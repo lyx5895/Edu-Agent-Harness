@@ -1,0 +1,1041 @@
+{
+  "scope": "scripted workflow and grading checks, not learning outcomes",
+  "cases": [
+    {
+      "name": "cross_subject_draft_generation",
+      "passed": true,
+      "details": {
+        "pack_id": "0d841877605f480ca60e878f19bc115b",
+        "items": [
+          {
+            "task_type": "reading",
+            "check_requirements": [
+              "引用材料并解释"
+            ],
+            "class_id": "Live",
+            "course_id": "语文",
+            "concept_id": "evidence",
+            "objective": "根据蒸发材料引用原文并解释原因",
+            "domain": "语文",
+            "question": "请从提供的材料中引用一句关于蒸发特点的原话，并解释这句话如何说明蒸发会带走热量。",
+            "rubric": "1. 准确引用原文（40分）；2. 解释清晰且紧扣中心观点（60分）",
+            "reference": "引用：'蒸发从周围环境吸收热量。' 解释：这句话直接说明了蒸发过程会吸收周围环境的热量，导致温度下降，因此引用它可以作为蒸发致冷的证据。",
+            "material": "蒸发从周围环境吸收热量。英文段落应围绕一个中心观点展开。",
+            "prerequisite": "理解蒸发的基本定义及其能量变化",
+            "teaching_note": "",
+            "allow_explanation": true,
+            "reference_origin": "model_generated_unverified",
+            "check_assignment_ids": [],
+            "criteria": [
+              {
+                "id": "c1",
+                "description": "准确引用原文语句",
+                "kind": "model",
+                "expected": "直接摘录材料中的关键句子",
+                "concept_id": "",
+                "tolerance": 0.0
+              },
+              {
+                "id": "c2",
+                "description": "解释与中心观点的关联",
+                "kind": "model",
+                "expected": "说明引用内容如何支撑或解释蒸发吸热的原理",
+                "concept_id": "",
+                "tolerance": 0.0
+              }
+            ],
+            "algebra_initial": "",
+            "algebra_kind": "none"
+          },
+          {
+            "task_type": "writing",
+            "check_requirements": [],
+            "class_id": "Live",
+            "course_id": "英语",
+            "concept_id": "paragraph",
+            "objective": "写三个英语句子表达一个中心观点",
+            "domain": "英语",
+            "question": "请围绕“蒸发会吸收热量”这一中心观点，写出三个连贯的英语句子。",
+            "rubric": "1. 内容相关性：三个句子是否都紧扣“蒸发吸热”这一中心观点。2. 语言准确性：句子结构是否完整，用词是否恰当，有无明显语法错误。3. 逻辑连贯性：句子之间是否有合理的逻辑连接，是否形成完整的语义单元。",
+            "reference": "Evaporation absorbs heat from the surrounding environment. This process causes the temperature of the remaining liquid to drop. For example, sweating helps cool down our bodies when we exercise.",
+            "material": "蒸发从周围环境吸收热量。英文段落应围绕一个中心观点展开。",
+            "prerequisite": "掌握英语简单句的基本结构（主谓宾）及常见连接词的使用。",
+            "teaching_note": "",
+            "allow_explanation": true,
+            "reference_origin": "model_generated_unverified",
+            "check_assignment_ids": [],
+            "criteria": [],
+            "algebra_initial": "",
+            "algebra_kind": "none"
+          }
+        ],
+        "model_calls": 2
+      },
+      "seconds": 3.13
+    },
+    {
+      "name": "quote_alone_does_not_satisfy_explanation",
+      "passed": true,
+      "details": {
+        "status": "incomplete",
+        "criteria": [
+          {
+            "id": "quote",
+            "description": "引用材料原文",
+            "concept_id": "",
+            "status": "correct",
+            "source": "tool"
+          }
+        ],
+        "trace": [
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [
+                {
+                  "document_hash": "fa42d85f47c8",
+                  "end": 16,
+                  "id": "material:1",
+                  "start": 0,
+                  "text": "水在蒸发时会从周围环境吸收热量。"
+                }
+              ],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "probe",
+              "reason": "询问作答依据，区分知识缺口与操作失误。"
+            },
+            "evidence_event_id": 2,
+            "input": {
+              "failures": 1,
+              "fallbacks": 0,
+              "grounded": false,
+              "hints": 0,
+              "kind": "attempt",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "stalls": 1,
+              "status": "incomplete"
+            },
+            "model_calls": [
+              {
+                "at": 1794594302.5156188,
+                "metrics": null,
+                "seconds": 0.6291639553382993,
+                "usage": {
+                  "completion_tokens": 87,
+                  "prompt_tokens": 799,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 886
+                }
+              },
+              {
+                "at": 1794594302.8076334,
+                "metrics": null,
+                "seconds": 0.2896905969828367,
+                "usage": {
+                  "completion_tokens": 40,
+                  "prompt_tokens": 237,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 277
+                }
+              },
+              {
+                "at": 1794594303.2692807,
+                "metrics": null,
+                "seconds": 0.46100050397217274,
+                "usage": {
+                  "completion_tokens": 64,
+                  "prompt_tokens": 537,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 601
+                }
+              },
+              {
+                "at": 1794594303.6284113,
+                "metrics": null,
+                "seconds": 0.35843873769044876,
+                "usage": {
+                  "completion_tokens": 50,
+                  "prompt_tokens": 381,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 431
+                }
+              },
+              {
+                "at": 1794594304.049077,
+                "metrics": null,
+                "seconds": 0.41967592388391495,
+                "usage": {
+                  "completion_tokens": 57,
+                  "prompt_tokens": 547,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 604
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "请指出你用到的原文位置，并说说它如何支持你的判断？",
+            "output_validation": {
+              "candidate": "你正确指出了水蒸发会吸热，但题目要求引用原文说明“湿衣服晾干”这一具体现象。请回到材料中，找出直接描述湿衣服晾干时吸热的原句，并引用它来支持你的解释。",
+              "delivered_action": "clarify",
+              "fallback": true,
+              "first_draft": {
+                "candidate": "你提到了水蒸发吸热，这确实是关键。请回到材料中，找出直接说明“湿衣服晾干”这一过程吸热的原句，并引用它来支持你的解释。",
+                "reasons": [
+                  "probe_must_be_one_question"
+                ],
+                "review": "学生正确识别了水蒸发吸热的原理，但未能准确引用材料中关于“湿衣服晾干”这一具体现象的原文。probe指令旨在引导学生定位更精确的原文依据，而非直接提供答案或纠正错误，符合当前教学阶段的要求。"
+              },
+              "reasons": [
+                "probe_must_be_one_question",
+                "model_review"
+              ],
+              "review": {
+                "acceptable": false,
+                "reason": "学生正确理解了水蒸发吸热的原理，但未能准确引用材料中关于“湿衣服晾干”这一具体现象的原文。题目明确要求引用原文并解释，学生需找到直接描述湿衣服晾干吸热的句子。"
+              }
+            },
+            "policy_version": "open-task-policy-v4",
+            "seconds": 2.1652653217315674,
+            "state_diff": {
+              "assisted": {
+                "after": true,
+                "before": false
+              },
+              "failures": {
+                "after": 1,
+                "before": 0
+              },
+              "feedback_fallbacks": {
+                "after": 1,
+                "before": null
+              },
+              "hypotheses": {
+                "after": [
+                  {
+                    "certainty": "tentative",
+                    "hypothesis": "学生正确理解了题目要求，并精准定位了材料中的关键句子进行作答。",
+                    "quote": "水在蒸发时会从周围环境吸收热量。"
+                  }
+                ],
+                "before": []
+              },
+              "pending_question": {
+                "after": "请指出你用到的原文位置，并说说它如何支持你的判断？",
+                "before": null
+              },
+              "stalls": {
+                "after": 1,
+                "before": null
+              },
+              "version": {
+                "after": 1,
+                "before": 0
+              }
+            },
+            "state_version": 1,
+            "task_id": "0069ca1580344afc81d0bb10f8ae5d54",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 3
+          }
+        ]
+      },
+      "seconds": 2.17
+    },
+    {
+      "name": "teacher_bank_physics_independent_check",
+      "passed": true,
+      "details": {
+        "status": "correct",
+        "evidence": "independent_model_assessed",
+        "trace": [
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "offer_check",
+              "reason": "当前任务完成，邀请进行新的无提示检查。"
+            },
+            "evidence_event_id": 5,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "grounded": false,
+              "hints": 0,
+              "kind": "attempt",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "stalls": 0,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794594304.6910915,
+                "metrics": null,
+                "seconds": 0.6268434664234519,
+                "usage": {
+                  "completion_tokens": 87,
+                  "prompt_tokens": 781,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 868
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+            "policy_version": "open-task-policy-v4",
+            "seconds": 0.629462718963623,
+            "state_diff": {
+              "completed": {
+                "after": true,
+                "before": false
+              },
+              "stalls": {
+                "after": 0,
+                "before": null
+              },
+              "version": {
+                "after": 1,
+                "before": 0
+              }
+            },
+            "state_version": 1,
+            "task_id": "54761a4fa1364934a5c1685eac0cdee1",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 6
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "check_source": "teacher_bank",
+            "context": {
+              "history": [
+                {
+                  "action": "offer_check",
+                  "event_id": 5,
+                  "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+                  "status": "correct",
+                  "text": "3 m/s"
+                }
+              ],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "create_check",
+              "reason": "按当前目标生成未见检查任务，先审核再呈现。"
+            },
+            "evidence_event_id": 7,
+            "generated_task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "check_assignment_id": "2a41a31c752146559de1fa2e26663dc1",
+              "check_requirements": [
+                "使用路程与时间求速度",
+                "写出速度单位"
+              ],
+              "criteria": [
+                {
+                  "concept_id": "",
+                  "description": "数值正确",
+                  "expected": "4",
+                  "id": "value",
+                  "kind": "numeric",
+                  "tolerance": 0
+                },
+                {
+                  "concept_id": "",
+                  "description": "单位正确",
+                  "expected": "m/s",
+                  "id": "unit",
+                  "kind": "unit",
+                  "tolerance": 0
+                }
+              ],
+              "domain": "物理",
+              "id": "778d083441a04fcf9616c5089f91288e",
+              "objective": "计算速度并写单位",
+              "phase": "check",
+              "prerequisite": "",
+              "question": "小车3秒走了12米，速度是多少？写单位。",
+              "reference": "4 m/s",
+              "reference_origin": "teacher_authored",
+              "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+              "source_ids": [],
+              "source_quote": "",
+              "task_type": "experiment",
+              "verifier_binding": "unavailable"
+            },
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "hints": 0,
+              "kind": "check",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "stalls": 0,
+              "status": "unknown"
+            },
+            "model_calls": [],
+            "operation": "check",
+            "output": "新的独立检查已准备好，请独立作答。",
+            "policy_version": "open-task-policy-v4",
+            "review": {
+              "acceptable": true,
+              "reason": "教师审核题库"
+            },
+            "seconds": 0.0009322166442871094,
+            "state_diff": {
+              "completed": {
+                "after": false,
+                "before": true
+              },
+              "seen": {
+                "after": [
+                  "小车2秒走了6米，速度是多少？写单位。",
+                  "小车3秒走了12米，速度是多少？写单位。"
+                ],
+                "before": [
+                  "小车2秒走了6米，速度是多少？写单位。"
+                ]
+              },
+              "task": {
+                "after": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_assignment_id": "2a41a31c752146559de1fa2e26663dc1",
+                  "check_requirements": [
+                    "使用路程与时间求速度",
+                    "写出速度单位"
+                  ],
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "数值正确",
+                      "expected": "4",
+                      "id": "value",
+                      "kind": "numeric",
+                      "tolerance": 0
+                    },
+                    {
+                      "concept_id": "",
+                      "description": "单位正确",
+                      "expected": "m/s",
+                      "id": "unit",
+                      "kind": "unit",
+                      "tolerance": 0
+                    }
+                  ],
+                  "domain": "物理",
+                  "id": "778d083441a04fcf9616c5089f91288e",
+                  "objective": "计算速度并写单位",
+                  "phase": "check",
+                  "prerequisite": "",
+                  "question": "小车3秒走了12米，速度是多少？写单位。",
+                  "reference": "4 m/s",
+                  "reference_origin": "teacher_authored",
+                  "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                  "source_ids": [],
+                  "source_quote": "",
+                  "task_type": "experiment",
+                  "verifier_binding": "unavailable"
+                },
+                "before": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_assignment_ids": [
+                    "2a41a31c752146559de1fa2e26663dc1"
+                  ],
+                  "check_requirements": [
+                    "使用路程与时间求速度",
+                    "写出速度单位"
+                  ],
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "数值正确",
+                      "expected": "3",
+                      "id": "value",
+                      "kind": "numeric",
+                      "tolerance": 0
+                    },
+                    {
+                      "concept_id": "",
+                      "description": "单位正确",
+                      "expected": "m/s",
+                      "id": "unit",
+                      "kind": "unit",
+                      "tolerance": 0
+                    }
+                  ],
+                  "domain": "物理",
+                  "id": "54761a4fa1364934a5c1685eac0cdee1",
+                  "objective": "计算速度并写单位",
+                  "phase": "teach",
+                  "prerequisite": "",
+                  "question": "小车2秒走了6米，速度是多少？写单位。",
+                  "reference": "3 m/s",
+                  "reference_origin": "teacher_authored",
+                  "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                  "source_ids": [],
+                  "source_quote": "",
+                  "task_type": "experiment",
+                  "verifier_binding": "unavailable"
+                }
+              },
+              "version": {
+                "after": 2,
+                "before": 1
+              }
+            },
+            "state_version": 2,
+            "task_id": "54761a4fa1364934a5c1685eac0cdee1",
+            "tools": [
+              "materials.retrieve",
+              "task.teacher_bank"
+            ],
+            "event_id": 8
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "assess_only",
+              "reason": "独立检查先评估作答，不向学生提供答案或提示。"
+            },
+            "evidence_event_id": 9,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "grounded": false,
+              "hints": 0,
+              "kind": "attempt",
+              "phase": "check",
+              "prior_support_needed": false,
+              "stalls": 0,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794594305.3348851,
+                "metrics": null,
+                "seconds": 0.6314625702798367,
+                "usage": {
+                  "completion_tokens": 88,
+                  "prompt_tokens": 784,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 872
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。",
+            "policy_version": "open-task-policy-v4",
+            "seconds": 0.6378271579742432,
+            "state_diff": {
+              "completed": {
+                "after": true,
+                "before": false
+              },
+              "version": {
+                "after": 3,
+                "before": 2
+              }
+            },
+            "state_version": 3,
+            "task_id": "778d083441a04fcf9616c5089f91288e",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 10
+          }
+        ]
+      },
+      "seconds": 1.29
+    },
+    {
+      "name": "generated_writing_check_preserves_contract",
+      "passed": true,
+      "details": {
+        "task": {
+          "id": "2fa8297fd1694f08b119e231279738e6",
+          "domain": "英语",
+          "objective": "用because写出表示原因的英语句子",
+          "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+          "phase": "check",
+          "source_ids": [],
+          "task_type": "writing",
+          "source_pages": [],
+          "check_requirements": [
+            "完整英语句子",
+            "because引导原因"
+          ],
+          "criteria": [
+            {
+              "id": "reason",
+              "description": "使用because引导原因并形成完整英语句子"
+            }
+          ]
+        },
+        "trace": [
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "offer_check",
+              "reason": "当前任务完成，邀请进行新的无提示检查。"
+            },
+            "evidence_event_id": 12,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "grounded": false,
+              "hints": 0,
+              "kind": "attempt",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "stalls": 0,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794594305.9619281,
+                "metrics": null,
+                "seconds": 0.6154948361217976,
+                "usage": {
+                  "completion_tokens": 77,
+                  "prompt_tokens": 724,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 801
+                }
+              },
+              {
+                "at": 1794594306.0391552,
+                "metrics": null,
+                "seconds": 0.6918229013681412,
+                "usage": {
+                  "completion_tokens": 89,
+                  "prompt_tokens": 445,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 534
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+            "policy_version": "open-task-policy-v4",
+            "seconds": 0.6951100826263428,
+            "state_diff": {
+              "completed": {
+                "after": true,
+                "before": false
+              },
+              "stalls": {
+                "after": 0,
+                "before": null
+              },
+              "version": {
+                "after": 1,
+                "before": 0
+              }
+            },
+            "state_version": 1,
+            "task_id": "fd339cd5231f4a929a4efecfbd900ad1",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 13
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "check_generation_attempts": [
+              {
+                "candidate": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_contract": {
+                    "check_requirements": [
+                      "完整英语句子",
+                      "because引导原因"
+                    ],
+                    "criteria": [
+                      {
+                        "concept_id": "",
+                        "description": "使用because引导原因并形成完整英语句子",
+                        "id": "reason",
+                        "kind": "model"
+                      }
+                    ],
+                    "original_rubric": "英语句子完整，使用because引导原因。",
+                    "task_type": "writing"
+                  },
+                  "check_requirements": [
+                    "完整英语句子",
+                    "because引导原因"
+                  ],
+                  "citation_validation": {
+                    "discarded_model_quote": "",
+                    "status": "no_sources"
+                  },
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "使用because引导原因并形成完整英语句子",
+                      "expected": "",
+                      "id": "reason",
+                      "kind": "model",
+                      "tolerance": 0.0
+                    }
+                  ],
+                  "domain": "英语",
+                  "id": "2fa8297fd1694f08b119e231279738e6",
+                  "objective": "用because写出表示原因的英语句子",
+                  "phase": "check",
+                  "prerequisite": "掌握because的用法",
+                  "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+                  "reference": "I like sports because they keep me healthy and happy.",
+                  "reference_origin": "model_generated_reviewed_same_model",
+                  "retrieval_mode": "none",
+                  "rubric": "英语句子完整，使用because引导原因。",
+                  "source_ids": [],
+                  "source_pages": [],
+                  "source_quote": "",
+                  "task_type": "writing",
+                  "verifier_binding": "unavailable"
+                },
+                "reference_assessment": {
+                  "confidence": "high",
+                  "evidence_quote": "I like sports because they keep me healthy and happy.",
+                  "evidence_sentence": 1,
+                  "hypothesis": "学生掌握了because的用法，能够正确构建表示原因的英语句子。",
+                  "observation": "学生句子完整，且正确使用了because引导原因状语从句，完全符合题目要求。",
+                  "status": "correct"
+                },
+                "review": {
+                  "acceptable": true,
+                  "reason": "题目要求用because写一句说明喜欢运动的英文句子，参考答案'I like sports because they keep me healthy and happy.'完全符合题目要求，使用了because引导原因，且句子完整。"
+                }
+              }
+            ],
+            "context": {
+              "history": [
+                {
+                  "action": "offer_check",
+                  "event_id": 12,
+                  "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+                  "status": "correct",
+                  "text": "I like reading because I can learn new things."
+                }
+              ],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "create_check",
+              "reason": "按当前目标生成未见检查任务，先审核再呈现。"
+            },
+            "evidence_event_id": 14,
+            "generated_task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "check_contract": {
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "id": "reason",
+                    "kind": "model"
+                  }
+                ],
+                "original_rubric": "英语句子完整，使用because引导原因。",
+                "task_type": "writing"
+              },
+              "check_requirements": [
+                "完整英语句子",
+                "because引导原因"
+              ],
+              "citation_validation": {
+                "discarded_model_quote": "",
+                "status": "no_sources"
+              },
+              "criteria": [
+                {
+                  "concept_id": "",
+                  "description": "使用because引导原因并形成完整英语句子",
+                  "expected": "",
+                  "id": "reason",
+                  "kind": "model",
+                  "tolerance": 0.0
+                }
+              ],
+              "domain": "英语",
+              "id": "2fa8297fd1694f08b119e231279738e6",
+              "objective": "用because写出表示原因的英语句子",
+              "phase": "check",
+              "prerequisite": "掌握because的用法",
+              "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+              "reference": "I like sports because they keep me healthy and happy.",
+              "reference_origin": "model_generated_reviewed_same_model",
+              "retrieval_mode": "none",
+              "rubric": "英语句子完整，使用because引导原因。",
+              "source_ids": [],
+              "source_pages": [],
+              "source_quote": "",
+              "task_type": "writing",
+              "verifier_binding": "unavailable"
+            },
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "hints": 0,
+              "kind": "check",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "stalls": 0,
+              "status": "unknown"
+            },
+            "model_calls": [
+              {
+                "at": 1794594307.0310493,
+                "metrics": null,
+                "seconds": 0.985946579836309,
+                "usage": {
+                  "completion_tokens": 145,
+                  "prompt_tokens": 895,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 1040
+                }
+              },
+              {
+                "at": 1794594307.389079,
+                "metrics": null,
+                "seconds": 0.3540987949818373,
+                "usage": {
+                  "completion_tokens": 49,
+                  "prompt_tokens": 370,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 419
+                }
+              },
+              {
+                "at": 1794594308.0005543,
+                "metrics": null,
+                "seconds": 0.6104662856087089,
+                "usage": {
+                  "completion_tokens": 83,
+                  "prompt_tokens": 825,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 908
+                }
+              },
+              {
+                "at": 1794594308.6055434,
+                "metrics": null,
+                "seconds": 0.603590676560998,
+                "usage": {
+                  "completion_tokens": 89,
+                  "prompt_tokens": 450,
+                  "prompt_tokens_details": null,
+                  "total_tokens": 539
+                }
+              }
+            ],
+            "operation": "check",
+            "output": "新的独立检查已准备好，请独立作答。",
+            "policy_version": "open-task-policy-v4",
+            "review": {
+              "acceptable": true,
+              "reason": "题目要求用because写一句说明喜欢运动的英文句子，参考答案'I like sports because they keep me healthy and happy.'完全符合题目要求，使用了because引导原因，且句子完整。"
+            },
+            "seconds": 2.5633788108825684,
+            "state_diff": {
+              "completed": {
+                "after": false,
+                "before": true
+              },
+              "seen": {
+                "after": [
+                  "用because写一句说明你为什么喜欢阅读的英文句子。",
+                  "用because写一句说明你为什么喜欢运动的英文句子。"
+                ],
+                "before": [
+                  "用because写一句说明你为什么喜欢阅读的英文句子。"
+                ]
+              },
+              "task": {
+                "after": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_contract": {
+                    "check_requirements": [
+                      "完整英语句子",
+                      "because引导原因"
+                    ],
+                    "criteria": [
+                      {
+                        "concept_id": "",
+                        "description": "使用because引导原因并形成完整英语句子",
+                        "id": "reason",
+                        "kind": "model"
+                      }
+                    ],
+                    "original_rubric": "英语句子完整，使用because引导原因。",
+                    "task_type": "writing"
+                  },
+                  "check_requirements": [
+                    "完整英语句子",
+                    "because引导原因"
+                  ],
+                  "citation_validation": {
+                    "discarded_model_quote": "",
+                    "status": "no_sources"
+                  },
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "使用because引导原因并形成完整英语句子",
+                      "expected": "",
+                      "id": "reason",
+                      "kind": "model",
+                      "tolerance": 0.0
+                    }
+                  ],
+                  "domain": "英语",
+                  "id": "2fa8297fd1694f08b119e231279738e6",
+                  "objective": "用because写出表示原因的英语句子",
+                  "phase": "check",
+                  "prerequisite": "掌握because的用法",
+                  "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+                  "reference": "I like sports because they keep me healthy and happy.",
+                  "reference_origin": "model_generated_reviewed_same_model",
+                  "retrieval_mode": "none",
+                  "rubric": "英语句子完整，使用because引导原因。",
+                  "source_ids": [],
+                  "source_pages": [],
+                  "source_quote": "",
+                  "task_type": "writing",
+                  "verifier_binding": "unavailable"
+                },
+                "before": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_assignment_ids": [],
+                  "check_requirements": [
+                    "完整英语句子",
+                    "because引导原因"
+                  ],
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "使用because引导原因并形成完整英语句子",
+                      "expected": "",
+                      "id": "reason",
+                      "kind": "model",
+                      "tolerance": 0
+                    }
+                  ],
+                  "domain": "英语",
+                  "id": "fd339cd5231f4a929a4efecfbd900ad1",
+                  "objective": "用because写出表示原因的英语句子",
+                  "phase": "teach",
+                  "prerequisite": "",
+                  "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                  "reference": "I like reading because I can learn new things.",
+                  "reference_origin": "teacher_authored",
+                  "rubric": "英语句子完整，使用because引导原因。",
+                  "source_ids": [],
+                  "source_quote": "",
+                  "task_type": "writing",
+                  "verifier_binding": "unavailable"
+                }
+              },
+              "version": {
+                "after": 2,
+                "before": 1
+              }
+            },
+            "state_version": 2,
+            "task_id": "fd339cd5231f4a929a4efecfbd900ad1",
+            "tools": [
+              "materials.retrieve",
+              "task.generate_and_review"
+            ],
+            "event_id": 15
+          }
+        ]
+      },
+      "seconds": 3.27
+    }
+  ],
+  "passed": true
+}

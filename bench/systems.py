@@ -67,17 +67,20 @@ class RawSession:
 
 
 class HarnessTutor:
-    def __init__(self, policy=None, cross_review=False):
+    def __init__(self, policy=None, cross_review=False, prompt_style=None):
         from harness.open_engine import OpenEngine
         from harness.open_model import OpenModel
         self.OpenEngine, self.OpenModel = OpenEngine, OpenModel
-        self.policy, self.cross_review = policy, cross_review
-        self.name = 'harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '') + ('-xr' if cross_review else '')
+        self.policy, self.cross_review, self.prompt_style = policy, cross_review, prompt_style
+        self.name = ('harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '') + ('-xr' if cross_review else '')
+                     + {'omniedu': '-op', 'mixed': '-mp', 'harness': '-hp'}.get(prompt_style, ''))
         self.tmp = tempfile.TemporaryDirectory(prefix='edu-bench-')
 
     def engine(self):
         model = self.OpenModel()
         model.logs = ROOT / 'logs/bench-model-calls.jsonl'
+        if self.prompt_style:
+            model.prompt_style = self.prompt_style
         reviewer = None
         if self.cross_review:
             reviewer = self.OpenModel(*ENDPOINTS['judge'])

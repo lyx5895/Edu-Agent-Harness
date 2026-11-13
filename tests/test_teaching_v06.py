@@ -183,7 +183,7 @@ def test_structured_arrays_and_criterion_images():
     assert model.structured(TaskDraft,'生成','材料').criteria==[]
     assert 'criteria必须是JSON数组' in seen[0][0]['content']
     capture=[]
-    def structured(schema,instruction,payload):
+    def structured(schema,instruction,payload,role=None):
         capture.append(payload)
         return schema(status='correct',confidence='high',evidence_quote='原文',observation='判断',hypothesis='')
     model.structured=structured

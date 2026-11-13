@@ -369,3 +369,30 @@ def test_inline_images_migrate_to_files(tmp_path):
     assert migrate(tmp_path / 'db.sqlite', apply=True) == 0
     assert list(tmp_path.glob('db.sqlite.bak-*'))
     assert e.image_event(s['session_id'], eid)['image_url'] == url
+
+
+def test_omniedu_prompt_style_uses_training_system_prompt(monkeypatch, tmp_path):
+    from harness.omniedu_prompts import REGISTRY, messages
+    seen = []
+
+    def handler(request):
+        seen.append(json.loads(request.content))
+        content = json.dumps({'status': 'incorrect', 'confidence': 'high', 'evidence_quote': '2x+3',
+                              'observation': '漏乘', 'hypothesis': '分配律'})
+        return httpx.Response(200, json={'choices': [{'message': {'content': content}}], 'usage': {}})
+
+    fake_transport(monkeypatch, handler)
+    monkeypatch.setenv('OMNIEDU_PROMPT_STYLE', 'omniedu')
+    m = ModelClient(base_url='http://model/v1')
+    m.logs = tmp_path / 'calls.jsonl'
+    m.structured(Assessment, '判定', '2x+3', role='answer_assessment')
+    system, user = seen[0]['messages']
+    assert system['content'] == REGISTRY['answer_assessment']
+    assert user['content'].startswith('要求：\n判定') and user['content'].endswith('2x+3')
+    m.structured(Assessment, '判定', '2x+3')
+    assert '判定' in seen[1]['messages'][0]['content']
+    parts = messages('omniedu', 'active_probe', '规则', [{'type': 'image_url', 'image_url': {'url': 'x'}}])
+    assert parts[1]['content'][0]['type'] == 'text' and parts[1]['content'][1]['type'] == 'image_url'
+    assert messages('harness', 'active_probe', '规则', 'x')[0]['content'] == '规则'
+    assert messages('mixed', 'active_probe', '规则', 'x')[0]['content'] == '规则'
+    assert messages('mixed', 'answer_assessment', '规则', 'x')[0]['content'] == REGISTRY['answer_assessment']

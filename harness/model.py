@@ -7,6 +7,8 @@ from typing import Literal
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
+from .omniedu_prompts import messages as prompt_messages
+
 
 class ModelUnavailable(Exception):
     pass
@@ -41,6 +43,7 @@ class ModelClient:
     def __init__(self, base_url=None, model=None):
         self.base_url = base_url or os.getenv('OMNIEDU_BASE_URL', 'http://127.0.0.1:8000/v1')
         self.model_name = model or os.getenv('OMNIEDU_MODEL', 'omniedu-9b')
+        self.prompt_style = os.getenv('OMNIEDU_PROMPT_STYLE', 'mixed')
         self.logs = Path(__file__).resolve().parents[1] / 'logs/model-calls.jsonl'
         self.calls = []
         self.json_schema_output = os.getenv('OMNIEDU_JSON_SCHEMA', '1') != '0'
@@ -71,7 +74,7 @@ class ModelClient:
         except (httpx.HTTPError, KeyError, ValueError) as e:
             raise ModelUnavailable('模型服务不可用或超时，请稍后重试；本次未更新学习记录。') from e
 
-    def structured(self, schema, instruction, content):
+    def structured(self, schema, instruction, content, role=None):
         definition=schema.model_json_schema()
         fields=definition['properties']
         example={}
@@ -99,10 +102,9 @@ class ModelClient:
                 example[name]=spec.get('default','...')
                 contracts.append(f"{name}必须是字符串，最多{spec.get('maxLength',600)}个字符")
         shape=json.dumps(example,ensure_ascii=False)
-        messages = [{'role': 'system', 'content': instruction +
-                    '\n只输出一个JSON数据对象。字段名必须保持英文，不要输出schema、properties、required或Markdown。'
-                    '\n结构示例（请填写实际内容）：'+shape+'\n'+'；'.join(contracts)},
-                    {'role': 'user', 'content': content}]
+        rules = (instruction + '\n只输出一个JSON数据对象。字段名必须保持英文，不要输出schema、properties、required或Markdown。'
+                 '\n结构示例（请填写实际内容）：'+shape+'\n'+'；'.join(contracts))
+        messages = prompt_messages(getattr(self, 'prompt_style', 'mixed'), role, rules, content)
         # Constrained decoding guarantees shape only; the instruction text above
         # still carries the judging rules and must stay.
         response_format = {'type': 'json_schema', 'json_schema': {

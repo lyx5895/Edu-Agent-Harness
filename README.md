@@ -2,6 +2,12 @@
 
 当前 bysz1 默认推理后端已切换为 **vLLM 0.23.0**；部署参数与命令见文末“bysz1 部署”。下文 Transformers 双卡设置保留为后备方案与历史记录。项目已纳入 git 管理。
 
+## v0.9：OmniEdu 系统指令与知识点库
+
+- **系统指令**：评分和知识点调用改用 OmniEdu 训练时的系统指令（`harness/omniedu_prompts.py`）。评测中转教师由 5.5–6.4% 降到 1.8–2.5%，准确率略升。教学回复仍用自写提示词，因为全部换用训练指令时回复评分略低。`OMNIEDU_PROMPT_STYLE` 取 `mixed`（默认）、`omniedu`（全部调用）或 `harness`（旧提示词）。
+- **知识点库**：`python scripts/import_kgraph.py` 下载 K12-KGraph 并导入 `data/knowledge.sqlite`（人教版数学、物理、化学、生物，小学到高中，7,938 个知识点和技能，带先修关系）。教师发布任务时可点"从知识点库推荐知识点"，模型从库内候选中选择，教师确认；课程路径可按库补全先修。K12-KGraph 采用 CC BY-NC-SA 4.0 许可，**只能用于研究和非商业教学**；未导入时这些功能提示先导入，其余功能不受影响。
+- 评测见 `HARNESS_REVIEW.md` 第十节；打标评测脚本为 `scripts/eval_knowledge.py`（需要 `references/k12-kgraph/` 中的图谱和 K12-Bench 文件）。
+
 ## v0.8：并发、材料检索、交叉复核与扩展评测
 
 - **并发**：快照提交冲突时自动重算，重算期间持有写锁，已完成的模型调用按输入复用不重发；40 名学生同时提交 80 次全部成功。客户端带旧 `version` 时仍返回 409。

@@ -1,0 +1,3057 @@
+{
+  "problems": 83,
+  "items": 166,
+  "summary": {
+    "harness-omniedu": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 1.0,
+      "error_f1": 1.0,
+      "false_acceptance_rate": 0.0,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.012,
+      "status_counts": {
+        "correct": 83,
+        "incorrect": 78,
+        "unknown": 2,
+        "incomplete": 3
+      },
+      "accuracy_by_subject": {
+        "化学": 1.0,
+        "物理": 1.0,
+        "生物": 1.0,
+        "英语": 1.0,
+        "语文": 1.0
+      }
+    },
+    "harness-omniedu-op": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 1.0,
+      "error_f1": 1.0,
+      "false_acceptance_rate": 0.0,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.012,
+      "status_counts": {
+        "correct": 83,
+        "incorrect": 81,
+        "unknown": 2
+      },
+      "accuracy_by_subject": {
+        "化学": 1.0,
+        "物理": 1.0,
+        "生物": 1.0,
+        "英语": 1.0,
+        "语文": 1.0
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“铁块变轻了，质量减小了，所以密度也就跟着变小了”，这里把密度和质量直接挂钩了。其实密度是物质的一种特性，就像水的密度是 1g/cm³，不管是一滴水还是一桶水，密度都不变。你能想一下，如果切去一半，体积和质量都减半，它们的比值会变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确引用了密度公式，但忽略了公式中质量和体积是同步变化的。当铁块切去一半时，质量和体积都减半，它们的比值（密度）其实保持不变。你能想到为什么质量和体积同时减半后，密度不会改变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“水的重量变重了”，但实际上瓶子和水的总重力在倒置前后并没有改变，所以压力应该保持不变。既然压力不变，那么导致压强变化的因素是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你的判断是正确的，倒立时压强确实更大。不过，在运用公式 $p=F/S$ 分析时，我们需要先明确一个关键前提：无论正立还是倒立，瓶子对桌面的压力 $F$ 都等于瓶子和水的总重力，这个力是不变的。你提到的“面积变小”是造成压强增大的直接原因，但完整的理由应该先确认压力 $F$ 在两种情况下是相等的，再结合受力面积 $S$ 的减小来推导。请补充说明为什么压力 $F$ 在两种情况下是相等的，这样你的解释就完整了。",
+        "action": "clarify"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你忽略了串联电路的总电阻是各电阻之和，所以不能直接用电源电压除以 R1。如果先算出总电阻，再根据欧姆定律求电流，结果会不同吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「通过该支路的电流变小，但干路总电流不变」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，直接把重力 300N 和位移 10m 相乘了，但重力是竖直向下的，而小车是水平移动的，两者方向垂直。根据功的公式 W=Fs cosθ，当力与位移垂直时，cos90°=0，所以重力做功应该是 0J。你能再检查一下重力方向和位移方向的关系吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「功率 P = W/G = 10000J / 2000N = 5J/N」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，把重力大小和位移直接相乘了，但重力是竖直向下的，而箱子是水平移动的，两者方向垂直。请问：当力的方向与物体运动方向垂直时，这个力做功是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了密度与排开体积的关系。在漂浮时，浮力等于重力，而装满水的瓶子总质量更大，重力更大，所以浮力更大。请重新思考：如果两个物体都漂浮，比较浮力大小应该先比较什么物理量？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“排开的水的体积更大”，但根据阿基米德原理，当物体完全浸没时，排开液体的体积等于物体自身的体积，与液体密度无关。既然金属块是同一个且都浸没，它在两种液体中排开的体积应该相同。那么，既然排开体积不变，浮力变大究竟是因为哪个因素发生了变化呢？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为酒精烧杯小，液面高度看起来比水高，所以根据公式浮力跟深度有关，酒精里更深浮力就大」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了柳树倒影是光的反射，但看到鱼的原因并非反射。当光从水底射向空气时，传播方向发生了改变，这属于折射现象。请思考：如果光没有改变传播方向，我们还能看到水下的鱼吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“水升高的温度更多”，但这与比热容的定义相悖。比热容大的物质，在吸收相同热量时，温度升高应该更少。请重新思考：在质量和吸热相同的情况下，比热容大的物质温度变化是更大还是更小？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为沙子的比热容比海水大」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为沙子的比热容比水大」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「算出来是 112」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用14除以80乘以100%，得出氮元素的质量分数是17.5%，因为我只算了一个氮原子」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你直接将反应前高锰酸钾的质量当作氧气质量，这忽略了反应中固体质量减少才是生成氧气的质量。根据质量守恒定律，减少的质量才等于生成氧气的质量，你能算出减少了多少克吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算氧气质量时，只减去了氯酸钾的质量，但题目中反应前的总质量应该包括氯酸钾和二氧化锰。请问，反应前混合物的总质量是多少克？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你忽略了酚酞在酸性条件下也呈无色的特性，所以红色消失并不能直接证明溶液是中性。如果盐酸加得过量，溶液呈酸性，酚酞同样是无色的。那么，仅凭溶液变为无色，你能确定溶液一定呈中性吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“液面突然停止上升”并不是酸碱中和反应的典型现象，因为反应过程中溶液体积变化是连续的，肉眼无法通过液面判断终点。实际上，稀盐酸和氢氧化钠反应生成氯化钠和水，溶液始终澄清透明，没有颜色或沉淀变化。既然没有明显的视觉信号，仅凭肉眼观察无法确定恰好完全反应的时刻。那么，在没有指示剂的情况下，你认为还有什么方法可以辅助判断反应是否完全呢？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用 200g 除以 15% 算出是 1333.3g」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你关于“俯视读数导致看到的数值偏小”的判断是错误的，这直接导致了对溶剂体积的误判。请回忆量筒读数的正确方法：视线应与凹液面最低处保持水平，若俯视，视线高于液面，此时读出的数值会比实际液面位置对应的数值偏大还是偏小？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用 50 除以 12% 算出需要 416.67g，因为我觉得质量分数是溶质除以溶剂」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「2Al + 3CuSO₄ = AlSO₄ + 3Cu」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Zn + AgNO₃ = ZnNO₃ + Ag」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Fe + CuSO₄ = Fe₂(SO₄)₃ + Cu」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了碳的化合价从 0 升高到 +2，但结论“被还原”与这一变化矛盾。请回忆：化合价升高对应的是氧化还是还原？“得到氧元素”通常意味着什么变化？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为钠单质变成了化合物，而且它的化合价从 0 价升高到了 +1 价，所以是被还原了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「氧化剂是 $H_2S$，因为 $H_2S$ 中的硫元素化合价升高了，它把 $SO_2$ 氧化成了硫单质」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了呼吸作用和光合作用的产物，气泡实际上是光合作用释放的氧气，而黑暗环境中缺乏光能，导致光合作用无法进行。请重新思考：在没有光照时，植物能否进行光合作用？如果不能，这如何解释气泡的消失？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“叶绿素被晒坏”和“植物受不了强光”并不是光合作用速率不再增加的科学原因。在光照强度达到饱和点后，限制因素通常是二氧化碳浓度或温度等。请思考：当光照不再是限制因素时，哪些其他条件可能会限制光合作用的速率？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为碳酸氢钠能不断释放氧气」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到夜间降温能促进光合作用，但夜间没有光照，植物无法进行光合作用。请根据呼吸作用会消耗有机物的原理，思考降低温度对呼吸作用强度的影响，以及这如何帮助蔬菜积累更多有机物？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到增加二氧化碳浓度是为了让苹果进行光合作用，但苹果作为果实缺乏叶绿体，无法进行光合作用。实际上，高浓度二氧化碳的主要作用是抑制呼吸作用。既然呼吸作用被抑制了，苹果体内的有机物消耗会如何变化？这又对保鲜期有什么影响？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到温度升高是因为光合作用，但煮熟的种子没有进行光合作用，温度却不变，这说明光合作用可能不是根本原因。请思考：萌发种子在进行呼吸作用时会释放能量，这部分能量是否可能以热能形式导致温度升高？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「母亲的基因型是 AA」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到父母基因型都是 AA，但如果是这样，他们不可能生出单眼皮孩子，因为 AA 只能传递 A 基因。实际上，父母都是双眼皮却生出单眼皮孩子，说明他们各自都携带一个隐性 a 基因。请重新思考：如果父母都能传递 a 基因给孩子，那么他们各自的基因型应该是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为父母都有耳垂，说明他们肯定都是显性纯合子 AA，那个无耳垂的女儿应该是基因突变才出现的」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到兔子数量“不会再减少”，这忽略了生态系统中生物数量随资源变化和天敌恢复而波动的规律。如果狐狸被大量捕杀后数量随后恢复，或者草场因过度啃食而退化，兔子数量可能会下降。请思考：在自然环境中，一个物种的数量真的能永远单向增长吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你只计算了草到兔的传递，但狐是第三营养级，需要连续传递两次。如果能量传递效率按最大值 20% 计算，从草到兔再到狐，应该怎样列式计算？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+        "action": "clarify"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为洋葱内表皮细胞本来就没有颜色，所以不需要碘液，细胞核自己就会自动变黑让我们看清楚」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为太厚的表皮会让细胞吸水涨破，所以细胞核就看不清楚了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到气泡里充满了细胞液，但气泡内部实际上是什么物质呢？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“酸性环境也能直接让淀粉分解成葡萄糖”，这一步需要再检查。因为淀粉的初步化学性消化主要发生在口腔，由唾液淀粉酶完成；在胃中，淀粉酶活性受抑制，淀粉不会在此处被分解。而胃液中的胃蛋白酶确实能在酸性环境下对蛋白质进行初步消化。所以，请重新思考：在胃液环境下，哪种营养物质的消化有对应的酶参与？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到壁薄是为了“增加消化酶的分泌量”，但消化酶主要与消化过程相关，而题目问的是“吸收”为何有利。壁薄实际上是为了缩短物质运输的距离，这样营养物质能更快进入血液。你能区分“消化”和“吸收”这两个过程吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「“悚惧”的意思是大家看了都很高兴」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为前面一直在描写核舟的样子，最后说关上它，应该是关上门或船舱」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「‘靡’在这里是没有的意思」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“夸张”的依据是“让读者觉得风的力量非常大”，但原句中“温柔的画家”“轻轻挥动画笔”等描述更侧重于赋予风人的动作和特征，而非单纯夸大其力量。请重新审视“像一位温柔的画家”这一部分，思考这是否更符合将非人事物人格化的修辞特点？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这句话运用了比喻的修辞手法」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为比喻，但原句并没有把柳树直接比作“害羞的小姑娘”这样的喻体，而是赋予柳树“羞涩”“低头”“诉说”这些人的动作和情态。请再仔细看句子，这种把物当作人来写的修辞手法叫什么？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「让文章读起来很有趣」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「生动形象地写出了蜜蜂复眼数量多的样子，让读者读起来更有画面感」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“打比方”是因为觉得把蓝鲸和象联系起来很形象，但原文中“相当于 20 头成年非洲象的总和”并没有使用比喻词，也不是把蓝鲸直接说成象，而是通过数量对比来突出重量。请再仔细看原文，这种用具体事物进行数量对比的说明方法叫什么？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「同时也运用了举例论证来增强说服力」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“举例论证”是不准确的，因为画线句子引用的是鲁迅的名言，属于引用权威言论来证明观点，这应该是“引用论证”或“道理论证”。请重新思考：如果句子中列举的是具体的人或事，才是举例论证；而引用名人名言、格言警句，通常属于哪种论证方法？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为作者引用了文天祥和林则徐的名言，通过这些道理来说明爱国是民族精神的脊梁，从而增强了文章的逻辑性」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「只要把'通过'改成'由于'，句子就变成'由于这次激烈的辩论赛，使同学们开阔了视野，增长了见识'，这样就通顺了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我觉得这里关联词搭配不当，应该把'为了'改成'因为'，这样句子就是'因为这类交通事故不再发生，我们加强了交通安全教育'」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我把它改成了‘同学们通过这次社区服务活动，使增强了社会责任感，也更懂得了奉献的快乐。’」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「诗人通过劝酒表达了和朋友即将重逢的喜悦」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到诗人感到“走投无路”和“悲伤绝望”，但原诗中“疑无路”只是暂时的疑虑，紧接着“又一村”就带来了惊喜，这与你描述的持续悲伤不符。请重新阅读诗句，思考“疑”字和“又”字分别体现了诗人怎样的心理变化？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「诗人因为年纪大了头发变少，所以只能把簪子拿下来，这句诗主要表现了他对自己日渐衰老、身体不好的无奈和感叹」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Did you notice the inconsistency in tense between 'stay' and 'watched'? Since the event happened 'last weekend', 'stay' should also be in the past tense. Can you change 'stay' to its correct form?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the present tense 'fly' in your sentence, but the question requires the simple past tense. What is the correct past tense form of the verb 'fly'?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You noticed that 'watched' is in the past tense, but 'stay' remains in its base form, which doesn't follow the rules for the simple past tense. Can you recall what the past tense of 'stay' is?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'have went,' but the correct form after 'have' is 'been' or 'gone.' Which form should you use to talk about a past experience that happened at an unspecified time?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"He didn't visit it again since last year because he was busy\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"Have you enjoyed live in the new city so far?\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'built' directly, but passive voice requires the auxiliary verb 'was' or 'were' plus the past participle. Remember that the time phrase 'last month' indicates the simple past tense. Since the subject 'library' is singular, which auxiliary verb should it be paired with?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'was' and the 'by' structure, but the passive voice predicate must be in the past participle form. Please check the word 'design'; what form should it take to meet the requirement after 'was'?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the passive voice structure, but since the subject 'trees' is plural, the linking verb should be 'were' instead of 'was'. Please review the subject-verb agreement rule: which form of the be verb pairs with a plural subject?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the relative clause structure, but the verb tense needs adjustment to match 'yesterday'. Should the verb be in the past tense to align with the time marker in the original sentence?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确使用了关系代词 who 引导定语从句，这很好。但是请注意，先行词 the teacher 是单数，且动作发生在 last year，所以谓语动词 help 需要变成过去式 helped。你能解释一下为什么这里要用 helped 而不是 help 吗？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You noted that Tom's grades are better than others, which does involve a comparison, but the phrase 'Among all the students' suggests selecting the most outstanding one from the entire group, which typically requires the superlative form. Consider again: when the scope is 'all students,' should we use the comparative or the superlative?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'warmest,' but 'more warm' does not follow the rule for forming comparatives of multi-syllable adjectives. Can you recall how the comparative is usually formed for a word like 'warm'?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'it' to refer to 'weather', but since 'weather' is an uncountable noun, you should use 'that' instead. Also, because the sentence compares three places ('among the three'), the second blank requires the superlative form 'warmest', not the comparative 'warmer'. Can you explain why 'that' is the correct pronoun here and how the number of items compared determines the adjective form?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the past tense 'stood', but the problem requires a present participle form to act as a post-positive attributive. Consider: what form of verb is needed here to modify 'the old house'?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"is flying\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"stared\". What is this step based on, and does it hold?",
+        "action": "locate"
+      }
+    ],
+    "harness-omniedu-op": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“铁块变轻了，质量减小了，所以密度也就跟着变小了”，这里把密度和质量直接挂钩了。其实密度是物质的一种特性，就像水的密度是 1g/cm³，不管是一滴水还是一桶水，密度都不变。那么，切去一半后，虽然质量和体积都减半了，但它们的比值——密度——会变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确引用了密度公式，但忽略了公式中质量和体积是同步变化的。如果铁块切去一半，质量和体积都变为原来的一半，那么它们的比值会改变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“水的重量变重了”，但实际上瓶子和水的总重力在倒置前后并没有改变，对桌面的压力应该保持不变。既然压力不变，那么压强变化就只取决于受力面积。请观察倒置后瓶口与桌面的接触面积是变大了还是变小了？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你正确识别了面积变化对压强的影响，但需要补充说明：无论正立还是倒立，瓶内水的重力不变，因此对桌面的压力 F 保持不变。请结合“压力不变、受力面积减小”这一完整逻辑，重新组织你的理由。",
+        "action": "clarify"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你直接用 6V 除以 10Ω 得到 0.6A，这一步忽略了串联电路的总电阻。在串联电路中，电流处处相等，但计算时应该用总电压除以总电阻。你能先算出 R1 和 R2 串联后的总电阻是多少吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了支路电流变小，但干路总电流不变这一结论是错误的。在并联电路中，各支路电压相等且等于电源电压，当一条支路电阻增大时，该支路电流减小，而另一条支路电流不变，干路总电流应为各支路电流之和。既然一条支路电流减小，另一条不变，总电流应该怎样变化？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，直接用了重力大小乘以位移，但重力方向是竖直向下的，而小车是水平移动的，两者方向垂直。请问：当力的方向与物体运动方向垂直时，这个力做功是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算功率时用了 P = W/G，但功率的定义是单位时间内做的功，公式应为 P = W/t。请检查题目中给出的时间数据，用正确的公式重新计算功率？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，把质量、重力加速度和位移都乘起来了，但重力方向是竖直向下的，而箱子是水平移动的，这两个方向垂直。请问：当力的方向和物体移动的方向垂直时，这个力做功是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了密度与排开体积的关系。在漂浮状态下，浮力等于重力，而装满水的瓶子总质量更大，重力更大，所以浮力更大。请重新思考：为什么密度小的油反而会导致瓶子排开的水体积更小？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“排开的水的体积更大”，但根据阿基米德原理，当物体完全浸没时，排开液体的体积等于物体自身的体积。既然金属块是同一个且都浸没，它在两种液体中排开的体积应该相同。那么，浮力差异到底是由哪个因素引起的呢？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“浮力跟深度有关”，但阿基米德原理指出浮力只与液体密度和排开液体的体积有关，与深度无关。既然小铁球在两种液体中都沉底，排开液体的体积等于球体体积，那么决定浮力大小的关键因素是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到看到水里的鱼是因为光的反射，但光从水进入空气时发生的是折射。请思考：光从一种介质斜射入另一种介质时，传播方向会发生什么变化？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“水升高的温度更多”，但这与比热容的定义相悖。比热容大的物质，在吸收相同热量时，温度升高应该更少。那么，在质量和吸热相同的情况下，水为什么反而能提供更好的冷却效果呢？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“沙子的比热容比海水大”，这与事实相反。实际上，水的比热容远大于沙子。如果比热容大，物质升高相同温度需要吸收更多热量，或者吸收相同热量时温度升高更少。那么，在同样吸收太阳热量时，比热容大的海水温度应该升高得更多还是更少呢？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“沙子的比热容比水大”与事实相反，水的比热容实际上比沙子大。既然比热容大的物质升温慢、降温也慢，那么请重新思考：在同样受热或散热的情况下，比热容大的水和比热容小的沙子，温度变化谁更明显？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确列出了计算式 64 + 32 + 16×4，但最后的加法结果算错了。请重新计算 64 + 32 + 64 的和，看看是不是 160？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用14除以80乘以100%」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你直接将反应前高锰酸钾的质量当作氧气质量，忽略了反应后固体质量减少才是氧气质量这一关键事实。根据质量守恒定律，生成氧气的质量应等于反应前后固体质量的差值。请重新计算 10g 与 9.2g 的差值，并说明这个差值代表什么？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算氧气质量时，只减去了氯酸钾的质量，但反应前的总质量应该是氯酸钾和二氧化锰的总和。请问反应前混合物的总质量是多少克？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你忽略了酚酞在酸性条件下也呈无色的事实，所以红色消失不一定代表溶液是中性。如果盐酸加得过量，溶液呈酸性，酚酞同样是无色的，这时候溶液就不是中性了。你能想到用pH试纸或测导电性来进一步验证溶液的酸碱性吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“液面突然停止上升”与酸碱中和反应的实际现象不符，因为反应过程中溶液体积变化是连续的，不会出现肉眼可见的突变。请重新思考：在没有指示剂的情况下，我们通常依靠什么明显的实验现象来判断反应是否恰好完全？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你使用的公式“溶液质量 ÷ 溶质质量分数”是错误的，因为溶质质量分数表示的是溶质占溶液的比例，所以正确的逻辑应该是用溶液质量乘以这个比例来求溶质质量。请重新思考：如果 200g 溶液中有 15% 是氯化钠，那么氯化钠的质量应该是 200g 的多少倍？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你关于“俯视读数导致数值偏小、水加多”的判断与量筒读数原理相反，请重新思考：当视线高于凹液面最低处时，读出的数值是偏大还是偏小？这会导致实际量取的水体积偏多还是偏少？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用 50 除以 12% 算出需要 416.67g，因为我觉得质量分数是溶质除以溶剂」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你写出的化学方程式中，生成物硫酸铝的化学式 AlSO₄ 是错误的，因为铝元素显+3价，硫酸根显-2价，正确的化学式应该是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Zn + AgNO₃ = ZnNO₃ + Ag」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Fe + CuSO₄ = Fe₂(SO₄)₃ + Cu」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「化合价升高了，说明它得到了氧元素，所以是被还原」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断钠元素被还原的依据是化合价从 0 升高到 +1，但这一步骤与还原反应的定义相悖。请回忆：化合价升高对应的是氧化还是还原？哪类元素的化合价降低才属于还原反应？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「氧化剂是 $H_2S$，因为 $H_2S$ 中的硫元素化合价升高了，它把 $SO_2$ 氧化成了硫单质」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了呼吸作用与光合作用的产物，气泡实际上是光合作用释放的氧气，而黑暗环境导致光合作用无法进行。请重新思考：在黑暗条件下，植物是否还能进行光合作用？如果不能，这如何解释气泡的消失？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“叶绿素被晒坏”和“植物受不了强光”并不是光合作用速率不再增加的科学原因。实际上，当光照强度达到饱和点后，限制因素通常是二氧化碳浓度或温度等。请重新思考：在光照充足的情况下，是什么因素会首先限制光合作用的继续进行？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到碳酸氢钠释放的是氧气，但实际它提供的是二氧化碳。如果二氧化碳是光合作用的原料，增加它会不会让植物产生更多氧气呢？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到夜间降温能促进光合作用，但夜间植物没有光照，无法进行光合作用。请根据呼吸作用会消耗有机物的原理，思考降温对呼吸作用强度有什么影响？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到增加二氧化碳浓度是为了让苹果进行光合作用，但苹果作为果实缺乏叶绿体，无法进行光合作用。实际上，高浓度二氧化碳的主要作用是抑制呼吸作用。那么，从抑制呼吸作用的角度来看，增加二氧化碳浓度是如何帮助延长保鲜期的呢？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到萌发种子进行光合作用产生热量，但光合作用通常吸收光能并储存能量，不会在黑暗密闭环境中导致温度显著升高。请思考：在缺乏光照的保温瓶内，萌发种子主要通过哪种生理活动释放能量并产生热量？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断母亲基因型为 AA，但题目中母亲生出了单眼皮（隐性）的儿子，这要求母亲必须提供隐性基因。如果母亲是 AA，她只能提供显性基因，儿子不可能出现单眼皮。请重新思考：要生出隐性性状的子女，显性性状的父母必须满足什么基因条件？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到父母基因型都是 AA，但根据遗传规律，如果父母都是 AA，孩子不可能获得 a 基因。请重新思考：父母都是双眼皮却生出单眼皮孩子，说明父母各自必须携带一个隐性基因 a，那么他们的基因型应该是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你假设父母都是显性纯合子 AA，但这样他们无法生出隐性纯合子 aa 的女儿，除非发生基因突变。根据孟德尔遗传规律，如果父母都有耳垂却生出了无耳垂的孩子，说明父母都携带隐性基因。那么，这对夫妇的基因型应该是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到兔子数量“不会再减少”，这忽略了生态系统中生物数量随资源变化和天敌恢复而波动的规律。如果狐狸被大量捕杀后数量逐渐恢复，或者草场因过度啃食而退化，兔子的数量可能会发生变化。请思考：在自然条件下，一个种群的数量真的会永远单向增长吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你只计算了草到兔的传递，但狐是第三营养级，需要再传递一次。如果能量传递效率按 20% 算，兔得到的能量再乘以 20% 才是狐最多能获得的能量，对吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+        "action": "clarify"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到细胞核会“自动变黑”，但显微镜下细胞核的显色通常依赖染色剂。如果忘记滴加碘液，细胞核在视野中会呈现什么状态？为什么？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确识别了“撕取表皮太厚”这一操作失误，但解释原因时提到“细胞吸水涨破”是不准确的。在临时装片制作中，细胞重叠模糊主要是因为多层细胞相互遮挡，导致光线无法穿透，而非细胞破裂。请重新思考：为什么细胞层数过多会直接影响显微镜下的观察效果？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到气泡里充满了细胞液，但气泡内部实际上是什么物质呢？这会导致光线如何折射，从而形成边缘黑、中间亮的现象？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“酸性环境也能直接让淀粉分解成葡萄糖”，这一步需要再检查。因为淀粉的初步化学性消化主要发生在口腔，由唾液淀粉酶完成；而在胃中，酸性环境主要激活胃蛋白酶来消化蛋白质，淀粉在胃内基本不被分解。请思考：胃液中的主要消化酶是什么？它针对哪种营养物质起作用？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“增加消化酶的分泌量”，但题目问的是壁薄如何直接促进“吸收”，而不是消化。壁薄主要影响物质穿过的距离，与酶分泌无关。请重新思考：一层细胞的结构，对营养物质从肠腔进入血液的“路程”有什么影响？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你给出的“很高兴”与“悚惧”在词典中的释义“恐惧、害怕”完全相反，这属于对核心实词的根本性误读。请重新查阅“悚”与“惧”的单字释义，并结合“孙权展示战利品”这一语境，思考群下为何会感到恐惧？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到‘之’指代‘核舟’，但原文中‘闭之’的前一句是‘启窗而观’，且后文紧接着描述窗上的刻字，这说明‘之’更可能指代前文刚提到的‘小窗’。请重新查看‘旁开小窗……闭之’这一句的上下文，看看‘闭’这个动作的对象是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你给出的解释是‘没有’，但结合‘望其旗靡’的语境，旗帜‘没有’似乎不太符合战场的实际情况。请再思考一下，‘靡’字在古文中常用来形容旗帜或草木的状态，它更准确的含义应该是‘倒下’。你能从‘辙乱’和‘旗靡’这两个并列的短语中，推断出‘靡’字描述的是旗帜怎样的状态吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“夸张”的依据是什么？原句中“风像一位温柔的画家”这一部分，是否更符合将非人事物赋予人的特征？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你指出“把风比作了人”，但“像一位顽皮的孩童”实际上是赋予风以人的性格和动作，这属于拟人而非比喻。请重新审视句子中是否直接出现了“像”“如”等比喻词，还是仅仅将物当成人来描写？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为比喻，但原句中“羞涩地低下了头”“诉说着悄悄话”这些描述是把柳树当成人来写，而不是把柳树比作其他事物。请再仔细看句子，找出哪个词语最能体现“把物当作人来写”这一特点？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确识别了说明方法是“列数字”，但在分析作用时，将“让文章读起来很有趣”作为核心作用，这偏离了说明文追求准确、科学的特点。请重新思考：列数字在说明文中主要为了增强说服力还是增加趣味性？结合原文语境，它具体是如何体现数据精确性的？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确识别了说明方法是“列数字”，但在分析作用时，将“生动形象”“画面感”等属于“打比方”或“摹状貌”的效果套用到了“列数字”上。列数字的核心作用在于用具体数据准确、科学地说明事物特征，增强说服力。请重新思考：文中“约 4000 个”这个数据，主要是为了让我们更直观地理解蜜蜂复眼的什么特点？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“打比方”，但原文是将蓝鲸的重量直接与 20 头大象进行数量对比，这属于“作比较”而非比喻。请重新审视画线句子中是否出现了将 A 事物直接等同于 B 事物的比喻词（如“像”“仿佛”），还是仅仅在进行数据或特征上的对照？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「同时也运用了举例论证来增强说服力」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“举例论证”的依据是认为文中列举了鲁迅的例子，但原文中鲁迅的话是作为名言被引用，属于道理论据而非具体事例。请重新审视画线句子的性质：它是引用了谁的话？这种引用在论证中通常被归为哪种方法？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“引用了文天祥和林则徐的名言”，但题目要求分析的是他们“抛头颅、洒热血”的具体事迹，这属于用事实举例而非单纯讲道理。请重新审视材料中“如文天祥……如林则徐……\"这一结构，判断这更符合哪种论证方法？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了病因是成分残缺，但修改方案有误。将“通过”改为“由于”后，句子依然保留了“使”字，导致“由于...使...”的结构仍然造成主语缺失，句子并未通顺。正确的修改应该是删去“通过”或删去“使”，而非替换介词。请重新思考：如果保留“使”字，应该删去哪个词才能让句子有主语？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你指出了关联词搭配的问题，但原句真正的语病在于“防止”和“不再”构成了双重否定，导致语义变成了“为了让事故再次发生”。请重新审视句子中“防止”一词的语义，思考如何去掉那个多余的否定词来恢复原意？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断病因是“语序不当”，但原句“通过……使……”结构导致主语缺失，这才是核心问题。你修改后的句子“使增强了社会责任感”依然缺少主语，因为“使”字句不能独立作谓语。请重新分析原句成分，思考如何调整结构让句子有明确的主语？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“即将重逢的喜悦”，但原句“西出阳关无故人”明明是说出了阳关就再也见不到老朋友了，这难道不是在表达离别后的孤独吗？请重新审视诗句中“无故人”的含义，它真的能支持“重逢”这个结论吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到诗人感到“非常悲伤和绝望”，但原诗中“疑无路”的“疑”字暗示了这是一种暂时的困惑而非绝境，且后句“又一村”立刻带来了转机。请重新审视诗句中“疑”与“又”的对比，思考诗人在这转折中流露出的真实情感是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你只关注了头发变少这一表面现象，却忽略了“搔首”这一动作在古诗中常用来表现内心的焦虑与苦闷。结合《春望》全诗“国破山河在”的背景，诗人为何会因“搔首”而感叹？这个动作背后真正反映的是个人衰老，还是对时局的深切忧虑？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Did you notice the inconsistency in tense between 'stay' and 'watched'? Since the event happened 'last weekend', what form should the verb 'stay' be in?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'fly' in the present tense, but the question asks for the simple past tense. Can you change 'fly' to its past form to match the requirement?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'watched' for the second verb, but notice that 'stay' should also be in the past tense to match the time frame. What is the past tense form of the verb 'stay'?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'have went,' but the correct past participle of 'go' is 'been' or 'gone.' Can you try rewriting that sentence with the right verb form?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the simple past tense (\"didn't visit\"), but the time adverbial \"since last year\" usually requires the present perfect tense. Consider: when a sentence includes \"since + a past time point,\" what should the tense of the main clause be?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used the auxiliary verb \"Have,\" but the main verb structure is incorrect. In the present perfect tense, \"enjoy\" must be followed by a gerund (living), not the base form of the verb. Can you rewrite the sentence using the correct form of the verb after \"enjoyed\"?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the past participle 'built' directly as the main verb, but the sentence requires a passive construction with an auxiliary verb. What auxiliary verb should be added before 'built' to indicate that the action was done to the library in the past?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'was' to start the passive construction, but the verb 'design' needs to be in its past participle form. Can you check the rule for forming the passive voice in the simple past tense and try changing 'design' to the correct form?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'was' with the plural subject 'trees', which breaks the subject-verb agreement rule. Can you identify the correct form of the verb 'to be' that matches a plural subject in the past tense?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'who' to introduce the relative clause, but notice the verb 'help' does not match the singular subject 'the teacher'. What should the verb form be to agree with a singular third-person subject?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你使用了关系代词 who 来引导定语从句，这很好。但请注意，先行词 the teacher 是单数，所以从句中的谓语动词 help 需要变成第三人称单数形式。你能检查一下 help 应该改成什么吗？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that Tom's scores are better than others, but the phrase 'Among all the students' requires the superlative form, not the comparative. Can you recall the rule for choosing between 'higher' and 'highest' in this context?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used \"more warm\" for the first blank, but the correct comparative form of \"warm\" is \"warmer\" because it is a two-syllable adjective that typically takes \"-er\" instead of \"more.\" Can you check the spelling rule for forming comparatives of two-syllable adjectives ending in a consonant-vowel-consonant pattern?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'it' for 'weather', but uncountable nouns like 'weather' require 'that' for reference. Also, 'among the three' calls for the superlative 'warmest', not the comparative 'warmer'. Why must we use 'that' instead of 'it' here?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the past tense 'stood', but the sentence needs a present participle to describe the house. Can you recall how a present participle functions as an adjective in this context?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used 'is' with the plural subject 'Some children'; remember that plural subjects require 'are'. Can you identify the correct form of the verb 'to be' for a plural subject in the present continuous tense?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You used the past tense 'stared', but the sentence requires a present participle to show an action happening at the same time as the main verb. What form of the verb 'stare' should be used to indicate an ongoing action accompanying 'sits'?",
+        "action": "locate"
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness-multi",
+  "limit": null,
+  "systems": [
+    "harness-omniedu",
+    "harness-omniedu-op"
+  ],
+  "seconds": 207.4,
+  "generated_at": "2026-11-13T17:38:09+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

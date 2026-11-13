@@ -235,7 +235,7 @@ def test_old_aggregate_evidence_still_invalidates_consumers(engine):
 def test_image_adapter_preserves_image_and_strips_dependency_metadata():
     from harness.open_model import OpenModel
     m=OpenModel();received=[]
-    def structured(schema,instruction,content):
+    def structured(schema,instruction,content,role=None):
         received.append(content)
         return schema(status='unknown',confidence='low',evidence_quote='图',observation='',hypothesis='')
     m.structured=structured

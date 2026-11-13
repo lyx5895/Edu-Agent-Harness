@@ -21,7 +21,7 @@ from .pedagogy import PROFILES
 from typing import Literal
 
 engine = Gateway(db=os.getenv('HARNESS_DB'))
-app = FastAPI(title='OmniEdu Teaching Harness', version='0.8.1')
+app = FastAPI(title='OmniEdu Teaching Harness', version='0.9.0')
 
 
 @app.middleware('http')
@@ -412,6 +412,32 @@ def publish_pack_ui(pack,rows,criteria_rows,learners,reviewed,note):
     except (ValueError,Conflict) as e:raise gr.Error(str(e))
 
 
+def suggest_knowledge_ui(question,subject,stage):
+    try:result=engine.open.suggest_knowledge(question,subject.strip(),stage or None)
+    except ValueError as e:raise gr.Error(str(e))
+    if not result['items']:return gr.update(),gr.update(),'知识点库中没有找到匹配的知识点。'
+    top=result['items'][0]
+    lines=['推荐知识点（第一项已填入，请核对后再发布）：']+[
+        f"- `{i['id']}` {i['label']}"+(f"；先修：{'、'.join(p['name'] for p in i['prerequisites'])}" if i['prerequisites'] else '')
+        for i in result['items']]+[f"来源：{result['license']}"]
+    return top['id'],'、'.join(p['name'] for p in top['prerequisites']) or gr.update(),'\n'.join(lines)
+
+
+def fill_path_ui(rows):
+    rows=[list(r) for r in rows or [] if r and r[0]]
+    ids={r[0].strip() for r in rows}
+    outside=[]
+    for r in rows:
+        node=engine.open.knowledge_node(r[0].strip())
+        if not node:continue
+        r[1]=r[1] or node['name']
+        listed=[x.strip() for x in (r[3] or '').replace('，',',').split(',') if x.strip()]
+        r[3]=','.join(dict.fromkeys(listed+[p['id'] for p in node['prerequisites'] if p['id'] in ids]))
+        outside+=[f"{node['name']} ← {p['name']}（`{p['id']}`）" for p in node['prerequisites'] if p['id'] not in ids]
+    note='知识点库中还有这些先修不在路径里，可考虑补充：\n'+'\n'.join(f'- {x}' for x in outside) if outside else '已按知识点库补全。'
+    return rows,note
+
+
 def next_text(path_id,learner):
     try:
         result=engine.open.next_step(path_id.strip(),learner.strip())
@@ -419,7 +445,9 @@ def next_text(path_id,learner):
                 'check':'进行独立检查','remediate':'补救学习','diagnose':'先做诊断','complete':'本轮路径完成'}
         lines=[f"### {labels[result['action']]}",result['reason']]
         for key,label in [('session_id','会话编号'),('followup_id','跟进任务编号'),('assignment_id','教师任务编号'),('concept_id','知识点')]:
-            if result.get(key):lines.append(f"{label}：`{result[key]}`")
+            if result.get(key):
+                node=engine.open.knowledge_node(result[key]) if key=='concept_id' else None
+                lines.append(f"{label}：`{result[key]}`"+(f" {node['label']}" if node else ''))
         return '\n\n'.join(lines)
     except ValueError as e:raise gr.Error(str(e))
 
@@ -557,6 +585,10 @@ with gr.Blocks(title='OmniEdu · 教学工作台',theme=gr.themes.Soft()) as dem
         task_type=gr.Dropdown(label='教学类型',choices=[(v['label'],k) for k,v in PROFILES.items()],value='open')
         check_requirements=gr.Textbox(label='独立检查要求（每行一项，使用可迁移要求，避免填写本题答案）',lines=3)
         tq=gr.Textbox(label='题目',lines=3)
+        with gr.Row():
+            kp_stage=gr.Dropdown(label='学段（知识点库）',choices=[('不限',''),('小学','小学'),('初中','初中'),('高中','高中')],value='')
+            kp_button=gr.Button('从知识点库推荐知识点')
+        kp_view=gr.Markdown()
         rubric=gr.Textbox(label='评分要求（注明解释、单位、形式等要求）',lines=3)
         reference=gr.Textbox(label='教师参考答案',lines=3)
         tm=gr.Textbox(label='教学材料',lines=4)
@@ -576,6 +608,7 @@ with gr.Blocks(title='OmniEdu · 教学工作台',theme=gr.themes.Soft()) as dem
                 try:return bind_algebra(question,initial,kind)
                 except ValueError as e:raise gr.Error(str(e))
             preview_button.click(preview_binding,[tq,initial,initial_kind],[preview])
+        kp_button.click(suggest_knowledge_ui,[tq,subject,kp_stage],[concept,prerequisite,kp_view])
         publish=gr.Button('发布教师任务')
         published_id=gr.Textbox(label='任务编号 · 交给学生填写',interactive=False)
         def publish_ui(cls,course,concept,subject,objective,tq,rubric,reference,tm,prerequisite,guidance,allow,criteria_rows,initial,kind,task_type,requirements,check_bank):
@@ -593,6 +626,9 @@ with gr.Blocks(title='OmniEdu · 教学工作台',theme=gr.themes.Soft()) as dem
         plan_course=gr.Textbox(label='课程编号')
         plan_title=gr.Textbox(label='课程路径名称')
         plan_rows=gr.Dataframe(headers=['知识点编号','名称','已发布教师任务编号','先修知识点（逗号分隔）'],datatype=['str']*4,type='array',row_count=3,col_count=(4,'fixed'))
+        plan_fill=gr.Button('按知识点库补全名称与先修')
+        plan_note=gr.Markdown()
+        plan_fill.click(fill_path_ui,[plan_rows],[plan_rows,plan_note])
         plan_publish=gr.Button('发布课程路径')
         plan_result=gr.Textbox(label='课程路径编号',interactive=False)
         def publish_path_ui(cls,course,title,rows):

@@ -1,0 +1,59 @@
+{
+  "scope": "scripted behaviour checks on the live model, not learning outcomes",
+  "cases": [
+    {
+      "name": "english_wrong_attempt_is_located_in_english",
+      "passed": true,
+      "details": {
+        "feedback": "You identified the cost of earbuds as half the total, but the problem states that half the tickets were spent on the koala, while the earbuds and bracelets together made up the other half. Can you recalculate which part of the spending represents exactly half of the total tickets?",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 3,
+        "evidence_quote": "So she had 10 x 2 = 20 tickets."
+      },
+      "seconds": 2.12
+    },
+    {
+      "name": "chinese_wrong_attempt_is_located_in_chinese",
+      "passed": true,
+      "details": {
+        "feedback": "你提到的“平均速度等于路程乘以时间”这个公式需要再确认一下，因为速度、路程和时间之间的关系通常是除法运算。你能回忆一下，平均速度的正确计算公式应该是怎样的吗？",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 3
+      },
+      "seconds": 1.56
+    },
+    {
+      "name": "hint_ladder_escalates",
+      "passed": true,
+      "details": {
+        "actions": [
+          "scaffold_concept",
+          "scaffold_step",
+          "scaffold_example"
+        ]
+      },
+      "seconds": 4.03
+    },
+    {
+      "name": "eight_students_submit_concurrently",
+      "passed": true,
+      "details": {
+        "statuses": [
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect"
+        ],
+        "wall_seconds": 2.63
+      },
+      "seconds": 2.65
+    }
+  ],
+  "passed": true
+}

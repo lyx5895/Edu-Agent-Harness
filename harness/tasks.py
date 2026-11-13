@@ -37,6 +37,14 @@ class ReplyMeaning(BaseModel):
     hypothesis: str = Field(max_length=240)
 
 
+class KnowledgeGuess(BaseModel):
+    points: list[str] = Field(max_length=6)
+
+
+class KnowledgeChoice(BaseModel):
+    ids: list[str] = Field(max_length=4)
+
+
 class Review(BaseModel):
     # Reason first so constrained decoding commits to a verdict after the analysis.
     reason: str = Field(max_length=250)

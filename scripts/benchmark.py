@@ -28,7 +28,11 @@ def systems(names):
              'harness-omniedu': HarnessTutor, 'harness-omniedu-v4': lambda: HarnessTutor('open-task-policy-v4'),
              'harness-omniedu-v5': lambda: HarnessTutor('open-task-policy-v5'),
              'harness-omniedu-xr': lambda: HarnessTutor(cross_review=True),
-             'harness-omniedu-v5-xr': lambda: HarnessTutor('open-task-policy-v5', cross_review=True)}
+             'harness-omniedu-v5-xr': lambda: HarnessTutor('open-task-policy-v5', cross_review=True),
+             'harness-omniedu-op': lambda: HarnessTutor(prompt_style='omniedu'),
+             'harness-omniedu-xr-op': lambda: HarnessTutor(cross_review=True, prompt_style='omniedu'),
+             'harness-omniedu-mp': lambda: HarnessTutor(prompt_style='mixed'),
+             'harness-omniedu-hp': lambda: HarnessTutor(prompt_style='harness')}
     return [table[n]() for n in names]
 
 
