@@ -1,16 +1,21 @@
 """Tutor systems under comparison. Raw systems see the same problem, gold solution
 and dialogue as the harness; only the scaffolding around the model differs."""
+import json
 import re
 import tempfile
 import uuid
 from pathlib import Path
 
-from .common import ROOT, chat
+from .common import ENDPOINTS, ROOT, chat
 from .data import mathtutorbench_prompt
 
 TUTOR_SYSTEM = ('You are a math tutor helping a student who made a mistake. Help the student find and fix the '
                 'mistake themselves. Do not reveal the final answer. Reply in the language the student uses, '
                 'in at most three sentences.')
+
+
+TASK_TYPES = {'数学': 'problem_solving', '物理': 'problem_solving', '化学': 'problem_solving',
+              '生物': 'concept', '语文': 'reading', '英语': 'concept'}
 
 
 class RawTutor:
@@ -21,8 +26,13 @@ class RawTutor:
 
     def judge_correctness(self, item):
         prompt = mathtutorbench_prompt('student_solution_correctness.yaml', **item)
+        if item.get('subject'):
+            prompt = prompt.replace('experienced math teacher', 'experienced teacher').replace('Problem:', 'Question:')
         if self.with_reference:
-            prompt = prompt.replace('Conversation:', 'Reference solution (correct): ' + item['reference_solution'] + '\nConversation:', 1)
+            extra = 'Reference solution (correct): ' + item['reference_solution']
+            if item.get('rubric'):
+                extra += '\nGrading rubric: ' + item['rubric']
+            prompt = prompt.replace('Conversation:', extra + '\nConversation:', 1)
         reply = chat(self.endpoint, [{'role': 'user', 'content': prompt}], max_tokens=8)
         text = reply.strip().lower()
         flagged = 'yes' in text or 'no' not in text
@@ -57,35 +67,51 @@ class RawSession:
 
 
 class HarnessTutor:
-    def __init__(self, policy=None):
+    def __init__(self, policy=None, cross_review=False):
         from harness.open_engine import OpenEngine
         from harness.open_model import OpenModel
         self.OpenEngine, self.OpenModel = OpenEngine, OpenModel
-        self.policy = policy
-        self.name = 'harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '')
+        self.policy, self.cross_review = policy, cross_review
+        self.name = 'harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '') + ('-xr' if cross_review else '')
         self.tmp = tempfile.TemporaryDirectory(prefix='edu-bench-')
 
     def engine(self):
         model = self.OpenModel()
         model.logs = ROOT / 'logs/bench-model-calls.jsonl'
-        return self.OpenEngine(Path(self.tmp.name) / f'{uuid.uuid4().hex}.sqlite', model, policy=self.policy)
+        reviewer = None
+        if self.cross_review:
+            reviewer = self.OpenModel(*ENDPOINTS['judge'])
+            reviewer.logs = model.logs
+        return self.OpenEngine(Path(self.tmp.name) / f'{uuid.uuid4().hex}.sqlite', model, policy=self.policy, reviewer=reviewer)
 
-    def start(self, engine, question, reference):
+    def start(self, engine, question, reference, item=None):
+        item = item or {}
+        if item.get('language') == 'zh':
+            subject = item.get('subject', '数学')
+            fields = {'domain': subject, 'objective': '正确回答题目并说明依据' if item.get('subject') else '正确求解应用题并给出推理',
+                      'rubric': item.get('rubric') or '最终答案须与参考解答一致，且每一步推理和计算正确。',
+                      'task_type': TASK_TYPES.get(subject, 'problem_solving')}
+        else:
+            fields = {'domain': 'Math', 'objective': 'Solve the word problem correctly with sound reasoning',
+                      'rubric': 'The final answer must match the reference solution and every reasoning and calculation step must be correct.',
+                      'task_type': 'problem_solving'}
         assignment = engine.publish_assignment({
-            'class_id': 'benchmark', 'course_id': 'math', 'concept_id': 'word-problem', 'domain': 'Math',
-            'objective': 'Solve the word problem correctly with sound reasoning', 'question': question,
-            'rubric': 'The final answer must match the reference solution and every reasoning and calculation step must be correct.',
-            'reference': reference,
-            'task_type': 'problem_solving', 'reference_origin': 'teacher_authored'})
+            'class_id': 'benchmark', 'course_id': fields['domain'], 'concept_id': 'benchmark-item', 'question': question,
+            'reference': reference, 'reference_origin': 'teacher_authored', **fields})
         return engine.create('bench-' + uuid.uuid4().hex[:8], assignment_id=assignment['assignment_id'])
 
     def judge_correctness(self, item):
         engine = self.engine()
-        session = self.start(engine, item['question'], item['reference_solution'])
+        session = self.start(engine, item['question'], item['reference_solution'], item)
         result = engine.operation(session['session_id'], 'attempt', 'attempt', {'text': item['student_chat_solution'][:1600]})
         status = result['status']
-        return {'status': status, 'flagged_error': status != 'correct', 'abstained': status == 'unknown',
-                'feedback': result['feedback'], 'action': result.get('action')}
+        out = {'status': status, 'flagged_error': status != 'correct', 'abstained': status == 'unknown',
+               'feedback': result['feedback'], 'action': result.get('action')}
+        if self.cross_review:
+            with engine.connect() as c:
+                payload = json.loads(c.execute('SELECT payload FROM learning_events WHERE id=?', (result['event_id'],)).fetchone()[0])
+            out['cross_review'] = payload.get('cross_review')
+        return out
 
     def respond(self, conversation):
         engine = self.engine()
@@ -112,4 +138,7 @@ class HarnessSession:
         kind = 'reply' if state['pending_question'] and not submits_answer else 'attempt'
         result = self.engine.operation(sid, uuid.uuid4().hex, kind, {'text': student_message[:1600]}, state['version'])
         self.session = result['session']
-        return {'tutor': result['feedback'], 'action': result.get('action'), 'status': result.get('status'), 'operation': kind}
+        trace = next((t for t in self.engine.traces(sid) if t['event_id'] == result.get('trace_id')), {})
+        validation = trace.get('output_validation', {})
+        return {'tutor': result['feedback'], 'action': result.get('action'), 'status': result.get('status'), 'operation': kind,
+                'delivered_action': validation.get('delivered_action'), 'fallback_reasons': validation.get('reasons', [])}

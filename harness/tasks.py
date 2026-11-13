@@ -92,7 +92,7 @@ def sentences(text):
 
 def public_task(task):
     return {**{k: task[k] for k in ('id', 'domain', 'objective', 'question', 'phase', 'source_ids')},
-            'task_type': task.get('task_type', 'open'),
+            'task_type': task.get('task_type', 'open'), 'source_pages': task.get('source_pages', []),
             'check_requirements': task.get('check_requirements', []),
             'criteria':[{'id':x['id'],'description':x['description']} for x in task.get('criteria',[])]}
 
@@ -121,6 +121,23 @@ def choose_v4(o):
     return decision
 
 
-POLICIES = {'open-task-policy-v4': choose_v4, 'open-task-policy-v3': choose_v3,
+STALL_ACTIONS = {'probe', 'locate', 'clarify', 'self_correct', 'change_explanation', 'prerequisite'}
+
+
+def choose_v5(o):
+    decision = choose_v4(o)
+    if o['phase'] != 'teach' or decision['action'] not in STALL_ACTIONS:
+        return decision
+    stalls = o.get('stalls', 0)
+    unhelped = o.get('outcome') in ('not_helped', 'unknown') if o['kind'] == 'reply' else o.get('status') in ('incorrect', 'incomplete')
+    if stalls < 3 and not (stalls >= 2 and unhelped):
+        return decision
+    if o.get('hints', 0) >= len(HINT_LEVELS):
+        return {'action': 'teacher_review', 'reason': '提示阶梯已用尽，学生仍未取得进展，转教师介入。'}
+    action, reason = HINT_LEVELS[o.get('hints', 0)]
+    return {'action': action, 'reason': f'连续{stalls}轮追问没有带来进展，按提示阶梯升级支持。' + reason}
+
+
+POLICIES = {'open-task-policy-v5': choose_v5, 'open-task-policy-v4': choose_v4, 'open-task-policy-v3': choose_v3,
             'open-task-policy-v2': choose_v2, 'open-task-policy-v1': choose_v1}
 choose = choose_v4

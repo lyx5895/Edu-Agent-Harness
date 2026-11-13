@@ -15,7 +15,7 @@ import sys
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from bench.common import parallel, sample, write_report
+from bench.common import ROOT, parallel, sample, write_report
 from bench.data import mrbench, stepverify, stepverify_problems
 from bench.judge import DIMENSIONS, agreement, judge, lenient
 from bench.simstudent import run_dialogue, submitted_gold
@@ -25,7 +25,10 @@ from bench.systems import HarnessTutor, RawTutor
 def systems(names):
     table = {'raw-baseline': lambda: RawTutor('baseline'), 'raw-omniedu': lambda: RawTutor('omniedu'),
              'raw-baseline-ref': lambda: RawTutor('baseline', True), 'raw-omniedu-ref': lambda: RawTutor('omniedu', True),
-             'harness-omniedu': HarnessTutor, 'harness-omniedu-v4': lambda: HarnessTutor('open-task-policy-v4')}
+             'harness-omniedu': HarnessTutor, 'harness-omniedu-v4': lambda: HarnessTutor('open-task-policy-v4'),
+             'harness-omniedu-v5': lambda: HarnessTutor('open-task-policy-v5'),
+             'harness-omniedu-xr': lambda: HarnessTutor(cross_review=True),
+             'harness-omniedu-v5-xr': lambda: HarnessTutor('open-task-policy-v5', cross_review=True)}
     return [table[n]() for n in names]
 
 
@@ -53,7 +56,29 @@ def track_calibration(args):
 def track_correctness(args):
     problems = sample(sorted({x['problem_id'] for x in stepverify()}), args.limit)
     keep = set(problems)
-    items = [x for x in stepverify() if x['problem_id'] in keep]
+    return run_correctness([x for x in stepverify() if x['problem_id'] in keep], args)
+
+
+def track_correctness_zh(args):
+    return run_correctness(derived('stepverify-zh'), args)
+
+
+def track_correctness_multi(args):
+    report = run_correctness(derived('multisubject-zh'), args)
+    for name, rows in report['records'].items():
+        subjects = sorted({r['id'].split('-')[0] for r in rows})
+        report['summary'][name]['accuracy_by_subject'] = {
+            s: rate([r['flagged_error'] == r['is_error'] for r in rows if r['id'].startswith(s) and 'error' not in r]) for s in subjects}
+    return report
+
+
+def derived(name):
+    path = ROOT / 'bench/data' / f'{name}.jsonl'
+    return [json.loads(line) for line in path.read_text().splitlines()]
+
+
+def run_correctness(items, args):
+    problems = {x['problem_id'] for x in items}
     summary, records = {}, {}
     for system in systems(args.systems):
         out = parallel(system.judge_correctness, items, args.workers)
@@ -74,6 +99,13 @@ def track_correctness(args):
             'abstain_rate': rate([r.get('abstained', False) for r in ok]),
             'status_counts': dict(Counter(r['status'] for r in ok)),
         }
+        reviewed = [r for r in ok if r.get('cross_review')]
+        if reviewed:
+            summary[system.name]['cross_review'] = {
+                'reviewed': len(reviewed), 'agreed': sum(r['cross_review']['agreed'] for r in reviewed),
+                'overturned': sum(r['cross_review']['overturned'] for r in reviewed),
+                'overturned_on_correct_items': sum(r['cross_review']['overturned'] and not r['is_error'] for r in reviewed),
+                'overturned_on_error_items': sum(r['cross_review']['overturned'] and r['is_error'] for r in reviewed)}
         records[system.name] = rows
     return {'problems': len(problems), 'items': len(items), 'summary': summary, 'records': records,
             'note': 'harness "unknown" counts as flagged (routed to teacher), reported separately as abstain_rate'}
@@ -112,10 +144,10 @@ def track_dialogue(args):
     problems = sample(stepverify_problems(), args.limit)
     summary, records = {}, {}
     for system in systems(args.systems):
-        rows = parallel(lambda p: {'id': p['id'], **run_dialogue(system, p, args.max_turns)}, problems, args.workers)
+        rows = parallel(lambda p: {'id': p['id'], **run_dialogue(system, p, args.max_turns, args.persona)}, problems, args.workers)
         summary[system.name] = summarize_dialogue(rows)
         records[system.name] = rows
-    return {'problems': len(problems), 'max_turns': args.max_turns, 'summary': summary, 'records': records,
+    return {'problems': len(problems), 'max_turns': args.max_turns, 'persona': args.persona, 'summary': summary, 'records': records,
             'note': 'leak = tutor states the gold final answer before the student does; simulator is Qwen3.5-27B'}
 
 
@@ -155,7 +187,8 @@ def rescore_dialogue(path):
     return report
 
 
-TRACKS = {'calibration': track_calibration, 'correctness': track_correctness, 'location': track_location,
+TRACKS = {'calibration': track_calibration, 'correctness': track_correctness, 'correctness-zh': track_correctness_zh,
+          'correctness-multi': track_correctness_multi, 'location': track_location,
           'response': track_response, 'dialogue': track_dialogue}
 
 
@@ -166,6 +199,7 @@ def main():
     p.add_argument('--systems', default='raw-baseline,raw-omniedu,harness-omniedu')
     p.add_argument('--workers', type=int, default=16)
     p.add_argument('--max-turns', type=int, default=6)
+    p.add_argument('--persona', default='cooperative', choices=['cooperative', 'persistent', 'gamer', 'disengaged'])
     p.add_argument('--tag', default='')
     p.add_argument('--rescore', help='Rescore a saved dialogue report instead of running tracks')
     args = p.parse_args()
@@ -179,7 +213,8 @@ def main():
     if not args.tracks or set(args.tracks) - set(TRACKS):
         p.error(f'tracks must be one or more of: {", ".join(TRACKS)}')
     args.systems = args.systems.split(',')
-    defaults = {'calibration': None, 'correctness': 200, 'location': 300, 'response': None, 'dialogue': 60}
+    defaults = {'calibration': None, 'correctness': 200, 'correctness-zh': None, 'correctness-multi': None,
+                'location': 300, 'response': None, 'dialogue': 60}
     limit = args.limit
     for name in args.tracks:
         args.limit = limit if limit is not None else defaults[name]

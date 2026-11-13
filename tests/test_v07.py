@@ -225,3 +225,74 @@ def test_review_queue_flags_risky_model_judgments(tmp_path):
     act(e, s, 'attempt', '参考结论')
     item = e.dashboard()['review_queue'][0]
     assert item['priority'] == 'risk' and 'model_reference' in item['risks']
+
+
+def test_policy_v5_escalates_hints_when_probing_stalls(tmp_path):
+    from harness.tasks import choose_v5
+    base = {'phase': 'teach', 'kind': 'reply', 'status': 'unknown', 'failures': 1, 'hints': 0}
+    assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 1})['action'] == 'change_explanation'
+    assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 2})['action'] == 'scaffold_concept'
+    assert choose_v5({**base, 'outcome': 'helped', 'stalls': 2})['action'] == 'self_correct'
+    assert choose_v5({**base, 'outcome': 'helped', 'stalls': 3})['action'] == 'scaffold_concept'
+    assert choose_v5({**base, 'outcome': 'misconception', 'stalls': 2})['action'] == 'prerequisite'
+    assert choose_v5({**base, 'outcome': 'misconception', 'stalls': 3})['action'] == 'scaffold_concept'
+    assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 2, 'hints': 3})['action'] == 'teacher_review'
+    model = FakeOpenModel()
+    model.outcome = 'not_helped'
+    e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v5')
+    s = e.create('u', '解释四季成因')
+    actions = [act(e, s, 'attempt', '错误解释')['action']] + [act(e, s, 'reply', '我觉得没错')['action'] for _ in range(5)]
+    assert actions == ['locate', 'scaffold_concept', 'change_explanation', 'scaffold_step', 'change_explanation', 'scaffold_example']
+    assert e.replay(s['session_id'])['passed']
+
+
+class FakeReviewer:
+    model_name = 'reviewer-27b'
+    def __init__(self, status='incorrect', acceptable=True):
+        self.status, self.acceptable, self.calls = status, acceptable, []
+    def assess(self, task, text, context, verification):
+        self.calls.append('assess')
+        return {'status': self.status, 'confidence': 'high', 'evidence_quote': text, 'observation': '复核意见', 'hypothesis': ''}
+    def review(self, task, candidate, action, student=None):
+        self.calls.append('review')
+        return {'acceptable': self.acceptable, 'reason': '复核'}
+
+
+def test_cross_review_confirms_negative_judgment_and_relieves_queue(tmp_path):
+    reviewer = FakeReviewer('incorrect')
+    e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel(), reviewer=reviewer)
+    out = act(e, e.create('u', '解释四季成因'), 'attempt', '错误解释')
+    assert out['status'] == 'incorrect' and reviewer.calls == ['assess', 'review']
+    queue = e.dashboard()['review_queue']
+    assert all('negative_judgment' not in item['risks'] for item in queue)
+
+
+def test_cross_review_disagreement_goes_to_teacher(tmp_path):
+    e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel(), reviewer=FakeReviewer('correct'))
+    out = act(e, e.create('u', '解释四季成因'), 'attempt', '错误解释')
+    assert out['status'] == 'unknown' and out['action'] == 'clarify'
+    assert e.dashboard()['review_queue'][0]['priority'] == 'urgent'
+
+
+def test_cross_review_can_veto_feedback_without_replay_collision(tmp_path):
+    reviewer = FakeReviewer('incorrect', acceptable=False)
+    e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel(), policy='open-task-policy-v3', reviewer=reviewer)
+    s = e.create('u', '解释四季成因')
+    act(e, s, 'attempt', '错误解释')
+    trace = [t for t in e.traces(s['session_id']) if 'output_validation' in t][-1]['output_validation']
+    assert trace['reasons'] == ['cross_review'] and trace['cross_review']['reviewer'] == 'reviewer-27b'
+    assert act(e, e.create('u2', '解释潮汐'), 'attempt', '正确解释')['status'] == 'correct'
+    assert reviewer.calls.count('assess') == 1
+
+
+def test_locate_trailing_instruction_is_trimmed_and_template_is_not_generic_fallback(tmp_path):
+    model = FakeOpenModel()
+    model.candidate = 'The step "2+2=5" looks off; what does 2+2 give? Please recheck it.'
+    e = OpenEngine(tmp_path / 'db.sqlite', model)
+    s = e.create('u', 'Explain why the moon has phases.')
+    assert act(e, s, 'attempt', '2+2=5')['feedback'] == 'The step "2+2=5" looks off; what does 2+2 give?'
+    model.bad_review = True
+    s2 = e.create('u2', 'Explain why tides happen.')
+    act(e, s2, 'attempt', 'tides 2+3=6')
+    with e.connect() as c:
+        assert e.load(c, s2['session_id'])[1]['feedback_fallbacks'] == 0

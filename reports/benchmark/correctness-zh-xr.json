@@ -1,0 +1,3566 @@
+{
+  "problems": 196,
+  "items": 392,
+  "summary": {
+    "harness-omniedu-xr": {
+      "n": 392,
+      "failed_calls": 0,
+      "accuracy": 0.967,
+      "error_f1": 0.968,
+      "false_acceptance_rate": 0.01,
+      "false_rejection_rate": 0.056,
+      "abstain_rate": 0.087,
+      "status_counts": {
+        "incorrect": 165,
+        "correct": 187,
+        "unknown": 34,
+        "incomplete": 6
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu-xr": [
+      {
+        "id": "331-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「47 美元 - x = 44 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "331-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "154-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于她花了一半的代币买它，我将 10 乘以 2 得到 20 个代币」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "154-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "404-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「如果黛西的主人找到了所有丢失的狗玩具，包括新买的，她就会有总共 11 个狗玩具 + 5 个丢失的狗玩具 = 16 个狗玩具」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "404-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "666-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我们知道 (2021-x) - x = 20」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "666-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "49-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从 85 中减去 17，得到 Mabel 拥有的弹珠数量，即 68」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "49-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "74-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将抬头看的学生人数（150）乘以 2，并将没有抬头看的学生人数（50）乘以 2，得到看到飞机的眼睛总数，结果是 400」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "74-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "840-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算小拼图单价时，用 23 减去了 15，但结果写成了 4，这步减法算错了。请重新计算 23 减 15 等于多少？",
+        "action": "locate"
+      },
+      {
+        "id": "840-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "548-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，在最后一餐，她需要喂 180 - 40 = 140 杯饲料」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "548-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "96-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "96-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "374-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先将艾尔莎拥有的硬币数量与阿玛莉拥有的硬币数量之比简化为 2:9」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "374-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "596-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「为了使他们的重量相等，杰克需要拿 100 - 60 = 40 磅」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "596-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "59-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「要找出布莱克最初给了康妮多少钱，我们需要从两边减去 30,000 美元，所以 $x = $60,000 - $30,000 = $40,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "59-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "931-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "931-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "519-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「之后，我从全天的 180 杯饲料中减去她早上和下午已经喂给鸡的 40 杯饲料，得到最后一餐需要 140 杯饲料」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "519-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "219-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于还剩 10 场比赛，他们需要至少赢 8 场 x 80% = 6.4 场，四舍五入为 7 场」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "219-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "38-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "38-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "88-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你误将“2 位顾客购买了 4 个汉堡”理解成了“每位顾客买 4 个”，导致算出了 8 个汉堡，而实际应该是 2 位顾客共买 4 个。请重新计算第一组顾客购买的汉堡总数，再结合第二组顾客的数量，看看 Frank 实际上已经卖出了多少个汉堡？",
+        "action": "locate"
+      },
+      {
+        "id": "88-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "444-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了每加仑行驶里程（25英里/加仑），但最后一步乘以了剩余油量8加仑而非油箱总容量12加仑。题目问的是“加满一箱油”能行驶多远，这意味着应该用总容量12加仑来计算。如果每加仑行驶25英里，那么12加仑能行驶多少英里呢？",
+        "action": "locate"
+      },
+      {
+        "id": "444-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "428-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，削 60 个土豆需要 90 x 60 = 5400 秒」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "428-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "71-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了坦雅的红色橡皮是10块，但在计算瑞秋的数量时，你直接用10减去了3，而题目说的是比“红色橡皮数量的一半”少三块。你能先算出10的一半是多少吗？",
+        "action": "locate"
+      },
+      {
+        "id": "71-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "246-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，把这些数字加起来，你得到 6+6+8=20」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "246-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "92-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，杰夫从周一到周五跑了 1 小时 x 5 天 = 5 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "92-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "564-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着我用 1680 减去 1320，得到 360 盎司，这就是他每次洗澡用的水量」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "564-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "434-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了她需要支付的总利息，即 3,650 x 10/100 x 5 = 1825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "434-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "60-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算剩余时间时只减去了睡觉的 8 小时，但题目要求先减去打扫和做饭的时间。如果先算出克莱尔总共花了多少小时在打扫、做饭和睡觉上，再从天总时间里减去这个总数，你会得到多少剩余时间？",
+        "action": "locate"
+      },
+      {
+        "id": "60-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "846-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算出蒂姆为医生就诊支付了 0.25 x 300 = 75 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "846-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "579-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我通过用 45 乘以 3/4 来计算聚会上单身男性的数量，得到 33.75（四舍五入到最接近的整数）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "579-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "126-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我利用了每个充氦气的气球都会触到天花板这一事实，并且已知买了 50 个气球和 1800cm³的氦气，这足以填充 36 个气球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "126-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "1000-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "1000-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "228-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了无法掉落零食的次数（5次）并直接将其加到了总掉落量中，但无法掉落意味着零食数量为0，不应计入总数。请重新思考：在30次购买中，除了无法掉落的5次和意外多掉的3次外，正常掉落的次数是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "228-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "642-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了第一次往返的总人数，但在处理后续三次往返时，只计算了单程的 100 人而遗漏了返程的 60 人。既然每次往返都包含去程和返程，那么三次往返的总人数应该是 (100 + 60) × 3，而不是 100 × 3。你能重新计算一下三次往返的总人数吗？",
+        "action": "locate"
+      },
+      {
+        "id": "642-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "990-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "990-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "63-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这三个月的访客总数为 215 + 15 = 230」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "63-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "590-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我解出 x，得到 x = 2」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "590-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "599-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，x = 10 + 2 = 12 厘米」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "599-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "406-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，如果所有衬衫和牛仔裤都售出，服装店总共将赚取 400 + 200 = 600 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "406-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "50-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「每人储蓄$1500/2 = $750 每月」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "50-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "226-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我确定他总共能骑行的面积是 10 个平方街区」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "226-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "47-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算每周总量时乘以了 7，但题目说每周只允许看 4 天，这一步应该用 4 而不是 7。如果按 4 天计算，一周的总分钟数应该是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "47-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "570-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你建立方程时把“6 年后”和“3 年前”混在一起做了减法，这不符合题目描述的时间关系。请重新审视：3 年前约翰的年龄等于詹姆斯 6 年后年龄的两倍，应该怎样用 x 表示詹姆斯 6 年后的年龄？",
+        "action": "locate"
+      },
+      {
+        "id": "570-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "879-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，净利润是 40 美元 + 10 美元 = 50 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "879-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "136-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了双黄蛋的蛋黄数，但在计算单黄蛋数量时，误将总鸡蛋数 12 当作单黄蛋的数量。实际上，单黄蛋的数量应该是总鸡蛋数减去双黄蛋数量。你能重新计算一下单黄蛋的数量吗？",
+        "action": "locate"
+      },
+      {
+        "id": "136-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "296-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从一个鸟屋的利润中减去，利润是 5.50 美元，所以一个鸟屋的成本是 5 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "296-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "429-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从该金额中减去 4.50，得到他们在食物上的花费，即 2.25 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "429-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "147-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我把这两个数加起来得到摘草莓的总数，即 300 + 1200 = 1500」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "147-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "553-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我将从周二到周四每天卖出的箱数相加，即 20 + 15 + 12 + 18 = 65 箱」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "553-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "120-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，我距离原来的起点向前 3+6 = 9 步」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "120-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "584-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 20 捆的成本减去 10 捆的成本，得到差额为 60 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "584-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "315-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，兰迪最初有 2,800 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "315-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "573-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，促销订阅便宜 0.5 x 36 = 18 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "573-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "835-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「在主人让它“安静”之前，梗犬叫了 6 次（一次，两次，安静，一次，两次，安静，一次，两次，安静）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "835-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "698-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "698-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "185-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后在第二晚后，每只吸血鬼又会将另外 10 个人变成吸血鬼，所以会有 22 加 10 再加 10，两晚后村里总共会有 42 只吸血鬼」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "185-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "105-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「得到文具区的销售数为 3」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "105-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "595-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，桑迪需要喝水 6 小时才能达到她 3 升或 3000 毫升的目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "595-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "952-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "同学你好，这道题的关键在于理解“增加当前数量的一半”这一描述。我们可以分步来思考：首先计算第一年末牛的数量，即原数量加上原数量的一半；然后再用第一年末的总数作为基数，计算第二年末的数量。请先尝试列出第一年的计算式，我们一步步来。",
+        "action": "clarify"
+      },
+      {
+        "id": "952-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "654-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了每天早餐的鸡蛋总数是 13 个，但在计算一年总量时，你直接用 13 乘以了 52 周。请回想一下，丽莎是每周一到周五才做早餐，那么她一年实际做早餐的天数是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "654-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "192-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我减去了 10 道含芒果的菜肴和奥利弗不会尝试的 4 道含新鲜芒果的菜肴，结果自助餐厅上还剩下总共 22 道菜供奥利弗食用」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "192-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "381-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，由于吉尔制作的薰衣草蜡烛数量是椰子蜡烛的两倍，我得出结论，她一定制作了 2 x 10 = 20 支薰衣草蜡烛」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "381-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "99-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我算出他还能在里面多待 10 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "99-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "560-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「h = 480/40 = 12 小时/月」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "560-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "729-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这得出了房子的最终售价，即 92000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "729-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "64-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他需要在周六再读 38 页才能达到目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "64-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "577-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了教室内的人数（16）和洗手间的人数（2），但似乎忘记了把缺勤的 5 名学生也加进去。卡拉教的学生总数应该包括这三部分，你能再检查一下总人数是怎么组成的吗？",
+        "action": "locate"
+      },
+      {
+        "id": "577-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "61-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此该月的总卫生纸产量为 31*21000 = 651000 卷卫生纸」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "61-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "633-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你错误地将两人的铅笔总数设定为 $2x+6$ 并令其等于 30，但 30 只是米切尔个人的数量，并非两人之和。请重新检查：既然米切尔有 30 支且比安东尼奥多 6 支，那么安东尼奥的数量 $x$ 应该满足什么等式？",
+        "action": "locate"
+      },
+      {
+        "id": "633-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "210-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这意味着每块饼干中巧克力碎片的平均数量是 3 - 1 = 2」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "210-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "508-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，这 5 个人一共带进了 2 x 5 = 10 张旧唱片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "508-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "696-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「克里斯将拿走 1/4 x 40 = 10 颗弹珠」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "696-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "544-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我将 3 打乘以 68 美元，得到 2448 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "544-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "437-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这得出的总利息为 1,825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "437-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "795-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "795-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "321-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "321-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "476-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「将两边除以 2，我得到 x = 8，这意味着温迪需要搬运 8 本书才能完成她的任务」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "476-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "965-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我乘以了 3，因为有 3 个人，每人有 2 只鞋，所以条纹总数是 11 x 2 x 3 = 66」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "965-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "464-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了她需要支付的总利息，即 3,650 x 10/100 x 5 = 1825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "464-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "370-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「之后，我算出杰克逊享受 20% 的折扣，所以他只需支付原价的 80%」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "370-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "306-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确理解了每5步净前进1步的逻辑，但在计算总步数时，误将距离66步直接当作总步数，而忽略了每净前进1步实际需要走5步的倍数关系。如果杰弗里每净前进1步需要走5步，那么走完66步距离，他实际需要走的步数应该是多少呢？",
+        "action": "locate"
+      },
+      {
+        "id": "306-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "254-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「家庭之后有 10 位顾客，所以是 10 - 1 = 9 位顾客」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "254-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "813-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "813-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "184-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将两边除以 2 得到 x = 30，这意味着詹姆斯是 30 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "184-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "715-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「第一天，她们采摘了 58/2 = 29 个蘑菇」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "715-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "798-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，15 双棕袜的成本将是 15 x 25 = 375 美分」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "798-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "249-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，客人总数将是 50 + 80 = 130」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "249-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "83-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「发现她使用了 5 盎司油」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "83-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "588-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，我得出结论：凯西在这两个月里总共工作了 200 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "588-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "307-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此城镇中路灯的总数为 10 个街区 x 4 条道路 x 250 盏路灯 x 2 侧 = 80,000 盏路灯」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "307-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "537-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了剩余 120 GB 的下载时间，但题目说必须从头开始重新下载，这意味着重启后的下载时间应该按整个 200 GB 计算，而不是剩余部分。请重新阅读题目中关于“从头开始重新下载”的描述，确认重启后需要下载的数据量是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "537-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "506-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「商品的原价是 43 + 4 = 47 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "506-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "896-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "896-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "351-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，80 - 36 = 44 颗弹珠」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "351-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "746-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了降价后的总收入是 111 美元，但题目问的是“还需要筹集多少钱”，你漏掉了最后一步减法。请问，用原本需要的 120 美元减去实际得到的 111 美元，差值是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "746-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "459-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着又加 50 美元，得到第四次也是获胜的出价 350 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "459-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "294-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我简化方程得到 35 = x，因此我得出结论，奈杰尔送出了 35 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "294-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "623-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将这个数字乘以 12，得到凯瑞的年龄，结果是 24」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "623-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "995-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "995-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "953-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "953-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "524-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，她 20 年后的年度养老金为 $50,000 x 100% = $50,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "524-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "982-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "982-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "168-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我加上了糖果棒的 200 卡路里，得到 425 卡路里」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "168-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "775-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "775-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "350-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，在完成比赛前中途退出的总人数为 50 + 30 = 80 人」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "350-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "155-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于他买了四袋草籽，他将全部用完来覆盖他的草坪，因此不会剩下任何草籽来覆盖额外的平方英尺」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "155-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "500-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，这 5 个人一共带进了 2 x 5 = 10 张旧唱片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "500-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "431-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「商品的原价为 43 + 4 = 47 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "431-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "40-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于每个早餐盘有两个鸡蛋，x = 2」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "40-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "684-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「之后，我应用了 10% 的优惠券，这将成本减少了 10 x 0.01 x 74 = 7.40 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "684-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "79-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算 6 乘以 0.5 时得到了 36，这显然是一个计算错误，因为 6 的一半应该是 3。请重新计算 6 打纸杯蛋糕所需的糖霜量，确认 6 乘以 0.5 的正确结果是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "79-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "782-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他以 30 英里/小时的速度行驶了 3 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "782-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "571-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，散养鸡的总数是 108 只」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "571-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "586-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这加起来总共是 144 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "586-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "808-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了黑色气球的数量，但这只是解题的第一步。题目要求将黄色和黑色气球的总数平均分给 10 所学校，你接下来应该做什么？",
+        "action": "locate"
+      },
+      {
+        "id": "808-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "837-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你误将“12 个披萨”直接当作“12 个站点”，但题目明确说明有两个站点各需 2 个披萨，其余站点各需 1 个。请先根据披萨总数和配送规则，重新计算实际有多少个站点需要配送？",
+        "action": "locate"
+      },
+      {
+        "id": "837-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "927-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "927-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "348-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他从办公室去拿午餐再返回需要 4 小时，而他读这本书需要 8 小时，所以每小时读 500 页」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "348-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "711-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「周一，Geoff 在运动鞋上总共花费了 60 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "711-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "358-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算吉姆以原速阅读的页数，即每小时 40 页乘以 7 小时，等于每周 280 页」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "358-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "608-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 30 分钟后的参赛者总人数（160）减去完成比赛的参赛者总人数（130），得到在完成比赛前退赛的人数，结果为 80」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "608-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "932-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "932-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "593-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，电影票的折扣是 10 美元的 20%，即 4 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "593-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "816-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "816-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "467-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以我总共用了 80 + 220 - 23 = 277 张便利贴」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "467-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "70-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，我算出如果学校将全部新预算用于购买垒球，他们可以买 (1.2 x 15) = 18 个垒球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "70-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "860-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "860-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "276-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，她需要每月飞行 1320/24 = 55 小时，才能在正好 6 个月内达成目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "276-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "485-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于 Sandy 的减重速率是每 4 周 8 磅，因此她需要 8 周才能减掉与 Joey 相同数量的体重」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "485-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "713-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "713-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "680-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到将剩余的 500,000 个代币除以 5，这是因为你误以为要分给 5 个人，但题目明确说是分给 4 个兄弟姐妹。如果只分给 4 个人，每个兄弟姐妹应该得到多少个代币？",
+        "action": "locate"
+      },
+      {
+        "id": "680-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "66-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这是因为每 1000 块中有 100 块砖，而所需的砖块总数是 10000，所以我们将 10000 除以 100 得到 1000 块砖的数量，然后乘以 100 得到砖块的成本」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "66-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "62-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，完成所有礼服需要 60 / (1/3) = 180 周」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "62-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "748-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "748-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "718-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算了 15*2 = 30，因为我需要 2 杯糖来做糖霜，而每袋糖含有 6 杯，所以我将 6 杯乘以 2 袋糖，以得到用于糖霜的总糖杯数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "718-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "317-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，杰克比奥斯汀晚 90 秒到达地面层」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "317-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "662-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我将 2C 设为等于 C + 3 并求解 C」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "662-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "591-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了英镑和日元的转换，但似乎忘记了题目中杰克原本就有的 3000 日元。在将 64 英镑转换为 6400 日元后，你是否记得要把这 6400 日元和他原有的 3000 日元相加，才能得到他的总日元金额？",
+        "action": "locate"
+      },
+      {
+        "id": "591-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "697-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "697-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "841-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这意味着她可以再往 6 升桶里加 2 升水，使总量达到 2 升」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "841-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "456-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，我将 10 名盗窃者乘以 3，得出因暴力被赶出的顾客人数为 30 人」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "456-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "291-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将所有费用相加，即 4.5 美元 + 4.5 美元 + 3.50 美元 + 8 美元 + 5 美元 + 3.50 美元 = 29 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "291-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "733-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "733-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "395-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我得出钢笔的长度是 12 - 2 = 10 厘米，所以 x = 10 + 2 = 12 厘米」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "395-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "893-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，下载该文件的总时间是 40 + 20 + 60 = 120 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "893-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "355-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算剩余比例时，将“剩下的一半”直接当作50%减去了，但题目说的是“在剩下的弹珠中，他又把一半掉进了下水道”，这意味着第二次失去的是“剩余部分”的一半，而不是总数的一半。如果最后剩下20颗，这20颗是第一次剩下后的一半，那么第一次剩下后应该是多少颗呢？",
+        "action": "locate"
+      },
+      {
+        "id": "355-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "23-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "23-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "472-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着，我将铅笔总数除以每个盒子里的铅笔数，即 24」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "472-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "363-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以第一层有 100 本书，第二层有 80 本书，第三层有 64 本书，第四层有 64 本书」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "363-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "172-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于每条带宽 2 英尺，而他翻耕 1 英尺需要 2 秒，因此翻耕每条带需要 4 秒」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "172-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "625-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「既然他的宠物中有六只拥有四条腿，我假设那是两只狗和四只猫」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "625-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "119-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「对于桥下的巨魔，我将 4 乘以 6 得到 24，然后加上 6 得到 30」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "119-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "505-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「从他的目标 10,000 中减去 6000，我得到 10,000-6000 = 4000 步剩余需要走」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "505-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "976-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "976-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "223-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着我加上了倒带的时间，即 5 + 15 = 20 分钟，所以她看完这部电影总共花费的时间是 120 + 20 = 140 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "223-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "786-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算利润时，将售价直接当作每打 30 美元，但题目中 30 美元是每半打的价格。如果先算出每打的实际售价，再减去成本 50 美元，结果会不同吗？",
+        "action": "locate"
+      },
+      {
+        "id": "786-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "906-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算食物总成本时，误将门票的单人费用当作总费用来使用，导致后续计算偏离了题目要求。请重新审题，确认题目中给出的 20.25 美元是三人门票的总花费，而非单人的费用。基于这个总费用，你该如何正确计算食物的总成本？",
+        "action": "locate"
+      },
+      {
+        "id": "906-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他们在食物上的花费比门票少 4.50 美元，这意味着每人食物花费为 6.75 - 4.50 = 2.25 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "132-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，在吉姆需要清洁之前，人们可以跳入泳池的次数为 1,600,000/400 = 4000 次」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "132-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "756-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以总数是 30 + 45 + 90 = 165 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "756-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "253-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我再次将该数值除以二，得到任何一天在校学生的百分比，即 15%」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "253-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "407-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以安雅带回了 21 个黄色气球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "407-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "400-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「于是我把所有这些数字加起来，得到 50 + 100 + 40 + 40 = 230 张巴厘岛的照片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "400-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "881-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他有 5 天时间完成所有阅读，所以他需要每天阅读 39/5 = 7.8 页（保留一位小数）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "881-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "82-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以我给了老师 22 - 5 = 17 个苹果」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "82-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "170-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算总饼干数时，将每批的饼干数（12）直接乘以总面粉重量（20），这忽略了“每 2 磅做一批”这个关键条件。正确的逻辑应该是先算出总面粉能做成多少批，再乘以每批的饼干数。你能先算出 20 磅面粉里包含多少个 2 磅吗？",
+        "action": "locate"
+      },
+      {
+        "id": "170-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "907-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Hunter: 36」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "907-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "411-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "411-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "562-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了利润和佣金的具体金额，但在最后一步中，你错误地将佣金从总价中减去了。请思考：佣金是卖家需要额外支付的费用，那么房子的实际售价应该是利润加到原价上，再加上这笔佣金，还是减去它？",
+        "action": "locate"
+      },
+      {
+        "id": "562-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "284-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，每名工人的日薪为 9450 / (15 x 6) = 42 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "284-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "140-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「飞行时间 1 小时 5 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "140-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "440-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 558 减去 367，得到 191，这就是布林利为了获得 93 的平均分所需的分数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "440-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "563-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算本的额外订单时，把煎饼和可可各算作 2 美元，但题目中可可每杯是 2 美元，他点了一杯，所以这部分是 2 美元，煎饼也是 2 美元，加起来确实是 4 美元。不过，你之前算原始订单时，2 杯可可只算了 2 美元，应该是 2 乘以 2 等于 4 美元。请重新检查原始订单中可可的总价计算是否正确？",
+        "action": "locate"
+      },
+      {
+        "id": "563-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "285-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，总共是 0.5 + 1 + 2 + 1.5 + 1 = 6 磅食物」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "285-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "723-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我应该将 4 片墨西哥辣椒乘以 8 片，即每个三明治 32 片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "723-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "425-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于老师们决定与他们一起演唱，那么共有 26 + 3 = 29 人参与了演唱」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "425-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "367-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，Jaco 所有礼物的总预算是 72 + 18 = 90 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "367-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "699-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「较便宜的那双是第二双，现在价格是 30 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "699-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "389-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算棕眼睛人数时，先减去了蓝眼睛的人数，但题目中“一半人有棕眼睛”是指总人数的一半，而不是剩下人数的一半。请重新阅读题目，确定棕眼睛人数应该基于哪个总数来计算？",
+        "action": "locate"
+      },
+      {
+        "id": "389-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "236-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用新的房产税减去当前的房产税，得到珍妮可以花在改善上的金额，即 $15,000 - $8,000 = 每年 $7,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "236-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "999-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "999-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "84-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，16 个扇贝的费用是 16 个扇贝 x 6.00 美元/个扇贝 = 96.00 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "84-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "180-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将每小时总椅子数乘以 6 小时，得到 6 小时后生产的椅子总数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "180-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "822-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我认为如果我知道总页数，就可以用暑假的天数去除，从而得出平均每天读的页数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "822-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "237-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以当艾米丽的年龄是瑞秋的一半时，瑞秋是 24 + x = 40 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "237-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「当瑞秋的年龄是艾米丽的两倍时，她会是 4 x 2 = 8 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "238-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，总共需要 21 天詹姆斯才能再次举重」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "238-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "12-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算的是每只哑铃的重量之和，但题目要求的是整套系统（包含左右两只）的总重量。请重新检查题目中“每对”和“每只”的区别，并思考如何调整你的计算步骤？",
+        "action": "locate"
+      },
+      {
+        "id": "12-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "496-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我从维修后房子的总价值中减去购买房子和维修的成本，得到乔什获得的利润，即 120,000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "496-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "603-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我知道他捕获的金枪鱼是鳟鱼的两倍，所以我将 200 乘以 2 得到 400」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "603-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "186-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了机器人的最小重量，即 100 x 2 = 200 磅」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "186-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "269-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算利润时，用马特收到的总价值减去了他原本拥有的所有卡片价值，但利润应该只与他实际交换掉的部分有关。如果只考虑他换出去的那两张卡的价值，你的计算基准应该是什么？",
+        "action": "locate"
+      },
+      {
+        "id": "269-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "288-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我把他们想要的爆米花杯数加起来，即 3+4+3+3 = 13 杯爆米花」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "288-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "4-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算总收入时假设约翰工作了 30 天，但题目明确说明他除了 4 个星期日都工作，四月总共有 30 天，所以实际工作天数应该是 30 减去 4。你能重新计算一下他实际工作了多少天吗？",
+        "action": "locate"
+      },
+      {
+        "id": "4-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "149-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算白色汽车收入时，只用了单价乘以时间，但题目中明确有两辆白色汽车都被租用了，这一步漏乘了车辆数量。请重新检查白色汽车的总收入计算，应该用单价乘以时间再乘以车辆数，还是先算每辆车的收入再乘以数量？",
+        "action": "locate"
+      },
+      {
+        "id": "149-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "956-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「詹姆斯有 10 双黑袜子」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "956-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "547-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算出摩根有 90 美元 - 5 美元（街机代币）= 85 美元剩余用于迷你高尔夫和卡丁车」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "547-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "378-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，塔莉亚的爸爸目前是 42 - 3 = 39 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "378-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "624-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我意识到这是错误的，所以我用 31 减去 30，得到 1」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "624-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "974-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我加上了 7，因为卡门还需要 7 美元才能拥有杰索钱数的两倍」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "974-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "326-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，肯德拉 2015 年的收入是 22000 美元 + 6000 美元 = 28000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "326-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness-zh",
+  "limit": null,
+  "systems": [
+    "harness-omniedu-xr"
+  ],
+  "seconds": 182.2,
+  "generated_at": "2026-11-13T11:11:50+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

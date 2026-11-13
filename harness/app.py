@@ -12,6 +12,7 @@ from .course import SKILLS
 from .errors import Conflict
 from .gateway import Gateway
 from .images import file_to_data_url
+from .materials import read_material
 from .model import ModelUnavailable
 from .teacher import Assignment
 from .planning import Curriculum, FollowupBatch
@@ -20,7 +21,7 @@ from .pedagogy import PROFILES
 from typing import Literal
 
 engine = Gateway(db=os.getenv('HARNESS_DB'))
-app = FastAPI(title='OmniEdu Teaching Harness', version='0.7.1')
+app = FastAPI(title='OmniEdu Teaching Harness', version='0.8.0')
 
 
 @app.middleware('http')
@@ -127,7 +128,9 @@ def question(s):
         if s['needs_review']: return '教师已修订证据，请新建任务重新检查。'
         if not s['task']: return '请确认或修正题目图片的识别结果。'
         t=s['task']
-        return f"### {'独立检查' if t['phase']=='check' else '当前任务'} · {t['domain']}\n\n{t['question']}\n\n学习目标：{t['objective']}"
+        pages=t.get('source_pages') or []
+        where=f"\n\n材料出处：第{'、'.join(map(str,pages))}页" if pages else ''
+        return f"### {'独立检查' if t['phase']=='check' else '当前任务'} · {t['domain']}\n\n{t['question']}\n\n学习目标：{t['objective']}{where}"
     if s['needs_review']: return '教师已修正记录，请新建该知识点会话重新检查。'
     if s['done']: return '本次学习已结束，可以在学习记录中查看证据或选择新练习。'
     label='独立检查 · 请独立作答' if s['item']['phase']=='check' else '教学练习'
@@ -206,9 +209,8 @@ def image_data(path):
 def start_task(learner,task,material,mode,task_image,material_file,assignment_id="",followup_id=""):
     try:
         if material_file:
-            file=Path(material_file)
-            if file.stat().st_size > 4*1024**2: raise ValueError('材料文件需小于4MB')
-            material += '\n'+file.read_text(encoding='utf-8')
+            uploaded=read_material(material_file)
+            material = uploaded if not material.strip() else material+'\n'+uploaded
         s=engine.create_task(learner=learner,request=task,material=material,mode=mode,image_url=image_data(task_image),assignment_id=assignment_id.strip() or None,followup_id=followup_id.strip() or None)
         pending=s.get('pending_image')
         return s['session_id'],s,question(s),'请确认图片题目。' if pending else '请提交你的尝试，也可以请求提示或讲解。',history(s),pending['text'] if pending else ''
@@ -458,7 +460,7 @@ with gr.Blocks(title='OmniEdu · 教学工作台',theme=gr.themes.Soft()) as dem
         with gr.Accordion('题目图片与学习材料',open=False):
             task_image=gr.Image(type='filepath',label='题目图片 · 识别后需要你确认')
             material=gr.Textbox(label='参考材料',lines=5)
-            material_file=gr.File(label='上传文本材料（UTF-8）',file_types=['.txt','.md'],type='filepath')
+            material_file=gr.File(label='上传材料（UTF-8 文本或文字版 PDF）',file_types=['.txt','.md','.pdf'],type='filepath')
         assignment_id=gr.Textbox(label='教师任务编号（可选；填写后使用教师题目与评分规则）')
         followup_id=gr.Textbox(label='跟进任务编号（可选；填写后优先打开该复习/补救任务）')
         begin_task=gr.Button('创建教学任务',variant='primary')

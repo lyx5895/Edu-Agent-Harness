@@ -83,6 +83,12 @@ class Turn:
         self.__dict__.update(fields)
 
 
+def trim_after_question(text):
+    # Locate feedback must end on its question; drop trailing instructions after it.
+    end = max(text.rfind('?'), text.rfind('？'))
+    return text[:end+1] if end > 0 else text
+
+
 def state_diff(before, after):
     return {k:{'before':before.get(k),'after':after.get(k)} for k in sorted(set(before)|set(after)) if before.get(k)!=after.get(k)}
 
@@ -98,7 +104,7 @@ def ground(assessment, text):
 
 def review_risks(p):
     risks=[]
-    if p.get('status') in ('incorrect','incomplete'): risks.append('negative_judgment')
+    if p.get('status') in ('incorrect','incomplete') and not p.get('cross_review',{}).get('agreed'): risks.append('negative_judgment')
     if p.get('assessment',{}).get('confidence')!='high': risks.append('low_confidence')
     if p.get('evidence')=='independent_model_assessed': risks.append('independent_by_model_only')
     if str(p.get('task',{}).get('reference_origin','')).startswith('model_generated'): risks.append('model_reference')
@@ -112,13 +118,16 @@ def public_dimensions(rows):
 
 
 class OpenEngine:
-    def __init__(self,db=None,model=None,tools=None,policy=None):
+    def __init__(self,db=None,model=None,tools=None,policy=None,reviewer=None):
         self.policy=policy or os.getenv('OMNIEDU_POLICY',POLICY_VERSION)
         if self.policy not in POLICIES: raise ValueError(f'未知教学策略：{self.policy}')
         self.db=str(db or Path(__file__).resolve().parents[1]/'data/learning.sqlite')
         Path(self.db).parent.mkdir(parents=True,exist_ok=True)
         self.images=Path(self.db).parent/(Path(self.db).stem+'-images')
         self.model=ReplayableModel(model or OpenModel());self.tools=tools or Toolbox()
+        if reviewer is None and os.getenv('OMNIEDU_REVIEW_BASE_URL'):
+            reviewer=OpenModel(os.getenv('OMNIEDU_REVIEW_BASE_URL'),os.getenv('OMNIEDU_REVIEW_MODEL','qwen3.5-27b'))
+        self.reviewer=ReplayableModel(reviewer,'reviewer') if reviewer else None
         with self.connect() as c:
             teacher.initialize(c)
             planning.initialize(c)
@@ -194,8 +203,10 @@ class OpenEngine:
             task['citation_validation']={'status':'no_sources','discarded_model_quote':quote}
         elif quote and not any(quote in x['text'] for x in selected):
             raise ModelUnavailable('模型引用的材料原文无法核对，未创建任务，请重试。')
+        cited=[x for x in selected if task.get('source_quote') and task['source_quote'] in x['text']] or selected
         task.update({'id':uuid.uuid4().hex,'phase':'check' if previous else 'teach',
-            'source_ids':[x['id'] for x in selected], 'reference_origin':'model_generated_unverified','retrieval_mode':retrieval_mode})
+            'source_ids':[x['id'] for x in selected], 'reference_origin':'model_generated_unverified','retrieval_mode':retrieval_mode,
+            'source_pages':sorted({x['page'] for x in cited if 'page' in x})})
         return task
 
     @retry_stale
@@ -326,19 +337,24 @@ class OpenEngine:
         candidate=self.model.respond(task,action,text,context,assessment)
         english=language(task.get('question','')+text)=='en'
         if english and candidate and language(candidate)=='zh': candidate=self.model.translate(candidate)
+        if action=='locate' and candidate: candidate=trim_after_question(candidate)
         review=self.model.review(task,candidate,action,text)
         reasons=[]
         if not candidate or len(candidate)>1200: reasons.append('length')
         if action=='probe':
             if candidate.count('？')+candidate.count('?') != 1 or not candidate.endswith(('？','?')) or any(x in candidate for x in ('。','!','！','\n')):
                 reasons.append('probe_must_be_one_question')
-        if action=='locate' and (candidate.count('？')+candidate.count('?')!=1 or not candidate.rstrip().endswith(('？','?'))):
+        if action=='locate' and (not 1<=candidate.count('？')+candidate.count('?')<=2 or not candidate.rstrip().endswith(('？','?'))):
             reasons.append('locate_must_end_with_one_question')
         if re.search(r'你已经掌握|已通过独立检查|系统指令',candidate): reasons.append('authority_claim')
         if english and language(candidate)=='zh': reasons.append('language_mismatch')
         answer=re.sub(r'\s','',task['reference'])
         if action!='explain' and len(answer)>=3 and answer in re.sub(r'\s','',candidate): reasons.append('reference_disclosure')
         if not review['acceptable']: reasons.append('model_review')
+        cross=None
+        if not reasons and action!='explain' and self.reviewer:
+            cross=self.reviewer.review(task,candidate,action,text)
+            if not cross['acceptable']: reasons.append('cross_review')
         lines=FALLBACKS[language(task.get('question','')+text)]
         fallback=lines['probe'] if action=='probe' else lines['default']
         if action!='explain':fallback=lines.get(task.get('task_type'),fallback)
@@ -350,7 +366,9 @@ class OpenEngine:
             if len(quote)>120: quote=(quote[:120].rsplit(' ',1)[0] if ' ' in quote[:120] else quote[:120])+'…'
             fallback=lines['locate'].format(quote=quote)
             if reasons: delivered='locate_template'
-        return (fallback if reasons else candidate),{'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
+        validation={'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
+        if cross is not None: validation['cross_review']={**cross,'reviewer':self.reviewer.model_name}
+        return (fallback if reasons else candidate),validation
 
     @retry_stale
     def operation(self,sid,key,kind,body,version=None):
@@ -527,6 +545,8 @@ class OpenEngine:
             # Dimension success cannot erase an uncovered whole-task requirement.
             status=aggregate([{'status':status},{'status':dimension_status}])
             source='model_rubric'
+        if source=='model_rubric' and status in ('incorrect','incomplete') and self.reviewer:
+            status=self._cross_review(task,text,assessment_ctx,verification,status,payload)
         payload['grading_conflict']=verification['status'] in ('correct','incorrect') and assessment['status'] in ('correct','incorrect') and verification['status']!=assessment['status']
         if re.fullmatch(r'(我)?(懂了|会了|知道了|明白了|学会了)[。！! ]*',text): status='unknown'
         o['status']=status
@@ -547,6 +567,14 @@ class OpenEngine:
             s['hypotheses']=(s['hypotheses']+[{'hypothesis':assessment['hypothesis'],
                 'quote':quote or '','certainty':'tentative'}])[-3:]
         s['pending_image']=None
+
+    def _cross_review(self,task,text,ctx,verification,status,payload):
+        second=self.reviewer.assess(task,text,ctx,verification)
+        overturned=second['status']=='correct' and second['confidence']=='high'
+        payload['cross_review']={'reviewer':self.reviewer.model_name,'status':second['status'],'confidence':second['confidence'],
+            'observation':second['observation'],'agreed':second['status'] in ('incorrect','incomplete'),'overturned':overturned}
+        # Two models disagreeing on a negative judgment is not evidence either way; a teacher decides.
+        return 'unknown' if overturned else status
 
     def _grade(self,task,text,ctx,verification,trace):
         with ThreadPoolExecutor(max_workers=1) as pool:
@@ -579,7 +607,10 @@ class OpenEngine:
 
     def _decide(self,t):
         s,payload=t.s,t.payload
+        unproductive=t.task['phase']=='teach' and t.kind in ('attempt','confirm','reply') and t.o.get('status')!='correct'
+        t.o['stalls']=s.get('stalls',0)+1 if unproductive else 0
         decision=POLICIES[self.policy](t.o)
+        s['stalls']=0 if decision['action'] in [level for level,_ in HINT_LEVELS]+['explain'] else t.o['stalls']
         if t.kind=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
         t.trace.update(input=t.o,decision=decision)
         payload['action']=decision['action']
@@ -590,7 +621,8 @@ class OpenEngine:
             output,validation=self.feedback(t.task,decision['action'],t.text,t.ctx,t.assessment)
             payload['feedback']=output;t.trace['output_validation']=validation
             payload['delivered_action']=validation.get('delivered_action',decision['action'])
-            s['feedback_fallbacks']=s.get('feedback_fallbacks',0)+1 if validation['fallback'] else 0
+            generic=validation['fallback'] and payload['delivered_action']!='locate_template'
+            s['feedback_fallbacks']=s.get('feedback_fallbacks',0)+1 if generic else 0
             s['assisted']=True;s['completed']=False
             s['pending_question']=output if decision['action'] not in ('self_correct','explain') else None
 

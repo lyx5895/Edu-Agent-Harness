@@ -1,0 +1,6279 @@
+{
+  "problems": 83,
+  "items": 166,
+  "summary": {
+    "raw-baseline": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 0.934,
+      "error_f1": 0.931,
+      "false_acceptance_rate": 0.108,
+      "false_rejection_rate": 0.024,
+      "abstain_rate": 0.0,
+      "status_counts": {
+        "correct": 90,
+        "incorrect": 76
+      },
+      "accuracy_by_subject": {
+        "化学": 0.967,
+        "物理": 0.969,
+        "生物": 1.0,
+        "英语": 0.941,
+        "语文": 0.806
+      }
+    },
+    "raw-omniedu": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 0.916,
+      "error_f1": 0.909,
+      "false_acceptance_rate": 0.157,
+      "false_rejection_rate": 0.012,
+      "abstain_rate": 0.0,
+      "status_counts": {
+        "correct": 95,
+        "incorrect": 71
+      },
+      "accuracy_by_subject": {
+        "化学": 0.967,
+        "物理": 0.969,
+        "生物": 1.0,
+        "英语": 0.912,
+        "语文": 0.75
+      }
+    },
+    "raw-baseline-ref": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 0.976,
+      "error_f1": 0.975,
+      "false_acceptance_rate": 0.048,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.0,
+      "status_counts": {
+        "correct": 87,
+        "incorrect": 79
+      },
+      "accuracy_by_subject": {
+        "化学": 1.0,
+        "物理": 0.969,
+        "生物": 0.971,
+        "英语": 1.0,
+        "语文": 0.944
+      }
+    },
+    "raw-omniedu-ref": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 0.976,
+      "error_f1": 0.975,
+      "false_acceptance_rate": 0.048,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.0,
+      "status_counts": {
+        "correct": 87,
+        "incorrect": 79
+      },
+      "accuracy_by_subject": {
+        "化学": 1.0,
+        "物理": 0.969,
+        "生物": 1.0,
+        "英语": 1.0,
+        "语文": 0.917
+      }
+    },
+    "harness-omniedu": {
+      "n": 166,
+      "failed_calls": 0,
+      "accuracy": 1.0,
+      "error_f1": 1.0,
+      "false_acceptance_rate": 0.0,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.012,
+      "status_counts": {
+        "correct": 83,
+        "incorrect": 78,
+        "unknown": 2,
+        "incomplete": 3
+      },
+      "accuracy_by_subject": {
+        "化学": 1.0,
+        "物理": 1.0,
+        "生物": 1.0,
+        "英语": 1.0,
+        "语文": 1.0
+      }
+    }
+  },
+  "records": {
+    "raw-baseline": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n**Reasoning:**\nThe"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n**Analysis:**\n1."
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n**Reasoning:**\nThe"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      }
+    ],
+    "raw-omniedu": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n**解析：**\n1."
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n**Explanation:**\nThe student"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\nThe student incorrectly calculated the mass"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\nThe student's chemical equation is"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\n硝酸银的化学式应为 Ag"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\nStudent 错误地认为碳酸"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\nStudent 错误地认为能量"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "‘之’指代的是‘小"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      }
+    ],
+    "raw-baseline-ref": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      }
+    ],
+    "raw-omniedu-ref": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes\n\nStudent 错误地认为碳酸"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "flagged_error": false,
+        "status": "correct",
+        "raw": "No"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "flagged_error": true,
+        "status": "incorrect",
+        "raw": "Yes"
+      }
+    ],
+    "harness-omniedu": [
+      {
+        "id": "物理-密度-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“铁块变轻了，质量减小了，所以密度也就跟着变小了”，这里把密度和质量的变化直接挂钩了。其实密度是物质的一种特性，就像水的密度是 1g/cm³，不管是一滴水还是一桶水，密度都不变。你能想一下，如果切去一半后体积也同时减半，那质量除以体积的结果会变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-密度-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-密度-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确引用了密度公式，但忽略了公式中质量和体积是同步变化的。当铁块切去一半时，质量和体积都减半，它们的比值（密度）其实保持不变。你能想到为什么质量和体积同时减半后，密度不会改变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为瓶子倒过来后，水的重量变重了，导致对桌面的压力变大，所以压强就变大了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-压强-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-压强-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你的判断是正确的，倒立时压强确实更大。不过，在运用公式 $p=F/S$ 分析时，需要补充一个关键前提：无论正立还是倒立，瓶子对桌面的压力 $F$ 都等于瓶子和水的总重力，这个力是不变的。你提到的“面积变小”是核心原因，因为 $S$ 减小而 $F$ 不变，所以 $p$ 增大。下次分析时，记得先确认压力是否变化，再比较受力面积。",
+        "action": "clarify"
+      },
+      {
+        "id": "物理-欧姆定律-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你忽略了串联电路的总电阻是各电阻之和，所以不能直接用电源电压除以 R1。如果先算出总电阻，再根据欧姆定律求电流，结果会不同吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-欧姆定律-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-欧姆定律-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「通过该支路的电流变小，但干路总电流不变」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，直接把重力 300N 和位移 10m 相乘了，但重力是竖直向下的，而小车是水平移动的，两者方向垂直。根据功的公式 W=Fs cosθ，当力与位移垂直时，cos90°=0，所以重力做功应该是 0J。你能再检查一下重力方向和位移方向的关系吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「功率 P = W/G = 10000J / 2000N = 5J/N」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-功和功率-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-功和功率-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算重力做功时，把质量、重力加速度和位移直接相乘了，但重力方向是竖直向下的，而箱子是水平移动的，两者方向垂直。请问：当力的方向与物体运动方向垂直时，这个力对物体做功是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了密度与排开体积的关系。在漂浮时，浮力等于重力，而装满水的瓶子总质量更大，重力更大，所以浮力更大。请重新思考：如果两个物体都漂浮，比较浮力大小应该先比较什么物理量？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了密度与排开体积的关系。根据阿基米德原理，浮力等于排开液体的重力，公式为 $F_{浮} = \\rho_{液} g V_{排}$。对于同一个实心金属块，当它完全浸没时，$V_{排}$ 等于金属块自身的体积，是一个定值，不会因液体密度不同而改变。你提到的“排开体积更大”是错误的，实际上 $V_{排}$ 不变，浮力增大的唯一原因是盐水密度 $\\rho_{液}$ 更大。请重新思考：在金属块完全浸没的前提下，改变液体密度，$V_{排}$ 会变吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-浮力-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-浮力-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为酒精烧杯小，液面高度看起来比水高，所以根据公式浮力跟深度有关，酒精里更深浮力就大」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-光的反射与折射-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-光的反射与折射-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「看到水里的鱼也是因为光的反射，因为鱼在水面下反射了光线」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为水的比热容比机油大，所以在质量和升高温度相同的情况下，水升高的温度更多，所以冷却效果好」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为沙子的比热容比海水大，所以在吸收相同热量时，沙子的温度升高得比海水快，导致沙子烫脚而海水凉凉的」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "物理-比热容-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "物理-比热容-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你关于比热容大小的描述与事实相反，水的比热容实际上比沙子大。既然水的比热容大，那么在吸收相同热量时，水的温度变化应该更小，而沙子的温度变化更大。请重新思考：如果水的比热容大，它在白天吸热后温度升高得慢，这是否能解释为什么海水比沙子凉？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「硫酸铜的化学式是 CuSO₄，它的相对分子质量是 64 + 32 + 16×4，算出来是 112」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-化学式与相对分子质量-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「算出硝酸铵的相对分子质量是80，然后直接用14除以80乘以100%，得出氮元素的质量分数是17.5%，因为我只算了一个氮原子」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「生成氧气的质量是 10g」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-质量守恒-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-质量守恒-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算时只减去了氯酸钾的质量，但质量守恒定律要求用反应前混合物的总质量减去反应后剩余固体的总质量。请重新确认反应前混合物的总质量是多少？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你忽略了酚酞在酸性条件下也呈无色的特性，所以红色消失并不能直接证明溶液是中性。如果盐酸加得过量，溶液呈酸性，酚酞同样是无色的。那么，仅凭溶液变为无色，你能确定溶液一定不是酸性吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-酸碱中和-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-酸碱中和-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「能判断，因为当酸和碱恰好完全反应时，溶液会从酸性变成中性，这时候烧杯里的液面会突然停止上升，肉眼就能看出来」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用 200g 除以 15% 算出是 1333.3g，所以应该称取 1333.3g 氯化钠」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为俯视读数会让看到的数值偏小，导致我们倒进去的水比需要的多，溶剂多了浓度自然就被稀释变小了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-溶液浓度计算-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「直接用 50 除以 12% 算出需要 416.67g，因为我觉得质量分数是溶质除以溶剂」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「2Al + 3CuSO₄ = AlSO₄ + 3Cu」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「反应的化学方程式是 Zn + AgNO₃ = ZnNO₃ + Ag」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-金属活动性-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-金属活动性-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「反应的化学方程式是 Fe + CuSO₄ = Fe₂(SO₄)₃ + Cu」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了碳的化合价从 0 升高到 +2，但“化合价升高”对应的是失去电子，即被氧化，而不是被还原。请重新回忆氧化还原反应中“升失氧、降得还”的口诀，确认碳元素在此反应中的变化属于哪一种？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为钠单质变成了化合物，而且它的化合价从 0 价升高到了 +1 价，所以是被还原了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "化学-氧化还原判断-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "化学-氧化还原判断-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「氧化剂是 $H_2S$，因为 $H_2S$ 中的硫元素化合价升高了，它把 $SO_2$ 氧化成了硫单质」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了呼吸作用和光合作用的产物。气泡是光合作用释放的氧气，而黑暗环境中缺乏光能，导致光合作用无法进行，这才是没有气泡的根本原因。请重新思考：没有光时，植物还能进行光合作用吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到的“叶绿素被晒坏”和“植物受不了光”并不是光饱和点现象的科学解释。在光饱和点之后，光照强度已不再是限制因素，此时限制光合作用速率的主要因素通常是二氧化碳浓度和温度。请思考：如果增加二氧化碳供应或调整温度，气泡释放速率是否还会增加？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-光合作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-光合作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为碳酸氢钠能不断释放氧气，氧气越多光合作用就越强，所以气泡产生得更快」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「夜间降温是为了让植物进行更旺盛的光合作用，这样能合成更多的有机物，让蔬菜长得更壮」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到增加二氧化碳浓度是为了让苹果进行光合作用，但苹果作为果实缺乏叶绿体，无法进行光合作用。实际上，高浓度二氧化碳的主要作用是抑制呼吸作用，从而减少有机物的消耗。请重新思考：在缺乏叶绿体的情况下，二氧化碳浓度升高对呼吸作用速率会产生什么影响？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-呼吸作用-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-呼吸作用-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到萌发种子进行光合作用产生热量，但在这个密闭保温瓶实验中，种子主要进行的是呼吸作用。呼吸作用会分解有机物释放能量，其中一部分以热能形式散失，这才是温度升高的根本原因。请重新思考：在缺乏光照的密闭环境中，种子更可能进行哪种生理活动来提供能量？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「母亲的基因型是 AA」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为父母都是双眼皮，所以他们的基因型都是 AA，但是孩子比较特殊，随机变异得到了两个 a 基因所以变成了单眼皮」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-遗传与性状-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-遗传与性状-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为父母都有耳垂，说明他们肯定都是显性纯合子 AA，那个无耳垂的女儿应该是基因突变才出现的」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「兔子的数量会一直增加」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你只计算了一次能量传递，但狐处于第三营养级，需要经过草到兔、兔到狐两次传递。如果每次按最高效率 20% 计算，你应该怎样列式？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-食物链与能量流动-2-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+        "action": "clarify"
+      },
+      {
+        "id": "生物-细胞结构-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为洋葱内表皮细胞本来就没有颜色，所以不需要碘液，细胞核自己就会自动变黑让我们看清楚」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为太厚的表皮会让细胞吸水涨破，所以细胞核就看不清楚了」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-细胞结构-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-细胞结构-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「它呈现边缘黑、中间亮是因为气泡里充满了细胞液，光线在细胞液里发生了折射，所以边缘看起来是黑的」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为胃液里有胃蛋白酶能消化蛋白质，而且胃液是酸性的，酸性环境也能直接让淀粉分解成葡萄糖」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "生物-人体消化-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "生物-人体消化-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到壁薄是为了“增加消化酶的分泌量”，但消化酶主要与消化过程相关，而题目问的是“吸收”如何有利。壁薄直接降低了物质进出细胞的距离，这更利于吸收。你能区分“消化”和“吸收”这两个过程吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「“悚惧”的意思是大家看了都很高兴，因为孙权把战利品展示给他们看」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这里的‘之’指代的是‘核舟’」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-文言实词理解-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-文言实词理解-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「‘靡’在这里是没有的意思，说明他们连旗帜都没有了，所以鲁军才去追赶」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这句话运用了夸张的修辞手法，作者故意把风写得像画家一样神奇，是为了让读者觉得风的力量非常大，把树叶染得非常亮」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到“把风比作了人”，但仔细看句子，风并没有被比作某个具体的事物，而是直接拥有了“顽皮”的性格和“追逐嬉戏”的动作，这其实是把物当成人来写。你能再区分一下，如果句子是“风像狮子一样吼叫”，那才是比喻，而这里的“像”字引导的是对风的人格化描述吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-修辞手法辨析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这句话主要运用了比喻的修辞手法，因为它把柳树比作了害羞的小姑娘」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-0-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这个句子用了列数字的说明方法，通过列举具体的数据，生动形象地说明了过滤技术去除杂质的效率很高，让文章读起来很有趣」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-1-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「通过列举“约 4000 个”这个数字，生动形象地写出了蜜蜂复眼数量多的样子，让读者读起来更有画面感」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-说明方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-说明方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“打比方”是因为觉得把蓝鲸和象联系起来很形象，但原文是用具体数字和同类事物进行对比，这其实是“作比较”。你能再读读这句话，看看它是不是在用一个事物直接比喻另一个事物，还是在把两个事物放在一起比大小？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-0-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确识别了比喻论证并分析了其作用，但“举例论证”在此句中并不存在，请重新审视原文是否提供了具体的事例来支撑观点？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你判断为“举例论证”是不准确的，因为画线句子引用的是鲁迅的名言，属于引用权威言论来证明观点，这应该是“引用论证”。请重新审视句子中是否列举了具体的事例，还是仅仅引用了名言？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-论证方法-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-论证方法-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因为作者引用了文天祥和林则徐的名言，通过这些道理来说明爱国是民族精神的脊梁，从而增强了文章的逻辑性」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确指出了病因是成分残缺，但修改方案将“通过”改为“由于”后，句子依然保留了“由于……使……”这一导致主语缺失的结构，因此并未真正解决问题。请思考：如果要保留“使”字，应该删去哪个词来让句子主语明确？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我觉得这里关联词搭配不当，应该把'为了'改成'因为'，这样句子就是'因为这类交通事故不再发生，我们加强了交通安全教育'」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-病句修改-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-病句修改-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我把它改成了‘同学们通过这次社区服务活动，使增强了社会责任感，也更懂得了奉献的快乐。’」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「诗人通过劝酒表达了和朋友即将重逢的喜悦，觉得虽然出了阳关没有熟人，但这次聚会让大家都很开心」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到诗人感到“害怕”“走投无路”“悲伤绝望”，但这与诗句中“疑无路”后紧接着“又一村”的转折意境不符。请重新审视“柳暗花明”这一景象所传达的突然发现新天地的惊喜感，并思考这种转折如何体现诗人的情感变化？",
+        "action": "locate"
+      },
+      {
+        "id": "语文-诗句情感分析-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "语文-诗句情感分析-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「诗人因为年纪大了头发变少，所以只能把簪子拿下来，这句诗主要表现了他对自己日渐衰老、身体不好的无奈和感叹」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"I stay at home and watched a movie yesterday\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"My friends and I fly a colorful kite and ate apple pie under the big tree\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-一般过去时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-一般过去时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"He stay at home and watched a movie\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'have' and 'haven't', but remember that 'go' becomes 'gone' in the present perfect tense, not 'went'. Can you try rewriting the first part of your sentence using the correct past participle?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"He didn't visit it again since last year because he was busy\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-现在完成时-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-现在完成时-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"Have you enjoyed live in the new city so far?\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"The new library in our school built by volunteers last month because they are very kind\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"This modern library was design by the famous architect five years ago\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-被动语态-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-被动语态-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"The old trees in our school garden was planted by the first generation of students fifty years ago\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly used 'who' to start the relative clause, but notice the verb 'help' doesn't match the singular subject 'teacher' and the past time 'yesterday'. Can you check if the verb should be 'helps' or 'helped' in this context?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-定语从句-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-定语从句-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「This is the teacher who help me solve the difficult math problem last year」。这一步依据的是什么，结果成立吗？",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"I think it should be 'higher' because Tom's scores are better than everyone else's in our class\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"It is more warm than in Beijing in winter, but it is not the warmest city in China\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-比较级与最高级-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-比较级与最高级-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"it; warmer\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-0-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-0-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"The old house stood at the end of the street has been abandoned for years\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-1-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-1-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"is flying\". What is this step based on, and does it hold?",
+        "action": "locate"
+      },
+      {
+        "id": "英语-非谓语动词-2-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "英语-非谓语动词-2-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Take another look at this part: \"The old man often sits by the window, stared at the setting sun to remember his youth\". What is this step based on, and does it hold?",
+        "action": "locate"
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness-multi",
+  "limit": null,
+  "systems": [
+    "raw-baseline",
+    "raw-omniedu",
+    "raw-baseline-ref",
+    "raw-omniedu-ref",
+    "harness-omniedu"
+  ],
+  "seconds": 69.8,
+  "generated_at": "2026-11-13T10:48:49+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

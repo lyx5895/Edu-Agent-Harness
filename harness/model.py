@@ -38,15 +38,16 @@ class Hint(BaseModel):
 
 
 class ModelClient:
-    def __init__(self, base_url=None):
+    def __init__(self, base_url=None, model=None):
         self.base_url = base_url or os.getenv('OMNIEDU_BASE_URL', 'http://127.0.0.1:8000/v1')
+        self.model_name = model or os.getenv('OMNIEDU_MODEL', 'omniedu-9b')
         self.logs = Path(__file__).resolve().parents[1] / 'logs/model-calls.jsonl'
         self.calls = []
         self.json_schema_output = os.getenv('OMNIEDU_JSON_SCHEMA', '1') != '0'
 
     def chat(self, messages, max_tokens=512, timeout=300, response_format=None):
         start = time.monotonic()
-        body = {'model': 'omniedu-9b', 'messages': messages, 'max_tokens': max_tokens,
+        body = {'model': self.model_name, 'messages': messages, 'max_tokens': max_tokens,
                 'temperature': 0, 'chat_template_kwargs': {'enable_thinking': False}}
         if response_format:
             body['response_format'] = response_format

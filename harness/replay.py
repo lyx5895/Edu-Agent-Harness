@@ -58,8 +58,9 @@ class ReplayableModel:
     """Transparent proxy; attribute writes go to the wrapped model."""
     UNCACHED = {'budget'}
 
-    def __init__(self, model):
+    def __init__(self, model, namespace=''):
         object.__setattr__(self, '_model', model)
+        object.__setattr__(self, '_namespace', namespace)
 
     def __getattr__(self, name):
         attr = getattr(self._model, name)
@@ -70,7 +71,7 @@ class ReplayableModel:
             replay = _active.get()
             if replay is None:
                 return attr(*args, **kwargs)
-            key = json.dumps([name, args, kwargs], sort_keys=True, ensure_ascii=False, default=repr)
+            key = json.dumps([self._namespace, name, args, kwargs], sort_keys=True, ensure_ascii=False, default=repr)
             if key in replay.results:
                 return deepcopy(replay.results[key])
             result = attr(*args, **kwargs)

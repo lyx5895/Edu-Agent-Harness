@@ -2,6 +2,25 @@
 
 当前 bysz1 默认推理后端已切换为 **vLLM 0.23.0**；部署参数与命令见文末“bysz1 部署”。下文 Transformers 双卡设置保留为后备方案与历史记录。项目已纳入 git 管理。
 
+## v0.8：并发、材料检索、交叉复核与扩展评测
+
+- **并发**：快照提交冲突时自动重算，重算期间持有写锁，已完成的模型调用按输入复用不重发；40 名学生同时提交 80 次全部成功。客户端带旧 `version` 时仍返回 409。
+- **结构**：`operation()` 拆为按操作类型的处理函数；轨迹只存状态差异（`state_diff`）；图片按内容哈希存为文件（`data/<库名>-images/`），旧库中的内联图片仍可读取。
+- **材料**：页面和接口可上传文字版 PDF（`pypdf`，≤20MB；扫描件会提示改用图片），按页切块，任务记录 `source_pages`，页面显示“材料出处：第 N 页”。检索由词重叠计数改为 BM25（中文按二字词，英文按单词）。
+- **交叉复核**（可选）：设置 `OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1`（模型名 `OMNIEDU_REVIEW_MODEL`，默认 `qwen3.5-27b`）后，第二个模型复核两类输出：模型给出的负面判定（复核判为正确且高置信时改为 unknown 转教师；复核同意时该条不再因“负面判定”进入复核队列），以及通过一审的教学回复（复核否决则改用兜底句）。未设置时行为不变。
+- **策略 v5**（`OMNIEDU_POLICY=open-task-policy-v5`）：同一任务连续多轮作答或回复没有进展时，不再反复追问依据，而是沿概念→步骤→半完成例子的提示阶梯升级，阶梯用完转教师。评测中没有超过 v4，默认策略仍为 v4，见 `HARNESS_REVIEW.md` 第八节。
+- **反馈修正**：OmniEdu-9B 原样复述中文导致“先翻译再审核”从未生效，已改写翻译提示词；`locate` 回复删去问号后的附加指令；引用学生原句的模板不计入“连续兜底转教师”。
+- **评测**：新增中文数学（StepVerify 译本 392 份）与五科简答（166 份，模型生成并经独立解题和人工抽查过滤）判定集，以及三种更难的模拟学生（坚持错误、索要答案、敷衍）。
+
+```bash
+.envs/harness/bin/python bench/build_data.py            # 生成 bench/data/*.jsonl（需 27B 裁判服务）
+.envs/harness/bin/python scripts/benchmark.py correctness-zh correctness-multi \
+  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-xr
+.envs/harness/bin/python scripts/benchmark.py dialogue --persona persistent \
+  --systems raw-baseline,raw-omniedu,harness-omniedu-v4,harness-omniedu-v5 --limit 40 --tag persistent
+PYTHONPATH=scripts .envs/harness/bin/python scripts/teaching_v08_e2e.py   # 真实模型回归
+```
+
 ## v0.7：vLLM 适配与教学策略补强
 
 - **图片**：上传图片统一校正 EXIF 方向并缩到最长边1536像素（约1.7k视觉 token），可用 `OMNIEDU_IMAGE_MAX_SIDE` 调整；页面上传上限放宽到30MB。超出上下文的请求单独提示“输入材料或图片过长”，不再报“模型服务不可用”。

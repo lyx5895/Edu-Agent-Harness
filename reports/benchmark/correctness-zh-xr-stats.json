@@ -1,0 +1,5183 @@
+{
+  "problems": 196,
+  "items": 392,
+  "summary": {
+    "harness-omniedu-xr": {
+      "n": 392,
+      "failed_calls": 0,
+      "accuracy": 0.967,
+      "error_f1": 0.968,
+      "false_acceptance_rate": 0.01,
+      "false_rejection_rate": 0.056,
+      "abstain_rate": 0.092,
+      "status_counts": {
+        "incorrect": 164,
+        "correct": 187,
+        "unknown": 36,
+        "incomplete": 5
+      },
+      "cross_review": {
+        "reviewed": 174,
+        "agreed": 169,
+        "overturned": 5,
+        "overturned_on_correct_items": 5,
+        "overturned_on_error_items": 0
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu-xr": [
+      {
+        "id": "331-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「47 美元 - x = 44 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地仅用柠檬水摊收入减去总利润来计算成本，忽略了照看孩子的收入也应计入总收入以平衡总利润。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "331-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "154-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于她花了一半的代币买它，我将 10 乘以 2 得到 20 个代币」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将耳机花费的 10 个代币视为一半，并据此计算毛绒考拉熊花费为 20，而实际上耳机和手环的总和 25 才是一半。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "154-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "404-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「如果黛西的主人找到了所有丢失的狗玩具，包括新买的，她就会有总共 11 个狗玩具 + 5 个丢失的狗玩具 = 16 个狗玩具」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终计算结果为 16，而正确答案应为 13。学生在计算丢失玩具数量时出现逻辑错误，误将周三新买的 5 个玩具计入丢失数量，且未正确累加所有曾拥有的玩具总数。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "404-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "666-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你引入了一个题目中并未给出的年份“2021”来建立方程，这导致计算出的出生年份（1000.5）与题目已知的卡琳娜出生于1970年这一事实完全矛盾。既然卡琳娜40岁且出生于1970年，你能直接根据弟弟的年龄推算出他的出生年份吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终年份为 1001 年，与正确答案 1990 年不符。错误源于第 5 句建立的方程 (2021-x) - x = 20 逻辑错误，该方程试图用弟弟年龄减去出生年份等于年龄差，混淆了变量定义。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "666-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "49-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从 85 中减去 17，得到 Mabel 拥有的弹珠数量，即 68」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了 Mabel 比 Amanda 多的数量。题目已知 Mabel 有 85 颗，学生却用 85 减去 Katrina 的数量（17）得到 68，导致后续计算错误，最终答案 46 与正确答案 63 不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "49-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "74-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将抬头看的学生人数（150）乘以 2，并将没有抬头看的学生人数（50）乘以 2，得到看到飞机的眼睛总数，结果是 400」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算了所有学生（包括未抬头者）的眼睛总数，而非仅抬头看飞机的学生眼睛数，导致最终答案 400 错误，正确答案应为 300。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "74-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "840-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算小拼图单价时，用 23 减去了 15，但结果写成了 4，这步减法算错了。请重新计算 23 减 15 等于多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的小拼图价格为 4 美元，而根据题目条件（大拼图 15 美元，两者共 23 美元），正确的小拼图价格应为 8 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "840-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "548-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，在最后一餐，她需要喂 180 - 40 = 140 杯饲料」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案 140 杯与正确答案 20 杯不符。学生在计算总需求量时出现逻辑错误，将每日总需求量误算为 180（可能是将每餐 60 杯乘以 3 餐，但题目中 3 杯是每只鸡每天的总量，而非每餐），导致后续减法错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "548-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "96-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "96-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "374-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先将艾尔莎拥有的硬币数量与阿玛莉拥有的硬币数量之比简化为 2:9」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将简化后的比例 2:9 的总份数错误地计算为 10x（应为 11x），导致后续阿玛莉的硬币数量及最终剩余数量计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "374-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "596-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了杰克和安娜的总重量（100 磅），但跷跷板平衡的条件是两侧重量相等，而不是总重量相等。如果杰克拿石头，石头的重量应该等于杰克比安娜多出的那部分重量，而不是总重量减去杰克的体重。你能重新思考一下，杰克需要拿多少石头才能让他的总重量等于安娜的体重吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将两人的体重相加来计算平衡所需的重量，而不是计算两人的体重差。正确的做法是计算 60 - 40 = 20 磅的差值，然后除以每块石头的重量。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "596-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "59-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「要找出布莱克最初给了康妮多少钱，我们需要从两边减去 30,000 美元，所以 $x = $60,000 - $30,000 = $40,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终答案是 40,000 美元，而正确答案应为 20,000 美元。学生在建立方程时逻辑错误，误将初始金额与给回金额相加等于总售价，而非通过售价反推初始成本。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "59-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "931-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "931-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "519-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算全天总量时，将每只鸡每餐的饲料量乘以了餐数，但题目中“三杯”是指每只鸡每天总共的量，而不是每餐的量。如果每只鸡每天只吃3杯，那么20只鸡一天总共吃多少杯？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将题目中'每只鸡每天喂食三杯'理解为'每只鸡每餐喂食三杯'，导致计算出的每日总需求量（180 杯）是正确答案（60 杯）的三倍，最终得出错误的 140 杯。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "519-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "219-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于还剩 10 场比赛，他们需要至少赢 8 场 x 80% = 6.4 场，四舍五入为 7 场」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算出还需赢 8 场，但随后错误地引入 80% 的系数进行二次计算，得出 7 场的错误结论，与参考答案 8 场不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "219-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "38-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "38-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": {
+          "agreed": false,
+          "confidence": "high",
+          "observation": "学生正确计算了今天的油耗（1600 加仑）和明天的里程（600 英里）及油耗（2400 加仑），最终得出总油耗 4000 加仑，与参考答案一致且推理步骤完整。",
+          "overturned": true,
+          "reviewer": "qwen3.5-27b",
+          "status": "correct"
+        }
+      },
+      {
+        "id": "88-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你误将“2 位顾客购买了 4 个汉堡”理解成了“每位顾客购买 4 个”，导致已售汉堡数算成了 12 个。请重新审题，确认这 4 个汉堡是两位顾客共同购买的总数，还是每人购买的数量？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'2 位顾客购买了 4 个汉堡'理解为每人买 4 个，导致已售总数计算错误（算成 12 个而非 6 个），进而得出错误结论。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "88-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "444-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了每加仑行驶里程为 25 英里，但在最后一步中，你乘以的是剩余油量 8 加仑，而不是题目要求的“加满一箱油”的总容量 12 加仑。请问，如果油箱加满，总共有多少加仑汽油可供行驶？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为 200 英里，与参考答案 300 英里不符。学生错误地用每加仑里程数乘以剩余油量（8 加仑），而非油箱总容量（12 加仑）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "444-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "428-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，削 60 个土豆需要 90 x 60 = 5400 秒」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总时间为 5700 秒，而参考答案为 95 分钟（即 5700 秒）。虽然数值等价，但题目未明确要求以秒为单位作答，且参考答案以分钟呈现。学生未将结果转换为分钟，可能不符合常规表达习惯或题目隐含要求。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "428-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "71-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了坦雅的红色橡皮是 10 块，但在计算瑞秋的数量时，你用了 10 减去 3，而题目要求的是“红色橡皮数量的一半”减去 3。请问，10 块红色橡皮的一半是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了瑞秋的橡皮数量。题目要求瑞秋的数量比坦雅红色橡皮数量的一半（即 5）少 3，应为 2，但学生直接用坦雅红色橡皮总数（10）减去 3 得到 7，导致后续计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "71-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "246-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，把这些数字加起来，你得到 6+6+8=20」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了鸟、狗和蜘蛛的剩余数量，但在最后求和时遗漏了题目中未发生变化的5只猫，导致最终答案20与正确答案25不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "246-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "92-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，杰夫从周一到周五跑了 1 小时 x 5 天 = 5 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算总时间时逻辑错误，将原本应扣除的周四时间重复计算，导致结果 410 分钟与正确答案 290 分钟不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "92-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "564-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着我用 1680 减去 1320，得到 360 盎司，这就是他每次洗澡用的水量」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将题目中给出的'舀走 3 桶'记为'11 桶'，导致后续计算每次洗澡用水量及每周总用水量均错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "564-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "434-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了她需要支付的总利息，即 3,650 x 10/100 x 5 = 1825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将年利率10%直接乘以5个月来计算利息，导致利息计算错误（应为365美元而非1825美元），最终答案1095美元与参考答案803美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "434-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "60-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算剩余时间时只减去了睡眠时间，但题目要求先减去打扫、做饭和睡觉的总时间。如果先算出所有已知活动的总时长，再从天数中减去，结果会不同吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算剩余时间时，仅从24小时中减去了睡眠时间，遗漏了打扫（4小时）和做饭（2小时）的时间，导致后续计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "60-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "846-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算出蒂姆为医生就诊支付了 0.25 x 300 = 75 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅计算了医生就诊的个人支付部分（75 美元），未计算猫就诊的个人支付部分（60 美元），也未给出最终总金额。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "846-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "579-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我通过用 45 乘以 3/4 来计算聚会上单身男性的数量，得到 33.75（四舍五入到最接近的整数）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了单身男性的数量。题目指出男性中有 3/4 是单身，意味着已婚男性占 1/4。学生误将已婚男性数（45）乘以 3/4 来求单身男性，且逻辑上混淆了比例关系，导致最终总人数错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "579-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "126-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我利用了每个充氦气的气球都会触到天花板这一事实，并且已知买了 50 个气球和 1800cm³的氦气，这足以填充 36 个气球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生给出的最终答案是 36，而正确答案应为 22。学生计算出了能飘起的气球数（36 个），但错误地将其直接作为‘多出的数量’，未计算未飘起的气球数（14 个）并求差值。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "126-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "1000-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "1000-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "228-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，自动售货机总共掉落了 5 + 6 = 11 份零食」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为11，与参考答案28不符。学生在最后一步错误地将‘未掉落次数’（5）与‘额外掉落份数’（6）相加，而忽略了正常掉落的22份零食。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "228-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "642-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了第一次往返的总人数，但在处理后续三次往返时，只计算了单程的 100 人而遗漏了返程的 60 人。既然每次往返都包含去程和返程，那么三次往返的总人数应该是 (100 + 60) × 3，而不是 100 × 3。你能重新计算一下三次往返的总人数吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生在计算后续三次往返行程的总人数时，仅计算了单程人数（100人）的三倍，忽略了返程人数（60人），导致计算基数错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "642-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "990-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "990-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "63-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这三个月的访客总数为 215 + 15 = 230」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算12月访客数时，错误地将12月比11月多的15人直接加到了前两个月的总和上，而非先算出12月实际访客数（130）再求和，导致最终结果230错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "63-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "590-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我解出 x，得到 x = 2」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算得出每枚金币价值 2 美元，导致最终剩余金币数为 7 枚，与正确答案 2 枚不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "590-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "599-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，x = 10 + 2 = 12 厘米」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算出钢笔长度为 10 厘米，但在计算橡皮长度时，错误地使用了铅笔长度（12 厘米）减去 3 厘米，而非钢笔长度（10 厘米）减去 3 厘米，导致橡皮长度算错为 9 厘米，最终总长度 33 厘米与正确答案 29 厘米不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "599-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "406-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，如果所有衬衫和牛仔裤都售出，服装店总共将赚取 400 + 200 = 600 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算牛仔裤收入时，错误地将单价 20 美元乘以了衬衫的数量 20，而非牛仔裤的实际数量 10，导致牛仔裤收入计算错误，最终总金额 600 美元与正确答案 400 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "406-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "50-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「每人储蓄$1500/2 = $750 每月」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算出 x=1500 为每人每月储蓄额，但在最后一步错误地再次除以 2，得出 750 的错误结论。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "50-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "226-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我确定他总共能骑行的面积是 10 个平方街区」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算汤米骑行的面积为 10 平方街区，而正确计算应为 20 平方街区（宽 5 街区，高 4 街区）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "226-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "47-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算每周总时间时乘以了 7，但题目明确说明每周只观看 4 天，这一步的乘法依据是什么？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'每天45分钟'与'每周4天'相乘，误算为'一天内'的总时长，导致后续计算全部错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "47-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "570-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你建立的方程 36 = 2(x + 6 - 3) 中，将“6 年后”和“3 年前”错误地合并了时间。请重新思考：题目说的是约翰 3 年前的年龄，等于詹姆斯 6 年后的年龄的 2 倍，这两个时间点应该分别对应詹姆斯的“现在年龄 + 6”和“现在年龄”，中间不需要做减法。你能根据这个关系，重新写出正确的方程吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生建立的方程 36 = 2(x + 6 - 3) 错误地将'3 年前'的时间偏移量应用到了'6 年后'的詹姆斯年龄上。题目要求比较的是'3 年前约翰的年龄'与'詹姆斯 6 年后的年龄'，两者时间基准不同，不应在 x+6 的基础上再减 3。正确方程应为 36 = 2(x + 6)。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "570-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "879-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，净利润是 40 美元 + 10 美元 = 50 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地认为净利润是收入加上成本，而正确的计算方法是收入减去成本。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "879-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "136-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了双黄蛋的蛋黄数，但把总鸡蛋数 12 当成了单黄蛋的数量。实际上，单黄蛋的数量应该是总鸡蛋数减去双黄蛋数，即 12 - 5 = 7 个。你能重新计算一下单黄蛋的数量吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地认为单黄蛋数量为 12 个，而题目明确总共有 12 个鸡蛋，其中 5 个是双黄蛋，因此单黄蛋应为 7 个。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "136-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "296-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从一个鸟屋的利润中减去，利润是 5.50 美元，所以一个鸟屋的成本是 5 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将利润从成本中减去来计算售价，导致单价计算错误（应为成本加利润），最终答案 10 美元与正确答案 32 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "296-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "429-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我从该金额中减去 4.50，得到他们在食物上的花费，即 2.25 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将单张门票价格（6.75 美元）减去 4.50 美元来计算食物总花费，而题目要求是用门票总花费（20.25 美元）减去 4.50 美元。这导致食物花费计算错误，进而导致最终总金额和人均费用错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "429-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "147-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我把这两个数加起来得到摘草莓的总数，即 300 + 1200 = 1500」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了莉莉贝斯摘的草莓数（300）和四人总数（1200），但在最后一步错误地将两者相加，导致最终答案1500与正确答案1200不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "147-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "553-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我将从周二到周四每天卖出的箱数相加，即 20 + 15 + 12 + 18 = 65 箱」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将周末的销量（20箱）计入了周二至周四的销量总和中，导致中间计算结果错误，进而得出错误的最终答案35箱，而正确答案应为55箱。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "553-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "120-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最后一步的加法中，把“之前向前的步数”当成了计算依据，但题目要求的是“刚才向后走步数的两倍”。请重新检查最后一步向前走的步数应该基于哪个数字计算？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'之前步数'理解为当前距离起点的步数（3步），而题目要求是'刚才向后走步数'（2步）的两倍。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "120-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "584-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 20 捆的成本减去 10 捆的成本，得到差额为 60 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终差额为 60 美元，而正确答案应为 210 美元。虽然学生描述了正确的解题步骤（计算原成本、新成本并求差），但最终数值计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "584-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "315-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，兰迪最初有 2,800 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生在正确计算出中间值 3000 美元后，错误地再次减去了 200 美元，导致最终答案 2800 美元与正确答案 3000 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "315-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": {
+          "agreed": false,
+          "confidence": "high",
+          "observation": "学生正确执行了逆向运算：先计算给萨莉钱之前的总额（2000+1200=3200），再减去史密斯给的200美元得到初始金额3000。最终答案与参考解答一致，且推理步骤完整正确。",
+          "overturned": true,
+          "reviewer": "qwen3.5-27b",
+          "status": "correct"
+        }
+      },
+      {
+        "id": "573-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，促销订阅便宜 0.5 x 36 = 18 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将每期折扣乘以2，导致总折扣计算翻倍。题目明确说明每期减免0.25美元，而非每月。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "573-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "835-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「在主人让它“安静”之前，梗犬叫了 6 次（一次，两次，安静，一次，两次，安静，一次，两次，安静）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地认为主人说6次“安静”对应梗犬叫了6次，而实际上每次“安静”对应梗犬叫2次，因此梗犬应叫12次，贵宾犬应叫24次。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "835-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "698-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "698-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "185-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后在第二晚后，每只吸血鬼又会将另外 10 个人变成吸血鬼，所以会有 22 加 10 再加 10，两晚后村里总共会有 42 只吸血鬼」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算第一晚后的吸血鬼总数时出错。初始有 2 只吸血鬼，新增 10 只（2*5），总数应为 12 只，但学生得出 22 只。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "185-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "105-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确找出了文具区的销售占比是 5/12，但在计算 36 乘以 5/12 时出现了错误。请重新计算 36 除以 12 再乘以 5 的结果，看看是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的文具区销售数为 3，而正确答案应为 15。虽然学生描述了正确的解题思路（先求占比再相乘），但最终数值结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "105-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": {
+          "agreed": false,
+          "confidence": "high",
+          "observation": "学生正确计算了布料区（12）和珠宝区（9）的销售数，并通过减法得出文具区为15笔，与参考答案一致且推理步骤完整。",
+          "overturned": true,
+          "reviewer": "qwen3.5-27b",
+          "status": "correct"
+        }
+      },
+      {
+        "id": "595-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，桑迪需要喝水 6 小时才能达到她 3 升或 3000 毫升的目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终答案给出 6 小时，但正确计算应为 12 小时。学生在第 4 句正确算出 6 小时喝 1500 毫升，却错误地推断 6 小时即可达到 3000 毫升目标，逻辑断裂。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "595-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "952-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "同学你好，这道题的关键在于理解“增加当前数量的一半”这一描述。我们可以分步来思考：首先计算第一年末牛的数量，即原数量加上原数量的一半；然后再用第一年末的总数作为基数，计算第二年末的数量。请先尝试列出第一年的计算式，我们一步步来。",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "952-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "654-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了每天早餐的鸡蛋总数是 13 个，但在计算一年总量时，你直接用 13 乘以了 52 周。请回想一下，丽莎是每周一到周五才做早餐，那么她一年实际做早餐的天数是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算每日鸡蛋总数正确（13 个），但在计算全年总数时，遗漏了每周 5 天的频率，直接用 13 乘以 52 周，导致结果 676 错误，正确答案应为 3380。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "654-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "192-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我减去了 10 道含芒果的菜肴和奥利弗不会尝试的 4 道含新鲜芒果的菜肴，结果自助餐厅上还剩下总共 22 道菜供奥利弗食用」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终计算结果为 22 道菜，而正确答案应为 28 道。学生在最后一步逻辑混乱，错误地重复减去了含芒果的菜肴数量，导致结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "192-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "381-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，由于吉尔制作的薰衣草蜡烛数量是椰子蜡烛的两倍，我得出结论，她一定制作了 2 x 10 = 20 支薰衣草蜡烛」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设每支蜡烛使用的香味量相同，导致计算出椰子蜡烛数量与大杏仁蜡烛数量相同（均为10支），而题目明确指出每支蜡烛使用的每种香味量相同，但总香味量不同，因此椰子蜡烛数量应为大杏仁的1.5倍（15支）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "381-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "99-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我算出他还能在里面多待 10 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生给出的最终答案是 10 分钟，而根据题目条件计算出的正确答案应为 55 分钟（总目标时间 300 分钟减去已用时间 245 分钟）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "99-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "560-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「米拉每周赚取 10 x h 小时，每月赚取 40 x h 小时（假设一个月有 4 周）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算米拉每月收入时错误地使用了 40h（即 10*4*h），而米拉每小时赚 10 美元，工作 h 小时应为 10h。正确的方程应为 10h = 480，解得 h=48。学生得出的 12 小时是错误的。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "560-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "729-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这得出了房子的最终售价，即 92000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生给出的最终售价是 92000 美元，而正确答案应为 100000 美元。学生错误地使用了减法而非加法来计算售价，且其计算逻辑与题目要求不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "729-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "64-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他需要在周六再读 38 页才能达到目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将一周的天数算作6天，导致总目标页数计算错误（应为350页而非300页），进而得出错误的最终答案38页。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "64-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "577-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了教室内就座的 16 名学生，但总人数应该包括教室内所有学生（16 人）、洗手间里的 2 人以及缺勤的 5 人。你漏掉了缺勤的那 5 名学生，为什么总人数不能只加洗手间的人数而忽略缺勤人数呢？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了缺勤人数（5）和教室内人数（16），但在计算总人数时，仅将教室内人数与洗手间人数相加（16+2），遗漏了缺勤的5名学生，导致最终答案18错误，正确答案应为23。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "577-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "61-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此该月的总卫生纸产量为 31*21000 = 651000 卷卫生纸」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将'提高三倍'误解为仅计算增加的部分（21000），而忽略了原产量（7000），导致每日总产量计算错误，进而导致最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "61-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "633-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着我说他们两人一共有 2x+6 支铅笔」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将米切尔的铅笔数（30）等同于两人总数（2x+6），导致方程建立错误。正确逻辑应为米切尔的铅笔数 x+6=30。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "633-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "210-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算出了每块饼干的平均碎片数是 3，但最后一步突然减去了 1，这并没有题目依据。请检查你的最后一步运算，为什么要在正确的平均值上减去 1？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了 M&M 豆数量（36）、总碎片数（144）以及除法结果（3），但在最后一步无端减去了 1，导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "210-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "508-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，这 5 个人一共带进了 2 x 5 = 10 张旧唱片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终得出的答案是10张旧唱片，而根据题目条件（2张旧换1张新，共换得7张新），正确答案应为14张。学生在正确计算出14张后，错误地引入了平均分配和取整的逻辑，导致最终结论错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "508-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "696-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「克里斯将拿走 1/4 x 40 = 10 颗弹珠」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅计算了克里斯拿走的弹珠数量，未计算总弹珠数、瑞安拿走的数量以及最终堆中剩余的弹珠数量，缺少最终答案。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "696-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "544-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算甜甜圈费用时，3 乘以 68 的结果是 2448，这个乘法算对了吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算甜甜圈费用时出现严重错误，3 乘以 68 应为 204，而非 2448。这导致后续所有计算及最终总费用（8328 美元）均不正确，与参考答案 694 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "544-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "437-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这得出的总利息为 1,825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将年利率乘以月数来计算总利息，导致利息计算结果（1,825 美元）和最终月供（1,095 美元）均错误。正确做法应仅用本金乘以年利率计算单期利息，或按题目隐含逻辑计算总利息后分摊。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "437-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "795-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "795-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "321-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "321-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "476-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于 2x + 20 = 36，我从两边减去 20 得到 2x = 16」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将目标书本数量（2*36+20）等同于书架容量（36），导致建立方程 2x+20=36，从而得出错误答案 8，正确答案应为 92。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "476-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "965-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我乘以了 3，因为有 3 个人，每人有 2 只鞋，所以条纹总数是 11 x 2 x 3 = 66」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为 66，与参考答案 22 不符。学生错误地使用了 11 作为单只鞋的条纹基数，且未正确计算每个人每只鞋的具体条纹数（奥尔加 3 条，里克 2 条，霍滕丝 6 条）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "965-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "464-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了她需要支付的总利息，即 3,650 x 10/100 x 5 = 1825 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将年利率10%直接乘以5个月来计算利息，导致利息计算错误（应为365美元，学生算出1825美元），进而导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "464-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "370-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「之后，我算出杰克逊享受 20% 的折扣，所以他只需支付原价的 80%」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将总夸脱数除以4来计算瓶数，而题目明确指出每瓶香槟容量为1夸脱，因此160夸脱应等于160瓶。这一计算错误导致后续总价和折扣计算全部错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "370-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "306-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确理解了每5步实际只前进1步的净效果，但在计算总步数时，错误地将距离（66步）直接当作总步数，忽略了每净前进1步需要实际走5步的倍数关系。既然每净前进1步需要走5步，那么走66步距离实际需要走多少步呢？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了净前进距离（1 步），但错误地认为总步数等于净距离乘以 1，忽略了每获得 1 步净前进实际需要走 5 步（3 步前 +2 步后）。正确答案应为 330 步，学生得出 66 步。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "306-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "254-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「家庭之后有 10 位顾客，所以是 10 - 1 = 9 位顾客」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将题目中明确给出的'10 位顾客'计算为 9 位（10-1），导致后续软塔可销售总额计算错误，最终答案 62 美元与正确答案 66 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "254-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "813-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你感觉不错是好事，但我们需要把“感觉”变成“步骤”。请先告诉我：你列出的方程是什么？或者，你是怎么算出盒子数量的？把第一步写出来，我们就能一起检查哪里卡住了。",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "813-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "184-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将两边除以 2 得到 x = 30，这意味着詹姆斯是 30 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生在化简方程时出现计算错误。原方程 2(x + 12) - 5 展开应为 2x + 24 - 5 = 2x + 19，但学生后续计算 2x + 19 = 79 时，移项得到 2x = 60 是错误的（79 - 19 应等于 60，此处看似正确，但需检查前一步展开是否正确：2*12=24, 24-5=19，展开正确。然而，若 2x+19=79，则 2x=60，x=30。让我们重新核对参考答案逻辑：蒂姆79，约翰=(79+5)/2=42。詹姆斯=42-12=30。等等，参考答案说约翰是37？参考答案逻辑：79-5=74，74/2=37。这意味着参考答案认为蒂姆年龄=2*约翰-5，即79=2*J-5 -> 2J=84 -> J=42。参考答案计算 79-5=74 是错误的，应该是 79+5=84",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "184-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "715-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "715-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "798-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，15 双棕袜的成本将是 15 x 25 = 375 美分」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为 375 美分，而正确答案应为 300 美分（3 美元）。学生错误地将白袜与棕袜的差价（25 美分）直接当作棕袜的单价进行计算，忽略了题目中'两双白袜比一双棕袜贵 25 美分'这一关键条件，导致单价推导错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "798-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "249-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，客人总数将是 50 + 80 = 130」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'比...多 60%'理解为'是...的 1.6 倍'作为增量，导致计算出增加了 80 位客人，而正确增量应为 30 位（50*0.6），最终总费用计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "249-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "83-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「发现她使用了 5 盎司油」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终答案是 5 盎司油，而根据题目比例（8 盎司花生配 2 盎司油，共 10 盎司）计算，20 盎司花生酱应含 4 盎司油。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "83-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "588-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，我得出结论：凯西在这两个月里总共工作了 200 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终答案是 200 小时，而正确答案应为 180 小时。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "588-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "307-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此城镇中路灯的总数为 10 个街区 x 4 条道路 x 250 盏路灯 x 2 侧 = 80,000 盏路灯」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为 80,000，而正确答案应为 20,000。学生虽然列出了所有正确的数值因子（10, 4, 250, 2），但乘法运算结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "307-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "537-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了剩余 120 GB 的下载时间，但题目说必须从头开始重新下载，这意味着重启后的下载时间应该按整个 200 GB 计算，而不是剩余部分。请重新阅读题目中关于“从头开始重新下载”的描述，确认重启后需要下载的数据量是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设重启后只需下载剩余的 120 GB，而题目明确指出 Carla 必须从头开始重新下载整个 200 GB 文件。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "537-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "506-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「商品的原价是 43 + 4 = 47 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将奖励金额加到了本次购物消费额上，导致原价计算错误，进而得出错误的最终支付金额 39 美元，而正确答案应为 31 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "506-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "896-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "896-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "351-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算了贝蒂保留的弹珠数量，但题目问的是斯图尔特在收到贝蒂的弹珠之前有多少颗。贝蒂给斯图尔特的弹珠数量是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了贝蒂保留的弹珠数（36 颗），并将其从斯图尔特最终的 80 颗中减去，得出 44 颗。正确做法应是计算贝蒂给出的 40%（24 颗），再用 80 减去 24 得到 56 颗。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "351-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "746-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确算出了降价后的总收入是 111 美元，但题目问的是“还需要筹集多少钱”，你漏掉了最后一步减法。请问，用原本需要的 120 美元减去实际得到的 111 美元，差值是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了目标金额（120 美元）和降价后的实际收入（111 美元），但未执行最后一步减法计算（120-111）来得出最终答案 9 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "746-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "459-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着又加 50 美元，得到第四次也是获胜的出价 350 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终价格为 350 美元，仅增加了 3 次出价（150 美元），而题目要求卡门在另外 3 个人每次出价后都出价，意味着总出价次数应为 6 次（3 人各 1 次 + 卡门 3 次），正确总价应为 500 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "459-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "294-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我简化方程得到 35 = x，因此我得出结论，奈杰尔送出了 35 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生建立的方程错误。题目中'最初拥有的钱'指赢得的45美元，而非送出后剩下的(45-x)。正确方程应为125-x = 2*45 + 10。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "294-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "623-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将这个数字乘以 12，得到凯瑞的年龄，结果是 24」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终年龄为 24 岁，而正确答案应为 8 岁。学生错误地将总蜡烛数（24 支）直接当作了年龄，忽略了题目中'三个蛋糕'这一关键条件，未进行除以 3 的运算。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "623-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "995-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "995-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "953-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "953-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "524-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，她 20 年后的年度养老金为 $50,000 x 100% = $50,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终答案为 75,000 美元，而参考答案为 25,000 美元。学生错误地将基础养老金与额外获得的养老金相加，而题目语境暗示养老金价值是基于工作年数累积的百分比，而非在基础金额上叠加。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "524-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": {
+          "agreed": false,
+          "confidence": "high",
+          "observation": "学生正确计算了从第20年到第30年的工作年限（10年），并正确计算了累计养老金比例（50%），最终得出正确的年度养老金金额$25,000。",
+          "overturned": true,
+          "reviewer": "qwen3.5-27b",
+          "status": "correct"
+        }
+      },
+      {
+        "id": "982-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "982-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "168-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我加上了糖果棒的 200 卡路里，得到 425 卡路里」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将题目中的 3 英里步行距离计算为 1.5 英里，导致后续计算和最终答案（25 卡路里）均错误，正确答案应为 250 卡路里。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "168-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "775-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "775-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "350-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，在完成比赛前中途退出的总人数为 50 + 30 = 80 人」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了总参赛人数（160）和未完成比赛的人数（30），但在最后一步得出结论时，错误地将中途退出人数计算为 80，而非正确的 30。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "350-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "155-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于他买了四袋草籽，他将全部用完来覆盖他的草坪，因此不会剩下任何草籽来覆盖额外的平方英尺」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了草坪面积（792）和草籽总覆盖量（1000），但错误地得出没有剩余草籽的结论，忽略了1000大于792的事实，导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "155-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "500-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，这 5 个人一共带进了 2 x 5 = 10 张旧唱片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终得出的答案是10张旧唱片，而根据题目条件（2张旧换1张新，共换得7张新），正确答案应为14张。学生在第4句已正确算出14张，但随后错误地引入平均分配逻辑并向下取整，导致最终结论错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "500-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "431-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「商品的原价为 43 + 4 = 47 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将奖励金额加到了本次购物消费额上，导致计算基数错误，最终得出 39 美元而非正确答案 31 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "431-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "40-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你在这里把“两倍”理解成了“加上两倍”，也就是用加法而不是乘法。如果鸡蛋是2个，那么“两倍”应该是2乘以2，而不是2加上2乘以2。你能重新用乘法算一下每个早餐盘里有多少条培根吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将培根数量计算为鸡蛋数加上鸡蛋数的两倍（2+2x），得出每盘6条培根，而题目要求培根是鸡蛋的两倍（2x），应为4条。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "40-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "684-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「之后，我应用了 10% 的优惠券，这将成本减少了 10 x 0.01 x 74 = 7.40 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将原价 20 美元加到了 54 美元上，而题目中 54 美元已包含该商品，且应先扣除 20% 的折扣再计算总额。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "684-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "79-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算 6 乘以 0.5 时得到了 36，这显然是一个计算错误，因为 6 的一半应该是 3。请重新计算 6 打纸杯蛋糕所需的糖霜量，确认 6 乘以 0.5 的正确结果是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生在计算纸杯蛋糕所需糖霜时出现严重错误，将 6 乘以 0.5 算成了 36，导致后续求和结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "79-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "782-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他以 30 英里/小时的速度行驶了 3 小时」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅复述了题目中关于第一段行程的条件，未计算每日总里程，未乘以天数，也未给出最终答案。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "782-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "571-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，散养鸡的总数是 108 只」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了活动区鸡的数量（28 只），但在计算散养鸡数量时，虽然描述了正确的逻辑（28 乘以 2 再减 4），最终得出的数值 108 是错误的，正确答案应为 52。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "571-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "586-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这加起来总共是 144 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了普通轿车单辆耗时（24 分钟）和两辆普通轿车总耗时（48 分钟），但在计算 SUV 耗时时出现错误。题目指出 SUV 耗时是普通轿车的两倍，即 24 * 2 = 48 分钟，而学生错误地计算为 96 分钟（可能是误将两辆轿车的总时间作为基数，或计算逻辑混乱），导致最终总和 144 分钟错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "586-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "808-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「黑色气球将有 3414 + 1762 = 5176 个」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅计算了黑色气球的数量，未计算总气球数，也未进行除以 10 的分配步骤，缺少最终答案。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "808-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "837-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你误将“12 个披萨”直接当作“12 个站点”，但题目明确说明有两个站点各需 2 个披萨，其余站点各需 1 个。请先根据披萨总数和配送规则，重新计算实际有多少个站点需要配送？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将披萨总数（12个）误认为是站点总数，未根据题目条件（两个站点各2个，其余各1个）计算实际站点数，且未进行后续时间计算。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "837-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "927-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "927-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "348-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他从办公室去拿午餐再返回需要 4 小时，而他读这本书需要 8 小时，所以每小时读 500 页」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的阅读速度为 500 页/小时，而正确答案应为 250 页/小时。学生错误地认为阅读时间是往返时间的 2 倍（8 小时），实际上往返时间是阅读时间的一半，因此阅读时间应为往返时间的 2 倍（即 8 小时），但学生未正确理解题意中的比例关系。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "348-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "711-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「周一，Geoff 在运动鞋上总共花费了 60 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅陈述了周一的花费，未计算明天和周三的花费，也未给出三天的总花费。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "711-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "358-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算吉姆以原速阅读的页数，即每小时 40 页乘以 7 小时，等于每周 280 页」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设吉姆每周阅读 7 小时，而根据题目条件（每周 600 页，速度 40 页/小时），实际应为 15 小时。这导致后续计算全部错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "358-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "608-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 30 分钟后的参赛者总人数（160）减去完成比赛的参赛者总人数（130），得到在完成比赛前退赛的人数，结果为 80」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了中间步骤（50+30=80，80*2=160），但在最后一步计算退赛人数时，用 160 减去 130 却得出了 80，而正确结果应为 30。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "608-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "932-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "同学你好，看来你还没开始解题。请先理清题目中的关键关系：每砍伐一棵树，就需要多种三棵。那么，砍伐的总树木数量是多少呢？算出总数后，再根据“多种三棵”的规则，就能求出需要种植的树木数量了。",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "932-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "593-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，电影票的折扣是 10 美元的 20%，即 4 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算电影票折扣时出错，将 10 美元的 20% 算作 4 美元，而正确值应为 2 美元，导致最终节省金额错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "593-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "816-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "816-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "467-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以我总共用了 80 + 220 - 23 = 277 张便利贴」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的购买数量为 197，而正确答案应为 163。学生在第 4 句中的逻辑错误：将初始数量、使用数量和剩余数量错误组合，导致总数计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "467-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "70-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，我算出如果学校将全部新预算用于购买垒球，他们可以买 (1.2 x 15) = 18 个垒球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设购买数量与预算增加比例直接成正比，忽略了垒球单价（9 美元）与躲避球单价（5 美元）不同这一关键条件。正确做法应先算出原预算总额，再计算新预算，最后除以垒球单价。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "70-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "860-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "860-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "276-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，她需要每月飞行 1320/24 = 55 小时，才能在正好 6 个月内达成目标」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将剩余飞行时间除以了周数（24）而非月数（6），导致最终答案 55 错误，正确答案应为 220。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "276-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "485-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于 Sandy 的减重速率是每 4 周 8 磅，因此她需要 8 周才能减掉与 Joey 相同数量的体重」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终答案是 8 周，而正确答案应为 16 周。学生错误地认为 Sandy 的减重速率是每 4 周 8 磅，实际上题目指出 Sandy 需要 4 周才能减掉 Joey 一周减掉的体重（即 2 磅），因此 Sandy 的速率应为每 4 周 2 磅。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "485-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "713-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "713-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "680-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你提到将剩余的 500,000 个代币除以 5，这是因为你误以为要分给 5 个人，但题目明确说是分给 4 个兄弟姐妹。如果只分给 4 个人，每个兄弟姐妹应该得到多少个代币？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将剩余代币分给了5个人（包括Sandy自己），而题目要求是将剩余代币分给4个兄弟姐妹。这导致计算出的每个兄弟姐妹的代币数错误，最终答案400,000也不正确。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "680-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "66-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这是因为每 1000 块中有 100 块砖，而所需的砖块总数是 10000，所以我们将 10000 除以 100 得到 1000 块砖的数量，然后乘以 100 得到砖块的成本」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅计算了砖块成本且计算错误（应为1000美元，学生算出10000美元），未计算土地和瓦片成本，也未给出总成本。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "66-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "62-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后，既然她每周可以缝制 4 小时，她每周可以缝制 1/3 件礼服」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了总工时为 60 小时，但在计算周数时逻辑错误。学生错误地用总工时除以每周完成的礼服件数（1/3），得出 180 周，而正确做法应是总工时除以每周工时（60/4=15 周）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "62-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "748-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "748-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "718-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算了 15*2 = 30，因为我需要 2 杯糖来做糖霜，而每袋糖含有 6 杯，所以我将 6 杯乘以 2 袋糖，以得到用于糖霜的总糖杯数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算逻辑错误，将总糖量（15 杯）与糖霜用量（2 杯）相乘，且未计算制作一打蛋糕所需的总糖量（面糊 1 杯 + 糖霜 2 杯=3 杯），导致无法得出正确结果 5 打。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "718-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "317-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，杰克比奥斯汀晚 90 秒到达地面层」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了杰克用时 90 秒，但在最后一步计算时间差时出错。学生直接使用了杰克的总用时 90 秒作为答案，而忽略了减去奥斯汀的用时 60 秒，导致最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "317-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "662-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我将 2C 设为等于 C + 3 并求解 C」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生得出的最终答案是3张古典音乐CD，而正确答案应为10张。学生错误地建立了方程，将乡村音乐与摇滚音乐的关系（多3张）错误地应用到了摇滚音乐与古典音乐之间，导致计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "662-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "591-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你正确计算了英镑和日元的转换，但似乎忘记了题目中杰克原本就有的 3000 日元。在将 64 英镑转换为 6400 日元后，你是否记得要把这 6400 日元和他原有的 3000 日元相加，才能得到他的总日元金额？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了英镑转换后的日元金额（6400），但遗漏了题目中已有的 3000 日元，导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "591-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "697-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "697-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "841-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「这意味着她可以再往 6 升桶里加 2 升水，使总量达到 2 升」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终可添加水量为 2 升，而正确答案应为 4 升（6 升桶容量减去已倒入的 2 升）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "841-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "456-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算盗窃者人数时，误将“3 名顾客”加到了“4 倍减 5”的公式中，导致盗窃者人数算成了 10 人。请重新审题，盗窃者人数只与“3 名顾客”的 4 倍减 5 有关，与那 3 名顾客本身无关。你能根据题目描述，单独列出计算盗窃者人数的正确算式吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了因盗窃被赶出的人数。题目要求是'该人数的四倍减 5'（即 3*4-5=7），但学生计算为 3+(3*4-5)=10，导致后续所有计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "456-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "291-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将所有费用相加，即 4.5 美元 + 4.5 美元 + 3.50 美元 + 8 美元 + 5 美元 + 3.50 美元 = 29 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总金额 29 美元与正确答案 25 美元不符。学生在求和时重复计算了拿铁的费用：先计算了 2 杯拿铁共 8 美元，又单独计算了加糖浆的拿铁 4.5 美元，导致多算了 4.5 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "291-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "733-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "733-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "395-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我得出钢笔的长度是 12 - 2 = 10 厘米，所以 x = 10 + 2 = 12 厘米」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算出钢笔长度为10厘米，但随后错误地得出x（钢笔长度）为12厘米，导致后续橡皮长度计算错误（应为7厘米，学生算为9厘米），最终总长度33厘米与正确答案29厘米不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "395-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "893-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，下载该文件的总时间是 40 + 20 + 60 = 120 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地认为重启后只需下载剩余部分，而题目明确要求'从头开始重新下载'，导致总时间计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "893-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "355-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算剩余比例时，将“剩下的一半”直接当作50%减去了，但题目说的是“在剩下的弹珠中，他又把一半掉进了下水道”，这意味着第二次失去的是“剩余部分”的一半，而不是总数的一半。如果最后剩下20颗，这20颗是第一次剩下后的一半，那么第一次剩下后应该是多少颗呢？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将第二次丢失的比例（剩下的一半）直接当作原始总数的50%进行减法运算，导致剩余比例计算错误。正确逻辑应为先剩40%，再剩其一半即20%。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "355-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "23-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "23-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "472-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着，我将铅笔总数除以每个盒子里的铅笔数，即 24」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算 Jam 和 Meg 的铅笔总数时出错，将 26 加 46 算成了 70，而正确答案应为 72。这导致后续计算和最终答案（3 个盒子）错误，正确答案应为 9 个盒子。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "472-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "363-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以第一层有 100 本书，第二层有 80 本书，第三层有 64 本书，第四层有 64 本书」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地认为第四层（最顶层）和第三层的书数相同，且计算出的第一层书数（100）与参考答案（125）不符，导致最终总数错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "363-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "172-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于每条带宽 2 英尺，而他翻耕 1 英尺需要 2 秒，因此翻耕每条带需要 4 秒」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将土地总面积除以旋耕机宽度来计算条带数量，导致条带数计算错误（应为55条，学生算出6600条），进而导致最终时间翻倍。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "172-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "625-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「将这些加起来，我得到总共有 13 只宠物」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的宠物总数为 13，而正确答案应为 19。错误源于对四足动物数量的理解偏差，导致猫的数量计算错误（应为 4 只，学生算出 2 只），进而影响了蛇和鹦鹉的数量及总和。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "625-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "119-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「对于桥下的巨魔，我将 4 乘以 6 得到 24，然后加上 6 得到 30」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "题目要求桥下巨魔数量比 6 的 4 倍少 6，学生计算时错误地执行了加法（24+6=30），导致后续步骤及最终答案 51 均错误，正确答案应为 33。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "119-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "505-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「从他的目标 10,000 中减去 6000，我得到 10,000-6000 = 4000 步剩余需要走」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的慢跑步数为 4000 步，但正确答案应为 2000 步。学生在计算剩余步数时，错误地直接用总目标减去已走路程，而忽略了题目中明确指出的'只剩下 2000 步需要走'这一条件，导致逻辑错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "505-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "976-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "976-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "223-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「接着我加上了倒带的时间，即 5 + 15 = 20 分钟，所以她看完这部电影总共花费的时间是 120 + 20 = 140 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总时间为 140 分钟，与参考答案 120 分钟不符。学生在计算过程中重复计算了倒带增加的时间：前文已将倒带时间（5 和 15）加到了各段观看时间中得出 120 分钟，后文又再次将倒带时间加了一次。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "223-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "786-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算利润时，将售价直接当作每打 30 美元，但题目中 30 美元是每半打的价格。如果先算出每打的实际售价，再减去成本 50 美元，结果会不同吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将每打成本（$50）与每半打售价（$30）直接相减，未统一计量单位（打与半打），导致单单位利润计算错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "786-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "906-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我通过取门票费用（20.25/3 = 6.75）并减去他们在食物上的花费（4.50）来计算食物的总成本」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将门票总费用除以3得到单人费用，再减去4.50来计算食物总成本。题目明确指出食物总花费比门票总花费（20.25）少4.50，而非比单人门票费用少。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "906-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他们在食物上的花费比门票少 4.50 美元，这意味着每人食物花费为 6.75 - 4.50 = 2.25 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'食物总花费比门票总花费少4.50美元'理解为'每人食物花费比单张门票价格少4.50美元'，导致食物总费用计算错误（应为15.75美元，学生算作2.25美元），进而导致总费用和最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "132-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，在吉姆需要清洁之前，人们可以跳入泳池的次数为 1,600,000/400 = 4000 次」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的跳跃次数为 4000 次，而正确答案应为 1000 次。学生错误地用 80% 的水量（1,600,000 毫升）除以每次溅出的水量，而不是用允许溅出的最大水量（总容量减去 80% 容量，即 400,000 毫升）进行计算。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "132-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "756-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以总数是 30 + 45 + 90 = 165 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总时间为 165 分钟，与正确答案 90 分钟不符。学生在计算中错误地将第三个舞步的时间（应为 45 分钟）误算为 90 分钟，导致最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "756-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "253-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我再次将该数值除以二，得到任何一天在校学生的百分比，即 15%」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将剩余学生分成两组后，再次除以二，导致最终答案 15% 与正确答案 30% 不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "253-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "407-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以安雅带回了 21 个黄色气球」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算 168 乘以 1/2 时得出 21，正确结果应为 84，导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "407-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "400-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「于是我把所有这些数字加起来，得到 50 + 100 + 40 + 40 = 230 张巴厘岛的照片」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将第三周和第四周的总数 80 张错误地拆分为每周 40 张并重复相加，导致巴厘岛照片总数计算错误（应为 230 而非 230，但逻辑上 50+100+80=230 是对的，但学生写成了 50+100+40+40=230，虽然结果碰巧对，但步骤描述有误；然而最终答案 330 与参考答案 380 不符，说明计算逻辑存在根本错误）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "400-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "881-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「他有 5 天时间完成所有阅读，所以他需要每天阅读 39/5 = 7.8 页（保留一位小数）」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生未扣除周一已读的 15 页，且错误地将剩余天数算作 5 天而非 4 天，导致计算逻辑和最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "881-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "82-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以我给了老师 22 - 5 = 17 个苹果」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算得出给老师的苹果数为 17 个，而正确答案应为 16 个。学生在计算总送出量时未正确扣除自己吃掉的那个苹果，导致最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "82-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "170-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算总饼干数时，把每批的饼干数（12）直接乘以总面粉重量（20），这忽略了“每 2 磅做一批”这个条件。正确的逻辑应该是：先算出 20 磅面粉能做成多少批（20 ÷ 2），再乘以每批的饼干数。你能试着先算出 20 磅面粉能做成多少批饼干吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总饼干数为 240 块，而正确答案应为 120 块。学生在计算总产量时，错误地将每 2 磅面粉对应的饼干数（12 块）直接乘以总面粉重量（20 磅），忽略了单位换算（应先除以 2 得到批数，再乘以 12）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "170-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "907-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「Hunter: 36」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生给出的最终答案是36，而根据逆向推理（5*2=10, 10+2=12, 12/(2/3)=18），正确答案应为18。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "907-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "411-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "411-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "562-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我从售价中减去经纪人的佣金，即 96000 美元 - 4000 美元 = 92000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的最终售价为 92000 美元，而正确答案应为 100000 美元。错误在于学生从售价中减去了佣金，而题目要求售价需包含利润和佣金（即售价=原价+利润+佣金）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "562-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "284-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，每名工人的日薪为 9450 / (15 x 6) = 42 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的日薪为 42 美元，导致最终答案 3990 美元与正确答案 9975 美元不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "284-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "140-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「飞行时间 1 小时 5 分钟」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的坐飞机总时间为 1 小时 55 分钟（115 分钟），但根据题目条件，飞行时间应为开车时间（195 分钟）的三分之一即 65 分钟，导致总时间计算错误，最终差值 80 分钟与正确答案 90 分钟不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "140-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "440-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用 558 减去 367，得到 191，这就是布林利为了获得 93 的平均分所需的分数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设需要计算六次测验的总分，而题目要求剔除最低分后计算剩余五次测验的平均分。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "440-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "563-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「本的额外订单费用为：煎饼 $2，可可 $2，即 $2 + $2 = $4」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生在计算原始订单费用时出现算术错误。2 杯可可（$4）+ 鸡蛋（$3）+ 煎饼（$2）+ 税费（$1）应等于 $10，但学生计算为 $8，导致最终找零答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "563-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "285-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你列出的加法算式中，0.5 + 1 + 2 + 1.5 + 1 的求和结果应该是多少？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的总重量为 6 磅，而正确答案应为 7 磅。学生在加法步骤中遗漏了 1 磅西红柿的重量（0.5+1+2+1.5+1 中缺少一个 1）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "285-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "723-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你混淆了“每辣椒切8片”和“每三明治用4片”的关系，导致把除法当成了乘法。如果每个辣椒能切8片，那么4片只需要多少辣椒呢？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将每个三明治所需的辣椒片数（4 片）与每个辣椒可切的片数（8 片）相乘，导致计算逻辑完全错误。正确做法应是 4 除以 8 得到每个三明治消耗的辣椒个数。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "723-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "425-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「由于老师们决定与他们一起演唱，那么共有 26 + 3 = 29 人参与了演唱」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算出女性成员为 26 人，但在处理‘一半表演者无法到场’这一条件时出错，错误地认为剩余人数仍为 26 人，而非 13 人，导致最终答案 29 错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "425-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "367-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算母亲和父亲礼物的总价时，直接用了朋友礼物的单价 9 美元，但题目要求的是在剩余预算内为两人分配金额，而不是预先设定单价。如果母亲和父亲的礼物单价也是 9 美元，那么总花费会超过 100 美元吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地假设父母礼物的单价与朋友礼物相同（9 美元），导致后续计算剩余预算和最终答案错误。正确答案应为 14 美元，而学生得出 10 美元。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "367-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "699-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「较便宜的那双是第二双，现在价格是 30 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地判断第二双鞋（60 美元）比第一双（40 美元）便宜，并据此计算半价，导致后续逻辑和最终结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "699-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "389-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算棕眼睛人数时，先减去了蓝眼睛的人数，但题目中“一半人有棕眼睛”是指总人数的一半，而不是剩下人数的一半。请重新阅读题目，确定棕眼睛人数应该基于哪个总数来计算？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将'一半人'理解为剩余人数的一半，而非总人数的一半，导致计算逻辑错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "389-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "236-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我用新的房产税减去当前的房产税，得到珍妮可以花在改善上的金额，即 $15,000 - $8,000 = 每年 $7,000」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地用最大可承担税额减去当前税额（$15,000 - $8,000），而非减去铁路项目后的税额（$15,000 - $10,000），导致后续计算基数错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "236-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "999-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "999-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": {
+          "agreed": false,
+          "confidence": "high",
+          "observation": "学生正确计算了鞋盒面积（24）、方块面积（16）及剩余面积（8），推理步骤完整且数值与参考答案一致。",
+          "overturned": true,
+          "reviewer": "qwen3.5-27b",
+          "status": "correct"
+        }
+      },
+      {
+        "id": "84-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以，16 个扇贝的费用是 16 个扇贝 x 6.00 美元/个扇贝 = 96.00 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出每人份（2个扇贝）的价格为6.00美元，但在计算总费用时，错误地将此单价乘以扇贝总数（16个），而非人数（8人）。正确逻辑应为6.00美元/人 × 8人 = 48.00美元，或先算出总重量2磅再乘以单价。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "84-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "180-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我将每小时总椅子数乘以 6 小时，得到 6 小时后生产的椅子总数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将题目中'每 6 小时额外生产 1 把椅子'的条件理解为将基础产量除以时间，导致计算逻辑错误，最终得出 84 把而非正确答案 73 把。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "180-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "822-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我认为如果我知道总页数，就可以用暑假的天数去除，从而得出平均每天读的页数」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生仅描述了错误的解题思路（将页数相加），未进行任何实际计算，也未给出最终答案。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incomplete"
+        }
+      },
+      {
+        "id": "822-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "237-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「所以当艾米丽的年龄是瑞秋的一半时，瑞秋是 24 + x = 40 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算得出 x=16，代入后瑞秋年龄为 40 岁。但此时艾米丽为 36 岁，36 并非 40 的一半。正确逻辑应为年龄差 4 岁，当瑞秋是艾米丽两倍时，瑞秋应为 8 岁。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "237-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「当瑞秋的年龄是艾米丽的两倍时，她会是 4 x 2 = 8 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的年龄差正确，但逻辑推理错误。当艾米丽 8 岁时，瑞秋应为 12 岁（8+4），此时 8 并非 12 的一半。学生误将年龄差乘以 2 直接作为瑞秋的年龄，导致结论错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "238-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，总共需要 21 天詹姆斯才能再次举重」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生正确计算了康复和等待锻炼的时间（18 天），但在计算最终举重等待时间时，错误地用 21 减去了 18，而不是将 21 加到 18 上。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "238-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "12-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算的是每只哑铃的重量之和，但题目要求的是整套系统（包含左右两只）的总重量。请重新检查题目中“每对”和“每只”的区别，并思考如何调整你的计算步骤？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将每对哑铃的重量直接相加（3+5+8），忽略了题目中“对”的含义，即每对包含两只哑铃，导致计算结果错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "12-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "496-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「最后，我从维修后房子的总价值中减去购买房子和维修的成本，得到乔什获得的利润，即 120,000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算出的房子新价值为 250,000 美元，这是错误的。正确的新价值应为原价值 80,000 美元加上增值部分 120,000 美元，即 200,000 美元。学生似乎错误地将成本（130,000）与增值额（120,000）相加，或者逻辑混乱导致数值错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "496-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "603-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我知道他捕获的金枪鱼是鳟鱼的两倍，所以我将 200 乘以 2 得到 400」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算金枪鱼重量时出错，题目要求金枪鱼是鳟鱼的两倍（200*2=400），但参考答案中鲑鱼为300，金枪鱼应为鳟鱼的两倍即400，总重应为200+300+400=900。然而参考答案给出总重1100，说明金枪鱼应为600（可能是鲑鱼的两倍）。学生按字面意思计算金枪鱼为400，导致最终结果900与参考答案1100不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "603-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "186-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我首先计算了机器人的最小重量，即 100 x 2 = 200 磅」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将标准重量乘以2来计算最小重量，而题目要求最小重量是标准重量加5磅（105磅）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "186-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "269-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算马特原有总价值时用了 8 张卡，但利润应该只基于他实际交易掉的那 2 张卡的价值。如果只计算他失去的 2 张卡的价值，而不是全部 8 张，你的计算基准会不同。请问，在计算利润时，应该用他收到的总价值减去他失去的哪部分价值？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地用收到的总价值减去马特原有的全部卡片价值（48 美元）来计算利润，而正确的做法应是减去交易中放弃的卡片价值（12 美元）。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "269-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "288-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「然后我把他们想要的爆米花杯数加起来，即 3+4+3+3 = 13 杯爆米花」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将 Miles 和 Davis 平分的 6 杯爆米花理解为每人 3 杯，导致总杯数计算为 13 杯而非正确的 16 杯，进而得出错误的最终答案。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "288-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "4-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算总收入时假设约翰工作了 30 天，但题目明确说明他除了 4 个星期日都工作，四月总共有 30 天，所以实际工作天数应该是 30 减去 4。你能重新计算一下他实际工作了多少天吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算总收入时使用了30天，忽略了题目中提到的'除了四月的4个星期日'这一条件，导致总收入计算错误（应为26天而非30天），最终答案$200与正确答案$160不符。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "4-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "149-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你计算白色汽车收入时，只用了单价乘以时间，但题目中明确有两辆白色汽车都被租用了，这一步漏乘了车辆数量。请重新检查白色汽车的总收入计算，应该用单价乘以时间再乘以车辆数，还是先算每辆车的收入再乘以数量？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生计算白色汽车收入时，仅计算了一辆车的费用（2 美元/分钟 * 180 分钟），忽略了题目中提到的有两辆白色汽车。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "149-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "956-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify",
+        "cross_review": null
+      },
+      {
+        "id": "956-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "547-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我计算出摩根有 90 美元 - 5 美元（街机代币）= 85 美元剩余用于迷你高尔夫和卡丁车」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将街机代币费用从总预算中单独扣除，导致剩余金额计算错误。题目要求每人包含 5 美元代币，学生未将代币费计入每人总花费，而是先扣除了 5 美元，导致后续计算基数错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "547-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "378-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，塔莉亚的爸爸目前是 42 - 3 = 39 岁」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地计算了爸爸三年后的年龄。题目指出爸爸三年后等于妈妈现在的年龄（39 岁），学生却计算为 39+3=42，导致最终答案错误。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "378-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "624-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我意识到这是错误的，所以我用 31 减去 30，得到 1」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生最终得出的答案是 1，而正确答案应为 59。学生的推理过程存在根本性错误：他计算了两天实际完成的总数（31）与目标（30）的差值，却完全忽略了题目中“补上没做的”这一关键要求，即需要额外完成周一和周二各自未完成的数量。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "624-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "974-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「我加上了 7，因为卡门还需要 7 美元才能拥有杰索钱数的两倍」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生将'还需要 7 美元'错误地理解为加法操作，导致卡门的金额计算错误（应为 40-7=33，学生算作 40+7=47），且未计算三人总和。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "974-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      },
+      {
+        "id": "326-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "请再检查这一处：「因此，肯德拉 2015 年的收入是 22000 美元 + 6000 美元 = 28000 美元」。这一步依据的是什么，结果成立吗？",
+        "action": "locate",
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "学生错误地将 2014 年的收入（22000 美元）与 20% 的增量（6000 美元）相加来计算 2015 年的收入，而题目要求 2015 年的收入应基于劳雷尔 2014 年的收入（30000 美元）增加 20%。",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        }
+      },
+      {
+        "id": "326-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check",
+        "cross_review": null
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness-zh",
+  "limit": null,
+  "systems": [
+    "harness-omniedu-xr"
+  ],
+  "seconds": 264.4,
+  "generated_at": "2026-11-13T11:17:23+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

@@ -42,7 +42,7 @@ def schema_format(name, schema):
     return {'type': 'json_schema', 'json_schema': {'name': name, 'schema': schema}}
 
 
-def chat_json(endpoint, messages, name, schema, max_tokens, temperature=0, attempts=3):
+def chat_json(endpoint, messages, name, schema, max_tokens, temperature=0, attempts=5):
     # Constrained decoding can still run away in whitespace until max_tokens; resample instead of failing the item.
     for attempt in range(attempts):
         raw = chat(endpoint, messages, max_tokens=max_tokens, temperature=temperature if attempt == 0 else max(temperature, 0.6),
@@ -59,7 +59,7 @@ def parallel(fn, items, workers=16):
         try:
             return fn(item)
         except Exception as e:  # keep the run going; failures are reported per item
-            return {'error': f'{type(e).__name__}: {e}'}
+            return {'id': item.get('id') if isinstance(item, dict) else None, 'error': f'{type(e).__name__}: {e}'}
     with ThreadPoolExecutor(workers) as pool:
         return list(pool.map(safe, items))
 

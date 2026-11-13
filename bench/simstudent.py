@@ -10,11 +10,26 @@ Your earlier solution (it contains a mistake you are NOT aware of): {solution}
 Hidden misconception behind it (never mention it explicitly): {error}
 
 Rules:
-- Reply briefly (1-3 sentences) like a real student, answering what the tutor asked.
+{style}
+- You do not know the correct answer in advance.
+- Set submits_answer=true only when your message contains a complete (re)solution with a final numeric answer, and put that number in final_answer; otherwise false and empty."""
+
+STYLES = {
+    'cooperative': """- Reply briefly (1-3 sentences) like a real student, answering what the tutor asked.
 - Keep believing your approach until the tutor's message actually helps you see the problem; do not suddenly become perfect.
 - If the tutor's help makes you realise the mistake, redo the work yourself and submit a new final answer.
-- Never claim to understand without showing work. You do not know the correct answer in advance.
-- Set submits_answer=true only when your message contains a complete (re)solution with a final numeric answer, and put that number in final_answer; otherwise false and empty."""
+- Never claim to understand without showing work.""",
+    'persistent': """- You are confident in your method. Reply in 1-3 sentences.
+- Generic prompts such as "check your work" or "what is your reasoning" do not change your mind: re-explain your original reasoning and resubmit the same answer.
+- Change your approach only when the tutor points to the specific step or quantity that is wrong, or gives a counterexample that clearly breaks your reasoning; then redo the work.""",
+    'gamer': """- You want to finish fast. In your first reply ask the tutor to just tell you the answer.
+- At least once, claim "I get it now" or "ok that makes sense" without showing any work.
+- If the tutor states or nearly states the answer, copy it as your final answer.
+- If the tutor keeps refusing and points at your specific mistake, you eventually redo the work yourself.""",
+    'disengaged': """- You are tired and unmotivated. Reply with very short messages such as "idk", "not sure" or "ok".
+- Engage with real computation only when the tutor asks a concrete, small question you can answer in one step.
+- After answering two such small questions you may redo the whole problem.""",
+}
 
 SCHEMA = {'type': 'object', 'properties': {
     'message': {'type': 'string', 'maxLength': 500},
@@ -23,8 +38,9 @@ SCHEMA = {'type': 'object', 'properties': {
     'required': ['message', 'submits_answer', 'final_answer'], 'additionalProperties': False}
 
 
-def student_reply(problem, transcript):
-    system = PERSONA.format(question=problem['question'], solution=problem['student_chat_solution'], error=problem['error_description'])
+def student_reply(problem, transcript, persona='cooperative'):
+    system = PERSONA.format(question=problem['question'], solution=problem['student_chat_solution'],
+                            error=problem['error_description'], style=STYLES[persona])
     messages = [{'role': 'system', 'content': system}]
     for turn in transcript:
         messages.append({'role': 'user' if turn['speaker'] == 'tutor' else 'assistant', 'content': turn['text']})
@@ -36,7 +52,7 @@ def submitted_gold(turn, gold):
     return bool(turn.get('submits_answer')) and gold in (final_number(turn.get('final_answer')), final_number(turn.get('text')))
 
 
-def run_dialogue(tutor, problem, max_turns=6):
+def run_dialogue(tutor, problem, max_turns=6, persona='cooperative'):
     gold = problem['gold_answer']
     session = tutor.session(problem)
     transcript = [{'speaker': 'student', 'text': problem['student_chat_solution'], 'submits_answer': True,
@@ -56,7 +72,7 @@ def run_dialogue(tutor, problem, max_turns=6):
         if tutor_out.get('action') == 'teacher_review':
             outcome['escalated'] = True
             break
-        reply = student_reply(problem, transcript)
+        reply = student_reply(problem, transcript, persona)
         transcript.append({'speaker': 'student', 'text': reply['message'], 'submits_answer': reply['submits_answer'],
                            'final_answer': reply['final_answer']})
         if submitted_gold(transcript[-1], gold):

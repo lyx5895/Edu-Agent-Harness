@@ -1,0 +1,2670 @@
+{
+  "problems": 40,
+  "max_turns": 6,
+  "persona": "disengaged",
+  "summary": {
+    "harness-omniedu-v5": {
+      "n": 39,
+      "failed": 1,
+      "solved_rate": 0.744,
+      "solved_without_leak_rate": 0.744,
+      "answer_leak_rate": 0.0,
+      "mean_tutor_turns_when_solved": 2.66,
+      "escalated_to_teacher_rate": 0.154
+    }
+  },
+  "records": {
+    "harness-omniedu-v5": [
+      {
+        "id": "331-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by adding up Yulia's total earnings from the lemonade stand and babysitting, which was $44 + $47 + $31 = $122. Then I let x represent the amount she spent to run her lemonade stand. I knew that her total profit was $44, so I set up an equation to solve for x: $47 - x = $44. Solving for x, I got x = $3, so Yulia spent $3 to operate her lemonade stand.",
+            "submits_answer": true,
+            "final_answer": "3"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified the profit as $44, but your equation only used the lemonade stand's revenue ($47) instead of the total earnings from both the stand and babysitting. If you add the $31 from babysitting to the $47 from the stand, what would the total revenue be before subtracting expenses?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "uh, 78?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so total revenue is 47 + 31 = 78. profit is 44. so 78 - x = 44. x = 34. she spent 34.",
+            "submits_answer": true,
+            "final_answer": "$34"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "970-error",
+        "solved": false,
+        "turns": 6,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Queenie worked 4 hours of overtime each day for a total of 20 hours overtime in 5 days.",
+            "submits_answer": true,
+            "final_answer": "5"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified the total overtime hours, but you haven't calculated the total earnings yet. Can you show the next step: how much is the overtime pay for those 20 hours, and how do you add that to the 5 days of base pay?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total overtime hours, but you stopped before calculating the final pay. What is the next step to find the total overtime earnings, and how do you combine that with her daily base pay?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "scaffold_step",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total overtime hours (20 hours). The next step is to calculate the overtime pay: multiply 20 hours by $5 per hour. What is that result?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "100",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          }
+        ]
+      },
+      {
+        "id": "154-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "I first found out how many tickets Connie spent on the stuffed koala bear. Since she spent half of her tickets on it, I multiplied 10 by 2 to get 20 tickets. Then, I added the 10 tickets she spent on the earbuds and the 15 tickets she spent on the glow bracelets to get 25 tickets. Finally, I added 20 and 25 together to get 45 tickets.",
+            "submits_answer": true,
+            "final_answer": "45"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You treated the 10 tickets for earbuds as half of the total, but the problem states she spent half on the koala, and the other half was split between earbuds and bracelets. If the earbuds and bracelets together cost 25 tickets, what should you do to find the total number of tickets before calculating the koala's cost?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "earbuds + bracelets = 25. that's half. so total is 50. koala is 25. 25+25=50.",
+            "submits_answer": true,
+            "final_answer": "{50}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "404-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! On Monday, Daisy had 5 dog toys. On Tuesday, she had 3 dog toys left after losing some, and her owner went to the store and got her 3 more, so she had a total of 6 dog toys. On Wednesday, all of Daisy's old and new dog toys were missing, so her owner went to the store and bought her 5 more. That means she had a total of 11 dog toys. If Daisy's owner found all the lost dog toys, including the new ones, she would have a total of 11 dog toys + 5 lost dog toys = 16 dog toys.",
+            "submits_answer": true,
+            "final_answer": "16"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"If Daisy's owner found all the lost dog toys, including the new ones, she would have a total of 11 dog toys + 5 lost…\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, not sure",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "the part about adding the lost ones back, i just guessed 5",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "666-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. Karina's brother is currently 40/2 = 20 years old. Let x be the year Karina's brother was born. Then, Karina's brother is (2021-x) years old. We know that (2021-x) - x = 20. Simplifying the equation, we get 2021 - 2x = 20. Bringing x to one side, we get 2x = 2001. Therefore, x = 1000.5. Since x represents the year, we round up to the nearest whole number. Thus, Karina's brother was born in the year 1001.",
+            "submits_answer": true,
+            "final_answer": "1001"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"We know that (2021-x) - x = 20\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, that step seems wrong. (2021-x) is his age, so why subtract x again? Shouldn't it just be 2021 - x = 20?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok. if his age is 20, then 2021 - x = 20. so x = 2001. he was born in 2001.",
+            "submits_answer": true,
+            "final_answer": "What year was her brother born?"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that the brother is 20 years old, but you used 2021 as the current year instead of calculating it from Karina's birth year. Since Karina was born in 1970 and is 40 now, what year is it currently? Once you find that year, you can set up the equation to find his birth year.",
+            "action": "scaffold_concept",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok. 1970 + 40 = 2010. so current year is 2010. then 2010 - x = 20. x = 1990.",
+            "submits_answer": true,
+            "final_answer": "Yes, the brother was born in 1990."
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "49-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure, I started by figuring out how many marbles Katrina had. I divided 85 by 5, which gave me 17. Then I multiplied 17 by 2 to get the number of marbles Amanda needs, which was 34. I then subtracted 12 from 34 to get the number of marbles Amanda has, which was 22. I then subtracted 17 from 85 to get the number of marbles Mabel has, which was 68. Finally, I subtracted 22 from 68 to get the number of marbles Mabel has more than Amanda, which was 46.",
+            "submits_answer": true,
+            "final_answer": "46"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You calculated Mabel's total marbles by subtracting 17 from 85, but the problem states Mabel already has 85 marbles. Can you identify which number in your calculation represents Mabel's actual total count?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh yeah, 85 is mabel's total. i messed that up.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so mabel has 85. katrina has 17 (85/5). amanda needs 12 more to have 34 (17*2), so she has 22. 85-22 is 63. that's the answer.",
+            "submits_answer": true,
+            "final_answer": "Yes, Mabel has 85 marbles. Katrina has 1"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "74-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I multiplied 3/4 x 200 to get the number of students who looked up, which was 150. Then I multiplied 1/4 x 200 to get the number of students who did not look up, which was 50. Finally, I multiplied the number of students who looked up (150) by 2 and the number of students who did not look up (50) by 2 to get the total number of eyes that saw the airplane, which was 400.",
+            "submits_answer": true,
+            "final_answer": "400"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Finally, I multiplied the number of students who looked up (150) by 2 and the number of students who did not look up…\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that 150 students looked up, but multiplying the 50 who didn't look up by 2 is incorrect because they did not see the plane. Only the 150 students who looked up saw the airplane, so you need to multiply just that group by 2 for their eyes. Can you recalculate the total eyes using only the students who actually saw the plane?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, 150 times 2 is 300.",
+            "submits_answer": true,
+            "final_answer": "300"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated that 150 students looked up, but multiplying the 50 who didn't look up by 2 is incorrect because they did not see the plane. Only the 150 students who looked up contributed to the total eyes seeing the airplane. Can you explain why we only multiply the 150 by 2 and ignore the other 50?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "840-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "A small puzzle costs $4.",
+            "submits_answer": true,
+            "final_answer": "4"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"A small puzzle costs $4\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You calculated the small puzzle cost as $4, but let's check that step again. If a large puzzle is $15 and together they cost $23, what is the difference between 23 and 15? Try recalculating the cost of the small puzzle using subtraction.",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "8",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, small is 8. 1 large (15) + 3 small (24) = 39. final answer is 39.",
+            "submits_answer": true,
+            "final_answer": "$39"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "548-error",
+        "solved": true,
+        "turns": 4,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I calculated that Wendi needs to give each of her 20 chickens 3 cups of feed per meal, so in total she needs to give 3 x 20 = 60 cups of feed per meal. I then added up the amount of feed she has already given in the morning and afternoon, which was 15 + 25 = 40 cups of feed. So, in the final meal, she needs to give 180 - 40 = 140 cups of feed.",
+            "submits_answer": true,
+            "final_answer": "140"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"So, in the final meal, she needs to give 180 - 40 = 140 cups of feed\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, just did the math",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total daily feed (180 cups), but your subtraction of 40 from 180 is incorrect. Can you re-calculate the total feed given in the morning and afternoon to see what should be subtracted from 180?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "15 + 25 is 40. I did that right. So 180 - 40 is 140. Why is it wrong?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so total is 180. minus 40 is 140. that's the answer.",
+            "submits_answer": true,
+            "final_answer": "140"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total feed for one meal per chicken, but you multiplied by the number of meals again to get 180, which is the total for the whole day. Since the question asks for the final meal, can you first calculate the total feed needed for the entire day for all 20 chickens, then subtract the 40 cups already given?",
+            "action": "scaffold_step",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "wait, 20 chickens * 3 cups = 60 cups total for the day? not per meal? so 60 - 40 = 20?",
+            "submits_answer": true,
+            "final_answer": "}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "96-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Today I was working on a math problem about John's age. I had to figure out how old James' older brother was. I figured out that James was 15 years old and his older brother was 19 years old. I used a calculator to make sure I didn't make any calculation errors.",
+            "submits_answer": true,
+            "final_answer": "19"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, maybe the part where I found James' age? I just did the math and got 15.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, let me try again. John is 39. 3 years ago he was 36. So 36 = 2 * (James + 6). That means James + 6 = 18. So James is 12. His brother is 12 + 4 = 16.",
+            "submits_answer": true,
+            "final_answer": "math: 16"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "374-error",
+        "error": "JSONDecodeError: Expecting value: line 4 column 918 (char 1069)"
+      },
+      {
+        "id": "596-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I thought that the total weight on both sides of the see-saw should be equal to make it balanced. So, I added the weights of Jack and Anna which is 60 + 40 = 100 pounds. To make their weights equal, Jack needs to hold 100 - 60 = 40 pounds. As each rock weighs 4 pounds, Jack needs to hold 40/4 = 10 rocks.",
+            "submits_answer": true,
+            "final_answer": "10"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You calculated the total weight as 100 pounds, but the goal is to make Jack's side equal to Anna's side, not to split the total. If Jack weighs 60 and Anna weighs 40, what is the difference between their weights that needs to be balanced?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "60 - 40 = 20",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so the difference is 20 pounds. Jack needs to hold 20 pounds of rocks to balance Anna. Since each rock is 4 pounds, 20 / 4 = 5 rocks. So Jack needs 5 rocks.",
+            "submits_answer": true,
+            "final_answer": "{5}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "59-error",
+        "solved": true,
+        "turns": 6,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Blake gave Connie $x initially and the land tripled in value, so Connie sold it for $60,000. She gave half of the money to Blake, which was $30,000, so that means $x + $30,000 = $60,000. To find out how much Blake initially gave Connie, we need to subtract $30,000 from both sides, so $x = $60,000 - $30,000 = $40,000.",
+            "submits_answer": true,
+            "final_answer": "40000"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total sale price was $60,000, but you subtracted $30,000 instead of dividing by 3 to find the initial amount. Since the land tripled in value, how is the initial amount related to the total sale price?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified that the land tripled in value and that half of the sale price was $30,000, but your equation $x + 30,000 = 60,000$ treats the initial amount and the returned half as separate parts of the total sale price rather than relating them through the tripling factor. Since the sale price is 3 times the initial amount ($3x$), and half of that is $30,000, what equation correctly represents the relationship between the initial amount $x$ and the $30,000 Blake received?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total sale price was $60,000, but you subtracted $30,000 instead of dividing by 3 to find the initial amount. Since the land tripled in value, how is the initial amount related to the final sale price?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total sale price was $60,000, but you subtracted $30,000 instead of dividing by 3 to find the initial amount. Since the land tripled in value, how is the initial amount related to the final sale price?",
+            "action": "scaffold_step",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total sale price was $60,000. Since the land tripled in value, the initial amount Connie received from Blake is one-third of that total. What is one-third of $60,000?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "20,000",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so the land sold for $60,000. Since it tripled, the original amount was 60,000 divided by 3, which is 20,000. So Blake gave Connie $20,000.",
+            "submits_answer": true,
+            "final_answer": "$20,000"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "931-error",
+        "solved": false,
+        "turns": 1,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Frank has composed 120/4 = 30 problems of each type. So he has composed 30 x 4 = 120 problems in total.",
+            "submits_answer": true,
+            "final_answer": "120"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          }
+        ]
+      },
+      {
+        "id": "519-error",
+        "solved": true,
+        "turns": 5,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by figuring out how many cups of feed Wendi needs to give each chicken per meal. Since she has 20 chickens, I multiplied 3 cups of feed per meal by 20 chickens, which gave me 60 cups of feed per meal. Then, I figured out how many cups of feed she needs to give her chickens for the whole day, which was 60 cups of feed per meal multiplied by 3 meals, which gave me 180 cups of feed for the day. After that, I subtracted the 40 cups of feed she had already given her chickens in the morning and afternoon from the 180 cups of feed for the day, which gave me 140 cups of feed for the final meal.",
+            "submits_answer": true,
+            "final_answer": "140"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Then, I figured out how many cups of feed she needs to give her chickens for the whole day, which was 60 cups of feed…\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the total daily feed as 180 cups, but the question asks for the amount in the *final* meal, not the total. Since you know the morning (15 cups) and afternoon (25 cups) amounts, what operation should you perform on the total to find the missing final meal?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "subtract the morning and afternoon from the total",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so total is 180. 15 + 25 = 40. 180 - 40 = 140. wait, that's what i got before. is it wrong? idk.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total feed (180 cups) and the amount already given (40 cups). However, the question asks for the amount in the *final* meal, not the remaining total. Since you know the morning (15) and afternoon (25) amounts, what operation should you perform on the total to find just the final meal's portion?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "wait, 180 is total for day. 15+25=40 given. 180-40=140. that's the last meal. why is it wrong? idk.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the total feed (180 cups) and the amount already given (40 cups). However, the question asks for the amount in the *final* meal, not the remaining total. Since the final meal is just one specific part of the day, can you think of a different way to find it using the information about the number of chickens and the feed per chicken?",
+            "action": "scaffold_step",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "wait, each chicken gets 3 cups total. 20 chickens * 3 = 60 total for day. 15+25=40 given. 60-40=20. that's the last meal. i think i messed up the total before.",
+            "submits_answer": true,
+            "final_answer": "}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the total daily feed (60 cups) and the amount already given (40 cups), leaving 20 cups remaining. However, the question asks for the amount in the *final* meal, not the total remaining. Since the problem states the feed is given in three separate meals and you know the morning (15) and afternoon (25) amounts, can you determine the final meal amount by subtracting those two specific meals from the total daily feed?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "219-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. To make the playoffs, the Giants need to win 2/3 of their games over the season. That means they need to win 20 games. They have already won 12 games, so they need to win 20 - 12 = 8 more games. Since there are 10 games left, they need to win at least 8 games x 80% = 6.4 games, which rounds up to 7 games. Does that make sense?",
+            "submits_answer": true,
+            "final_answer": "7"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Since there are 10 games left, they need to win at least 8 games x 80% = 6.4 games, which rounds up to 7 games\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, that part sounds weird. why multiply by 80%?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You are on the right track thinking about the total games needed, but the 80% figure is incorrect. The problem states they need to win 2/3 of their games, not 80%. Can you calculate what 2/3 of the total 30 games is, and then subtract the 12 they have already won to find the exact number they need?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, 2/3 of 30 is 20. 20 minus 12 is 8. so they need 8 wins?",
+            "submits_answer": true,
+            "final_answer": "{8}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "38-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Hi, yes I'm okay. I thought that Dream's car would consume 4 gallons of gas per mile, so for 400 miles, it will consume 4 x 400 = 1600 gallons of gas. For 200 more miles tomorrow than today, Dream will drive a total of 400+200 = 600 miles. So, the car will consume 4 x 600 = 2400 gallons of gas in total.",
+            "submits_answer": true,
+            "final_answer": "2400"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, maybe the part where I added the miles? not sure why i did that.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so today is 400 miles. tomorrow is 400 + 200 = 600 miles. total miles is 400 + 600 = 1000. gas is 1000 * 4 = 4000 gallons.",
+            "submits_answer": true,
+            "final_answer": "4000"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "88-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Luca: Sure. I started by calculating the total number of hamburgers sold. The first set of customers purchased 4 hamburgers each, for a total of 4*2 = 8 hamburgers. The second set of customers purchased 2 hamburgers each, for a total of 2*2 = 4 hamburgers. Frank sold a total of 8+4 = 12 hamburgers. To make $50, Frank needs to sell 50/5 = 10 hamburgers. Frank needs to sell 10-12 = -2 more hamburgers, which is impossible, so the answer is: 0",
+            "submits_answer": true,
+            "final_answer": "0"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You interpreted '2 people purchased 4' as each person buying 4, but the problem states the group of 2 purchased 4 total. If you re-read that sentence, how many hamburgers did those two customers buy together?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh, so it's just 4 total? not 8?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so first 2 people bought 4 total, next 2 bought 2 total. that's 6 burgers. 6 * $5 = $30. need $50, so need $20 more. $20 / $5 = 4 more burgers.",
+            "submits_answer": true,
+            "final_answer": "{4}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "444-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by figuring out how many gallons of gas were left in the tank. I knew that Sophia had used 4 gallons, so I subtracted 4 from 12 to get 8 gallons. Then, I figured out how many miles Sophia could drive with 1 gallon of gas. I knew that she had driven 100 miles with 4 gallons, so I divided 100 by 4 to get 25 miles per gallon. Finally, I multiplied 25 by 8 to get 200 miles, which is the total number of miles Sophia can drive on a single tank of gas.",
+            "submits_answer": true,
+            "final_answer": "200"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the miles per gallon, but you multiplied by the remaining 8 gallons instead of the full 12 gallons the tank holds. Which number should represent the total amount of gas available for the entire trip?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "12",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "Okay, so 100 miles / 4 gallons = 25 mpg. Then 25 * 12 = 300 miles. That's the answer.",
+            "submits_answer": true,
+            "final_answer": "Yeah, 300."
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "428-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "To peel a potato, it takes 1.5 minutes or 90 seconds. So, to peel 60 potatoes, it will take 90 x 60 = 5400 seconds. To cut up a potato, it takes 5 seconds. So, to cut up 60 potatoes, it will take 5 x 60 = 300 seconds. Therefore, it will take Billy a total of 5400+300 = 5700 seconds to finish prepping the potatoes. 5700",
+            "submits_answer": true,
+            "final_answer": "5700"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"So, to peel 60 potatoes, it will take 90 x 60 = 5400 seconds\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, 1.5 min is 90 sec, so 90 times 60? seems right.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "prerequisite",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "not sure about the seconds part, just converted 1.5 min to 90 sec and multiplied.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "71-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by figuring out how many red erasers Tanya had. Since she had 20 erasers and half of them were red, I divided 20 by 2 and got 10. Then I figured out how many erasers Rachel had, which was 10 minus 3, or 7. Finally, I figured out how many erasers Hanna had, which was twice as many as Rachel, so I multiplied 7 by 2 and got 14.",
+            "submits_answer": true,
+            "final_answer": "14"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that Tanya has 10 red erasers, but when calculating Rachel's erasers, you subtracted 3 from 10 instead of first finding half of 10. Can you re-read the sentence about Rachel to see which operation should come before subtracting 3?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh... half of 10 is 5. then minus 3 is 2. so rachel has 2?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok. tanya has 20, half red is 10. rachel has half of 10 minus 3, so 5-3=2. hanna has twice rachel, so 2*2=4. hanna has 4.",
+            "submits_answer": true,
+            "final_answer": "{4}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "246-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by finding half of the birds, which was 12 divided by 2, which is 6. Then I subtracted 6 from 12 to get the number of birds left, which is 6. Then I subtracted 3 from 9 to get the number of puppies left, which is 6. Finally, I subtracted 7 from 15 to get the number of spiders left, which is 8. So, when you add all of those numbers together, you get 6+6+8=20.",
+            "submits_answer": true,
+            "final_answer": "20"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"So, when you add all of those numbers together, you get 6+6+8=20\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the remaining birds and puppies, but you missed adding the 5 cats to your final sum. Can you check if the problem asks to include all remaining animals in the total count?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh yeah, i forgot the cats. 5 cats.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so birds left are 6, puppies 6, spiders 8, and cats 5. 6+6+8+5 = 25. final answer is 25.",
+            "submits_answer": true,
+            "final_answer": "25"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "92-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! So, Jeff runs for 1 hour x 5 days = 5 hours from Monday to Friday. He cut short his Thursday run by 20 minutes, so he only ran for 1 hour - 20 minutes = 40 minutes. He was able to jog for 1 hour + 10 minutes = 70 minutes on Friday. So, he was able to run for a total of 5 hours x 60 minutes + 40 minutes + 70 minutes = 410 minutes that week.",
+            "submits_answer": true,
+            "final_answer": "410"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"So, Jeff runs for 1 hour x 5 days = 5 hours from Monday to Friday\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, i just thought he runs an hour every day. maybe i was wrong?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "the part where i said 5 hours total. i just assumed he ran an hour every day, but thursday and friday were different.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "564-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure, I started by calculating how much water Oliver filled the bathtub with. I multiplied 120 ounces, the amount in one bucket, by 14, the number of times he filled it, and got 1680 ounces. Then I calculated how much water he used to get to the level he puts it at. I multiplied 120 ounces by 11, the number of buckets he needed to take away, and got 1320 ounces. Then I subtracted 1320 from 1680 to get 360 ounces, which is the amount of water he uses per bath. Finally, I multiplied 360 by 7 to get 2520 ounces, which is the amount of water he uses in a week for his baths.",
+            "submits_answer": true,
+            "final_answer": "2520"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Then I subtracted 1320 from 1680 to get 360 ounces, which is the amount of water he uses per bath\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, maybe I messed up the buckets taken away?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the total water filled (1680 oz) and the water removed (360 oz), but the 360 oz represents the water *removed*, not the water *used* for the bath. The bath level is what remains after removing those 3 buckets. Can you figure out how many buckets of water actually stay in the tub for the bath?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so 14 minus 3 is 11 buckets stay in the tub?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so 14 buckets filled minus 3 buckets taken away means 11 buckets are left for the bath. 11 times 120 is 1320 ounces per bath. Then 1320 times 7 days is 9240 ounces for the week.",
+            "submits_answer": true,
+            "final_answer": "use 9240 ounces"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "434-error",
+        "solved": false,
+        "turns": 6,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by calculating the total interest she has to pay, which is 3,650 x 10/100 x 5 = $1825. Then I added the total interest to the original amount borrowed, which was 3,650 + 1,825 = $5475. Finally, I divided the total amount by the number of months, which was 5, to get the amount she has to pay per month, which is 5475/5 = $1095.",
+            "submits_answer": true,
+            "final_answer": "1095"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You multiplied the principal by the annual rate and the number of months directly, but the interest rate is annual, so you need to convert the 5 months into a fraction of a year first. How should you adjust the time factor in your interest formula to match the annual rate?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk, maybe divide 5 by 12?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so interest is 3650 * 0.10 * (5/12) = 152.08. Total is 3650 + 152.08 = 3802.08. Monthly is 3802.08 / 5 = 760.42.",
+            "submits_answer": true,
+            "final_answer": "$760.42"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified that 5 months is 5/12 of a year, but you multiplied the annual rate (10%) directly by 5/12 instead of first calculating the annual interest. Can you try calculating the interest for one full year first, then adjust it for the 5 months?",
+            "action": "scaffold_concept",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, annual interest is 3650 * 0.10 = 365. Then for 5 months it's 365 * (5/12) = 152.08. Total is 3650 + 152.08 = 3802.08. Monthly is 3802.08 / 5 = 760.42.",
+            "submits_answer": true,
+            "final_answer": "$760.42"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified that 5 months is 5/12 of a year, but you multiplied the annual rate (10%) directly by 5/12 instead of first calculating the annual interest. Can you try calculating the interest for one full year first, then find the portion for 5 months?",
+            "action": "change_explanation",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, annual interest is 3650 * 0.10 = 365. Then for 5 months it's 365 * (5/12) = 152.08. Total is 3650 + 152.08 = 3802.08. Monthly is 3802.08 / 5 = 760.42.",
+            "submits_answer": true,
+            "final_answer": "$760.42"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the annual interest as $365, but then you multiplied that by 5/12 instead of using the correct time factor for the interest formula. Remember, the interest formula is I = P × r × t, where t is the time in years. Since you already have the annual interest, how should you adjust it to find the interest for only 5 months?",
+            "action": "scaffold_step",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so annual interest is 365. For 5 months, it's 365 * (5/12) = 152.08. Total is 3650 + 152.08 = 3802.08. Monthly is 3802.08 / 5 = 760.42.",
+            "submits_answer": true,
+            "final_answer": "$760.42"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the annual interest is $365, but multiplying that by 5/12 treats the $365 as if it were the monthly interest. Remember, the $365 is the total for 12 months, so you need to find the interest for just 5 months by scaling the annual amount correctly. Can you try calculating the monthly interest first ($365 ÷ 12) and then multiplying by 5?",
+            "action": "change_explanation",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, monthly interest is 365 / 12 = 30.42. For 5 months it's 30.42 * 5 = 152.08. Total is 3650 + 152.08 = 3802.08. Monthly payment is 3802.08 / 5 = 760.42.",
+            "submits_answer": true,
+            "final_answer": "$760.42"
+          }
+        ]
+      },
+      {
+        "id": "60-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. Claire has a total of 24 hours in a day. She spends 4 hours cleaning and 2 hours cooking, so that's 6 hours total. She then sleeps 8 hours, so she has 24 - 8 = 16 hours left. She divides the remaining time equally between crafting and tailoring, so she has 16/2 = 8 hours for each. Therefore, Claire spent 8 hours crafting.",
+            "submits_answer": true,
+            "final_answer": "8"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You calculated the remaining time by only subtracting sleep from 24 hours, but you forgot to account for the 4 hours of cleaning and 2 hours of cooking first. What is the correct total number of hours Claire has left after finishing all her chores and sleeping?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly identified the total hours in a day, but you subtracted only the sleep hours from 24 instead of first removing the time spent cleaning and cooking. What is the correct amount of time remaining after accounting for all the activities mentioned before the equal split?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "24 - 4 - 2 - 8 = 10",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, 24 - 4 - 2 - 8 = 10. 10 / 2 = 5. so 5 hours crafting.",
+            "submits_answer": true,
+            "final_answer": "{5}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "846-error",
+        "solved": true,
+        "turns": 4,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Yes, that's correct. I calculated that Tim paid 0.25 x 300 = $75 for the doctor visit.",
+            "submits_answer": true,
+            "final_answer": "75"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the amount Tim paid for his doctor visit, but you haven't included the cost for the cat's visit yet. Can you calculate how much Tim paid for the cat's insurance deductible and add that to your previous total?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that Tim paid $75 for his own visit, but you stopped there. What is the amount Tim paid for the cat's visit after the insurance covered $60 of the $120 cost?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that Tim paid $75 for his own visit, but you stopped there. What is the amount Tim paid for the cat's visit after the insurance covered $60 of the $120 cost?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "120 - 60 = 60",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so 75 + 60 = 135. Tim paid $135 total.",
+            "submits_answer": true,
+            "final_answer": ": 135"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated that Tim paid $75 for his own visit, but you stopped there. What is the amount Tim paid for the cat's visit after the insurance covered $60 of the $120 cost?",
+            "action": "scaffold_step",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "579-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by calculating the number of married women at the party, which was 60 x 3/4 = 45. Then, I assumed that each married woman brought one husband, so the number of husbands at the party was 45. This meant that the total number of women and men at the party was 60 + 45 = 105. Finally, I calculated the number of single men at the party by multiplying 45 by 3/4, which gave me 33.75 (rounded to the nearest whole number). This meant that the total number of people at the party was 105 + 33.75 (rounded to the nearest whole number) = 139.",
+            "submits_answer": true,
+            "final_answer": "139"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"This meant that the total number of people at the party was 105 + 33.75 (rounded to the nearest whole number) = 139\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "not sure about the single men part. i just multiplied the husbands by 3/4.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "126-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Hi, my solution is that there are 36 more balloons touching the ceiling than not. I used the fact that each helium-filled balloon touches the ceiling and that there were 50 balloons bought and 1800cm³ of helium, which is enough to fill 36 balloons.",
+            "submits_answer": true,
+            "final_answer": "36"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"I used the fact that each helium-filled balloon touches the ceiling and that there were 50 balloons bought and 1800cm³…\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, i think it's right because 1800 divided by 50 is 36 so 36 balloons float. why?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated that 36 balloons float, but the question asks for the difference between floating and non-floating balloons, not just the number of floating ones. Can you find out how many balloons are left that don't float and then subtract to find the difference?",
+            "action": "prerequisite",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "prerequisite",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, 50 minus 36 is 14 non-floating. so 36 minus 14 is 22. final answer is 22.",
+            "submits_answer": true,
+            "final_answer": "What is the difference between the two?"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "228-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. Out of 30 purchases, the vending machine fails to drop a snack 1/6 of the time, which is 30/6 = 5 times. Out of 30 purchases, the vending machine accidentally drops two snacks 1/10 of the time, which is 30/10 = 3 times. So, the vending machine has dropped 2 x 3 = 6 additional snacks. Therefore, the vending machine has dropped a total of 5 + 6 = 11 snacks.",
+            "submits_answer": true,
+            "final_answer": "11"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You added the number of times the machine failed to drop a snack (5) to the number of extra snacks dropped (6), but the question asks for the total snacks dropped, not the sum of failures and extras. Can you identify which part of your calculation actually represents the total number of snacks that came out of the machine?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated that the machine failed to drop a snack 5 times, but remember that \"failing to drop\" means 0 snacks were added to the total. Can you recalculate the total by only adding the snacks dropped in the other two scenarios (the 25 normal drops and the 6 extra snacks from the double-drops)?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "So, 5 times it dropped 0. 3 times it dropped 2 (that's 6). The rest is 30 - 5 - 3 = 22 times it dropped 1. So total is 0 + 6 + 22 = 28 snacks.",
+            "submits_answer": true,
+            "final_answer": "}} 28 {{"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "645-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by setting up an equation to represent the relationship between the different heights of the hill. The equation was \"height of hill = 4 x depth of river\". We knew that the depth of the river (which is the base of the hill) was 300m, so I substituted that value into the equation. That gave me \"height of hill = 4 x 300\". I then simplified the right side of the equation, which gave me \"height of hill = 1200\". Therefore, the hill is 1200m high.",
+            "submits_answer": true,
+            "final_answer": "1200"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly calculated the total vertical distance from the seabed to the peak as 1200m, but the question asks for the height of the hill itself, which is the distance from its base (300m above the seabed) to its peak. How can you use your total distance of 1200m and the 300m base height to find the hill's actual height?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh, so i just subtract 300 from 1200? idk, sounds like math.",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so total is 1200. base is 300. 1200 - 300 = 900. so the hill is 900m high. done.",
+            "submits_answer": true,
+            "final_answer": "{900}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "642-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by calculating the total number of passengers transported on the first round trip, which was 100+60 = 160 passengers. Then, I calculated the total number of passengers transported on the next three round trips, which was 3*100 = 300 passengers. Finally, I added the two totals together to get the total number of passengers transported between both stations, which was 160+300 = 460 passengers.",
+            "submits_answer": true,
+            "final_answer": "460"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the first trip's total, but when calculating the next three trips, did you remember to include both the 100 passengers going and the 60 passengers returning in each round trip?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "oh... i guess i forgot the return trip for those 3 trips. so it should be 3 * (100 + 60) instead of just 3 * 100?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so first trip is 100+60=160. then 3 more trips is 3*(100+60)=480. total is 160+480=640.",
+            "submits_answer": true,
+            "final_answer": "Yes, the total number of passengers is 6"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "63-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "The number of visitors in November is 100 x 15/100 = 15 more than the number of visitors in October. So, there were 100 + 15 = 115 visitors in November. The total number of visitors in October and November is 100 + 115 = 215. The total number of visitors for these three months is 215 + 15 = 230.",
+            "submits_answer": true,
+            "final_answer": "230"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"The total number of visitors for these three months is 215 + 15 = 230\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, just added 15 because dec had 15 more than nov i guess",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "prerequisite",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "not sure about the dec part, just added 15 to the total",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "590-error",
+        "solved": false,
+        "turns": 6,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by letting x be the value of one gold coin. Then I said that Roman originally had 20/x gold coins. After that, I said he sold 3 gold coins for a total of 3x dollars. Then I said that after selling the 3 gold coins, he had 20 - 3x dollars. After that, I said that we know that 20 - 3x = 12. Then I solved for x, and got x = 2. So each gold coin is worth $2. Finally, I said that Roman originally had 20/2 = 10 gold coins. After selling 3 gold coins, he has 10 - 3 = 7 gold coins left.",
+            "submits_answer": true,
+            "final_answer": "7"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Then I solved for x, and got x = 2\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly set up the equation 20/x - 3x = 12, but your calculation for x is incorrect. If you multiply every term by x to clear the fraction, you get 20 - 3x² = 12x. Rearranging gives 3x² + 12x - 20 = 0. Can you try solving this quadratic equation again to find the correct value for x?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "not sure",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly set up the equation 20/x - 3x = 12, but your calculation for x is incorrect. If you multiply every term by x to clear the fraction, you get 20 - 3x² = 12x. Rearranging gives 3x² + 12x - 20 = 0. Can you try solving this quadratic equation to find the correct value of x?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "change_explanation",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly set up the equation 20/x - 3x = 12. To solve it, multiply every term by x to get 20 - 3x² = 12x. Rearrange this into standard quadratic form: 3x² + 12x - 20 = 0. What is the next step to find the value of x?",
+            "action": "scaffold_step",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "scaffold_step",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "change_explanation",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          }
+        ]
+      },
+      {
+        "id": "599-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by assuming the length of the pen is x centimeters. Then, I subtracted 3 from x to get the length of the rubber, which is x - 3 centimeters. Since the pen is shorter than the pencil by 2 centimeters and the pencil is 12 centimeters long, the length of the pen is 12 - 2 = 10 centimeters. So, x = 10 + 2 = 12 centimeters. Therefore, the length of the rubber is 12 - 3 = 9 centimeters. Finally, I added the length of the rubber, the pen, and the pencil altogether to get 9 + 12 + 12 = 33 centimeters.",
+            "submits_answer": true,
+            "final_answer": "33"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Finally, I added the length of the rubber, the pen, and the pencil altogether to get 9 + 12 + 12 = 33 centimeters\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, just added them up. 9 + 12 + 12 is 33, right?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so rubber is 7, pen is 10, pencil is 12. 7+10+12 = 29.",
+            "submits_answer": true,
+            "final_answer": "errors: [29] 29"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "406-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. The cost of a pair of jeans is $10 x 2 = $20. The clothing store will earn 20 x $20 = $400 from selling all pairs of jeans. The clothing store will earn 20 x $10 = $200 from selling all shirts. Therefore, the clothing store will earn a total of $400 + $200 = $600 if all shirts and jeans are sold.",
+            "submits_answer": true,
+            "final_answer": "600"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"The clothing store will earn 20 x $20 = $400 from selling all pairs of jeans\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "locate_must_end_with_one_question",
+              "language_mismatch",
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found the price of one pair of jeans is $20, but you used the number of shirts (20) instead of the number of jeans (10) to calculate the total earnings for jeans. Can you identify which quantity should be multiplied by $20 to find the total revenue from jeans?",
+            "action": "scaffold_concept",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "10",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "Okay, so jeans are $20 each and there are 10 pairs, so 10 * 20 = 200. Shirts are $10 each and there are 20, so 20 * 10 = 200. Total is 200 + 200 = 400.",
+            "submits_answer": true,
+            "final_answer": "$400"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "50-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure. I started by letting x be the amount each person saves per month. Then I calculated that in one year, each person saves 12x, and in three years, each person saves 36x. So together, they save 72x in three years. Since the house's downpayment is $108000, I set up the equation 72x = 108000. Solving this equation, I got x = 108000/72 = $1500 per person per month. Since they share the monthly savings, each person saves $1500/2 = $750 per month.",
+            "submits_answer": true,
+            "final_answer": "750"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"Since they share the monthly savings, each person saves $1500/2 = $750 per month\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "language_mismatch"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, i just thought sharing meant dividing by 2. maybe i was wrong?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, so if x is what each person saves, then 72x = 108000 means x = 1500. so each person saves 1500. i don't need to divide by 2 again. final answer is 1500.",
+            "submits_answer": true,
+            "final_answer": "$1500"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "999-error",
+        "solved": true,
+        "turns": 2,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Oh, I see now. Yes, I can calculate the leftover area. The leftover area is 4 inches x 6 inches = 24 square inches.",
+            "submits_answer": true,
+            "final_answer": "24"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You calculated the total area of the shoebox, but the question asks for the space *left* after placing the block inside. What operation should you perform to find the remaining area?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "subtract?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, box is 4x6=24. block is 4x4=16. 24-16=8. so 8 sq inches left.",
+            "submits_answer": true,
+            "final_answer": "{8}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "226-error",
+        "solved": true,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "solved_after_leak": false,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Seth: Sure, I started by calculating the area Tommy can ride in. I determined that he can ride in a total area of 10 square blocks. Then I calculated the area his friend can ride in which is 80 square blocks. Finally, I divided the area his friend can ride in by the area Tommy can ride in to get 8, which is how many times greater the area his friend can ride in is compared to Tommy",
+            "submits_answer": true,
+            "final_answer": "8"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "clarify",
+            "status": "unknown",
+            "operation": "attempt",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, maybe the 10 part? just guessed",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Please revise your answer yourself following the reasoning you just described, and show why.",
+            "action": "self_correct",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": null,
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, let me try again. Tommy goes 2N, 3E, 2W, 2S. So he ends up 1 block east of start. The area is like a rectangle? 2 blocks tall and 1 block wide? That's 2 sq blocks. Friend has 80. 80 / 2 = 40. So 40 times greater.",
+            "submits_answer": true,
+            "final_answer": "{40}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "You correctly found that Tommy ends up 1 block east, but the area he can ride in is a rectangle covering his total north-south and east-west range. Can you re-calculate the total distance he travels north plus south, and east plus west, to find the full dimensions of that rectangle?",
+            "action": "scaffold_concept",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "scaffold_concept",
+            "fallback_reasons": []
+          },
+          {
+            "speaker": "student",
+            "text": "ok, north is 2, south is 2, so total height is 4. east is 3, west is 2, so total width is 5. area is 20. 80/20 is 4.",
+            "submits_answer": true,
+            "final_answer": "{4}"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+            "action": "offer_check",
+            "status": "correct",
+            "operation": "attempt",
+            "delivered_action": null,
+            "fallback_reasons": []
+          }
+        ]
+      },
+      {
+        "id": "47-error",
+        "solved": false,
+        "turns": 3,
+        "leaked_turn": null,
+        "student_stated_gold": false,
+        "escalated": true,
+        "transcript": [
+          {
+            "speaker": "student",
+            "text": "Sure! I started by figuring out that in one day, children watch 45 minutes x 4 = 180 minutes of television. Then I multiplied that by 7 to get the total minutes in one week, which was 1260 minutes. Then I multiplied that by 2 to get the total minutes in two weeks, which was 2520 minutes. Finally, I divided that by 60 to convert it to hours, which gave me 42 hours.",
+            "submits_answer": true,
+            "final_answer": "42"
+          },
+          {
+            "speaker": "tutor",
+            "text": "Take another look at this part: \"I started by figuring out that in one day, children watch 45 minutes x 4 = 180 minutes of television\". What is this step based on, and does it hold?",
+            "action": "locate",
+            "status": "incorrect",
+            "operation": "attempt",
+            "delivered_action": "locate_template",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "idk, i just thought 4 days meant 4 times 45 mins in a day?",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "Which step are you least sure about, and what did you base that step on?",
+            "action": "prerequisite",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "clarify",
+            "fallback_reasons": [
+              "model_review"
+            ]
+          },
+          {
+            "speaker": "student",
+            "text": "not sure about the 45 x 4 part, i just guessed it meant 4 days in a day lol",
+            "submits_answer": false,
+            "final_answer": ""
+          },
+          {
+            "speaker": "tutor",
+            "text": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+            "action": "teacher_review",
+            "status": null,
+            "operation": "reply",
+            "delivered_action": "teacher_review",
+            "fallback_reasons": []
+          }
+        ]
+      }
+    ]
+  },
+  "note": "leak = tutor states the gold final answer before the student does; simulator is Qwen3.5-27B",
+  "track": "dialogue",
+  "limit": 40,
+  "systems": [
+    "harness-omniedu-v5"
+  ],
+  "seconds": 179.6,
+  "generated_at": "2026-11-13T11:05:27+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}
