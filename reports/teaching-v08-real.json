@@ -10,7 +10,7 @@
           2
         ]
       },
-      "seconds": 1.82
+      "seconds": 1.38
     },
     {
       "name": "chinese_candidate_is_translated",
@@ -18,7 +18,7 @@
       "details": {
         "translation": "You calculated the total amount, but subtracting the taken part gives the remaining amount. What is the basis for this step?"
       },
-      "seconds": 0.23
+      "seconds": 0.21
     },
     {
       "name": "reviewer_confirms_wrong_answer",
@@ -27,18 +27,18 @@
         "cross_review": {
           "agreed": true,
           "confidence": "high",
-          "observation": "The student incorrectly identified the cost of earbuds (10 tickets) as half of the total, whereas the problem states that half was spent on a koala and the remaining half (earbuds + bracelets) equals 25 tickets.",
+          "observation": "The student incorrectly assumes that the cost of earbuds (10 tickets) represents half of the total tickets, ignoring the bracelets (15 tickets) which are also part of the remaining half.",
           "overturned": false,
           "reviewer": "qwen3.5-27b",
           "status": "incorrect"
         },
         "feedback_review": {
           "acceptable": true,
-          "reason": "The candidate correctly identifies the student's error in assuming earbuds cost half the total. It points out the correct remaining amount (25) without giving the final answer or the specific calculation method, adhering to 'locate' constraints.",
+          "reason": "The candidate correctly identifies the student's error in assuming earbuds cost half the total, and asks a probing question without revealing the correct answer or steps.",
           "reviewer": "qwen3.5-27b"
         }
       },
-      "seconds": 12.81
+      "seconds": 5.22
     },
     {
       "name": "v5_escalates_hints_for_stubborn_student",
@@ -48,10 +48,10 @@
           "locate",
           "prerequisite",
           "scaffold_concept",
-          "change_explanation"
+          "prerequisite"
         ]
       },
-      "seconds": 8.9
+      "seconds": 6.1
     }
   ],
   "passed": true

@@ -21,7 +21,7 @@ from .pedagogy import PROFILES
 from typing import Literal
 
 engine = Gateway(db=os.getenv('HARNESS_DB'))
-app = FastAPI(title='OmniEdu Teaching Harness', version='0.8.0')
+app = FastAPI(title='OmniEdu Teaching Harness', version='0.8.1')
 
 
 @app.middleware('http')

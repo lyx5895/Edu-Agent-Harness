@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import sqlite3
 import time
+import unicodedata
 import uuid
 from .errors import Conflict
 from .images import load_image, normalize_image, store_image
@@ -67,6 +68,8 @@ def verbatim_quote(quote, text):
     A quote whose tail was garbled near the length cap keeps its verbatim prefix."""
     if not quote: return None
     if quote in text: return quote
+    loose=loose_match(quote,text)
+    if loose: return loose
     trimmed=quote.rstrip().rstrip('.…').rstrip()
     low,high=0,len(trimmed)
     while low<high:
@@ -74,6 +77,22 @@ def verbatim_quote(quote, text):
         if trimmed[:mid] in text: low=mid
         else: high=mid-1
     return trimmed[:low] if low>=max(12,int(.8*len(trimmed))) else None
+
+
+def _loose(text):
+    # NFKC folds full-width forms; whitespace and quote-mark variants are ignored. Keeps an index map back to text.
+    chars,index=[],[]
+    for i,ch in enumerate(text):
+        for c in unicodedata.normalize('NFKC',ch).lower():
+            if c.isspace() or c in '"\'“”‘’「」『』`': continue
+            chars.append(c);index.append(i)
+    return ''.join(chars),index
+
+
+def loose_match(quote,text):
+    q,_=_loose(quote);t,index=_loose(text)
+    at=t.find(q) if len(q)>=6 else -1
+    return text[index[at]:index[at+len(q)-1]+1] if at>=0 else None
 
 
 class Turn:
@@ -334,8 +353,35 @@ class OpenEngine:
             return lines['teacher_review'], {'candidate':None,'review':{},'reasons':[],'fallback':False,'delivered_action':'teacher_review'}
         if action=='self_correct':
             return lines['self_correct'], {'candidate':None,'review':{'acceptable':True,'reason':'服务器只邀请自行作答，不提供答案'},'reasons':[],'fallback':False,'source':'policy_template'}
-        candidate=self.model.respond(task,action,text,context,assessment)
         english=language(task.get('question','')+text)=='en'
+        candidate,review,reasons,cross=self.draft(task,action,text,context,assessment,english)
+        first=None
+        left=self.model.budget_left() if hasattr(self.model,'budget_left') else None
+        # One rewrite with the rejection reasons; needs respond, translate and two reviews at most.
+        if reasons and reasons!=['length'] and (left is None or left>=4):
+            first={'candidate':candidate,'reasons':reasons,'review':review.get('reason','')}
+            try:
+                candidate,review,reasons,cross=self.draft(task,action,text,context,assessment,english,first)
+            except ModelUnavailable:
+                candidate,review,reasons,cross=first['candidate'],{'acceptable':False,'reason':first['review']},first['reasons'],None
+        lines=FALLBACKS[language(task.get('question','')+text)]
+        fallback=lines['probe'] if action=='probe' else lines['default']
+        if action!='explain':fallback=lines.get(task.get('task_type'),fallback)
+        if action=='self_correct': fallback=lines['self_correct_retry']
+        if action=='explain': fallback=lines['explain_failed']
+        delivered='clarify' if reasons else action
+        if action=='locate' and assessment.get('evidence_quote'):
+            quote=assessment['evidence_quote'].strip().rstrip('.。')
+            if len(quote)>120: quote=(quote[:120].rsplit(' ',1)[0] if ' ' in quote[:120] else quote[:120])+'…'
+            fallback=lines['locate'].format(quote=quote)
+            if reasons: delivered='locate_template'
+        validation={'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
+        if first: validation['first_draft']=first
+        if cross is not None: validation['cross_review']={**cross,'reviewer':self.reviewer.model_name}
+        return (fallback if reasons else candidate),validation
+
+    def draft(self,task,action,text,context,assessment,english,revision=None):
+        candidate=self.model.respond(task,action,text,context,assessment,revision) if revision else self.model.respond(task,action,text,context,assessment)
         if english and candidate and language(candidate)=='zh': candidate=self.model.translate(candidate)
         if action=='locate' and candidate: candidate=trim_after_question(candidate)
         review=self.model.review(task,candidate,action,text)
@@ -355,20 +401,7 @@ class OpenEngine:
         if not reasons and action!='explain' and self.reviewer:
             cross=self.reviewer.review(task,candidate,action,text)
             if not cross['acceptable']: reasons.append('cross_review')
-        lines=FALLBACKS[language(task.get('question','')+text)]
-        fallback=lines['probe'] if action=='probe' else lines['default']
-        if action!='explain':fallback=lines.get(task.get('task_type'),fallback)
-        if action=='self_correct': fallback=lines['self_correct_retry']
-        if action=='explain': fallback=lines['explain_failed']
-        delivered='clarify' if reasons else action
-        if action=='locate' and assessment.get('evidence_quote'):
-            quote=assessment['evidence_quote'].strip().rstrip('.。')
-            if len(quote)>120: quote=(quote[:120].rsplit(' ',1)[0] if ' ' in quote[:120] else quote[:120])+'…'
-            fallback=lines['locate'].format(quote=quote)
-            if reasons: delivered='locate_template'
-        validation={'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
-        if cross is not None: validation['cross_review']={**cross,'reviewer':self.reviewer.model_name}
-        return (fallback if reasons else candidate),validation
+        return candidate,review,reasons,cross
 
     @retry_stale
     def operation(self,sid,key,kind,body,version=None):
@@ -533,6 +566,8 @@ class OpenEngine:
                         'observation':'模型判定未能引用学生原文，已转教师复核。'}
             payload['quote_unverified']=True
         else: assessment['evidence_quote']=quote
+        if self.reviewer and not task.get('criteria') and (quote is None or assessment['status']=='unknown' or assessment['confidence']!='high'):
+            assessment,quote=self._resolve_unknown(task,text,assessment_ctx,verification,assessment,quote,payload)
         t.assessment=assessment
         o['grounded']=quote is not None and assessment['status'] in ('incorrect','incomplete')
         status,source=adjudicate(task,text,verification,assessment)
@@ -545,7 +580,7 @@ class OpenEngine:
             # Dimension success cannot erase an uncovered whole-task requirement.
             status=aggregate([{'status':status},{'status':dimension_status}])
             source='model_rubric'
-        if source=='model_rubric' and status in ('incorrect','incomplete') and self.reviewer:
+        if source=='model_rubric' and status in ('incorrect','incomplete') and self.reviewer and 'cross_review' not in payload:
             status=self._cross_review(task,text,assessment_ctx,verification,status,payload)
         payload['grading_conflict']=verification['status'] in ('correct','incorrect') and assessment['status'] in ('correct','incorrect') and verification['status']!=assessment['status']
         if re.fullmatch(r'(我)?(懂了|会了|知道了|明白了|学会了)[。！! ]*',text): status='unknown'
@@ -567,6 +602,17 @@ class OpenEngine:
             s['hypotheses']=(s['hypotheses']+[{'hypothesis':assessment['hypothesis'],
                 'quote':quote or '','certainty':'tentative'}])[-3:]
         s['pending_image']=None
+
+    def _resolve_unknown(self,task,text,ctx,verification,assessment,quote,payload):
+        second=self.reviewer.assess(task,text,ctx,verification)
+        second_quote=ground(second,text)
+        # Only a confident, grounded negative judgment is adopted; a reviewer "correct" never replaces an unsure primary.
+        resolved=second['status'] in ('incorrect','incomplete') and second['confidence']=='high' and second_quote is not None
+        payload['cross_review']={'reviewer':self.reviewer.model_name,'status':second['status'],'confidence':second['confidence'],
+            'observation':second['observation'],'agreed':False,'overturned':False,'resolved_unknown':resolved}
+        if not resolved: return assessment,quote
+        payload.pop('quote_unverified',None)
+        return {**second,'evidence_quote':second_quote},second_quote
 
     def _cross_review(self,task,text,ctx,verification,status,payload):
         second=self.reviewer.assess(task,text,ctx,verification)

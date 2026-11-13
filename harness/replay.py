@@ -56,7 +56,7 @@ def retry_stale(method):
 
 class ReplayableModel:
     """Transparent proxy; attribute writes go to the wrapped model."""
-    UNCACHED = {'budget'}
+    UNCACHED = {'budget', 'budget_left'}
 
     def __init__(self, model, namespace=''):
         object.__setattr__(self, '_model', model)

@@ -296,3 +296,76 @@ def test_locate_trailing_instruction_is_trimmed_and_template_is_not_generic_fall
     act(e, s2, 'attempt', 'tides 2+3=6')
     with e.connect() as c:
         assert e.load(c, s2['session_id'])[1]['feedback_fallbacks'] == 0
+
+
+def test_rejected_feedback_is_rewritten_once_with_reasons(tmp_path):
+    class Model(FakeOpenModel):
+        def __init__(self):
+            super().__init__(); self.reviews = 0; self.revisions = []
+        def respond(self, task, action, text, context, assessment, revision=None):
+            self.revisions.append(revision)
+            return '这一步的依据是什么？' if revision else '正确做法是先乘再加。'
+        def review(self, *a):
+            self.reviews += 1
+            return {'acceptable': self.reviews > 1, 'reason': '给出了改正做法'}
+    model = Model()
+    e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v3')
+    s = e.create('u', '解释四季成因')
+    out = act(e, s, 'attempt', '错误解释')
+    assert out['feedback'] == '这一步的依据是什么？'
+    assert 'model_review' in model.revisions[1]['reasons'] and model.revisions[1]['review'] == '给出了改正做法'
+    trace = [t for t in e.traces(s['session_id']) if 'output_validation' in t][-1]['output_validation']
+    assert trace['first_draft']['candidate'] == '正确做法是先乘再加。' and not trace['fallback']
+
+
+def test_no_rewrite_when_turn_budget_is_low(tmp_path):
+    model = FakeOpenModel()
+    model.bad_review = True
+    model.budget_left = lambda: 2
+    calls = []
+    model.respond = lambda *a: calls.append(a) or '候选'
+    e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v3')
+    act(e, e.create('u', '解释四季成因'), 'attempt', '错误解释')
+    assert len(calls) == 1
+
+
+def test_loose_quote_match_maps_back_to_original_text():
+    from harness.open_engine import verbatim_quote
+    text = 'Earbuds cost 10 tickets，which is “half” of the total.'
+    assert verbatim_quote('cost 10 tickets, which is "half"', text) == 'cost 10 tickets，which is “half'
+    assert verbatim_quote('cost 12 tickets', text) is None
+
+
+class UnsureModel(FakeOpenModel):
+    def assess(self, task, text, context, verification):
+        return {'status': 'unknown', 'confidence': 'low', 'evidence_quote': text, 'observation': '不确定', 'hypothesis': ''}
+
+
+def test_reviewer_resolves_unsure_primary_only_with_grounded_negative(tmp_path):
+    e = OpenEngine(tmp_path / 'db.sqlite', UnsureModel(), reviewer=FakeReviewer('incorrect'))
+    out = act(e, e.create('u', '解释四季成因'), 'attempt', '错误解释')
+    assert out['status'] == 'incorrect' and out['action'] == 'locate'
+    item = e.dashboard()['review_queue'][0]
+    assert item['priority'] == 'risk' and 'negative_judgment' in item['risks']
+    lenient = OpenEngine(tmp_path / 'b.sqlite', UnsureModel(), reviewer=FakeReviewer('correct'))
+    assert act(lenient, lenient.create('u', '解释四季成因'), 'attempt', '错误解释')['status'] == 'unknown'
+
+
+def test_inline_images_migrate_to_files(tmp_path):
+    import shutil, sys
+    sys.path.insert(0, 'scripts')
+    from migrate_images import migrate
+    e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
+    url = data_url(Image.new('RGB', (32, 32), 'white'))
+    s = e.create('u', image_url=url)
+    shutil.rmtree(e.images)
+    with e.connect() as c:
+        eid, payload = c.execute("SELECT id,payload FROM learning_events WHERE kind='image'").fetchone()
+        legacy = {k: v for k, v in json.loads(payload).items() if not k.startswith('image_')} | {'image_url': url}
+        c.execute('UPDATE learning_events SET payload=? WHERE id=?', (json.dumps(legacy), eid))
+        c.commit()
+    assert migrate(tmp_path / 'db.sqlite') == 1
+    assert migrate(tmp_path / 'db.sqlite', apply=True) == 1
+    assert migrate(tmp_path / 'db.sqlite', apply=True) == 0
+    assert list(tmp_path.glob('db.sqlite.bak-*'))
+    assert e.image_event(s['session_id'], eid)['image_url'] == url
