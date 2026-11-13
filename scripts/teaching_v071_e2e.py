@@ -58,7 +58,7 @@ def main():
             assert calls <= 12, calls
             return {'feedback': r['feedback'], 'delivered': trace['output_validation'].get('delivered_action'),
                     'reasons': trace['output_validation'].get('reasons'), 'model_calls': calls,
-                    'evidence_quote': trace['state_after']['hypotheses'][-1]['quote']}
+                    'evidence_quote': trace['state_diff']['hypotheses']['after'][-1]['quote']}
         run('english_wrong_attempt_is_located_in_english', english_locate)
 
         def chinese_locate():

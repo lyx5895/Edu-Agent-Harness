@@ -12,13 +12,15 @@ import time
 
 from .storage import StaleSnapshot
 
-ATTEMPTS = 5
+# The first run is optimistic; reruns hold the write lock, so a second rerun is a safety margin only.
+ATTEMPTS = 3
 _active = ContextVar('model_replay', default=None)
 
 
 class Replay:
     def __init__(self):
         self.started = time.time()
+        self.attempt = 0
         self.results = {}
 
 
@@ -27,14 +29,21 @@ def started():
     return replay.started if replay else time.time()
 
 
+def rerun():
+    replay = _active.get()
+    return bool(replay and replay.attempt)
+
+
 def retry_stale(method):
     @wraps(method)
     def run(*args, **kwargs):
         if _active.get() is not None:
             return method(*args, **kwargs)
-        token = _active.set(Replay())
+        replay = Replay()
+        token = _active.set(replay)
         try:
             for attempt in range(ATTEMPTS):
+                replay.attempt = attempt
                 try:
                     return method(*args, **kwargs)
                 except StaleSnapshot:

@@ -11,7 +11,7 @@
         "model_calls": 3,
         "evidence_quote": "So she had 10 x 2 = 20 tickets."
       },
-      "seconds": 1.74
+      "seconds": 1.89
     },
     {
       "name": "chinese_wrong_attempt_is_located_in_chinese",
@@ -36,7 +36,7 @@
           "scaffold_example"
         ]
       },
-      "seconds": 2.49
+      "seconds": 2.14
     },
     {
       "name": "eight_students_submit_concurrently",
@@ -52,9 +52,9 @@
           "correct",
           "incorrect"
         ],
-        "wall_seconds": 2.32
+        "wall_seconds": 2.35
       },
-      "seconds": 2.34
+      "seconds": 2.37
     }
   ],
   "passed": true

@@ -12,7 +12,7 @@ import sqlite3
 import time
 import uuid
 from .errors import Conflict
-from .images import normalize_image
+from .images import load_image, normalize_image, store_image
 from .model import ModelUnavailable
 from .open_model import OpenModel
 from .tasks import HINT_LEVELS, POLICIES, POLICY_VERSION, language, public_task, sentences
@@ -22,7 +22,7 @@ from .memory import summarize, goal_key
 from . import teacher, planning, preparation
 from .criteria import tool_grade, aggregate, bind_algebra
 from .storage import Snapshot
-from .replay import ReplayableModel, retry_stale, started as replay_started
+from .replay import ReplayableModel, rerun, retry_stale, started as replay_started
 from .pedagogy import check_contract, bind_check_contract
 
 
@@ -76,6 +76,17 @@ def verbatim_quote(quote, text):
     return trimmed[:low] if low>=max(12,int(.8*len(trimmed))) else None
 
 
+class Turn:
+    """Mutable working state of one operation, shared by the per-kind handlers."""
+    def __init__(self,**fields):
+        self.task=None;self.ctx={};self.o={};self.assessment={}
+        self.__dict__.update(fields)
+
+
+def state_diff(before, after):
+    return {k:{'before':before.get(k),'after':after.get(k)} for k in sorted(set(before)|set(after)) if before.get(k)!=after.get(k)}
+
+
 def ground(assessment, text):
     """Bind evidence to the student's own words: the verbatim quote, else the numbered sentence the model chose."""
     quote=verbatim_quote(assessment.get('evidence_quote',''),text)
@@ -106,6 +117,7 @@ class OpenEngine:
         if self.policy not in POLICIES: raise ValueError(f'未知教学策略：{self.policy}')
         self.db=str(db or Path(__file__).resolve().parents[1]/'data/learning.sqlite')
         Path(self.db).parent.mkdir(parents=True,exist_ok=True)
+        self.images=Path(self.db).parent/(Path(self.db).stem+'-images')
         self.model=ReplayableModel(model or OpenModel());self.tools=tools or Toolbox()
         with self.connect() as c:
             teacher.initialize(c)
@@ -125,7 +137,7 @@ class OpenEngine:
     @contextmanager
     def transaction(self):
         c = self.connect()
-        snapshot = Snapshot(c)
+        snapshot = Snapshot(c, locked=rerun())
         try:
             with self.model.budget() if hasattr(self.model, 'budget') else nullcontext():
                 yield snapshot
@@ -136,6 +148,19 @@ class OpenEngine:
         finally:
             snapshot.close()
             c.close()
+
+    def image_payload(self,image_url,transcription,purpose):
+        return {**store_image(image_url,self.images),'transcription':transcription,'purpose':purpose}
+
+    def image_url(self,payload):
+        return load_image(payload,self.images)
+
+    def image_event(self,sid,event_id):
+        with self.connect() as c:
+            row=c.execute("SELECT payload FROM learning_events WHERE id=? AND session=? AND kind='image'",(event_id,sid)).fetchone()
+        if not row: return None
+        payload=json.loads(row['payload'])
+        return {**payload,'image_url':self.image_url(payload)}
 
     def event(self,c,sid,kind,payload):
         return c.execute('INSERT INTO learning_events(session,kind,payload,at) VALUES(?,?,?,?)',
@@ -207,7 +232,7 @@ class OpenEngine:
                 image_url=normalize_image(image_url)
                 transcription=self.model.transcribe(image_url)
                 state['pending_image']={**transcription,'purpose':'task'}
-                self.event(c,sid,'image',{'image_url':image_url,'transcription':transcription,'purpose':'task'})
+                self.event(c,sid,'image',self.image_payload(image_url,transcription,'task'))
             else:
                 if assignment:
                     task={k:assignment[k] for k in ('domain','objective','question','rubric','reference','prerequisite')}
@@ -338,199 +363,236 @@ class OpenEngine:
             if s['needs_review']: raise Conflict('教师已修订证据，请新建任务重新检查')
             text=body.get('text','').strip()
             if len(text)>1600: raise ValueError('单次作答上限1600字，请分步提交')
-            before=deepcopy(s);trace={'policy_version':self.policy,'operation':kind,'tools':[]}
-            result={};payload={'text':text,'evidence':'interaction_only'}
-            if kind=='confirm_task':
-                if not s['pending_image'] or s['pending_image']['purpose']!='task': raise Conflict('没有待确认的题目图片')
-                if not text: raise ValueError('请确认或修正图片中的题目')
-                task=self.build(text,s['sources'],s['mode'])
-                s.update(task=task,original=deepcopy(task),pending_image=None,seen=[task['question']],request=text)
-                payload['feedback']='题目已确认。请提交你的尝试，或请求提示。'
-                trace['tools']=['task.plan'];trace['generated_task']=task
-            elif kind=='image':
-                if s['completed']: raise Conflict('当前任务已完成，请先开始检查或回到练习')
-                if s['pending_image']: raise Conflict('请先确认已有图片')
-                image_url=normalize_image(body.get('image_url'))
-                t=self.model.transcribe(image_url)
-                s['pending_image']={**t,'purpose':'work'}
-                self.event(c,sid,'image',{'image_url':image_url,'transcription':t,'purpose':'work'})
-                payload['feedback']='请确认或修正识别出的作答，再进行判定。';trace['tools']=['image.transcribe']
-            else:
-                if not s['task']: raise Conflict('请先确认题目')
-                if s['pending_image'] and kind!='confirm': raise Conflict('请先确认或修正图片转写')
-                if kind=='confirm' and (not s['pending_image'] or s['pending_image']['purpose']!='work'): raise Conflict('没有待确认的作答图片')
-                task=s['task'];ctx=self.context(c,sid,s,text);assessment={}
-                trace['context']=ctx;trace['task_id']=task['id'];trace['tools'].append('materials.retrieve')
-                memory=ctx.get('learning_memory',[])
-                o={'kind':kind,'phase':task['phase'],'status':'unknown','failures':s['failures'],
-                   'prior_support_needed':any(m['state']=='needs_support' for m in memory),
-                   'fallbacks':s.get('feedback_fallbacks',0),
-                   'hints':s.get('hints_by_task',{}).get(task['id'],0)}
-                if kind=='check':
-                    if task['phase']=='check': raise Conflict('请先完成当前独立检查')
-                    if not s['completed']: raise Conflict('先完成当前练习，再创建独立检查')
-                    seen=list(s['seen'])
-                    for row in c.execute('SELECT state FROM learning_sessions WHERE learner=?',(learner,)):
-                        old_state=json.loads(row['state'])
-                        if goal_key(old_state)==goal_key(s): seen.extend(old_state.get('seen',[]))
-                    bank=s['original'].get('check_assignment_ids',[])
-                    if bank:
-                        used={re.sub(r'\s','',q) for q in seen}
-                        candidates=[(key,teacher.load(c,key)) for key in bank]
-                        selected=next(((key,a) for key,a in candidates if re.sub(r'\s','',a['question']) not in used),None)
-                        if selected is None:raise ModelUnavailable('教师检查题已用完，请教师补充新题；原任务保持不变。')
-                        bank_key,a=selected
-                        new={k:deepcopy(a[k]) for k in ('domain','objective','question','rubric','reference','prerequisite','criteria','task_type','check_requirements')}
-                        new.update(bind_algebra(a['question'],a.get('algebra_initial',''),a.get('algebra_kind','none')))
-                        new.update(id=uuid.uuid4().hex,phase='check',source_quote='',source_ids=[],
-                                   reference_origin=a.get('reference_origin','teacher_authored'),check_assignment_id=bank_key)
-                        s['sources']=chunks(a['material'])
-                        new['source_ids']=[x['id'] for x in s['sources']]
-                        review={'acceptable':True,'reason':'教师审核题库'}
-                        trace.update(generated_task=new,review=review,check_source='teacher_bank')
-                    else:
-                        previous={'objective':task['objective'],'question':task['question'],'avoid_questions':seen[-12:],
-                                  'contract':check_contract(s['original'])}
-                        generations=[]
-                        for generation in range(2):
-                            new=self.build(task['objective'],s['sources'],'learn',previous)
-                            new['objective']=task['objective']
-                            new['domain']=task['domain']
-                            try:
-                                bind_check_contract(new, s['original'])
-                            except ValueError as error:
-                                review={'acceptable':False,'reason':str(error)}
-                                generations.append({'candidate':new,'review':review,'reference_assessment':None})
-                                previous['rejected_candidate']={'question':new['question'],'reason':str(error)}
-                                continue
-                            duplicate=re.sub(r'\s','',new['question']) in [re.sub(r'\s','',q) for q in seen]
-                            review={'acceptable':False,'reason':'重复旧题，必须更换数据、情境或考察角度。'} if duplicate else self.model.review(new,dump(new),'check_candidate')
-                            key_assessment=None
-                            if review['acceptable']:
-                                new['reference_origin']='model_generated_reviewed_same_model'
-                                verified,_=self.tools.verify(new,new['reference'])
-                                key_context={'history':[],'hypotheses':[],'prior_task_evidence':[],
-                                    'materials':retrieve(s['sources'],new['reference']+' '+new['objective'])}
-                                key_assessment=self.model.assess(new,new['reference'],key_context,verified)
-                                key_ok=adjudicate(new,new['reference'],verified,key_assessment)[0]=='correct'
-                                if key_ok and new.get('criteria'):
-                                    key_ok=aggregate(self.grade_dimensions(new,new['reference'],key_context))=='correct'
-                                if not key_ok:
-                                    review={'acceptable':False,'reason':'参考答案未通过评分：'+key_assessment['observation']}
-                            generations.append({'candidate':new,'review':review,'reference_assessment':key_assessment})
-                            if review['acceptable']: break
-                            previous['rejected_candidate']={'question':new['question'],'reference':new['reference'],'reason':review['reason']}
-                        else:
-                            raise ModelUnavailable('两次生成的新检查题均未通过审核，未更新状态，请重试。')
-                        trace['check_generation_attempts']=generations
-                        new['reference_origin']='model_generated_reviewed_same_model'
-                    s.update(task=new,completed=False,assisted=False,pending_question=None,failures=0)
-                    s['seen'].append(new['question']);payload['feedback']='新的独立检查已准备好，请独立作答。'
-                    trace.update(generated_task=new,review=review);trace['tools'].append('task.teacher_bank' if bank else 'task.generate_and_review')
-                elif kind=='resume_practice':
-                    s['sources']=deepcopy(s.get('original_sources',s['sources']))
-                    s.update(task=deepcopy(s['original']),completed=False,assisted=True,pending_question=None,failures=0)
-                    payload['feedback']='已回到原任务，可以继续提问或请求讲解。'
-                    o['phase']='teach';o['status']='unknown'
-                elif kind in ('attempt','confirm'):
-                    if s['completed']: raise Conflict('本任务已完成，请创建独立检查或继续学习')
-                    if not text: raise ValueError('请填写作答')
-                    verification,tool_results=self.tools.verify(task,text)
-                    assessment_ctx=dict(ctx)
-                    if ctx.get('image_evidence_id'):
-                        img=c.execute('SELECT payload FROM learning_events WHERE id=?',(ctx['image_evidence_id'],)).fetchone()
-                        assessment_ctx['image_url']=json.loads(img[0])['image_url']
-                    with ThreadPoolExecutor(max_workers=1) as pool:
-                        graded=pool.submit(copy_context().run,self.grade_dimensions,task,text,assessment_ctx) if task.get('criteria') else None
-                        assessment=self.model.assess(task,text,assessment_ctx,verification)
-                        quote=ground(assessment,text)
-                        if quote is None:
-                            trace['rejected_assessment']=assessment
-                            assessment=self.model.assess(task,text,{**assessment_ctx,'quote_feedback':
-                                '上次evidence_quote不是学生原文且evidence_sentence无效，请填写student_sentences中的编号并逐字复制该句。'},verification)
-                            quote=ground(assessment,text)
-                        dimensions=graded.result() if graded else None
-                    if quote is None:
-                        # An ungrounded judgment is not evidence; keep the attempt and route it to a teacher.
-                        trace['rejected_assessment']=assessment
-                        assessment={**assessment,'status':'unknown','confidence':'low','evidence_quote':'',
-                                    'observation':'模型判定未能引用学生原文，已转教师复核。'}
-                        payload['quote_unverified']=True
-                    else: assessment['evidence_quote']=quote
-                    o['grounded']=quote is not None and assessment['status'] in ('incorrect','incomplete')
-                    status,source=adjudicate(task,text,verification,assessment)
-                    if task.get('criteria'):
-                        payload['criteria_results']=dimensions
-                        dimension_status=aggregate(dimensions)
-                        payload['whole_task_status']=status
-                        payload['dimension_status']=dimension_status
-                        payload['rubric_conflict']=dimension_status=='correct' and status!='correct'
-                        # Dimension success cannot erase an uncovered whole-task requirement.
-                        status=aggregate([{'status':status},{'status':dimension_status}])
-                        source='model_rubric'
-                    payload['grading_conflict']=verification['status'] in ('correct','incorrect') and assessment['status'] in ('correct','incorrect') and verification['status']!=assessment['status']
-                    if re.fullmatch(r'(我)?(懂了|会了|知道了|明白了|学会了)[。！! ]*',text): status='unknown'
-                    o['status']=status
-                    payload.update(status=status,assessment=assessment,verification=verification,source=source,
-                        task=deepcopy(task),assisted=s['assisted'])
-                    trace['tools']+=tool_results
-                    if status=='correct':
-                        s['completed']=True;s['pending_question']=None
-                        payload['evidence']=('independent_verified' if source in ('sympy','rubric_tools') else 'independent_model_assessed') if task['phase']=='check' else ('assisted_complete' if s['assisted'] else 'practice_complete')
-                        lines=FALLBACKS[language(task['question']+text)]
-                        payload['feedback']=lines['passed_tool' if source in ('sympy','rubric_tools') else 'passed_model']
-                        if task['phase']=='teach': payload['feedback']+=lines['offer_check']
-                    elif task['phase']=='check':
-                        payload['feedback']=FALLBACKS[language(task['question']+text)]['check_failed']
-                    else:
-                        if status in ('incorrect','incomplete'): s['failures']+=1
-                        o['failures']=s['failures']
-                        s['hypotheses']=(s['hypotheses']+[{'hypothesis':assessment['hypothesis'],
-                            'quote':quote or '','certainty':'tentative'}])[-3:]
-                    s['pending_image']=None
-                elif kind=='reply':
-                    if task['phase']=='check': raise Conflict('独立检查时只评估作答')
-                    if not s['pending_question']: raise Conflict('没有待回答的追问，请提交作答')
-                    if not text: raise ValueError('请输入回答')
-                    interpreted=self.model.interpret_reply({'question':s['pending_question'],
-                        'student_reply':text,'rule':task['rubric'],'history':ctx})
-                    if not interpreted['evidence_quote'] or interpreted['evidence_quote'] not in text:
-                        raise ModelUnavailable('回答证据无法核对，未更新记录。')
-                    o['outcome']=interpreted['outcome'];trace['interpretation']=interpreted
-                    s['hypotheses']=(s['hypotheses']+[dict(interpreted,evidence_quote=interpreted['evidence_quote'][:200],certainty='tentative')])[-3:]
-                    payload['evidence']='dialogue_only'
-                elif kind in ('hint','explain'):
-                    if task['phase']=='check': raise Conflict('检查中不提供帮助，请回到原任务')
-                    if kind=='explain' and not s.get('allow_explanation',True): raise Conflict('教师为本任务关闭了完整讲解，请请求提示')
-                else: raise ValueError('未知教学操作')
-                decision=POLICIES[self.policy](o)
-                if kind=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
-                trace.update(input=o,decision=decision)
-                payload['action']=decision['action']
-                if decision['action'] in [level for level,_ in HINT_LEVELS]:
-                    counts=s.setdefault('hints_by_task',{})
-                    counts[task['id']]=counts.get(task['id'],0)+1
-                if 'feedback' not in payload:
-                    output,validation=self.feedback(task,decision['action'],text,ctx,assessment)
-                    payload['feedback']=output;trace['output_validation']=validation
-                    payload['delivered_action']=validation.get('delivered_action',decision['action'])
-                    s['feedback_fallbacks']=s.get('feedback_fallbacks',0)+1 if validation['fallback'] else 0
-                    s['assisted']=True;s['completed']=False
-                    s['pending_question']=output if decision['action'] not in ('self_correct','explain') else None
+            before=deepcopy(s)
+            t=Turn(c=c,sid=sid,learner=learner,s=s,kind=kind,body=body,text=text,
+                   trace={'policy_version':self.policy,'operation':kind,'tools':[]},
+                   payload={'text':text,'evidence':'interaction_only'})
+            {'confirm_task':self._confirm_task,'image':self._image}.get(kind,self._teach)(t)
+            payload,trace=t.payload,t.trace
             payload['task_id']=s['task']['id'] if s['task'] else None
             eid=self.event(c,sid,'turn',payload)
             planning.observe(c,sid,payload,eid)
             s['version']+=1
-            trace.update(evidence_event_id=eid,state_before=before,state_after=deepcopy(s),output=payload['feedback'],
+            trace.update(evidence_event_id=eid,state_diff=state_diff(before,s),state_version=s['version'],output=payload['feedback'],
                 seconds=time.time()-started,model_calls=[r for r in getattr(self.model,'calls',[]) if r['at']>=started],
                 budget={'max_model_calls':12,'max_repairs_per_structured_call':1})
             tid=self.event(c,sid,'trace',trace)
             c.execute('UPDATE learning_sessions SET state=? WHERE id=?',(dump(s),sid))
-            result.update({k:payload[k] for k in ('feedback','status','evidence','action','criteria_results') if k in payload})
+            result={k:payload[k] for k in ('feedback','status','evidence','action','criteria_results') if k in payload}
             if 'criteria_results' in result:result['criteria_results']=public_dimensions(result['criteria_results'])
             result.update(event_id=eid,trace_id=tid,session=self.view(c,sid,learner,s))
             self.remember(c,sid,key,digest,result)
             return result
+
+    def _confirm_task(self,t):
+        s=t.s
+        if not s['pending_image'] or s['pending_image']['purpose']!='task': raise Conflict('没有待确认的题目图片')
+        if not t.text: raise ValueError('请确认或修正图片中的题目')
+        task=self.build(t.text,s['sources'],s['mode'])
+        s.update(task=task,original=deepcopy(task),pending_image=None,seen=[task['question']],request=t.text)
+        t.payload['feedback']='题目已确认。请提交你的尝试，或请求提示。'
+        t.trace['tools']=['task.plan'];t.trace['generated_task']=task
+
+    def _image(self,t):
+        s=t.s
+        if s['completed']: raise Conflict('当前任务已完成，请先开始检查或回到练习')
+        if s['pending_image']: raise Conflict('请先确认已有图片')
+        image_url=normalize_image(t.body.get('image_url'))
+        transcription=self.model.transcribe(image_url)
+        s['pending_image']={**transcription,'purpose':'work'}
+        self.event(t.c,t.sid,'image',self.image_payload(image_url,transcription,'work'))
+        t.payload['feedback']='请确认或修正识别出的作答，再进行判定。';t.trace['tools']=['image.transcribe']
+
+    def _teach(self,t):
+        s=t.s
+        if not s['task']: raise Conflict('请先确认题目')
+        if s['pending_image'] and t.kind!='confirm': raise Conflict('请先确认或修正图片转写')
+        if t.kind=='confirm' and (not s['pending_image'] or s['pending_image']['purpose']!='work'): raise Conflict('没有待确认的作答图片')
+        t.task=s['task'];t.ctx=self.context(t.c,t.sid,s,t.text);t.assessment={}
+        t.trace['context']=t.ctx;t.trace['task_id']=t.task['id'];t.trace['tools'].append('materials.retrieve')
+        memory=t.ctx.get('learning_memory',[])
+        t.o={'kind':t.kind,'phase':t.task['phase'],'status':'unknown','failures':s['failures'],
+             'prior_support_needed':any(m['state']=='needs_support' for m in memory),
+             'fallbacks':s.get('feedback_fallbacks',0),
+             'hints':s.get('hints_by_task',{}).get(t.task['id'],0)}
+        handler={'check':self._check,'resume_practice':self._resume,'attempt':self._attempt,'confirm':self._attempt,
+                 'reply':self._reply,'hint':self._help,'explain':self._help}.get(t.kind)
+        if handler is None: raise ValueError('未知教学操作')
+        handler(t)
+        self._decide(t)
+
+    def _check(self,t):
+        c,s,task,trace=t.c,t.s,t.task,t.trace
+        if task['phase']=='check': raise Conflict('请先完成当前独立检查')
+        if not s['completed']: raise Conflict('先完成当前练习，再创建独立检查')
+        seen=list(s['seen'])
+        for row in c.execute('SELECT state FROM learning_sessions WHERE learner=?',(t.learner,)):
+            old_state=json.loads(row['state'])
+            if goal_key(old_state)==goal_key(s): seen.extend(old_state.get('seen',[]))
+        bank=s['original'].get('check_assignment_ids',[])
+        if bank:
+            new,review=self._bank_check(c,s,bank,seen)
+            trace.update(generated_task=new,review=review,check_source='teacher_bank')
+        else:
+            new,review,generations=self._generated_check(s,task,seen)
+            trace['check_generation_attempts']=generations
+        s.update(task=new,completed=False,assisted=False,pending_question=None,failures=0)
+        s['seen'].append(new['question']);t.payload['feedback']='新的独立检查已准备好，请独立作答。'
+        trace.update(generated_task=new,review=review);trace['tools'].append('task.teacher_bank' if bank else 'task.generate_and_review')
+
+    def _bank_check(self,c,s,bank,seen):
+        used={re.sub(r'\s','',q) for q in seen}
+        candidates=[(key,teacher.load(c,key)) for key in bank]
+        selected=next(((key,a) for key,a in candidates if re.sub(r'\s','',a['question']) not in used),None)
+        if selected is None:raise ModelUnavailable('教师检查题已用完，请教师补充新题；原任务保持不变。')
+        bank_key,a=selected
+        new={k:deepcopy(a[k]) for k in ('domain','objective','question','rubric','reference','prerequisite','criteria','task_type','check_requirements')}
+        new.update(bind_algebra(a['question'],a.get('algebra_initial',''),a.get('algebra_kind','none')))
+        new.update(id=uuid.uuid4().hex,phase='check',source_quote='',source_ids=[],
+                   reference_origin=a.get('reference_origin','teacher_authored'),check_assignment_id=bank_key)
+        s['sources']=chunks(a['material'])
+        new['source_ids']=[x['id'] for x in s['sources']]
+        return new,{'acceptable':True,'reason':'教师审核题库'}
+
+    def _generated_check(self,s,task,seen):
+        previous={'objective':task['objective'],'question':task['question'],'avoid_questions':seen[-12:],
+                  'contract':check_contract(s['original'])}
+        generations=[]
+        for _ in range(2):
+            new=self.build(task['objective'],s['sources'],'learn',previous)
+            new['objective']=task['objective']
+            new['domain']=task['domain']
+            try:
+                bind_check_contract(new, s['original'])
+            except ValueError as error:
+                review={'acceptable':False,'reason':str(error)}
+                generations.append({'candidate':new,'review':review,'reference_assessment':None})
+                previous['rejected_candidate']={'question':new['question'],'reason':str(error)}
+                continue
+            duplicate=re.sub(r'\s','',new['question']) in [re.sub(r'\s','',q) for q in seen]
+            review={'acceptable':False,'reason':'重复旧题，必须更换数据、情境或考察角度。'} if duplicate else self.model.review(new,dump(new),'check_candidate')
+            key_assessment=None
+            if review['acceptable']:
+                new['reference_origin']='model_generated_reviewed_same_model'
+                verified,_=self.tools.verify(new,new['reference'])
+                key_context={'history':[],'hypotheses':[],'prior_task_evidence':[],
+                    'materials':retrieve(s['sources'],new['reference']+' '+new['objective'])}
+                key_assessment=self.model.assess(new,new['reference'],key_context,verified)
+                key_ok=adjudicate(new,new['reference'],verified,key_assessment)[0]=='correct'
+                if key_ok and new.get('criteria'):
+                    key_ok=aggregate(self.grade_dimensions(new,new['reference'],key_context))=='correct'
+                if not key_ok:
+                    review={'acceptable':False,'reason':'参考答案未通过评分：'+key_assessment['observation']}
+            generations.append({'candidate':new,'review':review,'reference_assessment':key_assessment})
+            if review['acceptable']: break
+            previous['rejected_candidate']={'question':new['question'],'reference':new['reference'],'reason':review['reason']}
+        else:
+            raise ModelUnavailable('两次生成的新检查题均未通过审核，未更新状态，请重试。')
+        new['reference_origin']='model_generated_reviewed_same_model'
+        return new,review,generations
+
+    def _resume(self,t):
+        s=t.s
+        s['sources']=deepcopy(s.get('original_sources',s['sources']))
+        s.update(task=deepcopy(s['original']),completed=False,assisted=True,pending_question=None,failures=0)
+        t.payload['feedback']='已回到原任务，可以继续提问或请求讲解。'
+        t.o['phase']='teach';t.o['status']='unknown'
+
+    def _attempt(self,t):
+        c,s,task,text,trace,payload,o=t.c,t.s,t.task,t.text,t.trace,t.payload,t.o
+        if s['completed']: raise Conflict('本任务已完成，请创建独立检查或继续学习')
+        if not text: raise ValueError('请填写作答')
+        verification,tool_results=self.tools.verify(task,text)
+        assessment_ctx=dict(t.ctx)
+        if t.ctx.get('image_evidence_id'):
+            img=c.execute('SELECT payload FROM learning_events WHERE id=?',(t.ctx['image_evidence_id'],)).fetchone()
+            assessment_ctx['image_url']=self.image_url(json.loads(img[0]))
+        assessment,quote,dimensions=self._grade(task,text,assessment_ctx,verification,trace)
+        if quote is None:
+            # An ungrounded judgment is not evidence; keep the attempt and route it to a teacher.
+            trace['rejected_assessment']=assessment
+            assessment={**assessment,'status':'unknown','confidence':'low','evidence_quote':'',
+                        'observation':'模型判定未能引用学生原文，已转教师复核。'}
+            payload['quote_unverified']=True
+        else: assessment['evidence_quote']=quote
+        t.assessment=assessment
+        o['grounded']=quote is not None and assessment['status'] in ('incorrect','incomplete')
+        status,source=adjudicate(task,text,verification,assessment)
+        if task.get('criteria'):
+            payload['criteria_results']=dimensions
+            dimension_status=aggregate(dimensions)
+            payload['whole_task_status']=status
+            payload['dimension_status']=dimension_status
+            payload['rubric_conflict']=dimension_status=='correct' and status!='correct'
+            # Dimension success cannot erase an uncovered whole-task requirement.
+            status=aggregate([{'status':status},{'status':dimension_status}])
+            source='model_rubric'
+        payload['grading_conflict']=verification['status'] in ('correct','incorrect') and assessment['status'] in ('correct','incorrect') and verification['status']!=assessment['status']
+        if re.fullmatch(r'(我)?(懂了|会了|知道了|明白了|学会了)[。！! ]*',text): status='unknown'
+        o['status']=status
+        payload.update(status=status,assessment=assessment,verification=verification,source=source,
+            task=deepcopy(task),assisted=s['assisted'])
+        trace['tools']+=tool_results
+        lines=FALLBACKS[language(task['question']+text)]
+        if status=='correct':
+            s['completed']=True;s['pending_question']=None
+            payload['evidence']=('independent_verified' if source in ('sympy','rubric_tools') else 'independent_model_assessed') if task['phase']=='check' else ('assisted_complete' if s['assisted'] else 'practice_complete')
+            payload['feedback']=lines['passed_tool' if source in ('sympy','rubric_tools') else 'passed_model']
+            if task['phase']=='teach': payload['feedback']+=lines['offer_check']
+        elif task['phase']=='check':
+            payload['feedback']=lines['check_failed']
+        else:
+            if status in ('incorrect','incomplete'): s['failures']+=1
+            o['failures']=s['failures']
+            s['hypotheses']=(s['hypotheses']+[{'hypothesis':assessment['hypothesis'],
+                'quote':quote or '','certainty':'tentative'}])[-3:]
+        s['pending_image']=None
+
+    def _grade(self,task,text,ctx,verification,trace):
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            graded=pool.submit(copy_context().run,self.grade_dimensions,task,text,ctx) if task.get('criteria') else None
+            assessment=self.model.assess(task,text,ctx,verification)
+            quote=ground(assessment,text)
+            if quote is None:
+                trace['rejected_assessment']=assessment
+                assessment=self.model.assess(task,text,{**ctx,'quote_feedback':
+                    '上次evidence_quote不是学生原文且evidence_sentence无效，请填写student_sentences中的编号并逐字复制该句。'},verification)
+                quote=ground(assessment,text)
+            return assessment,quote,(graded.result() if graded else None)
+
+    def _reply(self,t):
+        s,text=t.s,t.text
+        if t.task['phase']=='check': raise Conflict('独立检查时只评估作答')
+        if not s['pending_question']: raise Conflict('没有待回答的追问，请提交作答')
+        if not text: raise ValueError('请输入回答')
+        interpreted=self.model.interpret_reply({'question':s['pending_question'],
+            'student_reply':text,'rule':t.task['rubric'],'history':t.ctx})
+        if not interpreted['evidence_quote'] or interpreted['evidence_quote'] not in text:
+            raise ModelUnavailable('回答证据无法核对，未更新记录。')
+        t.o['outcome']=interpreted['outcome'];t.trace['interpretation']=interpreted
+        s['hypotheses']=(s['hypotheses']+[dict(interpreted,evidence_quote=interpreted['evidence_quote'][:200],certainty='tentative')])[-3:]
+        t.payload['evidence']='dialogue_only'
+
+    def _help(self,t):
+        if t.task['phase']=='check': raise Conflict('检查中不提供帮助，请回到原任务')
+        if t.kind=='explain' and not t.s.get('allow_explanation',True): raise Conflict('教师为本任务关闭了完整讲解，请请求提示')
+
+    def _decide(self,t):
+        s,payload=t.s,t.payload
+        decision=POLICIES[self.policy](t.o)
+        if t.kind=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
+        t.trace.update(input=t.o,decision=decision)
+        payload['action']=decision['action']
+        if decision['action'] in [level for level,_ in HINT_LEVELS]:
+            counts=s.setdefault('hints_by_task',{})
+            counts[t.task['id']]=counts.get(t.task['id'],0)+1
+        if 'feedback' not in payload:
+            output,validation=self.feedback(t.task,decision['action'],t.text,t.ctx,t.assessment)
+            payload['feedback']=output;t.trace['output_validation']=validation
+            payload['delivered_action']=validation.get('delivered_action',decision['action'])
+            s['feedback_fallbacks']=s.get('feedback_fallbacks',0)+1 if validation['fallback'] else 0
+            s['assisted']=True;s['completed']=False
+            s['pending_question']=output if decision['action'] not in ('self_correct','explain') else None
 
     def traces(self,sid):
         with self.connect() as c:

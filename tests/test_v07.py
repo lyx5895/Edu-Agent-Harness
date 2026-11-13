@@ -132,6 +132,20 @@ def test_verbatim_quote_salvages_garbled_tail_but_rejects_paraphrase():
     assert verbatim_quote('', text) is None
 
 
+def test_images_are_files_and_traces_store_diffs(tmp_path):
+    e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
+    url = data_url(Image.new('RGB', (32, 32), 'white'))
+    s = e.create('u', image_url=url)
+    with e.connect() as c:
+        event = c.execute("SELECT id,payload FROM learning_events WHERE kind='image'").fetchone()
+    payload = json.loads(event['payload'])
+    assert 'image_url' not in payload and (e.images / payload['image_file']).exists()
+    assert e.image_event(s['session_id'], event['id'])['image_url'] == url
+    act(e, s, 'confirm_task', 'Explain tides.')
+    trace = e.traces(s['session_id'])[-1]
+    assert 'state_before' not in trace and trace['state_diff']['task']['before'] is None
+
+
 def test_paraphrase_is_bound_to_chosen_sentence():
     from harness.open_engine import ground
     text = 'Berry read 262 pages. Therefore, Berry has to read 88 pages on Saturday.'

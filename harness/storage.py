@@ -11,21 +11,31 @@ class StaleSnapshot(Conflict):
 
 
 class Snapshot:
-    def __init__(self, disk):
+    def __init__(self, disk, locked=False):
+        # locked: compute inside a write transaction on disk so the result cannot go stale.
+        # Used for reruns, whose model calls are replayed and therefore take milliseconds.
         self.disk = disk
+        self.locked = locked
+        self.writes = []
+        if locked:
+            disk.execute('BEGIN IMMEDIATE')
+            self.local = disk
+            return
         self.version = disk.execute('PRAGMA data_version').fetchone()[0]
         self.local = sqlite3.connect(':memory:')
         self.local.row_factory = sqlite3.Row
         disk.backup(self.local)
-        self.writes = []
 
     def execute(self, sql, args=()):
         result = self.local.execute(sql, args)
-        if sql.lstrip().split()[0].upper() in ('INSERT', 'UPDATE', 'DELETE'):
+        if not self.locked and sql.lstrip().split()[0].upper() in ('INSERT', 'UPDATE', 'DELETE'):
             self.writes.append((sql, args))
         return result
 
     def commit(self):
+        if self.locked:
+            self.disk.commit()
+            return
         if not self.writes:
             return
         self.disk.execute('BEGIN IMMEDIATE')
@@ -36,4 +46,5 @@ class Snapshot:
         self.disk.commit()
 
     def close(self):
-        self.local.close()
+        if not self.locked:
+            self.local.close()

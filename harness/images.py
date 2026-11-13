@@ -1,7 +1,9 @@
 """Validate uploaded images and bound their size before they reach the model."""
 import base64
+import hashlib
 import io
 import os
+from pathlib import Path
 import re
 
 from PIL import Image, ImageOps
@@ -34,6 +36,32 @@ def normalize_image(url, max_side=MAX_SIDE):
         rotated.convert('RGB').save(out, format='JPEG', quality=90)
         kind = 'jpeg'
     return f'data:image/{kind};base64,' + base64.b64encode(out.getvalue()).decode()
+
+
+def store_image(url, root):
+    """Write a normalized data URL to a content-addressed file; return the event fields."""
+    kind, data = re.match(r'^data:image/(png|jpeg|webp);base64,(.*)$', url, re.S).groups()
+    raw = base64.b64decode(data)
+    digest = hashlib.sha256(raw).hexdigest()
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / f'{digest}.{kind}'
+    if not path.exists():
+        tmp = path.with_suffix(f'.{os.getpid()}.tmp')
+        tmp.write_bytes(raw)
+        tmp.replace(path)
+    return {'image_file': path.name, 'image_sha256': digest, 'image_bytes': len(raw)}
+
+
+def load_image(payload, root):
+    """Data URL for an image event; older events stored the data URL inline."""
+    if payload.get('image_url'):
+        return payload['image_url']
+    name = payload['image_file']
+    raw = (Path(root) / name).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != payload['image_sha256']:
+        raise ValueError('原始图片文件校验失败')
+    return f'data:image/{name.rsplit(".", 1)[1]};base64,' + base64.b64encode(raw).decode()
 
 
 def file_to_data_url(path, max_side=MAX_SIDE):

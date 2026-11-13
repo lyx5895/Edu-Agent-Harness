@@ -222,10 +222,9 @@ def correct_open(sid:str,event_id:int,req:Correction):
 
 @app.get('/api/teacher/tasks/{sid}/images/{event_id}')
 def open_image(sid:str,event_id:int):
-    with engine.open.connect() as c:
-        row=c.execute("SELECT payload FROM learning_events WHERE id=? AND session=? AND kind='image'",(event_id,sid)).fetchone()
-    if not row: raise HTTPException(404)
-    return json.loads(row['payload'])
+    payload=engine.open.image_event(sid,event_id)
+    if not payload: raise HTTPException(404)
+    return payload
 
 
 @app.post('/api/teacher/assignments')
