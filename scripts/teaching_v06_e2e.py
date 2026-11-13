@@ -9,7 +9,7 @@ from harness.open_engine import OpenEngine
 
 
 def main():
-    output=Path('reports/teaching-v06-real.json')
+    output=Path(sys.argv[1] if len(sys.argv)>1 else 'reports/teaching-v06-real.json')
     report={'scope':'scripted workflow and grading checks, not learning outcomes','cases':[]}
     with tempfile.TemporaryDirectory(prefix='edu-v06-') as tmp:
         e=OpenEngine(Path(tmp)/'test.sqlite')

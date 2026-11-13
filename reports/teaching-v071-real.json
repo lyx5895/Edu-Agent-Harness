@@ -1,0 +1,61 @@
+{
+  "scope": "scripted behaviour checks on the live model, not learning outcomes",
+  "cases": [
+    {
+      "name": "english_wrong_attempt_is_located_in_english",
+      "passed": true,
+      "details": {
+        "feedback": "You assumed the earbuds cost half of the total, but the problem states that half was spent on the koala. If the earbuds and bracelets together cost the same as the koala, what would the total be?",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 3,
+        "evidence_quote": "So she had 10 x 2 = 20 tickets."
+      },
+      "seconds": 1.74
+    },
+    {
+      "name": "chinese_wrong_attempt_is_located_in_chinese",
+      "passed": true,
+      "details": {
+        "feedback": "请再检查这一处：「平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时」。这一步依据的是什么，结果成立吗？",
+        "delivered": "locate_template",
+        "reasons": [
+          "locate_must_end_with_one_question"
+        ],
+        "model_calls": 3
+      },
+      "seconds": 1.42
+    },
+    {
+      "name": "hint_ladder_escalates",
+      "passed": true,
+      "details": {
+        "actions": [
+          "scaffold_concept",
+          "scaffold_step",
+          "scaffold_example"
+        ]
+      },
+      "seconds": 2.49
+    },
+    {
+      "name": "eight_students_submit_concurrently",
+      "passed": true,
+      "details": {
+        "statuses": [
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect"
+        ],
+        "wall_seconds": 2.32
+      },
+      "seconds": 2.34
+    }
+  ],
+  "passed": true
+}
