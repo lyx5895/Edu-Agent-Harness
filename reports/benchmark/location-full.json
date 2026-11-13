@@ -1,0 +1,7246 @@
+{
+  "summary": {
+    "raw-baseline": {
+      "n": 300,
+      "accuracy": 0.357
+    },
+    "raw-omniedu": {
+      "n": 300,
+      "accuracy": 0.387
+    },
+    "raw-baseline-ref": {
+      "n": 300,
+      "accuracy": 0.357
+    },
+    "raw-omniedu-ref": {
+      "n": 300,
+      "accuracy": 0.38
+    }
+  },
+  "records": {
+    "raw-baseline": [
+      {
+        "id": "331-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "970-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "154-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "404-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "666-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "49-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "74-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "840-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "548-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "96-error",
+        "error_step": 1,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "374-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "596-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "59-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "931-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "519-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "219-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "38-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "88-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "444-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "428-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "71-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "246-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "92-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "564-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "434-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "60-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "846-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "579-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "126-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "1000-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "228-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "645-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "642-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "990-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "63-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "590-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "599-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "406-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "50-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "226-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "47-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "570-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "879-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "136-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "296-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "429-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "147-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "553-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "120-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "584-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "315-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "573-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "835-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "698-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "185-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "105-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "595-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "952-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "654-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "192-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "381-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "99-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "560-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "729-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "64-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "577-error",
+        "error_step": 7,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "61-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "633-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "210-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "508-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "696-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "544-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "437-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "795-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "321-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "476-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "965-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "464-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "370-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "306-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "254-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "813-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "184-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "715-error",
+        "error_step": 4,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "798-error",
+        "error_step": 1,
+        "step": 10,
+        "raw": "10"
+      },
+      {
+        "id": "249-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "83-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "588-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "307-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "537-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "506-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "896-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "351-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "746-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "459-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "294-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "623-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "995-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "953-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "524-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "982-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "168-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "775-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "350-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "155-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "500-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "431-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "40-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "684-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "79-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "782-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "571-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "586-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "808-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "837-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "927-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "348-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "711-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "358-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "608-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "932-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "593-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "816-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "467-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "70-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "860-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "95-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "276-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "485-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "713-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "680-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "66-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "62-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "748-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "718-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "317-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "662-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "591-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "697-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "841-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "456-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "291-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "733-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "395-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "893-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "355-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "23-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "472-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "363-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "172-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "625-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "119-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "505-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "976-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "223-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "786-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "906-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "132-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "756-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "253-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "407-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "400-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "881-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "82-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "170-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "907-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "411-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "562-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "284-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "140-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "440-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "563-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "285-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "723-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "425-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "367-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "699-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "389-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "236-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "999-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "84-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "180-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "822-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "237-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "674-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "238-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "12-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "496-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "603-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "186-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "269-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "288-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "4-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "149-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "956-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "547-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "378-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "624-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "974-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "326-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "128-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "707-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "527-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "632-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "670-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "692-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "757-error",
+        "error_step": 6,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "55-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "878-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "988-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "572-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "401-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "862-error",
+        "error_step": 6,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "408-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "403-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "106-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "493-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "649-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "410-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "967-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "195-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "68-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "213-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "451-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "166-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "112-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "885-error",
+        "error_step": 9,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "615-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "53-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "104-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "0-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "580-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "819-error",
+        "error_step": 5,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "549-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "103-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "372-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "628-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "26-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "72-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "212-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "765-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "385-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "152-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "784-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "258-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "856-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "616-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "766-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "873-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "125-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "118-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "499-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "477-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "491-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "495-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "319-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "87-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "955-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "772-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "898-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "271-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "490-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "708-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "165-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "528-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "855-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "933-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "540-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "923-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "150-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "706-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "556-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "27-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "734-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "305-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "658-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "93-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "712-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "267-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "530-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "375-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "171-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "364-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "971-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "545-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "554-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "514-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "337-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "651-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "867-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "627-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "199-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "245-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "783-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "232-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "204-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "722-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "504-error",
+        "error_step": 2,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "719-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "29-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      }
+    ],
+    "raw-omniedu": [
+      {
+        "id": "331-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "970-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "154-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "404-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "666-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student's solution contains a fundamental error"
+      },
+      {
+        "id": "49-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "74-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "840-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "548-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "96-error",
+        "error_step": 1,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "374-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "596-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "59-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "931-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the total number of"
+      },
+      {
+        "id": "519-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "219-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "38-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "88-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "444-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "428-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "71-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "246-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "92-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "564-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "434-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "60-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "846-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "579-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "126-error",
+        "error_step": 5,
+        "step": null,
+        "raw": "The student correctly calculates the number of helium"
+      },
+      {
+        "id": "1000-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "228-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "645-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "642-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "990-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "63-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "590-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "599-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly identifies the pen's length"
+      },
+      {
+        "id": "406-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "50-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "226-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "47-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "570-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "879-error",
+        "error_step": 5,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "136-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "296-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "429-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "147-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculated the strawberries Lilib"
+      },
+      {
+        "id": "553-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "120-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "584-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculates the cost of the"
+      },
+      {
+        "id": "315-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "573-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "835-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student correctly identifies the relationship between the"
+      },
+      {
+        "id": "698-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "185-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "105-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "595-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "952-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "654-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "192-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "381-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "99-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "560-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates Agnes's monthly"
+      },
+      {
+        "id": "729-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "64-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "577-error",
+        "error_step": 7,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "61-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "633-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "210-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "508-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "696-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "544-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "437-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "795-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "321-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculates the distance the first"
+      },
+      {
+        "id": "476-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "965-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the stripes per shoe"
+      },
+      {
+        "id": "464-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "370-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "306-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "254-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculated the family's spending"
+      },
+      {
+        "id": "813-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "184-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "715-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "798-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "249-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "83-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student set up the proportion as "
+      },
+      {
+        "id": "588-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "307-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "537-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "506-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "896-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "351-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "746-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "459-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "294-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "623-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "995-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "953-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "524-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "982-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student correctly calculated the total annual earnings"
+      },
+      {
+        "id": "168-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "775-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "350-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "155-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "500-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "431-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "40-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student's solution contains an error in"
+      },
+      {
+        "id": "684-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "79-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "782-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "571-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "586-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "808-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "837-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "927-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "348-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "711-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "358-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "608-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "932-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "593-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "816-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "467-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "70-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "860-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "The student correctly calculated the initial 4"
+      },
+      {
+        "id": "95-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "276-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "485-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "713-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "680-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "66-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "62-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "748-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "718-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "317-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "662-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "591-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "697-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "841-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "The student correctly calculated that 2 liters"
+      },
+      {
+        "id": "456-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "291-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "733-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "395-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly identifies the pen's length"
+      },
+      {
+        "id": "893-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "355-error",
+        "error_step": 2,
+        "step": 20,
+        "raw": "The student correctly identifies that 20"
+      },
+      {
+        "id": "23-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "472-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "363-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "172-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "625-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "119-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "505-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "976-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "223-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "786-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "906-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "132-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "756-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "253-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "407-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "400-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "881-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "82-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "170-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "907-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "411-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "562-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "284-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "140-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "440-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "563-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "285-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "723-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "425-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "367-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "699-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "389-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "236-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "999-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "84-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "180-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "822-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculated the total pages read"
+      },
+      {
+        "id": "237-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "674-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "238-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculated the healing time ("
+      },
+      {
+        "id": "12-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "496-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "603-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "186-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "269-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "288-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "4-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "149-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "956-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "547-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "378-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "624-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "974-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "326-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "128-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "707-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student correctly calculates the stairs for the"
+      },
+      {
+        "id": "527-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "632-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "670-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "692-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "757-error",
+        "error_step": 6,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "55-error",
+        "error_step": 5,
+        "step": 45,
+        "raw": "The student correctly identifies that 45"
+      },
+      {
+        "id": "878-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "988-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "572-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "401-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "862-error",
+        "error_step": 6,
+        "step": 9,
+        "raw": "9"
+      },
+      {
+        "id": "408-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "403-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "106-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "493-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "649-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The problem asks for the total number of"
+      },
+      {
+        "id": "410-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "967-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "195-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "68-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "213-error",
+        "error_step": 7,
+        "step": 75,
+        "raw": "The student correctly identifies that 75"
+      },
+      {
+        "id": "451-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "166-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "112-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "885-error",
+        "error_step": 9,
+        "step": 9,
+        "raw": "9"
+      },
+      {
+        "id": "615-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "53-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "104-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "0-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "580-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "819-error",
+        "error_step": 5,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "549-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "103-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "372-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "628-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "26-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "72-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "212-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "765-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "385-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student's first step correctly calculates the"
+      },
+      {
+        "id": "152-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "784-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "258-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "856-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student correctly calculated the length of the"
+      },
+      {
+        "id": "616-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the stripes per shoe"
+      },
+      {
+        "id": "766-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "873-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "125-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "118-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "499-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "477-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "491-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "495-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "319-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "87-error",
+        "error_step": 7,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "955-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "772-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "898-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "271-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "490-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "708-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "165-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student's solution is incorrect because it"
+      },
+      {
+        "id": "528-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "855-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "933-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "Step 2"
+      },
+      {
+        "id": "540-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "923-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "150-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "706-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "556-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "27-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "734-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "305-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "658-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "93-error",
+        "error_step": 3,
+        "step": 25,
+        "raw": "The student correctly identifies that 25"
+      },
+      {
+        "id": "712-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the profit for The"
+      },
+      {
+        "id": "267-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "530-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "375-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "171-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "364-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "971-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "545-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "554-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "514-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "337-error",
+        "error_step": 5,
+        "step": null,
+        "raw": "The student correctly sets up the equation "
+      },
+      {
+        "id": "651-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "867-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "627-error",
+        "error_step": 3,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "199-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "245-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "783-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "232-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "204-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "722-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "504-error",
+        "error_step": 2,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "719-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "29-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      }
+    ],
+    "raw-baseline-ref": [
+      {
+        "id": "331-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "970-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "154-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "404-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "666-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "49-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "74-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "840-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "548-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "96-error",
+        "error_step": 1,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "374-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "596-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "59-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "931-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "519-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "219-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "38-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "88-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "444-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "428-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "71-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "246-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "92-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "564-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "434-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "60-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "846-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "579-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "126-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "1000-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "228-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "645-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "642-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "990-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "63-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "590-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "599-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "406-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "50-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "226-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "47-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "570-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "879-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "136-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "296-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "429-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "147-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "553-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "120-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "584-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "315-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "573-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "835-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "698-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "185-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "105-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "595-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "952-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "654-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "192-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "381-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "99-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "560-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "729-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "64-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "577-error",
+        "error_step": 7,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "61-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "633-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "210-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "508-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "696-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "544-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "437-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "795-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "321-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "476-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "965-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "464-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "370-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "306-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "254-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "813-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "184-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "715-error",
+        "error_step": 4,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "798-error",
+        "error_step": 1,
+        "step": 10,
+        "raw": "10"
+      },
+      {
+        "id": "249-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "83-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "588-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "307-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "537-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "506-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "896-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "351-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "746-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "459-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "294-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "623-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "995-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "953-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "524-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "982-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "168-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "775-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "350-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "155-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "500-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "431-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "40-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "684-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "79-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "782-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "571-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "586-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "808-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "837-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "927-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "348-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "711-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "358-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "608-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "932-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "593-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "816-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "467-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "70-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "860-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "95-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "276-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "485-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "713-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "680-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "66-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "62-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "748-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "718-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "317-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "662-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "591-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "697-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "841-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "456-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "291-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "733-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "395-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "893-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "355-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "23-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "472-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "363-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "172-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "625-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "119-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "505-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "976-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "223-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "786-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "906-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "132-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "756-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "253-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "407-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "400-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "881-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "82-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "170-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "907-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "411-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "562-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "284-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "140-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "440-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "563-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "285-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "723-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "425-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "367-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "699-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "389-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "236-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "999-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "84-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "180-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "822-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "237-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "674-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "238-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "12-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "496-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "603-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "186-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "269-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "288-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "4-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "149-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "956-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "547-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "378-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "624-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "974-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "326-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "128-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "707-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "527-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "632-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "670-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "692-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "757-error",
+        "error_step": 6,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "55-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "878-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "988-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "572-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "401-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "862-error",
+        "error_step": 6,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "408-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "403-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "106-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "493-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "649-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "410-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "967-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "195-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "68-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "213-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "451-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "166-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "112-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "885-error",
+        "error_step": 9,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "615-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "53-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "104-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "0-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "580-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "819-error",
+        "error_step": 5,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "549-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "103-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "372-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "628-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "26-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "72-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "212-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "765-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "385-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "152-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "784-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "258-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "856-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "616-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "766-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "873-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "125-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "118-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "499-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "477-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "491-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "495-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "319-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "87-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "955-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "772-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "898-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "271-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "490-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "708-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "165-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "528-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "855-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "933-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "540-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "923-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "150-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "706-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "556-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "27-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "734-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "305-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "658-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "93-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "712-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "267-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "530-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "375-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "171-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "364-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "971-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "545-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "554-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "514-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "337-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "651-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "867-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "627-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "199-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "245-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "783-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "232-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "204-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "722-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "504-error",
+        "error_step": 2,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "719-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "29-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      }
+    ],
+    "raw-omniedu-ref": [
+      {
+        "id": "331-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "970-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "154-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "404-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "666-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student's solution contains a fundamental error"
+      },
+      {
+        "id": "49-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "74-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "840-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "548-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "96-error",
+        "error_step": 1,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "374-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "596-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "59-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "931-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the total number of"
+      },
+      {
+        "id": "519-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "219-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "38-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "88-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "444-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculates the miles per gallon"
+      },
+      {
+        "id": "428-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "71-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "246-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "92-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "564-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "434-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "60-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "846-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "579-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "126-error",
+        "error_step": 5,
+        "step": null,
+        "raw": "The student correctly calculates the number of helium"
+      },
+      {
+        "id": "1000-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "228-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "645-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "642-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "990-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "63-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "590-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "599-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly identifies the pen's length"
+      },
+      {
+        "id": "406-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "50-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "226-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "47-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "570-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "879-error",
+        "error_step": 5,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "136-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "296-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "429-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "147-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculated the strawberries Lilib"
+      },
+      {
+        "id": "553-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "120-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "584-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculated the cost of the"
+      },
+      {
+        "id": "315-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "573-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "835-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student correctly identifies that the terrier"
+      },
+      {
+        "id": "698-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "185-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "105-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "595-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "952-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "654-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "192-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "381-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "99-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "560-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates Agnes's monthly"
+      },
+      {
+        "id": "729-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "64-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "577-error",
+        "error_step": 7,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "61-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "633-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "210-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "508-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "696-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "544-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "437-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "795-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "321-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculates the distance the first"
+      },
+      {
+        "id": "476-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "965-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the stripes per shoe"
+      },
+      {
+        "id": "464-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "370-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "306-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "254-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculated the family's spending"
+      },
+      {
+        "id": "813-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "184-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "715-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "798-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "249-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "83-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student set up the proportion as "
+      },
+      {
+        "id": "588-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "307-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "537-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "506-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "896-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "351-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "746-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "459-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "294-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "623-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "995-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "953-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "524-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "982-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student correctly calculated the total annual earnings"
+      },
+      {
+        "id": "168-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "775-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "350-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "155-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "500-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "431-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "40-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student's solution contains an error in"
+      },
+      {
+        "id": "684-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "79-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "782-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "571-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "586-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "808-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "837-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "927-error",
+        "error_step": 7,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "348-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "711-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "358-error",
+        "error_step": 1,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "608-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "932-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "593-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "816-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "467-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "70-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "860-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student's solution contains a logical error"
+      },
+      {
+        "id": "95-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "276-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "485-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "713-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "680-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "66-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "62-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "748-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "718-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "317-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "662-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "591-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "697-error",
+        "error_step": 6,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "841-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "The student correctly calculated that 2 liters"
+      },
+      {
+        "id": "456-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "291-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "733-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "395-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly identifies the pen's length"
+      },
+      {
+        "id": "893-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "355-error",
+        "error_step": 2,
+        "step": 20,
+        "raw": "The student correctly identifies that 20"
+      },
+      {
+        "id": "23-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "472-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "363-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "172-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "625-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "119-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "505-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "976-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "223-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "786-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "906-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "132-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "756-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "253-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "407-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "400-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "881-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "82-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "170-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "907-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "411-error",
+        "error_step": 1,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "562-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "284-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "140-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "440-error",
+        "error_step": 2,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "563-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "285-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "723-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "425-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "367-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "699-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "389-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "236-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "999-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "84-error",
+        "error_step": 5,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "180-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "822-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculated the total pages read"
+      },
+      {
+        "id": "237-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "674-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "238-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student correctly calculated the healing time ("
+      },
+      {
+        "id": "12-error",
+        "error_step": 2,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "496-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "603-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "186-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "269-error",
+        "error_step": 4,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "288-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "4-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "149-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "956-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "547-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "378-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "624-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "974-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "326-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "128-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "707-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student correctly calculates the stairs for the"
+      },
+      {
+        "id": "527-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "632-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "670-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "692-error",
+        "error_step": 6,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "757-error",
+        "error_step": 6,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "55-error",
+        "error_step": 5,
+        "step": 45,
+        "raw": "The student correctly calculated that 45"
+      },
+      {
+        "id": "878-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "988-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "572-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "401-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "862-error",
+        "error_step": 6,
+        "step": 9,
+        "raw": "9"
+      },
+      {
+        "id": "408-error",
+        "error_step": 7,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "403-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "106-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "493-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "649-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The problem asks for the total number of"
+      },
+      {
+        "id": "410-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "967-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "195-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "68-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "213-error",
+        "error_step": 7,
+        "step": 75,
+        "raw": "The student correctly identifies that 75"
+      },
+      {
+        "id": "451-error",
+        "error_step": 3,
+        "step": 7,
+        "raw": "7"
+      },
+      {
+        "id": "166-error",
+        "error_step": 1,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "112-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "885-error",
+        "error_step": 9,
+        "step": 9,
+        "raw": "9"
+      },
+      {
+        "id": "615-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "53-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "104-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "0-error",
+        "error_step": 1,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "580-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "819-error",
+        "error_step": 5,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "549-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "103-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "372-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "628-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "26-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "72-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "212-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "765-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "385-error",
+        "error_step": 1,
+        "step": null,
+        "raw": "The student's first step correctly calculates the"
+      },
+      {
+        "id": "152-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "784-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "258-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "856-error",
+        "error_step": 2,
+        "step": null,
+        "raw": "The student correctly calculated the length of the"
+      },
+      {
+        "id": "616-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the stripes per shoe"
+      },
+      {
+        "id": "766-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "873-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "125-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "118-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "499-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "477-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "491-error",
+        "error_step": 4,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "495-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "319-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "87-error",
+        "error_step": 7,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "955-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "772-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "898-error",
+        "error_step": 3,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "271-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "490-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "708-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "165-error",
+        "error_step": 3,
+        "step": null,
+        "raw": "The student's solution is incorrect because it"
+      },
+      {
+        "id": "528-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "855-error",
+        "error_step": 1,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "933-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "Step 2"
+      },
+      {
+        "id": "540-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "923-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "150-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "706-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "556-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "27-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "734-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "305-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "658-error",
+        "error_step": 3,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "93-error",
+        "error_step": 3,
+        "step": 25,
+        "raw": "The student correctly identifies that 25"
+      },
+      {
+        "id": "712-error",
+        "error_step": 4,
+        "step": null,
+        "raw": "The student correctly calculates the profit for The"
+      },
+      {
+        "id": "267-error",
+        "error_step": 5,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "530-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "375-error",
+        "error_step": 3,
+        "step": 2,
+        "raw": "2"
+      },
+      {
+        "id": "171-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "364-error",
+        "error_step": 3,
+        "step": 5,
+        "raw": "5"
+      },
+      {
+        "id": "971-error",
+        "error_step": 2,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "545-error",
+        "error_step": 3,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "554-error",
+        "error_step": 4,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "514-error",
+        "error_step": 4,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "337-error",
+        "error_step": 5,
+        "step": null,
+        "raw": "The student correctly sets up the equation "
+      },
+      {
+        "id": "651-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "867-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "627-error",
+        "error_step": 3,
+        "step": 8,
+        "raw": "8"
+      },
+      {
+        "id": "199-error",
+        "error_step": 2,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "245-error",
+        "error_step": 2,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "783-error",
+        "error_step": 1,
+        "step": 1,
+        "raw": "1"
+      },
+      {
+        "id": "232-error",
+        "error_step": 3,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "204-error",
+        "error_step": 5,
+        "step": 0,
+        "raw": "0"
+      },
+      {
+        "id": "722-error",
+        "error_step": 4,
+        "step": 4,
+        "raw": "4"
+      },
+      {
+        "id": "504-error",
+        "error_step": 2,
+        "step": 6,
+        "raw": "6"
+      },
+      {
+        "id": "719-error",
+        "error_step": 4,
+        "step": 3,
+        "raw": "3"
+      },
+      {
+        "id": "29-error",
+        "error_step": 2,
+        "step": 2,
+        "raw": "2"
+      }
+    ]
+  },
+  "track": "location",
+  "limit": 300,
+  "systems": [
+    "raw-baseline",
+    "raw-omniedu",
+    "raw-baseline-ref",
+    "raw-omniedu-ref",
+    "harness-omniedu"
+  ],
+  "seconds": 70.0,
+  "generated_at": "2026-11-13T08:53:52+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

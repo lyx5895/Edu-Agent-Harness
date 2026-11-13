@@ -1,0 +1,545 @@
+{
+  "problems": 30,
+  "items": 60,
+  "summary": {
+    "harness-omniedu": {
+      "n": 52,
+      "failed_calls": 8,
+      "accuracy": 1.0,
+      "error_f1": 1.0,
+      "false_acceptance_rate": 0.0,
+      "false_rejection_rate": 0.0,
+      "abstain_rate": 0.115,
+      "status_counts": {
+        "unknown": 6,
+        "correct": 24,
+        "incorrect": 22
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu": [
+      {
+        "id": "38-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "38-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "49-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "49-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "59-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "59-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "60-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "60-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "71-error",
+        "is_error": true,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "71-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "74-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "74-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "88-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "88-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "92-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "92-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "96-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你给出了最终答案，但没有展示解题步骤。为了帮你检查思路，请先写出：1. 3年前John的年龄；2. 根据“两倍关系”列出的关于James未来年龄的等式；3. 解出James当前年龄的过程。我们一步步来，确保逻辑正确。",
+        "action": "clarify"
+      },
+      {
+        "id": "96-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "126-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "126-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "154-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "154-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "219-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "219-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "228-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "228-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "246-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "246-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "331-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "331-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "374-error",
+        "is_error": true,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "374-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "404-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "404-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "428-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "428-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "434-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "434-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "444-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "444-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "519-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "519-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "548-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "548-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "564-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "564-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "579-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "579-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "596-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total weight of both Jack and Anna together, but the goal is to make their individual weights equal, not to match their combined weight. If Jack holds some rocks, what should the weight on his side be to match Anna's 40 pounds?",
+        "action": "probe"
+      },
+      {
+        "id": "596-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "666-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "probe"
+      },
+      {
+        "id": "666-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "840-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你算出了小拼图的价格，但题目要求的是买1个大拼图和3个小拼图的总费用。请继续计算：先用大拼图价格加上3个小拼图的价格，得出最终答案。",
+        "action": "clarify"
+      },
+      {
+        "id": "840-correct",
+        "is_error": false,
+        "error": "ModelUnavailable: 判定引用不属于当前作答，未更新记录。"
+      },
+      {
+        "id": "846-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你正确计算了医生就诊的自付部分，但漏掉了猫的检查费用。请计算猫的检查费中Tim需要支付的部分，并将其与你的 $75 相加，得出总支付金额。",
+        "action": "clarify"
+      },
+      {
+        "id": "846-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "931-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+        "action": "clarify"
+      },
+      {
+        "id": "931-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      },
+      {
+        "id": "970-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "你误将 overtime 理解为每天 4 小时且持续 5 天，但题目中 4 小时 overtime 是总共的工作时间，并非每天。请重新阅读题目，确认 overtime 的总小时数是多少？",
+        "action": "clarify"
+      },
+      {
+        "id": "970-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "action": "offer_check"
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness",
+  "limit": 30,
+  "systems": [
+    "harness-omniedu"
+  ],
+  "seconds": 19.3,
+  "generated_at": "2026-11-13T08:26:06+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

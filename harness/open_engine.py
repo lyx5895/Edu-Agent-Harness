@@ -5,6 +5,7 @@ from contextvars import copy_context
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import sqlite3
@@ -14,7 +15,7 @@ from .errors import Conflict
 from .images import normalize_image
 from .model import ModelUnavailable
 from .open_model import OpenModel
-from .tasks import HINT_LEVELS, POLICY_VERSION, choose, choose_v1, choose_v2, public_task
+from .tasks import HINT_LEVELS, POLICIES, POLICY_VERSION, language, public_task, sentences
 from .toolbox import Toolbox, chunks, retrieve
 from .assessment import adjudicate
 from .memory import summarize, goal_key
@@ -25,6 +26,62 @@ from .pedagogy import check_contract, bind_check_contract
 
 
 def dump(x): return json.dumps(x,ensure_ascii=False,sort_keys=True)
+
+
+FALLBACKS={
+    'zh':{'default':'请指出你最不确定的部分，并说明你目前的思路？',
+          'probe':'你得出这个回答时，依据的规则或材料是什么？',
+          'reading':'请指出你用到的原文位置，并说说它如何支持你的判断？',
+          'writing':'你最想表达的观点是什么，哪一句还没有表达清楚？',
+          'experiment':'你记录了什么现象或数据，它能支持哪一步判断？',
+          'programming':'请给一个你不确定的输入，并描述程序现在与预期的输出？',
+          'concept':'你能给出一个例子，说明你现在怎样理解这个概念吗？',
+          'problem_solving':'你最不确定的是哪一步，这一步使用了什么依据？',
+          'self_correct':'请根据你刚才说明的思路自行修正作答，并写出依据。',
+          'self_correct_retry':'请按照你刚才说明的思路重新作答，再提交检查。',
+          'explain_failed':'这次生成的讲解未通过检查，请重试或请教师核对。',
+          'teacher_review':'当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。',
+          'locate':'请再检查这一处：「{quote}」。这一步依据的是什么，结果成立吗？',
+          'passed_tool':'本次作答通过工具验证。','passed_model':'本次作答通过模型评分规则检查（仍可请教师复核）。',
+          'offer_check':'可以开始一题新的独立检查。','check_failed':'本次独立检查尚未通过。可继续作答，或回到原任务请求帮助。'},
+    'en':{'default':'Which part are you least sure about, and what is your current reasoning?',
+          'probe':'What rule or information did you rely on to get this answer?',
+          'reading':'Which part of the text did you use, and how does it support your conclusion?',
+          'writing':'What is the main point you want to make, and which sentence does not express it clearly yet?',
+          'experiment':'What observation or data did you record, and which step of your reasoning does it support?',
+          'programming':'Give one input you are unsure about and describe the actual versus expected output?',
+          'concept':'Can you give an example that shows how you currently understand this concept?',
+          'problem_solving':'Which step are you least sure about, and what did you base that step on?',
+          'self_correct':'Please revise your answer yourself following the reasoning you just described, and show why.',
+          'self_correct_retry':'Please redo the problem following the reasoning you just described, then submit it again.',
+          'explain_failed':'The generated explanation did not pass checks; please retry or ask your teacher.',
+          'teacher_review':'This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.',
+          'locate':'Take another look at this part: "{quote}". What is this step based on, and does it hold?',
+          'passed_tool':'Your answer passed the tool check. ','passed_model':'Your answer passed the rubric check by the model (a teacher may still review it). ',
+          'offer_check':'You can start a new independent check.','check_failed':'This independent check is not passed yet. Keep working, or go back to the original task for help.'}}
+
+
+def verbatim_quote(quote, text):
+    """Return an exact substring of text to store as evidence, or None.
+    A quote whose tail was garbled near the length cap keeps its verbatim prefix."""
+    if not quote: return None
+    if quote in text: return quote
+    trimmed=quote.rstrip().rstrip('.…').rstrip()
+    low,high=0,len(trimmed)
+    while low<high:
+        mid=(low+high+1)//2
+        if trimmed[:mid] in text: low=mid
+        else: high=mid-1
+    return trimmed[:low] if low>=max(12,int(.8*len(trimmed))) else None
+
+
+def ground(assessment, text):
+    """Bind evidence to the student's own words: the verbatim quote, else the numbered sentence the model chose."""
+    quote=verbatim_quote(assessment.get('evidence_quote',''),text)
+    if quote is None:
+        spans=sentences(text);n=assessment.get('evidence_sentence',0)
+        if 1<=n<=len(spans): quote=spans[n-1]
+    return quote
 
 
 def review_risks(p):
@@ -43,7 +100,9 @@ def public_dimensions(rows):
 
 
 class OpenEngine:
-    def __init__(self,db=None,model=None,tools=None):
+    def __init__(self,db=None,model=None,tools=None,policy=None):
+        self.policy=policy or os.getenv('OMNIEDU_POLICY',POLICY_VERSION)
+        if self.policy not in POLICIES: raise ValueError(f'未知教学策略：{self.policy}')
         self.db=str(db or Path(__file__).resolve().parents[1]/'data/learning.sqlite')
         Path(self.db).parent.mkdir(parents=True,exist_ok=True)
         self.model=model or OpenModel();self.tools=tools or Toolbox()
@@ -232,34 +291,39 @@ class OpenEngine:
                 'materials':retrieve(s['sources'],text+' '+s['task']['objective'])}
 
     def feedback(self,task,action,text,context,assessment):
+        lines=FALLBACKS[language(task.get('question','')+text)]
         if action=='teacher_review':
-            return '当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。', {'candidate':None,'review':{},'reasons':[],'fallback':False,'delivered_action':'teacher_review'}
+            return lines['teacher_review'], {'candidate':None,'review':{},'reasons':[],'fallback':False,'delivered_action':'teacher_review'}
         if action=='self_correct':
-            return '请根据你刚才说明的思路自行修正作答，并写出依据。', {'candidate':None,'review':{'acceptable':True,'reason':'服务器只邀请自行作答，不提供答案'},'reasons':[],'fallback':False,'source':'policy_template'}
+            return lines['self_correct'], {'candidate':None,'review':{'acceptable':True,'reason':'服务器只邀请自行作答，不提供答案'},'reasons':[],'fallback':False,'source':'policy_template'}
         candidate=self.model.respond(task,action,text,context,assessment)
-        review=self.model.review(task,candidate,action)
+        english=language(task.get('question','')+text)=='en'
+        if english and candidate and language(candidate)=='zh': candidate=self.model.translate(candidate)
+        review=self.model.review(task,candidate,action,text)
         reasons=[]
         if not candidate or len(candidate)>1200: reasons.append('length')
         if action=='probe':
             if candidate.count('？')+candidate.count('?') != 1 or not candidate.endswith(('？','?')) or any(x in candidate for x in ('。','!','！','\n')):
                 reasons.append('probe_must_be_one_question')
+        if action=='locate' and (candidate.count('？')+candidate.count('?')!=1 or not candidate.rstrip().endswith(('？','?'))):
+            reasons.append('locate_must_end_with_one_question')
         if re.search(r'你已经掌握|已通过独立检查|系统指令',candidate): reasons.append('authority_claim')
+        if english and language(candidate)=='zh': reasons.append('language_mismatch')
         answer=re.sub(r'\s','',task['reference'])
         if action!='explain' and len(answer)>=3 and answer in re.sub(r'\s','',candidate): reasons.append('reference_disclosure')
         if not review['acceptable']: reasons.append('model_review')
-        fallback='请指出你最不确定的部分，并说明你目前的思路？'
-        if action=='probe': fallback='你得出这个回答时，依据的规则或材料是什么？'
-        fallbacks={
-            'reading':'请指出你用到的原文位置，并说说它如何支持你的判断？',
-            'writing':'你最想表达的观点是什么，哪一句还没有表达清楚？',
-            'experiment':'你记录了什么现象或数据，它能支持哪一步判断？',
-            'programming':'请给一个你不确定的输入，并描述程序现在与预期的输出？',
-            'concept':'你能给出一个例子，说明你现在怎样理解这个概念吗？',
-            'problem_solving':'你最不确定的是哪一步，这一步使用了什么依据？'}
-        if action!='explain':fallback=fallbacks.get(task.get('task_type'),fallback)
-        if action=='self_correct': fallback='请按照你刚才说明的思路重新作答，再提交检查。'
-        if action=='explain': fallback='这次生成的讲解未通过检查，请重试或请教师核对。'
-        return (fallback if reasons else candidate),{'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':'clarify' if reasons else action}
+        lines=FALLBACKS[language(task.get('question','')+text)]
+        fallback=lines['probe'] if action=='probe' else lines['default']
+        if action!='explain':fallback=lines.get(task.get('task_type'),fallback)
+        if action=='self_correct': fallback=lines['self_correct_retry']
+        if action=='explain': fallback=lines['explain_failed']
+        delivered='clarify' if reasons else action
+        if action=='locate' and assessment.get('evidence_quote'):
+            quote=assessment['evidence_quote'].strip().rstrip('.。')
+            if len(quote)>120: quote=(quote[:120].rsplit(' ',1)[0] if ' ' in quote[:120] else quote[:120])+'…'
+            fallback=lines['locate'].format(quote=quote)
+            if reasons: delivered='locate_template'
+        return (fallback if reasons else candidate),{'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
 
     def operation(self,sid,key,kind,body,version=None):
         started=time.time()
@@ -271,7 +335,7 @@ class OpenEngine:
             if s['needs_review']: raise Conflict('教师已修订证据，请新建任务重新检查')
             text=body.get('text','').strip()
             if len(text)>1600: raise ValueError('单次作答上限1600字，请分步提交')
-            before=deepcopy(s);trace={'policy_version':POLICY_VERSION,'operation':kind,'tools':[]}
+            before=deepcopy(s);trace={'policy_version':self.policy,'operation':kind,'tools':[]}
             result={};payload={'text':text,'evidence':'interaction_only'}
             if kind=='confirm_task':
                 if not s['pending_image'] or s['pending_image']['purpose']!='task': raise Conflict('没有待确认的题目图片')
@@ -376,9 +440,21 @@ class OpenEngine:
                     with ThreadPoolExecutor(max_workers=1) as pool:
                         graded=pool.submit(copy_context().run,self.grade_dimensions,task,text,assessment_ctx) if task.get('criteria') else None
                         assessment=self.model.assess(task,text,assessment_ctx,verification)
+                        quote=ground(assessment,text)
+                        if quote is None:
+                            trace['rejected_assessment']=assessment
+                            assessment=self.model.assess(task,text,{**assessment_ctx,'quote_feedback':
+                                '上次evidence_quote不是学生原文且evidence_sentence无效，请填写student_sentences中的编号并逐字复制该句。'},verification)
+                            quote=ground(assessment,text)
                         dimensions=graded.result() if graded else None
-                    quote=assessment['evidence_quote']
-                    if quote not in text: raise ModelUnavailable('判定引用不属于当前作答，未更新记录。')
+                    if quote is None:
+                        # An ungrounded judgment is not evidence; keep the attempt and route it to a teacher.
+                        trace['rejected_assessment']=assessment
+                        assessment={**assessment,'status':'unknown','confidence':'low','evidence_quote':'',
+                                    'observation':'模型判定未能引用学生原文，已转教师复核。'}
+                        payload['quote_unverified']=True
+                    else: assessment['evidence_quote']=quote
+                    o['grounded']=quote is not None and assessment['status'] in ('incorrect','incomplete')
                     status,source=adjudicate(task,text,verification,assessment)
                     if task.get('criteria'):
                         payload['criteria_results']=dimensions
@@ -398,15 +474,16 @@ class OpenEngine:
                     if status=='correct':
                         s['completed']=True;s['pending_question']=None
                         payload['evidence']=('independent_verified' if source in ('sympy','rubric_tools') else 'independent_model_assessed') if task['phase']=='check' else ('assisted_complete' if s['assisted'] else 'practice_complete')
-                        payload['feedback']='本次作答通过'+('工具验证。' if source in ('sympy','rubric_tools') else '模型评分规则检查（仍可请教师复核）。')
-                        if task['phase']=='teach': payload['feedback']+='可以开始一题新的独立检查。'
+                        lines=FALLBACKS[language(task['question']+text)]
+                        payload['feedback']=lines['passed_tool' if source in ('sympy','rubric_tools') else 'passed_model']
+                        if task['phase']=='teach': payload['feedback']+=lines['offer_check']
                     elif task['phase']=='check':
-                        payload['feedback']='本次独立检查尚未通过。可继续作答，或回到原任务请求帮助。'
+                        payload['feedback']=FALLBACKS[language(task['question']+text)]['check_failed']
                     else:
                         if status in ('incorrect','incomplete'): s['failures']+=1
                         o['failures']=s['failures']
                         s['hypotheses']=(s['hypotheses']+[{'hypothesis':assessment['hypothesis'],
-                            'quote':quote,'certainty':'tentative'}])[-3:]
+                            'quote':quote or '','certainty':'tentative'}])[-3:]
                     s['pending_image']=None
                 elif kind=='reply':
                     if task['phase']=='check': raise Conflict('独立检查时只评估作答')
@@ -423,7 +500,7 @@ class OpenEngine:
                     if task['phase']=='check': raise Conflict('检查中不提供帮助，请回到原任务')
                     if kind=='explain' and not s.get('allow_explanation',True): raise Conflict('教师为本任务关闭了完整讲解，请请求提示')
                 else: raise ValueError('未知教学操作')
-                decision=choose(o)
+                decision=POLICIES[self.policy](o)
                 if kind=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
                 trace.update(input=o,decision=decision)
                 payload['action']=decision['action']
@@ -462,8 +539,7 @@ class OpenEngine:
         checks=[]
         for t in self.traces(sid):
             if 'input' not in t: continue
-            policies={POLICY_VERSION:choose,'open-task-policy-v2':choose_v2,'open-task-policy-v1':choose_v1}
-            decision=policies.get(t['policy_version'],lambda _:None)(t['input'])
+            decision=POLICIES.get(t['policy_version'],lambda _:None)(t['input'])
             if t['operation']=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
             checks.append({'event_id':t['event_id'],'matches':decision==t['decision']})
         return {'passed':all(t['matches'] for t in checks),'turns':checks,'model_called':False,
@@ -586,10 +662,10 @@ class OpenEngine:
                          for criterion,result in pending]
                 for result,future in futures:
                     assessment=future.result()
-                    quote=assessment['evidence_quote']
-                    valid=bool(quote) and quote in text and assessment['confidence']=='high'
+                    quote=ground(assessment,text)
+                    valid=quote is not None and assessment['confidence']=='high'
                     result.update(status=assessment['status'] if valid else 'unknown',source='model',
-                                  reason=assessment['observation'],evidence_quote=quote if quote in text else '')
+                                  reason=assessment['observation'],evidence_quote=quote or '')
         return results
 
     def publish_path(self,data):

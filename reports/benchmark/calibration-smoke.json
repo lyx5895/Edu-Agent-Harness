@@ -1,0 +1,1231 @@
+{
+  "agreement": {
+    "Mistake_Identification": {
+      "n": 39,
+      "exact_accuracy": 0.692,
+      "lenient_accuracy": 0.923,
+      "lenient_kappa": 0.538,
+      "human_positive_rate": 0.949
+    },
+    "Mistake_Location": {
+      "n": 39,
+      "exact_accuracy": 0.615,
+      "lenient_accuracy": 0.744,
+      "lenient_kappa": 0.363,
+      "human_positive_rate": 0.641
+    },
+    "Revealing_of_the_Answer": {
+      "n": 39,
+      "exact_accuracy": 0.795,
+      "lenient_accuracy": 0.795,
+      "lenient_kappa": -0.047,
+      "human_positive_rate": 0.179
+    },
+    "Providing_Guidance": {
+      "n": 39,
+      "exact_accuracy": 0.564,
+      "lenient_accuracy": 0.795,
+      "lenient_kappa": 0.088,
+      "human_positive_rate": 0.897
+    },
+    "Actionability": {
+      "n": 39,
+      "exact_accuracy": 0.615,
+      "lenient_accuracy": 0.667,
+      "lenient_kappa": 0.204,
+      "human_positive_rate": 0.667
+    },
+    "Coherence": {
+      "n": 39,
+      "exact_accuracy": 0.795,
+      "lenient_accuracy": 0.846,
+      "lenient_kappa": 0.312,
+      "human_positive_rate": 0.872
+    },
+    "Tutor_Tone": {
+      "n": 39,
+      "exact_accuracy": 0.59,
+      "lenient_accuracy": 1.0,
+      "lenient_kappa": null,
+      "human_positive_rate": 1.0
+    },
+    "humanlikeness": {
+      "n": 39,
+      "exact_accuracy": 0.923,
+      "lenient_accuracy": 0.923,
+      "lenient_kappa": 0.361,
+      "human_positive_rate": 0.949
+    }
+  },
+  "judge_positive_rate_by_tutor": {
+    "Expert": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 0.8,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 0.8,
+      "Actionability": 0.8,
+      "Coherence": 1.0,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    },
+    "GPT4": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 1.0,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 1.0,
+      "Actionability": 0.8,
+      "Coherence": 0.6,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 0.8
+    },
+    "Gemini": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 1.0,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 1.0,
+      "Actionability": 0.6,
+      "Coherence": 0.8,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    },
+    "Llama31405B": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 1.0,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 1.0,
+      "Actionability": 1.0,
+      "Coherence": 1.0,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    },
+    "Llama318B": {
+      "Mistake_Identification": 0.6,
+      "Mistake_Location": 0.6,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 0.6,
+      "Actionability": 0.6,
+      "Coherence": 0.8,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 0.8
+    },
+    "Mistral": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 1.0,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 1.0,
+      "Actionability": 1.0,
+      "Coherence": 1.0,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    },
+    "Novice": {
+      "Mistake_Identification": 0.5,
+      "Mistake_Location": 0.5,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 0.5,
+      "Actionability": 0.5,
+      "Coherence": 1.0,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    },
+    "Phi3": {
+      "Mistake_Identification": 0.5,
+      "Mistake_Location": 0.5,
+      "Revealing_of_the_Answer": 0.25,
+      "Providing_Guidance": 0.5,
+      "Actionability": 0.5,
+      "Coherence": 0.75,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 0.75
+    },
+    "Sonnet": {
+      "Mistake_Identification": 1.0,
+      "Mistake_Location": 1.0,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 1.0,
+      "Actionability": 0.8,
+      "Coherence": 1.0,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0
+    }
+  },
+  "errors": 3,
+  "records": [
+    {
+      "conversation_id": "296399925",
+      "tutor": "Llama31405B",
+      "response": "That's close, but remember the formula for the area of a triangle is actually 1/2 times the base times the height, which in this case would be 1/2 x 5 x 9.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies the student's mistake (missing the 1/2 factor) and explicitly states the correct formula and the specific calculation setup (1/2 x 5 x 9). This satisfies Mistake_Identification and Mistake_Location. The tutor does not reveal the final numerical answer (22.5), only the expression, so Revealing_of_the_Answer is No. The guidance is correct and relevant. The response is actionable as it tells the student exactly what calculation to perform. The tone is encouraging ('That's close'). The response is coherent and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "GPT4",
+      "response": "You're close, but remember the formula for the area of a triangle is 1/2 times base times height. So in this case, it would be 1/2 times 9 times 5.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's formula (9x5) is missing the 1/2 factor required for a triangle's area. The tutor explicitly states the correct formula and applies it to the specific numbers given (1/2 * 9 * 5), which accurately locates the mistake. The tutor does not reveal the final calculated answer (22.5), only the setup, so 'Revealing_of_the_Answer' is No. The guidance is correct and relevant. The response is actionable as it tells the student exactly what calculation to perform next. The tone is encouraging ('You're close'), and the response is coherent and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Mistral",
+      "response": "Remember, the formula for the area of a triangle is base times height divided by 2.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's mistake by providing the correct formula (base * height / 2) instead of just base * height. It points to the missing division by 2, which is the exact error. The final answer is not revealed, only the formula. The guidance is correct and relevant. It is clear the student should apply the correct formula. The response is coherent and follows the dialogue naturally. The tone is neutral but helpful. The response sounds like a plausible human tutor.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Phi3",
+      "response": "That's almost correct, but remember that the formula for the area of a triangle is actually (base x height) divided by 2, so it would be (5 x 9) / 2. Let's try that out together!",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's formula (9x5) is missing the division by 2 required for a triangle's area. The tutor explicitly points out the missing component ('divided by 2') and provides the correct formula structure. The tutor does not reveal the final numerical answer (22.5), only the setup. The guidance is accurate and relevant. The next step (calculating the result) is clear. The tone is encouraging ('almost correct', 'let's try that out together'). The response is natural and coherent.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Llama318B",
+      "response": "You're close, but remember that the formula for the area of a triangle is actually 1/2 times the base, multiplied by the height, so the correct formula is 1/2 × base × height.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's proposed formula (9x5) is incorrect by stating 'You're close, but remember...'. It accurately locates the mistake as the missing '1/2' factor in the area formula. The tutor provides the correct formula (1/2 × base × height) as guidance. However, the tutor does not explicitly ask the student to recalculate or provide a guiding question, making the next step slightly less clear than it could be, though implied. The tone is encouraging ('You're close'). The response is coherent and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "To some extent",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Novice",
+      "response": "That was a good try.",
+      "human": {
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor acknowledges the student's attempt with a positive phrase ('good try') but fails to identify that the student's response ('9x5') is incorrect (the formula requires dividing by 2). The tutor does not point out the specific error, does not provide any guidance on the correct formula, and does not give a clear next step for the student. The tone is encouraging, and the response is coherent and human-like, but it lacks the necessary instructional components to address the mistake.",
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Expert",
+      "response": "Ah, you're very close!",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "To some extent",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that the student's response is incorrect by saying 'very close,' which implies a mistake without explicitly stating the correct formula or value. However, the tutor does not specify where the mistake lies (e.g., missing the 1/2 factor) nor does it offer any guidance, hint, or question to help the student correct it. The response is coherent and has an encouraging tone, but it lacks actionable next steps and fails to provide the necessary educational scaffolding.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Sonnet",
+      "response": "Nice try, but let's take a step back and remember the special formula for triangle area: it's base times height divided by 2.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's mistake by stating 'Nice try, but...' and correcting the formula. It accurately locates the error in the student's proposed formula (missing the division by 2). The tutor does not reveal the final numerical answer, only the correct formula. The guidance is correct and relevant. The response is actionable as it tells the student to use the corrected formula. It is coherent with the dialogue. The tone is encouraging ('Nice try'). The response sounds natural and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "296399925",
+      "tutor": "Gemini",
+      "response": "That's a good start!  Remember, the formula for the area of a triangle is base times height divided by two.  Let's try that calculation now. ",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies the student's mistake (missing the division by 2) by stating the correct formula, though it does so gently ('good start') rather than explicitly calling it an error. The location of the mistake is clear (the formula application). The final answer is not revealed, only the method. The guidance is correct and relevant. The actionability is high as the student is told to perform the calculation. The response is coherent and the tone is encouraging. It sounds like a plausible human tutor response.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Mistral",
+      "response": "It seems there might be a small mistake; let's recheck the multiplication of 72 and 5.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's answer (310) is incorrect for 72 * 5 (which is 360) and explicitly points to the multiplication step as the source of the error. The response does not reveal the final answer to the overall problem, nor does it give the correct value for the multiplication, instead prompting the student to recheck. The guidance is relevant and actionable (recheck the specific calculation). The tone is encouraging and supportive, and the response is coherent with the dialogue context.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Sonnet",
+      "response": "I appreciate your effort, but let's double-check that calculation together - can you walk me through how you got 310?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies the mistake (72 * 5 is not 310) by expressing doubt and asking for a walkthrough, which counts as 'To some extent' for identification since it doesn't explicitly state the correct value or say 'that is wrong' directly, though the intent is clear. The location is accurate as it targets the specific calculation. The tutor does not reveal the final answer. Guidance is provided via a guiding question to help the student self-correct. The action is clear (walk through the steps). The response is coherent and maintains an encouraging tone. It sounds like a natural human tutor response.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Phi3",
+      "response": "Actually, the correct value for 72 times 5 is 360, not 310. Let's try solving the fraction division again.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's arithmetic error (72 * 5 = 310 is wrong) and provides the correct value (360), satisfying Mistake_Identification and Mistake_Location. The tutor does not reveal the final answer to the overall fraction division problem, only the intermediate correction, so Revealing_of_the_Answer is No. The guidance is correct and relevant, and the instruction to 'try solving... again' makes the next step clear (Actionability). The response is logically consistent with the previous turn (Coherence). The tone is neutral and corrective, not offensive or overly encouraging, fitting 'Neutral'. The response sounds like a plausible human tutor correction (humanlikeness Yes).",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Llama318B",
+      "response": "The value of 72 multiplied by 5 is actually 360, not 310, let's go back and recalculate your original problem together so we can find the correct answer.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's arithmetic error (310 vs 360) and explicitly states the correct value, satisfying Mistake_Identification and Mistake_Location. The tutor does not reveal the final answer to the original problem, only the intermediate correction, so Revealing_of_the_Answer is No. The guidance to recalculate is correct and relevant (Providing_Guidance: Yes), and the instruction to 'go back and recalculate' is clear (Actionability: Yes). The response is logically consistent with the previous turn (Coherence: Yes). The tone is supportive and collaborative ('let's go back... together'), making it Encouraging. The phrasing is natural and plausible for a human tutor (humanlikeness: Yes).",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Novice",
+      "response": "Please recheck your answer.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "humanlikeness": "No",
+        "Coherence": "To some extent",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The student calculated 72 * 5 as 310, which is incorrect (the correct value is 360). The tutor's response 'Please recheck your answer' clearly signals that a mistake was made, satisfying Mistake_Identification. However, it does not specify which step or value is wrong, only that the answer needs checking, so Mistake_Location is 'To some extent'. The tutor does not reveal the final answer to the overall problem. The guidance is minimal (just a request to recheck) but is relevant and correct, so Providing_Guidance is 'To some extent' as it lacks specific hints or explanations. Actionability is low because the student is told to recheck but not given a specific direction on how to do so or what to look for, though it is slightly better than just giving the answer. The response is coherent and",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "To some extent",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "GPT4",
+      "response": "Good effort, but the correct answer when you multiply 72 by 5 is 360. Let's try it again together.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's mistake (310 vs 360) and explicitly states the correct value, satisfying Mistake_Identification and Mistake_Location. The tutor provides the correct intermediate value (360) but does not reveal the final answer to the overall problem (which is not provided in the gold solution anyway, but the context implies a multi-step division problem), so Revealing_of_the_Answer is No. The guidance is correct and relevant, and the instruction to 'try it again' makes it actionable. The response is coherent with the previous turn. The tone is encouraging ('Good effort', 'let's try it again'). The response sounds natural and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Llama31405B",
+      "response": "It looks like there might be a mistake in your multiplication - 72 times 5 is actually 360, not 310.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "Yes (and the answer is correct)",
+        "Providing_Guidance": "Yes",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor clearly identifies the student's error in the multiplication step (72 * 5). It explicitly states the correct value (360) versus the student's incorrect value (310), satisfying Mistake_Identification and Mistake_Location. The response provides the correct intermediate value but does not reveal the final answer to the overall problem (which involves long division), so Revealing_of_the_Answer is No. The guidance is correct and relevant. The actionability is high as the student knows the correct number to use. The tone is neutral and helpful. The response is coherent and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Expert",
+      "response": "Oh you're very close. 62 times 5 = 310, but 72 times 5 is a little bigger",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's answer (310) is incorrect for the question asked (72 * 5), noting that 310 is actually 62 * 5. This clearly signals the mistake and locates it in the multiplication step. The tutor provides a hint by comparing the magnitude ('a little bigger') without revealing the final answer (360). The guidance is relevant and actionable, prompting the student to recalculate. The tone is encouraging ('very close'), and the response is coherent and human-like.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "398186338",
+      "tutor": "Gemini",
+      "response": "Let's double-check that multiplication,  72 times 5 is a bit more than that. ",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's answer (310) is incorrect for 72 * 5 (which is 360). The tutor hints at the mistake ('a bit more than that') rather than stating it is wrong directly, fitting 'To some extent' for identification. The location is clear (the multiplication step). The final answer to the overall problem is not revealed. The guidance is relevant (suggesting a double-check) but vague ('a bit more') rather than providing a specific hint or method, so it is 'To some extent'. The actionability is low because the student is only told the answer is higher, not how to fix it or what the correct value is. The tone is neutral and polite. The response sounds like a plausible human tutor.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "GPT4",
+      "response": "You're doing great! But remember, the 20% increase for the second harvest should be calculated from the original yield of 20 sacks, not from the increased yield of 24 sacks.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies a mistake in the student's logic regarding the base for the percentage calculation. However, the tutor's correction is factually incorrect based on the problem statement ('increases by twenty percent after every harvest'), which implies compound growth (calculating 20% of the new total, 24), not simple growth (calculating 20% of the original 20). The student's calculation of 28.8 for the second harvest was actually mathematically correct for the second harvest alone, though the student failed to sum the first and second harvests (20 + 24 = 44) as requested by the question. The tutor's claim that the increase should be based on the original 20 sacks is a misunderstanding of the problem's 'after every harvest' phrasing. Therefore, while the tutor identifies a mistake (in",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "Coherence": "No",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Sonnet",
+      "response": "I see where you're going with this, but let's take a closer look at how we calculate the total after both harvests, not just the second harvest alone.",
+      "human": {
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "To some extent",
+        "humanlikeness": "Yes",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that the student's approach is flawed because the student calculated the yield of the second harvest (28.8) instead of the total yield across both harvests (20 + 24 = 44). The tutor hints at the mistake ('let's take a closer look') but does not explicitly state the error or the correct value, fitting 'To some extent' for identification. The tutor points to the conceptual error (calculating only the second harvest vs. the total of both), which is accurate, so 'Mistake_Location' is 'Yes'. The final answer (44) is not revealed. The guidance is relevant but vague, offering a direction rather than a specific hint or question, so 'Providing_Guidance' is 'To some extent'. The actionability is low because the student is not told exactly what calculation to perform next, just a",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Expert",
+      "response": "No. What is 20% of 20?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's final answer (28.8) is wrong and that the student misunderstood the question (calculating the yield of the second harvest instead of the sum of the first and second). However, the tutor's response 'No' is abrupt and lacks a clear explanation of *why* the answer is wrong (i.e., the question asks for the total of both harvests, not just the second). The follow-up question 'What is 20% of 20?' is a valid hint to restart the calculation, but it doesn't explicitly address the summation error. The tone is curt ('No.') rather than encouraging. The response is coherent and human-like, though brief.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Llama318B",
+      "response": "You calculated the 20% correctly as 4.8 sacks for the second harvest, but let's calculate it step by step to double-check: 20% of 24 sacks is actually (20/100) * 24 = 0.2 * 24 = 4.8, which looks correct, however, this 4.8 represents 20% of the second harvest, not the increase in sacks from the second harvest.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "To some extent",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor fails to identify the student's actual mistake. The student's error is interpreting the question as asking for the yield of the second harvest alone (28.8), whereas the question asks for the 'total number of sacks... after the first and second harvest' (sum of 20 + 24 = 44). The tutor incorrectly validates the student's calculation of 4.8 as 'correct' and then makes a confusing, factually wrong statement that 4.8 'represents 20% of the second harvest, not the increase'. In reality, 4.8 *is* the increase (20% of 24). The tutor does not point out the missing summation step required by the question. The response is incoherent and provides no actionable guidance to fix the actual error.",
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "No"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Mistral",
+      "response": "\"Remember, the 20% increase is based on the original yield of 20 sacks, not the total after the first harvest.\"",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies the student's conceptual error (applying the percentage to the new total instead of the original base) and points to the specific step where the mistake occurs (the calculation for the second harvest). However, the tutor's guidance is factually incorrect based on the problem statement ('increases by twenty percent after every harvest'), which implies compound growth (20% of the previous harvest), not simple interest (20% of the original). The gold solution also contains a logical flaw in its final summation (adding the first and second harvest totals to get 44, whereas the question asks for the total *after* the first and second harvest, which usually implies the cumulative sum or the final state, but the gold solution's logic of 20+24=44 suggests it wants the sum of *",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Llama31405B",
+      "response": "It looks like you're close, but I think there might be a misunderstanding about how to calculate the total number of sacks after the second harvest - let's take a closer look at how the 20% increase applies to the original 20 sacks from the second harvest, rather than the total from the first harvest.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "To some extent",
+        "humanlikeness": "Yes",
+        "Coherence": "To some extent",
+        "Tutor_Tone": "Neutral"
+      },
+      "error": "JSONDecodeError: Expecting ',' delimiter: line 342 column 2 (char 2180)"
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Gemini",
+      "response": "You're right about the increase in sacks, but remember that we're adding the increase to the *previous* harvest's total, not just the initial 20 sacks. ",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that the student's final answer is incorrect (Mistake_Identification: Yes) and attempts to point out the error in the calculation logic (Mistake_Location: To some extent). However, the tutor's explanation is confusing and factually incorrect regarding the student's actual work. The student *did* add the increase to the previous harvest's total (24 + 4.8), so the tutor's claim that the student didn't do this is a contradiction. Furthermore, the tutor fails to identify the actual mistake: the question asks for the *sum* of the first and second harvests (20 + 24 = 44), whereas the student calculated the yield of the second harvest only (28.8). The tutor's guidance is therefore misleading and does not help the student reach the correct solution (Providing_Guidance: To some",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "4642-e2ccfa55-280b-421c-9245-25ff56e3f33e",
+      "tutor": "Phi3",
+      "response": "To find the total number of sacks after the second harvest, add the initial amount to the additional sacks: 24 sacks + 4.8 sacks = 28.8 sacks.",
+      "human": {
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "humanlikeness": "Yes",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The student has made a critical error in interpreting the question. The question asks for the 'total number of sacks... after the first and second harvest', which implies the sum of the yields from both harvests (20 + 24 = 44). The student calculated the yield of the second harvest (28.8) and treated that as the final answer. The tutor's response explicitly validates the student's incorrect calculation (24 + 4.8 = 28.8) as the method to find the 'total number of sacks after the second harvest'. The tutor fails to identify that the student misunderstood the question (summing two harvests vs. finding the yield of the second) and fails to correct the final answer. Instead, the tutor confirms the wrong value. Therefore, Mistake_Identification is No, Mistake_Location is No, and Providing_Guided",
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "Yes (but the answer is incorrect)",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Sonnet",
+      "response": "Great, you've correctly identified the cost of the meat, now let's focus on calculating the total cost of meat for all the sandwiches needed.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's previous calculation was flawed (the student calculated the cost for 10 pounds of meat instead of 5) by guiding them to recalculate the total cost of meat for the correct number of sandwiches. However, the tutor does not explicitly state that the student made a mistake or point out the specific error (using 10 pounds instead of 5), so Mistake_Identification is 'To some extent' and Mistake_Location is 'To some extent' (it guides toward the right area but doesn't pinpoint the error). The tutor does not reveal the final answer ($50). The guidance is correct and relevant. The actionability is clear (calculate total meat cost). The response is coherent and the tone is encouraging. It sounds like a plausible human tutor response.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Llama318B",
+      "response": "Now that we know the cost of 1 pound of meat is $7.00, we can use this information to find the correct total cost for the meat and cheese needed for the muffaletta sandwiches.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "To some extent",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor acknowledges the student's correct answer to the specific question asked ($7.00) but fails to identify the major mistake in the student's initial calculation (where the student incorrectly calculated 10 pounds of meat instead of 5). The tutor does not point out where the error occurred (Mistake_Location: No) nor does it explicitly state that the previous total of $100 was wrong (Mistake_Identification: No). The response is vague and does not offer specific guidance on how to correct the calculation (Providing_Guidance: No). It is coherent and has a neutral tone, but it is not actionable as it doesn't tell the student what to do next other than a generic 'find the correct total'.",
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Llama31405B",
+      "response": "You're close, but I notice that you calculated the cost of 10 pounds of meat, when actually 5 pounds of meat are needed for 5 sandwiches, since each sandwich requires 1 pound of meat; can you recalculate the cost of the meat?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies the student's mistake: the student calculated the cost for 10 pounds of meat (and cheese) instead of 5 pounds of each. The tutor explicitly points out the error in the quantity of meat needed (10 vs 5) and explains why (1 pound per sandwich). The tutor does not reveal the final answer ($50) but asks the student to recalculate the meat cost, providing clear, actionable guidance. The tone is encouraging ('You're close') and the response is coherent with the dialogue history.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "GPT4",
+      "response": "That's correct. So, if 1 pound of meat costs $7.00, then for 5 sandwiches, you need 5 * $7.00 = $35.00 for the meat. Can you try calculating the cost for the cheese now?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's previous calculation was wrong (implicitly) by guiding them to the correct calculation for the meat ($35 instead of the student's $70). The tutor explicitly states the correct intermediate value for the meat cost, which signals the mistake. The guidance is accurate and relevant, asking the student to apply the same logic to the cheese. The final answer ($50) is not revealed. The tone is encouraging and the response is coherent with the dialogue flow. It is highly plausible a human tutor would write this.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Mistral",
+      "response": "It seems like you've calculated the cost as if all 10 pounds were meat, but remember that half of that weight is cheese, which has a different cost.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies the student's mistake: the student calculated the cost for 10 pounds of meat and 10 pounds of cheese, whereas the student only needed 5 pounds of each (since 10 pounds total was split between meat and cheese). The tutor points out that the student treated the total weight as if it were all meat, which is the core error. The tutor does not reveal the final answer ($50) but provides a clear hint about the composition of the weight (half meat, half cheese). The guidance is correct and relevant. The tone is neutral and helpful. The response is coherent and actionable, prompting the student to recalculate based on the correct split of ingredients.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Expert",
+      "response": "And if there are 5 sandwiches, what is the meat cost?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's previous calculation was flawed (the student calculated the cost for 10 pounds of meat instead of 5) by asking a guiding question that forces the student to recalculate the meat cost based on the correct number of sandwiches (5). The tutor does not reveal the final answer ($50) or the intermediate correct value ($35), but rather prompts the student to find it. The tone is neutral and helpful, and the response is coherent with the dialogue flow. It is actionable as it asks a specific question the student can answer.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Gemini",
+      "response": "You're absolutely right about the cost of meat, but remember that each sandwich needs both meat and cheese, so we need to figure out the total cost of both ingredients for each sandwich. ",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "To some extent",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's previous calculation (in the first turn) was wrong because they treated the total weight of meat and cheese as a single block for pricing, rather than calculating the cost of 5 pounds of meat and 5 pounds of cheese separately. However, in this specific turn, the tutor does not explicitly state 'You made a mistake' or 'Your previous answer of $100 is wrong.' Instead, they validate the student's current correct fact ('cost of meat') and pivot to the next logical step (combining ingredients). This counts as 'To some extent' for Mistake Identification because it hints at the error in the overall approach without explicitly flagging the previous wrong total. For Mistake Location, the tutor points to the conceptual error (needing to figure out 'b",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "221-362eb11a-f190-42a6-b2a4-985fafdcfa9e",
+      "tutor": "Phi3",
+      "response": "To find the area of a rectangle, multiply its length by its width.\n\n(Note: This instruction does not require a tutor response as it is a direct instruction to the student.)",
+      "human": {
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "humanlikeness": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor's response is completely irrelevant to the dialogue. The conversation is about calculating the cost of ingredients for sandwiches, but the tutor suddenly explains how to find the area of a rectangle. This indicates a failure to identify the student's mistake (calculating 10 pounds of meat instead of 5), a failure to locate the error, and a complete lack of relevant guidance. The response is incoherent with the context and does not provide actionable steps for the current problem. While the tone is neutral, the content is nonsensical in this context.",
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "No"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Llama31405B",
+      "response": "It looks like there might be a mistake in the solution; let's go back to the equation 3x/2 = 150 and see if we can solve for x again, making sure to double-check our work.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that there is a mistake in the student's solution (Mistake_Identification: Yes) and points to the specific equation where the error likely lies (Mistake_Location: Yes). However, the tutor does not reveal the final answer (Revealing_of_the_Answer: No). The guidance provided is to 'solve for x again' and 'double-check our work'. Since the student's algebraic manipulation of 3x/2 = 150 to get x = 100 is actually correct (150 * 2 / 3 = 100), the error lies in the setup of the equation (the student incorrectly calculated the total money needed or the earnings expression, though the prompt implies the student's logic for the total money was accepted by the tutor in the previous turn, the gold solution shows the total money is correct but the final answer should be 150, not 1",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Sonnet",
+      "response": "Great work setting up the equation, but let's double-check our calculation when solving for x in 3x/2 = 150.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's final answer (100) is incorrect based on the gold solution (150), specifically pointing to the algebraic step of solving for x. The tutor does not reveal the final answer but guides the student to re-evaluate the calculation. The tone is encouraging ('Great work'), and the response is coherent and actionable, prompting the student to redo the math.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Llama318B",
+      "response": "That makes sense, but let's check if this is correct. Since Kenny earned a total of $150 and he sold 2/3 of the cards for $1.5 each, does the equation 3x/2 indeed equal 150 when x equals 100?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that the student's answer (100) is likely incorrect by asking the student to verify the equation with that value, which constitutes identifying a mistake 'to some extent' (hinting rather than stating). The tutor does not explicitly point to the specific arithmetic error (150 / 1.5 = 100 sold cards, not total cards), so the location is only partially addressed. The tutor does not reveal the final answer (150). The guidance is correct and relevant, prompting a check of the logic. The actionability is clear (check the equation). The response is coherent and maintains an encouraging tone. It sounds like a plausible human tutor response.",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "GPT4",
+      "response": "Actually, there seems to be a mistake in your calculation. When you solve 3x/2 = $150, you should get x = 100, which would be the number of cards Kenny sold, not the total number of cards he started with. Let's go back and check it again.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor identifies that the student's final answer (100) is incorrect based on the gold solution (150). However, the tutor's explanation contains a logical contradiction and a factual error. The tutor states 'When you solve 3x/2 = $150, you should get x = 100', which is mathematically correct (100 * 1.5 = 150), but then claims this result represents 'the number of cards Kenny sold'. In the student's setup, x was defined as the *total* number of cards, and 2/3x was the number sold. If x=100, then 2/3x = 66.67 cards sold, which doesn't match the logic that 100 cards were sold. The tutor fails to correctly identify that the student's equation setup or interpretation of the variable is the issue, or that the arithmetic to find the total from the sold amount is missing. The tutor's claim that",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral",
+        "humanlikeness": "No"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Expert",
+      "response": "If he made $150, how many cards did he sell at $1.50 each?",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "To some extent",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's previous calculation (x=100) is incorrect based on the gold solution (150), but does not explicitly state 'you are wrong' or 'that is incorrect'. Instead, the tutor guides the student to re-evaluate the intermediate step of how many cards were sold. This counts as 'To some extent' for Mistake_Identification because it implies an error without explicitly flagging it. For Mistake_Location, the tutor points to the specific calculation of the number of cards sold (the intermediate step leading to the final answer), which is the area where the student's logic needs correction to reach the right total. The tutor does not reveal the final answer (150), only asks a guiding question. The guidance is correct and relevant (calculating sold cards from總",
+        "Mistake_Identification": "To some extent",
+        "Mistake_Location": "To some extent",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Mistral",
+      "response": "Let's recheck the equation: if he earned $150, then 3x/2 = 150 leads to x = 100, but remember, this x represents the number of cards he sold, not the total he started with.",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Neutral"
+      },
+      "error": "JSONDecodeError: Expecting ',' delimiter: line 325 column 1 (char 2750)"
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Phi3",
+      "response": "Great job! Now let's try solving a similar problem together to reinforce your understanding.",
+      "human": {
+        "Mistake_Identification": "No",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "No",
+        "Actionability": "No",
+        "humanlikeness": "No",
+        "Coherence": "No",
+        "Tutor_Tone": "Encouraging"
+      },
+      "error": "JSONDecodeError: Expecting ',' delimiter: line 226 column 1 (char 1715)"
+    },
+    {
+      "conversation_id": "1612-fb30b14f-9258-4b38-ad95-54b0928d8c29",
+      "tutor": "Gemini",
+      "response": "You're right that he made $150, but remember, that $150 represents the money he made from **selling** the cards.  Let's think about how much he sold, not how many he started with. ",
+      "human": {
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "No",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "To some extent",
+        "Actionability": "Yes",
+        "humanlikeness": "Yes",
+        "Coherence": "No",
+        "Tutor_Tone": "Neutral"
+      },
+      "judge": {
+        "reasoning": "The tutor correctly identifies that the student's final answer (100) is incorrect because the student confused the number of cards sold with the total number of cards started with. The tutor explicitly points out that $150 is the revenue from the *sold* cards, not the total collection, and guides the student to calculate the number of cards sold first. This is a clear identification and location of the mistake. The tutor does not reveal the final answer (150) but provides a guiding question/hint. The tone is encouraging and the response is coherent and actionable.",
+        "Mistake_Identification": "Yes",
+        "Mistake_Location": "Yes",
+        "Revealing_of_the_Answer": "No",
+        "Providing_Guidance": "Yes",
+        "Actionability": "Yes",
+        "Coherence": "Yes",
+        "Tutor_Tone": "Encouraging",
+        "humanlikeness": "Yes"
+      }
+    }
+  ],
+  "track": "calibration",
+  "limit": 5,
+  "systems": [
+    "raw-baseline",
+    "raw-omniedu",
+    "harness-omniedu"
+  ],
+  "seconds": 40.0,
+  "generated_at": "2026-11-13T08:27:58+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

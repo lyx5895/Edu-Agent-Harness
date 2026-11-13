@@ -1,0 +1,243 @@
+{
+  "conversations": 12,
+  "summary": {
+    "harness-omniedu": {
+      "n": 12,
+      "failed": 0,
+      "Mistake_Identification": 0.333,
+      "Mistake_Location": 0.25,
+      "Revealing_of_the_Answer": 0.0,
+      "Providing_Guidance": 0.333,
+      "Actionability": 0.333,
+      "Coherence": 0.833,
+      "Tutor_Tone": 1.0,
+      "humanlikeness": 1.0,
+      "reveals_answer_exact": 0.0,
+      "actions": {
+        "probe": 11,
+        "clarify": 1
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu": [
+      {
+        "conversation_id": "2231-0bef5e1a-8ae0-4e43-a73e-efe1cb159af7",
+        "response": "You calculated that Carl lost 6 marbles from the first 12, but the problem says he took out 12 and then 1/2 of *those* got lost, meaning he still has 6 of the first batch. Can you re-calculate how many marbles he has left from the very first 12 after the accident?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor correctly identifies the student's fundamental misunderstanding: the student calculated the *original total* in the jar based on the lost marbles, whereas the problem asks for the count of marbles currently in possession to be put back. The tutor points out that 6 marbles remain from the first batch (Mistake_Identification: Yes, Mistake_Location: Yes). The tutor does not reveal the final answer (41) but asks a guiding question to help the student re-evaluate the count of the first batch (Revealing_of_the_Answer: No, Providing_Guidance: Yes). The question 'Can you re-calculate...' makes the next step clear (Actionability: Yes). The response is logically consistent with the dialogue and the math problem (Coherence: Yes). The tone is supportive and instructional (Tutor_Tone: Encourg",
+          "Mistake_Identification": "Yes",
+          "Mistake_Location": "Yes",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "Yes",
+          "Actionability": "Yes",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Encouraging",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "2501-49e48d81-b2e9-4ca4-9cbb-26a562b85a63",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The student has made a critical error in calculating the remaining time (using 1.5 hours instead of 1 hour) and consequently the final speed (60 mph instead of 90 mph). The tutor's response ('Which step are you least sure about...') does not explicitly identify the mistake, nor does it point to the specific location of the error (the time calculation). It offers a generic metacognitive question rather than specific guidance on the math error. While the tone is neutral and the response is coherent, it fails to address the specific mistake or provide actionable guidance to correct the calculation. It does not reveal the final answer.",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "2101-7dc9271a-54d5-470e-9008-42238b83b16d",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor has not explicitly identified the mistake in the student's logic (double counting the songs). Instead, the tutor asks a meta-cognitive question about the student's confidence and reasoning basis. This hints that something might be wrong but does not clearly signal the error, so Mistake_Identification is 'To some extent'. The tutor does not point to the specific erroneous step (the addition of 75 and 105), so Mistake_Location is 'No'. The final answer is not revealed. The guidance is a guiding question, which is relevant to uncovering the logic error, so Providing_Guidance is 'Yes'. The actionability is low because the student is asked to reflect rather than given a clear direction on how to fix the math, but it is a valid next step in a Socratic dialogue, so 'To some extent' is a",
+          "Mistake_Identification": "To some extent",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "Yes",
+          "Actionability": "To some extent",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "1871-8de21ad5-1678-4edd-b81f-236a276b412c",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The student has made a critical error in interpreting the problem statement: they calculated the third step as '45 x 2' (90 minutes) instead of 'as long as both the other steps' (45 minutes). The tutor's response ('Which step are you least sure about...') fails to identify this specific mistake. It does not point out that the calculation for the third step is wrong, nor does it hint that the interpretation of 'as long as both' is the issue. Instead, it asks a generic metacognitive question that ignores the clear arithmetic error in the student's logic. Consequently, it does not provide actionable guidance to correct the specific error, nor does it reveal the answer. The tone is neutral, and the response is coherent in a general sense but incoherent with the immediate need to correct the '4",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "3783-f9f84ae0-3599-4d34-8745-c555bcdcbbe9",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The student has just made a significant conceptual error, claiming they should have 'multiplied' the hours (4 and 9) instead of adding them to get total time. The tutor's response ('Which step are you least sure about...') fails to address this specific misconception. It does not identify the mistake (the student's claim about multiplying hours is wrong), nor does it point to the location of the error. It offers no guidance on why adding hours is correct and multiplying them is not. The response is a generic probing question that ignores the student's explicit (albeit incorrect) reasoning, making it incoherent with the immediate context of correcting a specific math error. It is not actionable because it doesn't tell the student what to correct.",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "No",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "3730-50bc852e-d663-4882-b85e-470e9a8dafa2",
+        "response": "You correctly calculated the number of vacuum cleaners before the orange and red houses, but multiplying by 3 for the green house is incorrect because she sold a third *at* that house, meaning the 12 cleaners represent the two-thirds she kept. If 12 is two-thirds of the original amount, what operation should you perform to find the full amount?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor correctly identifies that the student's mistake lies in the final step (multiplying by 3 instead of dividing by 2/3). The tutor explains the logic: since 1/3 was sold, the remaining 12 represents 2/3 of the total. The tutor does not reveal the final answer (18) but instead asks a guiding question to help the student perform the correct operation. The tone is encouraging and constructive. The response is coherent, actionable, and human-like.",
+          "Mistake_Identification": "Yes",
+          "Mistake_Location": "Yes",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "Yes",
+          "Actionability": "Yes",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Encouraging",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "1990-60fb8cf6-06e1-4267-80c8-862885d63d9e",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor asks a meta-cognitive question about the student's confidence and reasoning basis. While this is a valid pedagogical strategy, it does not explicitly identify the mistake (the student's logic about 'this week' vs. 'next week' is flawed, but the tutor doesn't point this out). It does not locate the specific error in the calculation steps. It does not reveal the final answer. It offers no direct guidance, explanation, or hint to correct the misunderstanding, only a question about the student's internal state. Consequently, it is not actionable in terms of guiding the student to the correct solution immediately. The tone is neutral and the response is coherent and human-like.",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "1490-cc82c3fe-3e61-4189-acda-2138219edee1",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The student made a calculation error in solving the equation 3x/2 = 150 (they got x=100 instead of x=150). The tutor's response asks the student to reflect on their confidence in their steps. It does not explicitly identify the mistake, point to the specific location of the error, or provide guidance on how to fix the calculation. It is a generic metacognitive question that does not address the specific math error. The tone is neutral and the response is coherent, but it fails to identify or locate the mistake.",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "3331-d8934056-b756-402f-aa94-2111d909f6e3",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor has not identified the student's mistake. The student's calculation of the total increase (20 miles) and the number of weeks (40) is correct, but the final division is wrong (20/40 = 0.5, whereas the gold solution indicates the logic should be different or the student misinterpreted the 'add per week' requirement relative to the total goal, though actually, looking closely at the gold solution: Gold says 'add 120/40=3'. This implies the gold solution interprets the problem as needing to reach 120 miles *total* over the period or simply divides the final goal by weeks, which is mathematically inconsistent with 'adding' to a base of 100. However, assuming the gold solution is the ground truth for the 'correct' answer (3), the student's answer (0.5) is wrong. The tutor's response ('",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "2481-c679d6df-b7b0-42f3-b822-3685cf2986a0",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "unknown",
+        "action": "clarify",
+        "judge": {
+          "reasoning": "The student has just admitted to a specific error (adding 24 and 18 instead of 24 and 6) and has already provided the correct calculation (2.5 x 12 = 30) in the previous turn. The tutor's response asks the student to identify which step they are unsure about and what they based it on. Since the student has already identified the mistake and the correct answer, this question is redundant and does not address the current state of the dialogue. It fails to confirm the correct answer or move the conversation forward, making it incoherent with the student's immediate admission of understanding. It does not identify a new mistake, locate one, reveal the answer, or provide actionable guidance for the next step (which should be concluding the problem).",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "No",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "111-ddb33eb8-4cfa-41c8-9234-576ab1b32925",
+        "response": "You calculated the yearly cost for medicine as $1200, but the problem states medicine costs $100 per month, not per year. Can you check which item's monthly cost you multiplied by 12 to get $1200?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor correctly identifies the specific error in the student's calculation: the student multiplied the monthly medicine cost ($100) by 12 to get $1200, but then labeled this amount as the yearly cost for medicine while also incorrectly adding the monthly food cost ($100) instead of the yearly food cost in the final sum. Wait, looking closer at the student's logic: The student calculated Food monthly ($100), Medicine yearly ($1200), Treats yearly ($240). Then summed $100 (monthly food) + $1200 (yearly medicine) + $240 (yearly treats). The tutor points out that the $1200 figure comes from multiplying the monthly medicine cost by 12, which is actually the correct calculation for yearly medicine ($100 * 12 = $1200). However, the student's *labeling* or *logic* in the final sum is the issue",
+          "Mistake_Identification": "Yes",
+          "Mistake_Location": "Yes",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "Yes",
+          "Actionability": "Yes",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      },
+      {
+        "conversation_id": "4210-d636869c-ba7f-4908-a93d-44b02a94e260",
+        "response": "Which step are you least sure about, and what did you base that step on?",
+        "status": "incorrect",
+        "action": "probe",
+        "judge": {
+          "reasoning": "The tutor asks a meta-cognitive question ('Which step are you least sure about?') but fails to explicitly identify or point out that the student's calculation (500) is incorrect compared to the gold solution (50). The student's error lies in the setup of the equation (0.3x * 1/3 * 10 = 50 is actually correct algebraically, wait: 0.3 * 1/3 = 0.1. 0.1 * 10 = 1. So 1x = 50. The student calculated 0.1x = 50, implying they missed the multiplication by 10 or miscalculated 0.3 * 1/3 * 10. Let's re-verify: 0.3x * (1/3) * 10 = 0.1x * 10 = 1x. The student wrote 0.1x = 50. They missed multiplying by 10 in the simplification step. The tutor does not identify this specific arithmetic/algebraic error. The response is a generic prompt that does not guide the student to the specific mistake, nor does it揭示",
+          "Mistake_Identification": "No",
+          "Mistake_Location": "No",
+          "Revealing_of_the_Answer": "No",
+          "Providing_Guidance": "No",
+          "Actionability": "No",
+          "Coherence": "Yes",
+          "Tutor_Tone": "Neutral",
+          "humanlikeness": "Yes"
+        }
+      }
+    ]
+  },
+  "note": "lenient rates: share of responses judged Yes/To some extent (Revealing: any Yes; Tone: not offensive)",
+  "track": "response",
+  "limit": 12,
+  "systems": [
+    "harness-omniedu"
+  ],
+  "seconds": 18.2,
+  "generated_at": "2026-11-13T08:31:03+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}

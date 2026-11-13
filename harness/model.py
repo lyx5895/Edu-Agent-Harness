@@ -91,6 +91,9 @@ class ModelClient:
             elif spec.get('type')=='boolean':
                 example[name]=True
                 contracts.append(f'{name}必须是布尔值true或false')
+            elif spec.get('type')=='integer':
+                example[name]=spec.get('default',0)
+                contracts.append(f'{name}必须是整数')
             else:
                 example[name]=spec.get('default','...')
                 contracts.append(f"{name}必须是字符串，最多{spec.get('maxLength',600)}个字符")
@@ -102,7 +105,7 @@ class ModelClient:
         # Constrained decoding guarantees shape only; the instruction text above
         # still carries the judging rules and must stay.
         response_format = {'type': 'json_schema', 'json_schema': {
-            'name': schema.__name__, 'schema': definition}} if self.json_schema_output else None
+            'name': schema.__name__, 'schema': {**definition, 'required': list(fields)}}} if self.json_schema_output else None
         for attempt in range(2):
             raw = self.chat(messages, max_tokens=1024 if any(s.get('type')=='array' for s in fields.values()) else 512,
                             response_format=response_format)

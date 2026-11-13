@@ -12,6 +12,22 @@
 - **教师复核队列**：抽检由固定 `id%10` 改为风险分层（负面判定、低置信、仅模型判定的独立检查、模型生成参考答案、分项未定），其余按哈希抽样约10%；每项列出风险原因。
 - **部署**：上下文32768、最多32路并发、60%显存；启动后先预热文本、图片、长输入、批处理和 JSON schema 路径，再标记就绪。参数在 `service-config.json` 的 `vllm` 段配置。`requirements-vllm.lock` 改为完整版本锁定。
 
+### 对照评测与 v0.7.1 修正
+
+`scripts/benchmark.py` 对比裸 Qwen3.5-9B、裸 OmniEdu-9B 与 OmniEdu-9B + harness，裁判和模拟学生为 Qwen3.5-27B（需先 `scripts/service.py start judge` 与 `start baseline`，分别占用 GPU 3、4）。结果与局限见 `HARNESS_REVIEW.md` 第七节。
+
+```bash
+.envs/harness/bin/python scripts/benchmark.py calibration correctness location response dialogue \
+  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-v4 --tag full
+.envs/harness/bin/python scripts/benchmark.py --rescore reports/benchmark/dialogue-full.json
+```
+
+评测暴露并已修正的问题：
+- 回复语言跟随学生作答；模型给出中文候选时先翻译再审核；兜底句和系统提示中英两套。
+- 证据引用：评分模型同时返回 `student_sentences` 中的句子编号，转述时绑定该原句。
+- 新增策略 `open-task-policy-v4`：评分已逐字定位到问题时，指出出错步骤并追问，不给正确结果；审核未通过时用引用学生原句的模板，而不是通用追问。默认仍为 v3，用 `OMNIEDU_POLICY=open-task-policy-v4` 或 `OpenEngine(policy=...)` 切换。
+- 审核结构先写理由再给结论；`locate` 审核同时查看学生原作答。
+
 ## v0.6：跨学科任务协议与批量备课
 
 继续支持任意学科与多课程，不限制为单个单元。新增默认教学类型为开放任务、解题推理、概念理解、阅读证据、写作表达、实验分析和编程算法；类型用于选择教学指导和回退反馈，不是学科白名单。

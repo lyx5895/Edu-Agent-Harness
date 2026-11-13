@@ -26,6 +26,7 @@ class FakeOpenModel:
         if self.fail: raise ModelUnavailable('timeout')
         return self.candidate
     def review(self,*a):return {'acceptable':not self.bad_review,'reason':'检查结果'}
+    def translate(self,text,target='English'):return 'Translated: what is your reasoning?'
     def transcribe(self,url):return {'text':'Explain why the moon has phases.','uncertain':False,'note':''}
 
 

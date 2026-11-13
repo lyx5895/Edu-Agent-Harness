@@ -1,4 +1,5 @@
 """Subject-neutral contracts. No course ids or subject allowlist."""
+import re
 from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 from .criteria import Criterion
@@ -24,6 +25,8 @@ class TaskDraft(TeachingContract):
 class Assessment(BaseModel):
     status: Literal['correct', 'incorrect', 'incomplete', 'unknown']
     confidence: Literal['high', 'medium', 'low']
+    # 1-based index into the server-numbered student_sentences; 0 = cannot locate.
+    evidence_sentence: int = Field(default=0, ge=0, le=200)
     evidence_quote: str = Field(min_length=1, max_length=250)
     observation: str = Field(max_length=350)
     hypothesis: str = Field(max_length=250)
@@ -35,8 +38,9 @@ class ReplyMeaning(BaseModel):
 
 
 class Review(BaseModel):
-    acceptable: bool
+    # Reason first so constrained decoding commits to a verdict after the analysis.
     reason: str = Field(max_length=250)
+    acceptable: bool
 
 
 POLICY_VERSION = 'open-task-policy-v3'
@@ -70,6 +74,22 @@ def choose_v1(o):
     return {'action': 'probe', 'reason': '询问作答依据，区分知识缺口与操作失误。'}
 
 
+def language(text):
+    cjk = len(re.findall(r'[\u4e00-\u9fff]', text))
+    latin = len(re.findall(r'[A-Za-z]', text))
+    return 'zh' if cjk * 3 >= latin or cjk >= 20 else 'en'
+
+
+def sentences(text):
+    """Exact, non-empty spans of text split at line breaks and sentence ends."""
+    spans = re.findall(r'[^\n。！？；!?]+(?:[。！？；!?]+|(?<=\S)\.(?=\s|$))?', text)
+    out = []
+    for span in spans:
+        # Split at ". " but keep decimals such as 1.5 intact.
+        out.extend(p.strip() for p in re.split(r'(?<=[^\d\s]\.)\s+|(?<=\d\.)\s+(?=[A-Z])', span))
+    return [s[:250] for s in out if s][:200]
+
+
 def public_task(task):
     return {**{k: task[k] for k in ('id', 'domain', 'objective', 'question', 'phase', 'source_ids')},
             'task_type': task.get('task_type', 'open'),
@@ -85,10 +105,22 @@ def choose_v2(o):
     return choose_v1(o)
 
 
-def choose(o):
+def choose_v3(o):
     decision = choose_v2(o)
     if decision['action'] != 'scaffold':
         return decision
     # Escalate support only as hints accumulate on the same task.
     action, reason = HINT_LEVELS[min(o.get('hints', 0), len(HINT_LEVELS)-1)]
     return {'action': action, 'reason': reason}
+
+
+def choose_v4(o):
+    decision = choose_v3(o)
+    if decision['action'] == 'probe' and o.get('grounded'):
+        return {'action': 'locate', 'reason': '评分已逐字定位到学生原文中的问题，指出位置并追问，不给改正结果。'}
+    return decision
+
+
+POLICIES = {'open-task-policy-v4': choose_v4, 'open-task-policy-v3': choose_v3,
+            'open-task-policy-v2': choose_v2, 'open-task-policy-v1': choose_v1}
+choose = choose_v3

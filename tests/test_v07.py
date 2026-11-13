@@ -121,6 +121,90 @@ def test_review_interval_expands_with_independent_streak(tmp_path):
         assert summarize(c, '学生A', now=time.time() + 3*86400 + 60)[0]['review_due']
 
 
+def test_verbatim_quote_salvages_garbled_tail_but_rejects_paraphrase():
+    from harness.open_engine import verbatim_quote
+    text = 'She also spent 25 tickets on the koala, so she had 50 tickets in total.'
+    assert verbatim_quote('spent 25 tickets', text) == 'spent 25 tickets'
+    garbled = 'She also spent 25 tickets on the koala, so she had 50 ticketz'
+    assert verbatim_quote(garbled, text) == 'She also spent 25 tickets on the koala, so she had 50 ticket'
+    assert verbatim_quote('She also spent 25 tickets...', text) == 'She also spent 25 tickets'
+    assert verbatim_quote('Her total was fifty tickets', text) is None
+    assert verbatim_quote('', text) is None
+
+
+def test_paraphrase_is_bound_to_chosen_sentence():
+    from harness.open_engine import ground
+    text = 'Berry read 262 pages. Therefore, Berry has to read 88 pages on Saturday.'
+    paraphrase = {'evidence_quote': 'He has to read 88 pages on Saturday', 'evidence_sentence': 2}
+    assert ground(paraphrase, text) == 'Therefore, Berry has to read 88 pages on Saturday.'
+    assert ground({**paraphrase, 'evidence_sentence': 9}, text) is None
+    assert ground({'evidence_quote': 'read 262 pages', 'evidence_sentence': 2}, text) == 'read 262 pages'
+
+
+class ParaphrasingModel(FakeOpenModel):
+    def __init__(self):
+        super().__init__()
+        self.assess_contexts = []
+
+    def assess(self, task, text, context, verification):
+        self.assess_contexts.append(context)
+        result = super().assess(task, text, context, verification)
+        if 'quote_feedback' not in context:
+            result['evidence_quote'] = '学生大意是说了一个结论'
+        return result
+
+
+def test_paraphrased_quote_is_retried_once_with_feedback(tmp_path):
+    model = ParaphrasingModel()
+    e = OpenEngine(tmp_path / 'db.sqlite', model)
+    s = e.create('u', '解释四季成因')
+    r = act(e, s, 'attempt', '参考结论')
+    assert r['status'] == 'correct' and len(model.assess_contexts) == 2
+    assert 'rejected_assessment' in e.traces(s['session_id'])[-1]
+
+
+def test_ungrounded_judgment_becomes_unknown_for_teacher(tmp_path):
+    model = FakeOpenModel()
+    original = model.assess
+    model.assess = lambda *a: dict(original(*a), evidence_quote='并非学生原文的句子')
+    e = OpenEngine(tmp_path / 'db.sqlite', model)
+    s = e.create('u', '解释四季成因')
+    r = act(e, s, 'attempt', '参考结论')
+    assert r['status'] == 'unknown' and not r['session']['completed']
+    assert e.dashboard()['review_queue'][0]['priority'] == 'urgent'
+
+
+def test_fallback_follows_task_language(tmp_path):
+    model = FakeOpenModel()
+    model.bad_review = True
+    e = OpenEngine(tmp_path / 'db.sqlite', model)
+    english = act(e, e.create('u', 'Explain why the moon has phases.'), 'attempt', 'wrong idea')
+    chinese = act(e, e.create('u', '解释月相成因'), 'attempt', '错误解释')
+    assert english['feedback'].isascii() and not chinese['feedback'].isascii()
+    model.bad_review = False
+    translated = act(e, e.create('u3', 'Explain why the sky is blue.'), 'attempt', 'wrong idea')
+    assert translated['feedback'] == 'Translated: what is your reasoning?'
+
+
+def test_policy_v4_locates_grounded_error_and_replays(tmp_path):
+    model = FakeOpenModel()
+    model.candidate = 'The step "2+2=5" adds incorrectly; what does 2+2 give?'
+    e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v4')
+    s = e.create('u', 'Explain why the moon has phases.')
+    out = act(e, s, 'attempt', '2+2=5')
+    assert out['action'] == 'locate' and out['feedback'] == model.candidate
+    assert e.replay(s['session_id'])['passed']
+    model.bad_review = True
+    again = act(e, e.create('u2', 'Explain why tides happen.'), 'attempt', 'tides 2+3=6')
+    assert again['feedback'] == 'Take another look at this part: "tides 2+3=6". What is this step based on, and does it hold?'
+    trace = [t for t in e.traces(again['session']['session_id']) if 'output_validation' in t][-1]
+    assert trace['output_validation']['delivered_action'] == 'locate_template'
+    v3 = OpenEngine(tmp_path / 'v3.sqlite', FakeOpenModel())
+    assert act(v3, v3.create('u', 'Explain tides.'), 'attempt', 'wrong')['action'] == 'probe'
+    with pytest.raises(ValueError):
+        OpenEngine(tmp_path / 'x.sqlite', model, policy='nope')
+
+
 def test_review_queue_flags_risky_model_judgments(tmp_path):
     e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
     s = e.create('u', '解释四季成因')

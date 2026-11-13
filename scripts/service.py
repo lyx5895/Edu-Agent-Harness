@@ -11,12 +11,16 @@ import time
 import urllib.request
 
 ROOT=Path(__file__).resolve().parents[1]
-CONFIG={'inference':('inference','inference_server:app',8000), 'harness':('harness','harness.app:app',7860)}
+CONFIG={'inference':('inference','inference_server:app',8000), 'harness':('harness','harness.app:app',7860),
+    'judge':('vllm','vllm.entrypoints.openai.api_server',8002), 'baseline':('vllm','vllm.entrypoints.openai.api_server',8003)}
+# Evaluation-only models; never used by the teaching app.
+AUX_DEFAULTS={'judge':{'model':'/default-filesys/workspace/models/Qwen3.5-27B','served_model_name':'qwen3.5-27b','gpus':'3','gpu_memory_utilization':0.85},
+    'baseline':{'model':'/default-filesys/workspace/models/Qwen3.5-9B','served_model_name':'qwen3.5-9b','gpus':'4','gpu_memory_utilization':0.6}}
 VLLM_MODULE='vllm.entrypoints.openai.api_server'
 VLLM_DEFAULTS={'max_model_len':32768,'max_num_seqs':32,'max_num_batched_tokens':8192,'gpu_memory_utilization':0.6}
 
 
-def warmup(port):
+def warmup(port,model='omniedu-9b'):
     """Exercise text, image, long-prompt, batched and JSON-schema paths so Triton
     kernels compile before real students hit them."""
     import base64,io
@@ -24,7 +28,7 @@ def warmup(port):
     from PIL import Image
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     def post(body):
-        data=json.dumps({'model':'omniedu-9b','temperature':0,'max_tokens':16,
+        data=json.dumps({'model':model,'temperature':0,'max_tokens':16,
             'chat_template_kwargs':{'enable_thinking':False},**body}).encode()
         req=urllib.request.Request(f'http://127.0.0.1:{port}/v1/chat/completions',data,{'Content-Type':'application/json'})
         with opener.open(req,timeout=300) as r: r.read()
@@ -58,18 +62,20 @@ def main():
     backend=a.backend or settings.get('inference_backend','transformers')
     if a.instance and not all(c.isalnum() or c in '-_' for c in a.instance):
         p.error('Invalid instance name')
-    if a.service!='inference' and any((a.backend,a.gpus,a.instance,a.port)):
-        p.error('Overrides are only supported for inference')
+    aux={**AUX_DEFAULTS[a.service],**settings.get('aux_models',{}).get(a.service,{})} if a.service in AUX_DEFAULTS else None
+    if a.service=='harness' and any((a.backend,a.gpus,a.instance,a.port)):
+        p.error('Overrides are not supported for harness')
     envname,module,port=CONFIG[a.service]
     if a.service=='inference' and backend=='vllm': envname,module='vllm',VLLM_MODULE
-    port=a.port or port
+    is_vllm=module==VLLM_MODULE
+    port=a.port or (aux or {}).get('port') or port
     instance=a.instance or a.service
     logs=ROOT/'logs'; logs.mkdir(exist_ok=True)
     with (logs/f'{instance}.lock').open('w') as guard:
         fcntl.flock(guard,fcntl.LOCK_EX)
         pidfile=logs/f'{instance}.pid'
         pid=int(pidfile.read_text()) if pidfile.exists() else None
-        accepted=[module] if a.service=='harness' else ['inference_server:app',VLLM_MODULE]
+        accepted=[module] if a.service=='harness' or aux else ['inference_server:app',VLLM_MODULE]
         running_module=next((m for m in accepted if pid and identity(pid,m)),None)
         alive=bool(running_module)
         if a.action=='stop':
@@ -84,8 +90,9 @@ def main():
             print('Stopped',a.service)
             return
         if a.action=='status':
-            actual_backend=('vllm' if running_module==VLLM_MODULE else 'transformers') if a.service=='inference' else None
-            print(json.dumps({'service':a.service,'pid':pid,'running':alive,'backend':actual_backend if alive else backend,'url':f'http://127.0.0.1:{port}'}))
+            actual_backend=('vllm' if running_module==VLLM_MODULE else 'transformers') if a.service=='inference' else 'vllm' if aux else None
+            print(json.dumps({'service':a.service,'pid':pid,'running':alive,'backend':actual_backend if alive else backend if a.service=='inference' else actual_backend,
+                'model':aux['served_model_name'] if aux else None,'url':f'http://127.0.0.1:{port}'}))
             return
         if alive:
             if running_module!=module: raise SystemExit('Another inference backend is running; stop it before switching')
@@ -104,16 +111,17 @@ def main():
             checked=json.loads(report.read_text())
             if (ROOT/'models/Omni-Edu-9B/model.safetensors').stat().st_size!=checked['bytes']:
                 raise SystemExit('Model file size changed; verify again')
+        if a.service=='inference' or aux:
             rows=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used','--format=csv,noheader,nounits'],text=True)
             used={int(r.split(',')[0]):int(r.split(',')[1]) for r in rows.strip().splitlines()}
-            gpus=a.gpus or (settings.get('vllm_gpus','1') if backend=='vllm' else '1,2')
+            gpus=a.gpus or (aux['gpus'] if aux else settings.get('vllm_gpus','1') if backend=='vllm' else '1,2')
             indices=[int(i) for i in gpus.split(',')]
             if any(used.get(i,999999)>1024 for i in indices):
                 raise SystemExit(f'GPU {gpus} in use; not touching other processes')
             env['CUDA_VISIBLE_DEVICES']=gpus
         command=[str(ROOT/f'.envs/{envname}/bin/python'),'-m','uvicorn',module,
                 '--host','127.0.0.1','--port',str(port),'--workers','1','--timeout-graceful-shutdown','30']
-        if a.service=='inference' and backend=='vllm':
+        if is_vllm:
             compat=settings.get('cuda_compat_path','/usr/local/cuda-13.0/compat')
             if not (Path(compat)/'libcuda.so.1').is_file(): raise SystemExit('CUDA compatibility library missing: '+compat)
             temporary=ROOT/'.cache/tmp'
@@ -122,9 +130,10 @@ def main():
                 'VLLM_ENABLE_CUDA_COMPATIBILITY':'1','VLLM_CUDA_COMPATIBILITY_PATH':compat,
                 'VLLM_NO_USAGE_STATS':'1','DO_NOT_TRACK':'1','TMPDIR':str(temporary),
                 'FLASHINFER_WORKSPACE_BASE':str(ROOT/'.cache/flashinfer'),'MAX_JOBS':'4'})
-            vllm={**VLLM_DEFAULTS,**settings.get('vllm',{})}
+            vllm={**VLLM_DEFAULTS,**settings.get('vllm',{}),**(aux or {})}
+            served=aux['served_model_name'] if aux else 'omniedu-9b'
             command=[str(ROOT/'.envs/vllm/bin/python'),'-m',VLLM_MODULE,
-                '--model',str(ROOT/'models/Omni-Edu-9B'),'--served-model-name','omniedu-9b',
+                '--model',aux['model'] if aux else str(ROOT/'models/Omni-Edu-9B'),'--served-model-name',served,
                 '--host','127.0.0.1','--port',str(port),'--dtype','bfloat16',
                 '--tensor-parallel-size',str(len(indices)),'--max-model-len',str(vllm['max_model_len']),
                 '--max-num-seqs',str(vllm['max_num_seqs']),'--max-num-batched-tokens',str(vllm['max_num_batched_tokens']),
@@ -138,17 +147,16 @@ def main():
         pidfile.write_text(str(proc.pid))
         print(f'Started {instance} pid={proc.pid}; log={logs/(instance+".log")}',flush=True)
         opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
-        for _ in range(900 if backend=='vllm' and a.service=='inference' else 300):
+        for _ in range(900 if is_vllm else 300):
             if proc.poll() is not None:raise SystemExit('Service exited; inspect log')
-            vllm=a.service=='inference' and backend=='vllm'
             try:
                 with opener.open(f'http://127.0.0.1:{port}/health',timeout=2) as r:
-                    up=(vllm and r.status==200) or json.load(r).get('ready')
+                    up=(is_vllm and r.status==200) or json.load(r).get('ready')
             except Exception:up=False
             if up:
-                if vllm:
+                if is_vllm:
                     print('Warming up kernels',flush=True)
-                    try:warmup(port)
+                    try:warmup(port,served)
                     except Exception as e:raise SystemExit(f'Warmup failed ({e}); process retained for inspection, not declared healthy')
                 print('Ready',f'http://127.0.0.1:{port}',flush=True);return
             time.sleep(1)

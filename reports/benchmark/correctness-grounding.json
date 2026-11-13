@@ -1,0 +1,3638 @@
+{
+  "problems": 200,
+  "items": 400,
+  "summary": {
+    "harness-omniedu": {
+      "n": 400,
+      "failed_calls": 0,
+      "accuracy": 0.968,
+      "error_f1": 0.968,
+      "false_acceptance_rate": 0.02,
+      "false_rejection_rate": 0.045,
+      "abstain_rate": 0.07,
+      "status_counts": {
+        "incorrect": 171,
+        "correct": 195,
+        "unknown": 28,
+        "incomplete": 6
+      }
+    }
+  },
+  "records": {
+    "harness-omniedu": [
+      {
+        "id": "4-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total days as 30, but April has 30 days and you need to subtract the 4 Sundays he didn't work. How many actual days did he walk the dog?",
+        "action": "probe"
+      },
+      {
+        "id": "4-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "12-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the weights of the individual pairs, but remember that a \"pair\" consists of two dumbbells. If the first pair is 3 lbs each, how should you calculate the total weight for that specific pair before adding them to the others?",
+        "action": "probe"
+      },
+      {
+        "id": "12-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "23-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "23-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "38-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You mentioned the car consumes 4 gallons per mile, but the problem states it consumes 4 gallons per 100 miles. Can you re-read the first sentence to find the correct rate and try recalculating the gas needed for just today's 400 miles?",
+        "action": "clarify"
+      },
+      {
+        "id": "38-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "40-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "40-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "47-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total minutes, but you multiplied by 7 days instead of using the 4 days per week the children are allowed to watch TV. How many days should you multiply the daily viewing time by to find the weekly total?",
+        "action": "probe"
+      },
+      {
+        "id": "47-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "49-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that Amanda has 22 marbles, but you calculated Mabel's count as 68 instead of using the original 85. Can you check which number represents Mabel's total marbles in the problem statement?",
+        "action": "probe"
+      },
+      {
+        "id": "49-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "50-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation 72x = 108000, but your final step divided by 2 again even though x already represented the amount each person saves. If 72x is the total savings from both people, what does solving for x directly tell you about the individual monthly savings?",
+        "action": "probe"
+      },
+      {
+        "id": "50-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "59-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that half of the sale price was $30,000, but your equation $x + 30,000 = 60,000$ incorrectly adds the amount Blake received back to the initial amount instead of recognizing that the sale price is three times the initial amount. If the initial amount is $x$, what is the correct expression for the sale price of the land?",
+        "action": "probe"
+      },
+      {
+        "id": "59-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "60-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "60-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "61-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the increase as 3 times the original, but the phrase \"three times more\" typically means the new total is the original plus three times the original (4 times total). Can you re-read the sentence to determine if the new daily production should be 4 times 7000 instead of 3 times 7000?",
+        "action": "probe"
+      },
+      {
+        "id": "61-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "62-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "62-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "63-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the November visitors, but you added the December increase (15) to the October-November total instead of adding the full December count. What is the total number of visitors for December before adding it to the other months?",
+        "action": "probe"
+      },
+      {
+        "id": "63-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "64-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total pages needed as 300, but remember there are 7 days in a week, not 6. Can you recalculate the total pages needed for the full week?",
+        "action": "probe"
+      },
+      {
+        "id": "64-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "66-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You divided 10,000 by 100, but the price is given per 1,000 bricks, not per 100. How many groups of 1,000 are there in 10,000?",
+        "action": "probe"
+      },
+      {
+        "id": "66-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "70-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the new budget amount, but your final step multiplied the cost per softball by the number of softballs instead of dividing the total budget by the cost per softball to find the quantity. Can you set up the division expression to find how many softballs fit into the $162 budget?",
+        "action": "probe"
+      },
+      {
+        "id": "70-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "71-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "71-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "74-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "74-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "79-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the frosting for the layer cakes, but you treated the cupcakes, single cakes, and brownies as requiring 0.5 cans each instead of 1/2 can per item. Since 6 dozen cupcakes means 6 units, 12 single cakes means 12 units, and 18 pans means 18 units, how should you multiply these counts by 1/2 to find the total cans needed for each group?",
+        "action": "probe"
+      },
+      {
+        "id": "79-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "82-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total apples given away as 22, but remember you also ate one apple yourself. If you subtract the 5 friends, 1 eaten, and 3 remaining from the original 25, what number do you get for the teachers?",
+        "action": "probe"
+      },
+      {
+        "id": "82-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "83-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "83-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "84-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "84-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "88-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated that Frank needs to sell 10 hamburgers to reach $50, but you subtracted the 12 he already sold from that target. Since he has already sold more than the target amount, how much money has he actually made so far?",
+        "action": "probe"
+      },
+      {
+        "id": "88-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "92-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total as 5 hours x 60 minutes, but remember Jeff ran for 1 hour on Monday, Tuesday, and Wednesday, not the full 5 hours at once. Can you re-calculate the minutes for those three days separately before adding the Thursday and Friday adjustments?",
+        "action": "probe"
+      },
+      {
+        "id": "92-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "95-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "95-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "96-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "96-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "99-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You mentioned Frank has already spent 45 minutes in the current maze and averaged 50 minutes over 4 previous ones. If he spends exactly 10 more minutes (totaling 55 minutes) in this maze, what would his new total time be, and would that keep his average at or below 60 minutes for all 5 mazes?",
+        "action": "probe"
+      },
+      {
+        "id": "99-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "105-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "105-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "119-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You added 6 to the product of 4 and 6 for the bridge trolls, but the problem states there are 6 *less* than that product. Can you re-read the sentence about the bridge trolls and write the correct expression for that number?",
+        "action": "probe"
+      },
+      {
+        "id": "119-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "120-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that Frank is 3 steps forward before the final move, but you doubled the number of steps back (2) instead of the net position (3) to find the final forward steps. Can you re-read the sentence about the final move to see which specific amount should be doubled?",
+        "action": "probe"
+      },
+      {
+        "id": "120-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "126-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that 36 balloons touch the ceiling, but you forgot to subtract the number of air-filled balloons from that total to find the difference. How many balloons were filled with air instead of helium?",
+        "action": "probe"
+      },
+      {
+        "id": "126-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "132-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "132-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "136-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified there are 5 double-yolk eggs, but you treated the 12 as the number of single yolks instead of the total number of eggs. If there are 5 double-yolk eggs, how many eggs in the carton have only one yolk?",
+        "action": "probe"
+      },
+      {
+        "id": "136-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "140-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "140-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "147-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "147-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "149-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the earnings for the red cars, but you forgot to multiply the $360 by 2 to account for both white cars. How much would the total earnings be if you included the cost for both white cars?",
+        "action": "probe"
+      },
+      {
+        "id": "149-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "154-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the koala bear cost by multiplying 10 by 2, but the problem states she spent half her tickets on the bear, meaning the 10 tickets for earbuds and 15 for bracelets are the other half. If 10 + 15 equals the second half, what is the total amount of tickets she started with?",
+        "action": "probe"
+      },
+      {
+        "id": "154-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "155-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "155-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "168-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the calories burned by multiplying 150 by 1.5, but remember Cary walks the full 3-mile round trip. How many total miles does he walk for the entire journey?",
+        "action": "probe"
+      },
+      {
+        "id": "168-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "170-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the total flour, but multiplying 2 pounds by 6 gives the number of cookies per batch, not the total cookies from 20 pounds. How many batches can Matt make with 20 pounds of flour?",
+        "action": "probe"
+      },
+      {
+        "id": "170-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "172-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the number of swaths by dividing the area by the width of the swath, but a swath is a path the tiller takes, not a unit of area to be divided. If the tiller moves along the length of the plot, how many times must he travel the length to cover the entire width?",
+        "action": "probe"
+      },
+      {
+        "id": "172-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "180-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "180-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "184-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation for Tim's age, but you defined John's age as (x + 12) instead of (x - 12) since John is older than James. Given that James is x and the age difference is 12 years, how should you express John's age in terms of x?",
+        "action": "probe"
+      },
+      {
+        "id": "184-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "185-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found 22 vampires after the first night, but when calculating the second night, you added 10 twice instead of multiplying the 22 vampires by 5 new conversions each. If each of the 22 vampires turns 5 people, how many new vampires are created on the second night?",
+        "action": "probe"
+      },
+      {
+        "id": "185-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "186-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "186-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "192-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the total number of dishes with mango (10), but you subtracted the 2 dishes Oliver can pick the mango out of from the wrong group. Oliver can only pick the mango out of the 6 dishes with *fresh* mango, not the 10 total. Which specific group of dishes should you subtract the 2 from to find how many he still won't eat?",
+        "action": "probe"
+      },
+      {
+        "id": "192-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "210-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total number of chocolate pieces as 144, but your final step subtracted 1 from the average. Why would you subtract 1 from the total average number of pieces per cookie?",
+        "action": "probe"
+      },
+      {
+        "id": "210-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "219-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated that they need to win 20 games total, but the season has 30 games (20 played + 10 left), so 2/3 of 30 is actually 20. However, your final step of multiplying 8 by 80% is incorrect because they just need to win 8 more games out of the 10 remaining. Can you re-evaluate how many more wins are needed based on the total games played and the required win percentage?",
+        "action": "probe"
+      },
+      {
+        "id": "219-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "223-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "223-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "226-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You calculated Tommy's area as 10, but let's recheck his path: 2 north and 2 south means 4 blocks total vertical movement, while 3 east and 2 west means 1 block net east, but the *area* he covers is a rectangle 4 blocks tall by 5 blocks wide (from 2 west to 3 east). Can you recalculate the area of that 4x5 rectangle?",
+        "action": "clarify"
+      },
+      {
+        "id": "226-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "228-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the number of times the machine failed or dropped extra snacks, but you forgot to account for the 22 times it dropped exactly one snack. How many snacks were dropped during those 22 normal transactions?",
+        "action": "probe"
+      },
+      {
+        "id": "228-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "236-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the new property tax bill is $10,000, but you subtracted the old tax ($8,000) from the new limit ($15,000) instead of comparing the new tax bill to the limit. If the new tax is $10,000, how much extra money does Jenny have left from her $15,000 limit to spend on improvements?",
+        "action": "probe"
+      },
+      {
+        "id": "236-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "237-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "237-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the age difference correctly, but multiplying that difference by 2 does not tell you Rachel's age when Emily is half her age. Can you set up an equation where Rachel's age is exactly double Emily's age, knowing their ages always differ by 4?",
+        "action": "probe"
+      },
+      {
+        "id": "238-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "238-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "246-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the remaining birds and puppies, but you forgot to include the 5 cats in your final sum. Did you remember to add the cats to the total number of animals left?",
+        "action": "probe"
+      },
+      {
+        "id": "246-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "249-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the number of additional guests, but you added those 80 guests to the original 50 instead of using the 80 as the total increase from the 50. If the wife wants 60% more than 50, what is the actual total number of guests she wants?",
+        "action": "probe"
+      },
+      {
+        "id": "249-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "253-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that 60% of students are not learning from home, but dividing by two twice is incorrect because the problem states the remaining students are divided into two equal groups, not that each group is further divided. Can you re-read the sentence about the two equal groups to see how many times you should divide the 60% by two?",
+        "action": "probe"
+      },
+      {
+        "id": "253-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "254-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "254-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "269-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total value of Matt's original cards and the trade-in value, but you subtracted the original total from the new total instead of comparing what he gave away versus what he received. Can you identify which specific value represents what Matt lost and which represents what he gained?",
+        "action": "probe"
+      },
+      {
+        "id": "269-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "276-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "276-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "284-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the daily wage per worker, but your final calculation for 19 workers over 5 days is off. Can you double-check the multiplication of 19 times 5 times 42?",
+        "action": "probe"
+      },
+      {
+        "id": "284-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "285-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly converted the 8 ounces of brie to 0.5 pounds, but you missed that the 8 ounces of raspberries and 8 ounces of blueberries each equal 0.5 pounds, not 1 pound combined. Can you re-calculate the total weight of the berries in pounds?",
+        "action": "probe"
+      },
+      {
+        "id": "285-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "288-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total cups needed, but dividing by 2 assumes 2 tablespoons make 1 cup instead of 4. If 2 tablespoons make 4 cups, what is the correct ratio of tablespoons to cups to use for your division?",
+        "action": "probe"
+      },
+      {
+        "id": "288-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "291-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the cost of the 2 lattes as $8, but remember that one of them has an extra $0.50 for vanilla syrup. How should you adjust the total cost for the lattes to account for that extra charge?",
+        "action": "probe"
+      },
+      {
+        "id": "291-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "294-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "294-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "296-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You subtracted the profit from the cost of the wood, but the profit is what Denver adds to the cost to determine the selling price. Can you think about whether the selling price should be higher or lower than the cost of the wood?",
+        "action": "probe"
+      },
+      {
+        "id": "296-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "306-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that Jeffrey gains 1 net step per 5 total steps, but you multiplied the distance by 1 instead of dividing to find how many 5-step cycles are needed. If 5 steps result in 1 step forward, how many 5-step cycles would it take to cover 66 steps?",
+        "action": "probe"
+      },
+      {
+        "id": "306-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "307-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the number of neighborhoods, roads per neighborhood, and lights per side per road. However, did you consider that the 250 lights are on *each* of the two opposite sides of the road, meaning you need to multiply by 2 for the sides before multiplying by the number of roads and neighborhoods?",
+        "action": "probe"
+      },
+      {
+        "id": "307-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "315-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "315-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "317-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that Jake takes 90 seconds total, but the question asks how many seconds *later* he arrives compared to Austin's 60 seconds. What operation should you perform on 90 and 60 to find that difference?",
+        "action": "probe"
+      },
+      {
+        "id": "317-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "321-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You mentioned multiplying the third snail's speed by the first snail's time, but speed and time are inversely related for a fixed distance. If the third snail is faster, shouldn't it take less time? Can you try calculating the distance the first snail traveled first, then use that distance to find the third snail's time?",
+        "action": "clarify"
+      },
+      {
+        "id": "321-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "326-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated Kendra's 2015 earnings as $28,000, but the problem states she made 20% more than Laurel's 2014 sales ($30,000), not 20% more than her own 2014 earnings. Can you recalculate the 2015 amount using Laurel's $30,000 as the base for the 20% increase?",
+        "action": "probe"
+      },
+      {
+        "id": "326-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "331-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You added the profit to the gross revenue and babysitting income, but the $44 profit is already the result after expenses were subtracted. Can you identify which numbers represent total income and which represent the final profit to set up the correct equation?",
+        "action": "probe"
+      },
+      {
+        "id": "331-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "348-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "348-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "350-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "350-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "351-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated that Betty kept 36 marbles, but 60% of 60 is actually 36, which is correct. However, the 40% she gave away is 24 marbles, not 36. Can you recalculate how many marbles Stuart received from Betty using the correct 40% of 60?",
+        "action": "probe"
+      },
+      {
+        "id": "351-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "355-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that 40% of the original amount equals 20 marbles, but your calculation for 1% is off because 20 divided by 40 is 0.5, not 0.5 marbles per 1% (which is correct, but let's check the final step). If 1% is 0.5, then 100% is indeed 50. Can you verify if 40% of 50 actually equals 20?",
+        "action": "probe"
+      },
+      {
+        "id": "355-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "358-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the original weekly pages as 40 * 7, but the problem states he reads 600 pages per week originally, not 280. Can you re-read the first sentence to find the correct starting total?",
+        "action": "probe"
+      },
+      {
+        "id": "358-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "363-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation for the third level, but you stopped one level too early; since there are four levels total and the top is the fourth, your equation should be (0.8)^3 * x = 64 to find the first level. Can you re-calculate the value of x using this correct exponent?",
+        "action": "probe"
+      },
+      {
+        "id": "363-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "367-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total cost of the friends' gifts as $72, but 8 multiplied by 9 is actually 72, so that part is correct. However, you seem to have used the $9 price for the parents' gifts instead of finding the remaining amount from the $100 budget. If the friends' gifts cost $72, how much money is left from the $100 budget to split between the two parents?",
+        "action": "probe"
+      },
+      {
+        "id": "367-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "370-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the number of bottles needed, but your discount calculation applied the 20% reduction to the total cost instead of reducing the price per bottle first. If the discount is 20% off the volume, does that mean the price per bottle changes before you multiply by the number of bottles?",
+        "action": "probe"
+      },
+      {
+        "id": "370-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "374-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You simplified the ratio 10:45 to 2:9, but the problem states the ratio of Elsa's coins to Amalie's is 10:45, which should be used directly to find their individual amounts. Can you try setting up the equation using the original ratio parts (10 and 45) instead of the simplified one to see if it changes the total parts?",
+        "action": "probe"
+      },
+      {
+        "id": "374-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "378-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "378-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "381-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the number of almond candles, but you assumed the number of coconut candles was also 10 instead of using the 1.5x ratio to find the correct amount of coconut scent before dividing by the scent per candle. Given that she made 10 almond candles using 'x' amount of scent per candle, how much total coconut scent did she have in terms of 'x'?",
+        "action": "probe"
+      },
+      {
+        "id": "381-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "389-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "389-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "395-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "395-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "400-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "400-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "404-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total number of toys Daisy had at different points, but you added the lost toys back instead of just finding the total number of toys her owner bought and the ones she originally had. Can you recount the total number of toys Daisy has now if all the lost ones were found, based on the number her owner bought and the ones she started with?",
+        "action": "probe"
+      },
+      {
+        "id": "404-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly calculated the total after Tuesday, but on Wednesday, you added 5 new toys without first confirming that all previously lost toys were found. If the owner found every lost toy (including the 3 from Tuesday and the 5 from Wednesday), how many toys were there in total before any were lost again?",
+        "action": "clarify"
+      },
+      {
+        "id": "406-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the earnings from jeans by multiplying the number of shirts (20) by the price of jeans ($20), but you should multiply the number of jeans (10) by their price. Can you recalculate the earnings specifically for the jeans using the correct quantity?",
+        "action": "probe"
+      },
+      {
+        "id": "406-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "407-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that there are 168 yellow balloons, but multiplying by 1/2 gives the amount taken, not the remaining amount in the group. Can you re-read the sentence to see what operation you should perform on the 168 yellow balloons to find how many Anya took home?",
+        "action": "probe"
+      },
+      {
+        "id": "407-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "411-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the difference between 1982 and 1985 as 3 years, but 1985 minus 1982 actually equals 3. Can you double-check that subtraction step to see if it matches the years Aziz's parents lived in America before his birth?",
+        "action": "probe"
+      },
+      {
+        "id": "411-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "425-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that 26 girls were initially performing, but you missed that the bus breakdown affected the entire group of 26 performers, not just the girls. If half of the 26 performers couldn't make it, how many actually showed up before the teachers joined?",
+        "action": "probe"
+      },
+      {
+        "id": "425-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "428-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You multiplied the time per potato by the number of potatoes, but you should have multiplied the number of potatoes by the time per potato to find the total time. Can you rewrite the calculation for peeling the potatoes using the correct multiplication order?",
+        "action": "probe"
+      },
+      {
+        "id": "428-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "429-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the food cost by subtracting $4.50 from the ticket price, but the problem states they spent $4.50 less on food than on the tickets, meaning you should subtract $4.50 from the total ticket cost ($20.25), not from the cost per ticket. Can you recalculate the total food cost using the correct base amount?",
+        "action": "probe"
+      },
+      {
+        "id": "429-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "431-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "431-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "434-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the interest as $1,825, but the formula for simple interest is Principal × Rate × Time, where the rate is 10% (or 0.10) and the time is 5 months, not 5 years. Can you recalculate the interest using the correct time unit?",
+        "action": "probe"
+      },
+      {
+        "id": "434-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "437-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the interest by multiplying the principal, rate, and months, but interest is typically calculated as principal times rate times time in years, not months directly. Can you check how the 10% annual rate should be adjusted for a 5-month period before multiplying?",
+        "action": "probe"
+      },
+      {
+        "id": "437-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "440-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "440-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "444-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the miles per gallon correctly by dividing 100 miles by 4 gallons, but you subtracted 4 from 12 to find the remaining gas instead of using the full tank capacity. If you want to know how far she can drive on a full tank, should you be using the 8 gallons remaining or the 12 gallons the tank holds?",
+        "action": "probe"
+      },
+      {
+        "id": "444-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "456-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the number of shoplifters by adding 3 and (3x4-5), but the problem states the number of shoplifters *is* (3x4-5), not the sum of 3 and that number. Can you re-read the sentence about shoplifters to identify the correct expression for that group?",
+        "action": "probe"
+      },
+      {
+        "id": "456-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "459-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified the $50 increase, but you missed that Carmen bids after each of the 3 other people, meaning there are more than 4 bids total. Can you recount how many times the $50 increase happens before Carmen wins?",
+        "action": "probe"
+      },
+      {
+        "id": "459-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "464-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the interest as $1,825, but the formula for simple interest is Principal × Rate × Time, where the rate is 10% (or 0.10) and time is 5 months, not 5 years. Can you recalculate the interest using the correct time unit?",
+        "action": "probe"
+      },
+      {
+        "id": "464-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "467-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "467-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "472-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "472-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "476-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation 2x + 20 = 36, but your final step of dividing 16 by 2 to get x = 8 is correct, yet you forgot that the question asks for the total number of books she needs to carry, which is 2x + 20, not just x. Can you calculate the final value of 2x + 20 using your value for x?",
+        "action": "probe"
+      },
+      {
+        "id": "476-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "485-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found Joey's weekly loss, but your final step multiplied the rate by 4 again instead of using Sandy's specific 4-week timeframe. If Sandy loses 2 pounds per week, how many weeks does it take to reach 8 pounds?",
+        "action": "probe"
+      },
+      {
+        "id": "485-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "496-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "496-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "500-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that the 7 new records are equivalent to 14 old records, but your final step of dividing by 5 to find an average and then rounding down is incorrect because the problem asks for the total number of old records brought in, not an average per person. Since the trade rate is fixed, how can you directly convert the 7 new records back into the total number of old records using the given ratio?",
+        "action": "probe"
+      },
+      {
+        "id": "500-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "505-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that 4,000 steps remained after the school walks and friend's walk, but you stopped there instead of subtracting the 2,000 steps left after the jog. If 4,000 steps were left before the jog and only 2,000 are left after, how many steps must have been taken during the jog?",
+        "action": "probe"
+      },
+      {
+        "id": "505-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "506-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "506-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "508-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that the 7 new records are equivalent to 14 old records, but your final step of dividing by 5 to find an average and then rounding down to 2 is incorrect because the problem asks for the total number of old records brought in, not the average per person. If 7 new records are traded, how many old records must have been brought in total to make that exchange?",
+        "action": "probe"
+      },
+      {
+        "id": "508-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "519-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "519-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "524-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the pension increase as 5% per year of service, but the problem states she gets 5% of the *total* pension value for each year *after* the first 20. Can you re-read the sentence about the 5% entitlement to see if it applies to the base amount or accumulates differently?",
+        "action": "probe"
+      },
+      {
+        "id": "524-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "537-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "537-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "544-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the cost of the donuts as 3 × 68 = 2448, but 3 × 68 is actually 204. Can you recheck that multiplication step?",
+        "action": "probe"
+      },
+      {
+        "id": "544-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "547-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "547-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "548-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "548-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "553-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total sold as 85, but let's recheck the sum of 20, 15, 12, and 18. What is the correct total of those four numbers?",
+        "action": "probe"
+      },
+      {
+        "id": "553-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "560-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "560-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "562-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "562-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "563-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "563-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "564-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "564-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "570-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You wrote that three years ago James was x - 3, but the problem states John's age three years ago is compared to James's age six years from now, not three years ago. Can you re-read the sentence \"3 years ago, he was twice as old as James will be in 6 years\" and write the equation that directly relates John's past age to James's future age?",
+        "action": "probe"
+      },
+      {
+        "id": "570-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "571-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the number of chickens in the run (28), but you multiplied by two again instead of doubling and then subtracting four. Can you re-read the sentence about free ranging chickens to see what operation you should perform on the run count?",
+        "action": "probe"
+      },
+      {
+        "id": "571-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "573-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the total number of issues, but you multiplied the discount per issue by 2 instead of using the $0.25 discount directly. Can you re-calculate the total discount by multiplying the number of issues by the $0.25 discount per issue?",
+        "action": "probe"
+      },
+      {
+        "id": "573-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "577-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "577-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "579-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the number of married women and their husbands, but you calculated the number of single men using the wrong base. The problem states that 3/4 of the men at the party were single, not 3/4 of the married women. Can you identify which group of people the fraction 3/4 actually refers to when describing the single men?",
+        "action": "probe"
+      },
+      {
+        "id": "579-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "584-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "584-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "586-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "586-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "588-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "588-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "590-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found that each coin is worth $2, but your initial setup of \"20/x\" for the number of coins is backwards since 20 is the total value, not the number of coins. If each coin is $2, how many coins did he start with?",
+        "action": "probe"
+      },
+      {
+        "id": "590-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "591-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly converted the euros to pounds and added them to the initial pounds. However, when you converted the total pounds to yen, you multiplied 64 by 100 to get 6400, but the problem states there are 100 yen per pound, so your calculation is actually correct. Can you double-check the final multiplication step to ensure you didn't miss any zeros?",
+        "action": "probe"
+      },
+      {
+        "id": "591-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "593-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "593-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "595-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that 500 mL every 2 hours equals 1500 mL in 6 hours, but that only covers half of her 3000 mL goal. How many more 500 mL portions does she need to reach 3000 mL, and how much additional time would that take?",
+        "action": "probe"
+      },
+      {
+        "id": "595-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "596-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total weight of both Jack and Anna, but the goal is to make their individual weights equal, not the sum. If Jack holds the rocks, what should his new total weight be to match Anna's 40 pounds?",
+        "action": "probe"
+      },
+      {
+        "id": "596-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "599-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You mentioned the pen is shorter than the pencil by 2 cm, but then you calculated the pen's length as 12 - 2 = 10 cm, which is correct. However, you later set x = 10 + 2 = 12 cm, which contradicts your earlier finding that the pen is 10 cm. If the pen is 10 cm, what should the rubber's length be based on your first equation (x - 3)?",
+        "action": "probe"
+      },
+      {
+        "id": "599-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "603-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "603-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "608-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total number of racers after 30 minutes as 160, but you forgot to account for the 30 racers who joined after the initial 50. Can you re-calculate the total number of racers at the start of the race before any joined?",
+        "action": "probe"
+      },
+      {
+        "id": "608-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "623-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the number of boxes, but you multiplied that by 12 instead of using the cost per box to find the total candles needed. If 2 boxes cost $5, how many individual candles are in those 2 boxes?",
+        "action": "probe"
+      },
+      {
+        "id": "623-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "624-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "624-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "625-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that 6 pets have four legs, but you assumed those were the 2 dogs and 4 cats. Since dogs have four legs, how many cats must there be if 6 total four-legged pets include 2 dogs?",
+        "action": "probe"
+      },
+      {
+        "id": "625-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "633-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation for Mitchell's pencils, but you used the total of both pencils (2x+6) instead of just Mitchell's count (x+6) when setting it equal to 30. If you only count Mitchell's pencils, what equation should you write to find Antonio's amount?",
+        "action": "probe"
+      },
+      {
+        "id": "633-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "642-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "642-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "645-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly set up the equation as height = 4 × depth, but the problem states the base is 300m *above* the seabed, not the depth of the river itself. If 300m represents only a quarter of the total vertical distance, what is the full height of the hill?",
+        "action": "probe"
+      },
+      {
+        "id": "645-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "654-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the daily total as 13 eggs, but you multiplied by 52 weeks instead of the number of days Lisa cooks in a year. How many days are there in a year if she only cooks Monday through Friday?",
+        "action": "probe"
+      },
+      {
+        "id": "654-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "662-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "662-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "666-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the brother's current age, but the equation (2021-x) - x = 20 incorrectly assumes the difference between their ages changes over time. Since the age difference is constant, can you write an equation using only their current ages and the unknown birth year?",
+        "action": "probe"
+      },
+      {
+        "id": "666-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "674-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the earnings and spending, but you subtracted the earnings from the original balance instead of adding them. Why should the money received from selling players be added to the club's total funds?",
+        "action": "probe"
+      },
+      {
+        "id": "674-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "680-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You divided the remaining tokens by 5, but remember that Sandy is keeping half for herself, so the remaining half is only being split among the 4 siblings, not including Sandy. Can you re-calculate how many tokens each sibling gets by dividing the remaining 500,000 by just the 4 siblings?",
+        "action": "probe"
+      },
+      {
+        "id": "680-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "684-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "684-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "696-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated 1/4 of 40, but the problem states that *each* person takes away 1/4 of the marbles. How many marbles does Ryan take away?",
+        "action": "probe"
+      },
+      {
+        "id": "696-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "697-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You mentioned she spent a total of $28, but let's check the second shop: if she spent 3 times the $7 on the shirt, how much did she spend there?",
+        "action": "probe"
+      },
+      {
+        "id": "697-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "698-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "698-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "699-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You identified the second pair as the cheaper one, but the problem states the first pair cost $40 and the second $60. Which pair is actually cheaper, and what is its original price before the half-off discount?",
+        "action": "probe"
+      },
+      {
+        "id": "699-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "711-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "711-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "713-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "713-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "715-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "715-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "718-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "718-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "723-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the total slices needed, but you divided by 8 slices per pepper instead of multiplying to find the number of whole peppers required. If 3072 slices are needed and each pepper provides 8 slices, how many peppers must be cut to get that many slices?",
+        "action": "probe"
+      },
+      {
+        "id": "723-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "729-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "729-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "733-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly identified that Janet uses 15 pounds weekly, but the problem asks for the cost to last 210 days. What is the first step to determine how many 45-pound containers she needs to buy for that duration?",
+        "action": "clarify"
+      },
+      {
+        "id": "733-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "746-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "746-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "748-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that double-counting adds extra toddlers, but did you consider how the 3 hiding toddlers affect the total count?",
+        "action": "probe"
+      },
+      {
+        "id": "748-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "756-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "756-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "775-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly identified the formula for range, but your calculation of the weights is incorrect. Can you re-calculate Jake's weight based on Tracy's 52 kg and the 8 kg difference?",
+        "action": "clarify"
+      },
+      {
+        "id": "775-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "782-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "782-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "786-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the profit per dozen as $20, but remember Chloe sold half a dozen for $30. What is the correct profit for just one half-dozen before scaling up?",
+        "action": "probe"
+      },
+      {
+        "id": "786-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "795-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated 30% of 2000 as 300 for the adult men, but 30% of 2000 is actually 600. Can you recalculate the number of adult men using the correct percentage?",
+        "action": "probe"
+      },
+      {
+        "id": "795-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "798-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You mentioned the unit rate of a brown sock compared to a white sock is 25 cents, but the problem states two white socks cost 25 cents *more* than one brown sock, not that a brown sock costs 25 cents. Can you re-read the first sentence to determine the correct relationship between the prices of a brown sock and a white sock?",
+        "action": "probe"
+      },
+      {
+        "id": "798-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "808-error",
+        "is_error": true,
+        "status": "incomplete",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the number of black balloons, but the problem asks for the total number of balloons divided among the schools. What is the total number of yellow and black balloons combined?",
+        "action": "probe"
+      },
+      {
+        "id": "808-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "813-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You mentioned feeling good about your method, but I need to see your actual steps to check for errors. Can you show me how you calculated the total ribbon used and divided by the amount per box?",
+        "action": "clarify"
+      },
+      {
+        "id": "813-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly calculated the total ribbon used (3.5 feet), but the phrase \"1 foot of ribbon is left\" refers to the remaining amount after all boxes are tied, not per box. Can you re-read the problem to determine how much ribbon was actually used for the boxes before finding the number of boxes?",
+        "action": "clarify"
+      },
+      {
+        "id": "816-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly noted the total number of chapters, but we need to determine how many she actually reads. Which chapters does she skip, and how many chapters remain for her to read?",
+        "action": "clarify"
+      },
+      {
+        "id": "816-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "822-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You added the pages together, but the problem asks for the second person's average, not the total. Did you calculate how many pages the second person read based on the 75% of Deshaun's total?",
+        "action": "clarify"
+      },
+      {
+        "id": "822-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "835-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that the terrier barked 6 times, but the problem states the owner hushed it *every second time* it barked, meaning the barking stopped after the 6th bark, not after the 6th hush. If the owner said \"hush\" 6 times, how many total barks did the terrier make before the dogs stopped?",
+        "action": "probe"
+      },
+      {
+        "id": "835-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "837-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You stated there are 12 stops total, but the problem says 2 stops are for 2 pizzas each, meaning those 2 stops account for 4 pizzas, leaving 8 pizzas for the remaining stops. How many single-pizza stops are actually left after accounting for the two 2-pizza stops?",
+        "action": "probe"
+      },
+      {
+        "id": "837-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly calculated the number of stops and the average time, but let's re-examine the phrase \"two of the stops are for orders of two pizzas.\" Does this mean two stops each have two pizzas (totaling 4 pizzas), or does it mean two pizzas are being delivered in total? How would that change the total number of pizzas delivered?",
+        "action": "clarify"
+      },
+      {
+        "id": "840-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the cost of a small puzzle, but the question asks for the total cost of 1 large and 3 small puzzles. Can you write an expression using the prices you found to calculate that total?",
+        "action": "probe"
+      },
+      {
+        "id": "840-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "841-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated that 2 liters remain in the 5-liter bucket, but your final sentence incorrectly states the total water in the 6-liter bucket is 2 liters instead of the 2 liters you just added. Given that the 6-liter bucket started empty and now holds 2 liters, how many more liters can it accept before reaching its 6-liter capacity?",
+        "action": "probe"
+      },
+      {
+        "id": "841-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "846-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly calculated the amount Tim paid for his doctor visit, but you haven't included the cost for the cat's visit yet. Can you calculate how much Tim paid for the cat's insurance deductible and add that to your previous total?",
+        "action": "clarify"
+      },
+      {
+        "id": "846-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "860-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly identified that we need to find the total number of people, but you haven't started calculating yet. Let's break it down: First, how many guests did Ashley originally invite? Then, how many of those guests brought an extra person? Finally, add everyone together including Ashley. What is the number of guests Ashley originally invited?",
+        "action": "clarify"
+      },
+      {
+        "id": "860-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "879-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly calculated the revenue as $40, but you added the supply cost instead of subtracting it to find the profit. Can you recall the formula for net profit and try subtracting the $10 cost from your $40 revenue?",
+        "action": "probe"
+      },
+      {
+        "id": "879-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "881-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total pages correctly, but you included Monday's reading in the 4 days remaining. Since Solo already read 15 pages on Monday, how many pages are left to read over the next 4 days?",
+        "action": "probe"
+      },
+      {
+        "id": "881-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "893-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "893-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "896-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly identified the quantities and prices, but you haven't shown how to combine them yet. Can you write out the multiplication for each type of pastry (e.g., 3 × 68) to find the cost for donuts, mini cupcakes, and mini cheesecakes separately?",
+        "action": "clarify"
+      },
+      {
+        "id": "896-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "906-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly found the cost per ticket, but you subtracted the food difference from the ticket cost per person instead of from the total ticket cost. Can you re-read the sentence about food to see if it refers to the total amount spent on tickets or the amount per person?",
+        "action": "probe"
+      },
+      {
+        "id": "906-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the food cost per person as $2.25, but the problem states they spent $4.50 less on food than on the tickets in total, not per person. Can you re-calculate the total food cost before dividing by the number of people?",
+        "action": "probe"
+      },
+      {
+        "id": "907-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated 36, but let's work backward from the 5 remaining vacuum cleaners. If 5 is half of what was left after the orange house, what number multiplied by 2 gives you the amount before that sale?",
+        "action": "probe"
+      },
+      {
+        "id": "907-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "927-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You haven't shown your calculation steps or final answer yet. Can you tell me how you found the difference between the snails, and what you did with that number to find the total fish?",
+        "action": "clarify"
+      },
+      {
+        "id": "927-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "931-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "931-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "932-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Hello! To solve this problem, we first need to find the total number of trees chopped down. Can you add the trees from the first half (200) and the second half (300) to get the total?",
+        "action": "clarify"
+      },
+      {
+        "id": "932-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "952-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You haven't attempted a solution yet, so let's start by clarifying the growth rule. Does \"rises by half the number of cows\" mean you add half the current total to the total each year? Try calculating the number of cows after just the first year to see how the population changes.",
+        "action": "clarify"
+      },
+      {
+        "id": "952-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "953-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the volume of the entire aquarium as 72 cubic feet, but the problem asks for the amount of water currently inside after the cat knocked it over and Nancy refilled it. Can you re-read the steps to determine what fraction of the total capacity the water actually occupies right now?",
+        "action": "probe"
+      },
+      {
+        "id": "953-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "956-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "clarify"
+      },
+      {
+        "id": "956-correct",
+        "is_error": false,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You treated the 20 pairs of red socks as 20 individual socks, but remember that 1 pair equals 2 socks. How many individual red socks does James actually have?",
+        "action": "clarify"
+      },
+      {
+        "id": "965-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "965-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "970-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You correctly identified the total overtime hours, but you haven't calculated the total earnings yet. Can you show the next step: how much is the overtime pay for those 20 hours, and how do you add that to the 5 days of base pay?",
+        "action": "clarify"
+      },
+      {
+        "id": "970-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "974-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You correctly identified that Carmen needs $7 more to reach twice Jethro's amount, but you added the $7 instead of subtracting it to find her current total. If twice Jethro's amount is $40, what number plus $7 equals $40?",
+        "action": "probe"
+      },
+      {
+        "id": "974-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "976-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You calculated the 60% infection rate correctly for the scenario without a vaccine, but the problem asks for the chance *with* the experimental vaccine. How does the vaccine changing the infection probability by 50% affect that 60% figure?",
+        "action": "clarify"
+      },
+      {
+        "id": "976-correct",
+        "is_error": false,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "Which step are you least sure about, and what did you base that step on?",
+        "action": "probe"
+      },
+      {
+        "id": "982-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You haven't started solving the problem yet. Can you calculate the total monthly income John receives from the three subtenants?",
+        "action": "clarify"
+      },
+      {
+        "id": "982-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "990-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "990-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "995-error",
+        "is_error": true,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "995-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "999-error",
+        "is_error": true,
+        "status": "incorrect",
+        "flagged_error": true,
+        "abstained": false,
+        "feedback": "You calculated the total area of the shoebox correctly, but you forgot to subtract the area covered by the block. What is the area of the block in square inches?",
+        "action": "probe"
+      },
+      {
+        "id": "999-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      },
+      {
+        "id": "1000-error",
+        "is_error": true,
+        "status": "unknown",
+        "flagged_error": true,
+        "abstained": true,
+        "feedback": "You haven't attempted to solve the math problem yet. Please calculate the total miles by finding the number of weeks in each half of the year, multiplying by the weekly mileage, and adding the two totals together. What is the number of weeks in the first half of the year?",
+        "action": "clarify"
+      },
+      {
+        "id": "1000-correct",
+        "is_error": false,
+        "status": "correct",
+        "flagged_error": false,
+        "abstained": false,
+        "feedback": "Your answer passed the rubric check by the model (a teacher may still review it). You can start a new independent check.",
+        "action": "offer_check"
+      }
+    ]
+  },
+  "note": "harness \"unknown\" counts as flagged (routed to teacher), reported separately as abstain_rate",
+  "track": "correctness",
+  "limit": 200,
+  "systems": [
+    "harness-omniedu"
+  ],
+  "seconds": 169.6,
+  "generated_at": "2026-11-13T09:11:13+0000",
+  "sources": {
+    "UnifyingAITutorEvaluation": "bbef521ddb875f2cc8a5ee798f4066965a7cfd8a",
+    "mathtutorbench": "6faed173ec2bef55cb899b2a3e0f93982f9cb176",
+    "stepverify_sha256": "335351285ae4b58176a671e6590d5ca29448df98f6b59c2ab8e5598cc8106cbf"
+  }
+}
