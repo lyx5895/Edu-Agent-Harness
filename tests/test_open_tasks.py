@@ -47,7 +47,7 @@ def test_arbitrary_subject_no_course_required(setup,task):
     assert 'reference' not in json.dumps(s)
     assert 'k01' not in json.dumps(s)
     r=act(e,s,'attempt','错误解释')
-    assert r['action']=='probe' and r['status']=='incorrect'
+    assert r['action']=='locate' and r['status']=='incorrect'
     r=act(e,s,'reply','我以为一直如此')
     assert r['action']=='prerequisite' and r['evidence']=='dialogue_only'
     r=act(e,s,'attempt','正确解释')
@@ -149,7 +149,7 @@ def test_open_api_default_requires_task_and_supports_nonmath(tmp_path,monkeypatc
         s=c.post('/api/sessions',json={'learner':'u','task':'解释季风形成'}).json()
         path='/api/sessions/'+s['session_id']
         r=c.post(path+'/attempt',json={'request_id':'a','text':'错误解释'}).json()
-        assert r['action']=='probe'
+        assert r['action']=='locate'
         assert c.get('/api/teacher/sessions/'+s['session_id']+'/replay').json()['passed']
         assert c.get('/api/progress/u').json()['open_tasks'][0]['task']['question']=='解释季风形成'
         assert c.get('/').status_code==200
@@ -235,8 +235,8 @@ def test_no_material_never_invents_citation(setup):
     assert state['task']['citation_validation']['discarded_model_quote']=='杜撰的材料'
 
 
-def test_probe_cannot_silently_turn_into_explanation(setup):
-    e,m=setup;s=e.create('u','任意题目')
+def test_probe_cannot_silently_turn_into_explanation(tmp_path):
+    m=FakeOpenModel();e=OpenEngine(tmp_path/'open.sqlite',m,policy='open-task-policy-v3');s=e.create('u','任意题目')
     m.candidate='你的回答不对。正确的方法是先计算。你知道了吗？'
     r=act(e,s,'attempt','错误解释')
     assert r['feedback']=='你得出这个回答时，依据的规则或材料是什么？'

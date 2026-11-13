@@ -43,7 +43,7 @@ class Review(BaseModel):
     acceptable: bool
 
 
-POLICY_VERSION = 'open-task-policy-v3'
+POLICY_VERSION = 'open-task-policy-v4'
 HINT_LEVELS = (
     ('scaffold_concept', '第一级提示：只点明关键概念或依据。'),
     ('scaffold_step', '第二级提示：说明下一步做什么及依据。'),
@@ -123,4 +123,4 @@ def choose_v4(o):
 
 POLICIES = {'open-task-policy-v4': choose_v4, 'open-task-policy-v3': choose_v3,
             'open-task-policy-v2': choose_v2, 'open-task-policy-v1': choose_v1}
-choose = choose_v3
+choose = choose_v4

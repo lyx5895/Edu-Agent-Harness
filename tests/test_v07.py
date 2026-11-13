@@ -199,7 +199,7 @@ def test_policy_v4_locates_grounded_error_and_replays(tmp_path):
     assert again['feedback'] == 'Take another look at this part: "tides 2+3=6". What is this step based on, and does it hold?'
     trace = [t for t in e.traces(again['session']['session_id']) if 'output_validation' in t][-1]
     assert trace['output_validation']['delivered_action'] == 'locate_template'
-    v3 = OpenEngine(tmp_path / 'v3.sqlite', FakeOpenModel())
+    v3 = OpenEngine(tmp_path / 'v3.sqlite', FakeOpenModel(), policy='open-task-policy-v3')
     assert act(v3, v3.create('u', 'Explain tides.'), 'attempt', 'wrong')['action'] == 'probe'
     with pytest.raises(ValueError):
         OpenEngine(tmp_path / 'x.sqlite', model, policy='nope')
