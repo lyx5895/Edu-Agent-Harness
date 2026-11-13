@@ -1,0 +1,37 @@
+{
+  "image": "blank synthetic image",
+  "response": {
+    "transcription": {
+      "event_id": 14,
+      "text": "",
+      "uncertain": true,
+      "note": "图片内容为空白，无法识别任何题目或学生作答信息。"
+    },
+    "feedback": "请确认或修正转写，仅保留你实际写出的解题步骤，再提交判定。",
+    "session": {
+      "session_id": "875a3b8ada3041bd8a8d8e803f501a59",
+      "learner": "验收-不可辨认图片-1794393951",
+      "item": {
+        "id": "k01-teach-1",
+        "skill": "k01",
+        "phase": "teach",
+        "prompt": "展开并合并：2(x+3)",
+        "source": "course:algebra-v1/k01"
+      },
+      "hint_level": 0,
+      "failures": 0,
+      "done": false,
+      "pending_image": {
+        "event_id": 14,
+        "text": "",
+        "uncertain": true,
+        "note": "图片内容为空白，无法识别任何题目或学生作答信息。"
+      },
+      "version": 1,
+      "needs_review": false,
+      "check_seen": [],
+      "practice_round": 1
+    }
+  },
+  "no_learning_evidence_written": true
+}

@@ -1,0 +1,349 @@
+[
+  {
+    "path": "/api/sessions",
+    "response": {
+      "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+      "learner": "验收学生-1794393868",
+      "item": {
+        "id": "k01-teach-1",
+        "skill": "k01",
+        "phase": "teach",
+        "prompt": "展开并合并：2(x+3)",
+        "source": "course:algebra-v1/k01"
+      },
+      "hint_level": 0,
+      "failures": 0,
+      "done": false,
+      "pending_image": null,
+      "version": 0,
+      "needs_review": false,
+      "check_seen": [],
+      "practice_round": 1,
+      "history": []
+    }
+  },
+  {
+    "path": "/api/sessions/1efa0c73749d4e4eafde70960a51dbbd/attempt",
+    "response": {
+      "event_id": 8,
+      "status": "incorrect",
+      "evidence": "attempted",
+      "feedback": "请先检查第1步。",
+      "session": {
+        "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+        "learner": "验收学生-1794393868",
+        "item": {
+          "id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "prompt": "展开并合并：2(x+3)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 1,
+        "done": false,
+        "pending_image": null,
+        "version": 1,
+        "needs_review": false,
+        "check_seen": [],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "path": "/api/sessions/1efa0c73749d4e4eafde70960a51dbbd/hint",
+    "response": {
+      "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+      "level": 1,
+      "session": {
+        "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+        "learner": "验收学生-1794393868",
+        "item": {
+          "id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "prompt": "展开并合并：2(x+3)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 1,
+        "failures": 1,
+        "done": false,
+        "pending_image": null,
+        "version": 2,
+        "needs_review": false,
+        "check_seen": [],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "path": "/api/sessions/1efa0c73749d4e4eafde70960a51dbbd/attempt",
+    "response": {
+      "event_id": 10,
+      "status": "correct",
+      "evidence": "assisted_complete",
+      "feedback": "这道练习已完成。接下来做一题无提示检查。",
+      "session": {
+        "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+        "learner": "验收学生-1794393868",
+        "item": {
+          "id": "k01-check-1",
+          "skill": "k01",
+          "phase": "check",
+          "prompt": "展开并合并：5(x+6)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 0,
+        "done": false,
+        "pending_image": null,
+        "version": 3,
+        "needs_review": false,
+        "check_seen": [
+          "k01-check-1"
+        ],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "path": "/api/sessions/1efa0c73749d4e4eafde70960a51dbbd/attempt",
+    "response": {
+      "event_id": 11,
+      "status": "correct",
+      "evidence": "independent_check_passed",
+      "feedback": "本次独立检查通过，已保存原始作答。以后仍需复习验证。",
+      "session": {
+        "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+        "learner": "验收学生-1794393868",
+        "item": {
+          "id": "k01-check-1",
+          "skill": "k01",
+          "phase": "check",
+          "prompt": "展开并合并：5(x+6)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 0,
+        "done": true,
+        "pending_image": null,
+        "version": 4,
+        "needs_review": false,
+        "check_seen": [
+          "k01-check-1"
+        ],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "teacher_report": {
+      "summary": [
+        {
+          "learner": "验收学生-1794393868",
+          "skill": "k01",
+          "name": "正数分配律",
+          "attempts": 3,
+          "errors": 1,
+          "assisted_attempts": 1,
+          "independent_check_passed": true,
+          "due_review": false,
+          "evidence_ids": [
+            8,
+            10,
+            11
+          ]
+        }
+      ],
+      "attempts": [
+        {
+          "item_id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "text": "2(x+3)=2x+3",
+          "status": "incorrect",
+          "source": "sympy",
+          "diagnosis": {
+            "status": "incorrect",
+            "first_error": 1,
+            "observation": "学生在展开表达式 2(x+3) 时，只将括号外的 2 乘到了 x 上，得到 2x+3，而忽略了括号内的常数项 3 也需要乘以 2。",
+            "hypothesis": "学生可能没有完全掌握分配律（a(b+c) = ab + ac）的规则，误以为括号外的数只与括号内的第一项相乘，或者在计算 2*3 时出现了疏忽。",
+            "confidence": "high"
+          },
+          "verification": {
+            "status": "incorrect",
+            "first_error": 1,
+            "reason": "这一步与原式不等价。",
+            "source": "sympy"
+          },
+          "hint_level": 0,
+          "evidence": "attempted",
+          "feedback": "请先检查第1步。",
+          "confirmed": false,
+          "image_event_id": null,
+          "id": 8,
+          "learner": "验收学生-1794393868",
+          "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+          "at": 1794393874.887402,
+          "original_status": "incorrect",
+          "correction": null
+        },
+        {
+          "item_id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "text": "2x+6",
+          "status": "correct",
+          "source": "sympy",
+          "diagnosis": {
+            "status": "correct",
+            "first_error": null,
+            "observation": "学生答案 2x+6 与标准答案完全一致，计算过程正确。",
+            "hypothesis": "学生正确应用了乘法分配律，将 2 分别乘以括号内的 x 和 3，并正确合并了结果。",
+            "confidence": "high"
+          },
+          "verification": {
+            "status": "correct",
+            "first_error": null,
+            "reason": "各步等价，已完成。",
+            "source": "sympy"
+          },
+          "hint_level": 1,
+          "evidence": "assisted_complete",
+          "feedback": "这道练习已完成。接下来做一题无提示检查。",
+          "confirmed": false,
+          "image_event_id": null,
+          "id": 10,
+          "learner": "验收学生-1794393868",
+          "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+          "at": 1794393880.092178,
+          "original_status": "correct",
+          "correction": null
+        },
+        {
+          "item_id": "k01-check-1",
+          "skill": "k01",
+          "phase": "check",
+          "text": "5x+30",
+          "status": "correct",
+          "source": "sympy",
+          "diagnosis": {
+            "status": "correct",
+            "first_error": null,
+            "observation": "学生直接给出了正确答案 5x+30，且该结果与标准答案完全一致。",
+            "hypothesis": "学生正确应用了乘法分配律，将 5 分别乘以括号内的 x 和 6，并正确合并了结果。",
+            "confidence": "high"
+          },
+          "verification": {
+            "status": "correct",
+            "first_error": null,
+            "reason": "各步等价，已完成。",
+            "source": "sympy"
+          },
+          "hint_level": 0,
+          "evidence": "independent_check_passed",
+          "feedback": "本次独立检查通过，已保存原始作答。以后仍需复习验证。",
+          "confirmed": false,
+          "image_event_id": null,
+          "id": 11,
+          "learner": "验收学生-1794393868",
+          "session_id": "1efa0c73749d4e4eafde70960a51dbbd",
+          "at": 1794393884.0594006,
+          "original_status": "correct",
+          "correction": null
+        }
+      ],
+      "revisions": []
+    }
+  },
+  {
+    "path": "/api/sessions",
+    "response": {
+      "session_id": "6c0e36958b9b47958baefe0d4c427f1c",
+      "learner": "验收学生-1794393868图片",
+      "item": {
+        "id": "k01-teach-1",
+        "skill": "k01",
+        "phase": "teach",
+        "prompt": "展开并合并：2(x+3)",
+        "source": "course:algebra-v1/k01"
+      },
+      "hint_level": 0,
+      "failures": 0,
+      "done": false,
+      "pending_image": null,
+      "version": 0,
+      "needs_review": false,
+      "check_seen": [],
+      "practice_round": 1,
+      "history": []
+    }
+  },
+  {
+    "path": "/api/sessions/6c0e36958b9b47958baefe0d4c427f1c/image",
+    "response": {
+      "transcription": {
+        "event_id": 12,
+        "text": "Expand: 2(x + 3)\nStudent: 2x + 3",
+        "uncertain": false,
+        "note": "题目要求展开表达式 2(x + 3)，学生作答为 2x + 3。"
+      },
+      "feedback": "请确认或修正转写，仅保留你实际写出的解题步骤，再提交判定。",
+      "session": {
+        "session_id": "6c0e36958b9b47958baefe0d4c427f1c",
+        "learner": "验收学生-1794393868图片",
+        "item": {
+          "id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "prompt": "展开并合并：2(x+3)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 0,
+        "done": false,
+        "pending_image": {
+          "event_id": 12,
+          "text": "Expand: 2(x + 3)\nStudent: 2x + 3",
+          "uncertain": false,
+          "note": "题目要求展开表达式 2(x + 3)，学生作答为 2x + 3。"
+        },
+        "version": 1,
+        "needs_review": false,
+        "check_seen": [],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "path": "/api/sessions/6c0e36958b9b47958baefe0d4c427f1c/confirm",
+    "response": {
+      "event_id": 13,
+      "status": "incorrect",
+      "evidence": "attempted",
+      "feedback": "请先检查第1步。",
+      "session": {
+        "session_id": "6c0e36958b9b47958baefe0d4c427f1c",
+        "learner": "验收学生-1794393868图片",
+        "item": {
+          "id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "prompt": "展开并合并：2(x+3)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 1,
+        "done": false,
+        "pending_image": null,
+        "version": 2,
+        "needs_review": false,
+        "check_seen": [],
+        "practice_round": 1
+      }
+    }
+  },
+  {
+    "image_confirmation": true
+  }
+]

@@ -1,0 +1,103 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "checks": {
+    "model_registration": true,
+    "eight_concurrent_requests": true,
+    "streaming": true,
+    "edu_structured_diagnosis": true
+  },
+  "server_version": {
+    "version": "0.23.0"
+  },
+  "concurrent_requests": [
+    {
+      "index": 0,
+      "seconds": 3.502595104277134,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 1,
+      "seconds": 3.5047260373830795,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 2,
+      "seconds": 3.5021345391869545,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 3,
+      "seconds": 3.5035147489979863,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 4,
+      "seconds": 3.5032922765240073,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 5,
+      "seconds": 3.5025604981929064,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 6,
+      "seconds": 3.501776940189302,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    },
+    {
+      "index": 7,
+      "seconds": 3.501778312958777,
+      "usage": {
+        "prompt_tokens": 23,
+        "total_tokens": 77,
+        "completion_tokens": 54,
+        "prompt_tokens_details": null
+      }
+    }
+  ],
+  "batch_seconds": 3.5308065842837095,
+  "diagnosis": {
+    "status": "incorrect",
+    "first_error": 1,
+    "observation": "学生在应用分配律时，只将括号外的因子2乘到了括号内的第一项x上，而遗漏了对第二项3的乘法运算，导致结果错误。",
+    "hypothesis": "学生可能对分配律的理解不够全面，或者在计算过程中出现了疏忽，未能将括号外的因子乘到括号内的每一项。",
+    "confidence": "high"
+  },
+  "seconds": 5.969470358453691
+}

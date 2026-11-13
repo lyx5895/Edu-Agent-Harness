@@ -1,0 +1,16 @@
+{
+  "chosen_backend": "transformers",
+  "vllm_preflight": {
+    "current_pypi_version": "0.33.0",
+    "dependencies_include_cuda13": true,
+    "host_driver": "535.129.03",
+    "decision": "Use tested Transformers fallback; vLLM runtime not installed/tested. Older vLLM versions not evaluated."
+  },
+  "python": "3.11",
+  "torch": "2.8.0",
+  "transformers": "5.2.0",
+  "bf16_cuda_probe": [
+    128.0,
+    128.0
+  ]
+}

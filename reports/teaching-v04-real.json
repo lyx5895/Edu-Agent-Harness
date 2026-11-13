@@ -1,0 +1,1263 @@
+{
+  "scope": "authored grading regression; not learning outcomes",
+  "cases": [
+    {
+      "name": "equation_missing_explanation",
+      "expected": "incomplete",
+      "actual": "incomplete",
+      "passed": true,
+      "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "probe",
+            "reason": "询问作答依据，区分知识缺口与操作失误。"
+          },
+          "evidence_event_id": 2,
+          "input": {
+            "failures": 1,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "incomplete"
+          },
+          "model_calls": [
+            {
+              "at": 1794487975.3304214,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.346,
+                  10.511
+                ],
+                "seconds": 4.991991471964866,
+                "ttft_seconds": 0.25778374494984746
+              },
+              "seconds": 5.02698744693771,
+              "usage": {
+                "completion_tokens": 100,
+                "prompt_tokens": 531,
+                "total_tokens": 631
+              }
+            },
+            {
+              "at": 1794487978.0705028,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.265,
+                  10.427
+                ],
+                "seconds": 2.728357757907361,
+                "ttft_seconds": 0.20262567279860377
+              },
+              "seconds": 2.7388201621361077,
+              "usage": {
+                "completion_tokens": 54,
+                "prompt_tokens": 179,
+                "total_tokens": 233
+              }
+            },
+            {
+              "at": 1794487981.7587159,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.323,
+                  10.492
+                ],
+                "seconds": 3.6670557861216366,
+                "ttft_seconds": 0.22050196677446365
+              },
+              "seconds": 3.6845817482098937,
+              "usage": {
+                "completion_tokens": 73,
+                "prompt_tokens": 459,
+                "total_tokens": 532
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "你得出这个回答时，依据的规则或材料是什么？",
+          "output_validation": {
+            "candidate": "你直接给出了 x=2，但还没展示解题过程。请写出从 2x+3=7 到 2x=4 这一步的移项操作，并说明为什么 3 要变成 -3 移到等号右边。",
+            "delivered_action": "clarify",
+            "fallback": true,
+            "reasons": [
+              "probe_must_be_one_question"
+            ],
+            "review": {
+              "acceptable": true,
+              "reason": "该回复严格遵循了probe指令的要求，没有直接给出答案或纠正错误，而是通过提问引导学生展示从'2x+3=7'到'2x=4'的移项过程，并解释'3'变号移位的依据，符合'询问依据'的约束。"
+            }
+          },
+          "policy_version": "open-task-policy-v2",
+          "seconds": 11.459782123565674,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "9f7beda5955c4cadb6d0b78ab928ae74",
+            "assisted": true,
+            "completed": false,
+            "failures": 1,
+            "feedback_fallbacks": 1,
+            "hypotheses": [
+              {
+                "certainty": "tentative",
+                "hypothesis": "学生可能知道答案，但未按要求展示解题过程，导致不符合评分标准。",
+                "quote": "x=2"
+              }
+            ],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "4f023de596c74745ae6ed245659f40b5",
+              "objective": "解方程 2*x+3=7，并解释移项的依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解方程 2*x+3=7，并解释移项的依据。",
+              "reference": "等式两边同时减3得到2*x=4，再同时除以2得到x=2。",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须给出x=2，并说明等式两边同时减3、再同时除以2；只有结果属于未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": "你得出这个回答时，依据的规则或材料是什么？",
+            "request": "解方程 2*x+3=7，并解释移项的依据。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "等式性质",
+              "course_id": "数学"
+            },
+            "seen": [
+              "解方程 2*x+3=7，并解释移项的依据。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "4f023de596c74745ae6ed245659f40b5",
+              "objective": "解方程 2*x+3=7，并解释移项的依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解方程 2*x+3=7，并解释移项的依据。",
+              "reference": "等式两边同时减3得到2*x=4，再同时除以2得到x=2。",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须给出x=2，并说明等式两边同时减3、再同时除以2；只有结果属于未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "9f7beda5955c4cadb6d0b78ab928ae74",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "4f023de596c74745ae6ed245659f40b5",
+              "objective": "解方程 2*x+3=7，并解释移项的依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解方程 2*x+3=7，并解释移项的依据。",
+              "reference": "等式两边同时减3得到2*x=4，再同时除以2得到x=2。",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须给出x=2，并说明等式两边同时减3、再同时除以2；只有结果属于未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "解方程 2*x+3=7，并解释移项的依据。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "等式性质",
+              "course_id": "数学"
+            },
+            "seen": [
+              "解方程 2*x+3=7，并解释移项的依据。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "4f023de596c74745ae6ed245659f40b5",
+              "objective": "解方程 2*x+3=7，并解释移项的依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解方程 2*x+3=7，并解释移项的依据。",
+              "reference": "等式两边同时减3得到2*x=4，再同时除以2得到x=2。",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须给出x=2，并说明等式两边同时减3、再同时除以2；只有结果属于未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "4f023de596c74745ae6ed245659f40b5",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 3
+        }
+      ],
+      "seconds": 11.614017724990845
+    },
+    {
+      "name": "factorization_wrong_form",
+      "expected": "incomplete",
+      "actual": "incomplete",
+      "passed": true,
+      "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "probe",
+            "reason": "询问作答依据，区分知识缺口与操作失误。"
+          },
+          "evidence_event_id": 5,
+          "input": {
+            "failures": 1,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "incomplete"
+          },
+          "model_calls": [
+            {
+              "at": 1794487986.1290066,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.325,
+                  10.494
+                ],
+                "seconds": 4.1997802229598165,
+                "ttft_seconds": 0.21378483902662992
+              },
+              "seconds": 4.21647803671658,
+              "usage": {
+                "completion_tokens": 84,
+                "prompt_tokens": 494,
+                "total_tokens": 578
+              }
+            },
+            {
+              "at": 1794487989.4127138,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.26,
+                  10.43
+                ],
+                "seconds": 3.235453822184354,
+                "ttft_seconds": 0.1856225049123168
+              },
+              "seconds": 3.245693346951157,
+              "usage": {
+                "completion_tokens": 64,
+                "prompt_tokens": 169,
+                "total_tokens": 233
+              }
+            },
+            {
+              "at": 1794487992.7692573,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.315,
+                  10.48
+                ],
+                "seconds": 3.336413139011711,
+                "ttft_seconds": 0.2092935941182077
+              },
+              "seconds": 3.355114733800292,
+              "usage": {
+                "completion_tokens": 66,
+                "prompt_tokens": 430,
+                "total_tokens": 496
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "你得出这个回答时，依据的规则或材料是什么？",
+          "output_validation": {
+            "candidate": "你给出的答案 $x^2-1$ 只是原式本身，并没有完成因式分解。请回忆一下平方差公式 $a^2-b^2=(a+b)(a-b)$，看看 $x^2-1$ 是否符合这个形式，并尝试写出分解后的结果。",
+            "delivered_action": "clarify",
+            "fallback": true,
+            "reasons": [
+              "probe_must_be_one_question",
+              "model_review"
+            ],
+            "review": {
+              "acceptable": false,
+              "reason": "候选内容中直接给出了平方差公式的具体形式 $(a+b)(a-b)$ 并引导写出结果，这属于在 'probe' 动作下泄露了关键解题方法和公式，违反了 '不得纠正错误、给出正确方法或知识结论' 的限制。"
+            }
+          },
+          "policy_version": "open-task-policy-v2",
+          "seconds": 10.860816478729248,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "b2c8b9eca274458393def3a80e501748",
+            "assisted": true,
+            "completed": false,
+            "failures": 1,
+            "feedback_fallbacks": 1,
+            "hypotheses": [
+              {
+                "certainty": "tentative",
+                "hypothesis": "学生可能未掌握平方差公式，或者未理解题目要求是将表达式分解而非保持原样。",
+                "quote": "x**2-1"
+              }
+            ],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "3a18a6fc36ec4ee69899c5f2cce6b283",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积；仅写展开形式未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": "你得出这个回答时，依据的规则或材料是什么？",
+            "request": "将 x*x-1 因式分解。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "平方差",
+              "course_id": "数学"
+            },
+            "seen": [
+              "将 x*x-1 因式分解。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "3a18a6fc36ec4ee69899c5f2cce6b283",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积；仅写展开形式未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "b2c8b9eca274458393def3a80e501748",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "3a18a6fc36ec4ee69899c5f2cce6b283",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积；仅写展开形式未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "将 x*x-1 因式分解。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "平方差",
+              "course_id": "数学"
+            },
+            "seen": [
+              "将 x*x-1 因式分解。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "3a18a6fc36ec4ee69899c5f2cce6b283",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积；仅写展开形式未完成。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "3a18a6fc36ec4ee69899c5f2cce6b283",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 6
+        }
+      ],
+      "seconds": 11.004772901535034
+    },
+    {
+      "name": "factorization_complete",
+      "expected": "correct",
+      "actual": "correct",
+      "passed": true,
+      "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "offer_check",
+            "reason": "当前任务完成，邀请进行新的无提示检查。"
+          },
+          "evidence_event_id": 8,
+          "input": {
+            "failures": 0,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "correct"
+          },
+          "model_calls": [
+            {
+              "at": 1794487996.9982653,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.325,
+                  10.494
+                ],
+                "seconds": 4.078912760131061,
+                "ttft_seconds": 0.21444717328995466
+              },
+              "seconds": 4.090836695861071,
+              "usage": {
+                "completion_tokens": 81,
+                "prompt_tokens": 489,
+                "total_tokens": 570
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+          "policy_version": "open-task-policy-v2",
+          "seconds": 4.092252254486084,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "c2b113e4bd1c480c9e511bd9e3bde6a4",
+            "assisted": false,
+            "completed": true,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "cc1c2cc2b4f542fabb7b30d199af3aa2",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "将 x*x-1 因式分解。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "平方差",
+              "course_id": "数学"
+            },
+            "seen": [
+              "将 x*x-1 因式分解。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "cc1c2cc2b4f542fabb7b30d199af3aa2",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "c2b113e4bd1c480c9e511bd9e3bde6a4",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "cc1c2cc2b4f542fabb7b30d199af3aa2",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "将 x*x-1 因式分解。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "平方差",
+              "course_id": "数学"
+            },
+            "seen": [
+              "将 x*x-1 因式分解。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "数学",
+              "id": "cc1c2cc2b4f542fabb7b30d199af3aa2",
+              "objective": "将 x*x-1 因式分解。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "将 x*x-1 因式分解。",
+              "reference": "(x-1)*(x+1)",
+              "reference_origin": "teacher_authored",
+              "rubric": "必须写成两个一次因式的积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "cc1c2cc2b4f542fabb7b30d199af3aa2",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 9
+        }
+      ],
+      "seconds": 4.186658620834351
+    },
+    {
+      "name": "physics_wrong_operation",
+      "expected": "incorrect",
+      "actual": "incorrect",
+      "passed": true,
+      "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "probe",
+            "reason": "询问作答依据，区分知识缺口与操作失误。"
+          },
+          "evidence_event_id": 11,
+          "input": {
+            "failures": 1,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "incorrect"
+          },
+          "model_calls": [
+            {
+              "at": 1794488002.356225,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.343,
+                  10.511
+                ],
+                "seconds": 5.2230258621275425,
+                "ttft_seconds": 0.22546715615317225
+              },
+              "seconds": 5.240031430032104,
+              "usage": {
+                "completion_tokens": 105,
+                "prompt_tokens": 534,
+                "total_tokens": 639
+              }
+            },
+            {
+              "at": 1794488005.516852,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.27,
+                  10.437
+                ],
+                "seconds": 3.140820343978703,
+                "ttft_seconds": 0.19695817306637764
+              },
+              "seconds": 3.160072480328381,
+              "usage": {
+                "completion_tokens": 62,
+                "prompt_tokens": 195,
+                "total_tokens": 257
+              }
+            },
+            {
+              "at": 1794488009.0801594,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.323,
+                  10.492
+                ],
+                "seconds": 3.543491514865309,
+                "ttft_seconds": 0.2218564529903233
+              },
+              "seconds": 3.5617962391115725,
+              "usage": {
+                "completion_tokens": 70,
+                "prompt_tokens": 458,
+                "total_tokens": 528
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "你得出这个回答时，依据的规则或材料是什么？",
+          "output_validation": {
+            "candidate": "你计算出的数值 36 是通过 12 乘以 3 得到的，但牛顿第二定律的公式是 F=ma，求加速度时应该是力除以质量。请重新检查公式中各物理量的关系，用 12 除以 3 再试一次。",
+            "delivered_action": "clarify",
+            "fallback": true,
+            "reasons": [
+              "probe_must_be_one_question",
+              "model_review"
+            ],
+            "review": {
+              "acceptable": false,
+              "reason": "该回复直接指出了学生的计算错误（用乘法代替除法），并给出了正确的计算指令（用12除以3），这属于在'probe'（探测）阶段直接纠正错误并给出正确方法，违反了'不得纠正错误、给出正确方法或知识结论'的约束。"
+            }
+          },
+          "policy_version": "open-task-policy-v2",
+          "seconds": 11.965898275375366,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "4bbbb4e5ed604d72b910c3c13f7678f7",
+            "assisted": true,
+            "completed": false,
+            "failures": 1,
+            "feedback_fallbacks": 1,
+            "hypotheses": [
+              {
+                "certainty": "tentative",
+                "hypothesis": "学生可能混淆了公式中变量之间的关系，误以为加速度与质量和力成正比，而忽略了质量在分母上的作用。",
+                "quote": "加速度是36 m/s²，因为力乘质量就是加速度。"
+              }
+            ],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "3877a82179fe4913b9db4d3f4f56effc",
+              "objective": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "reference": "由F=ma，a=F/m=12/3=4 m/s²。",
+              "reference_origin": "teacher_authored",
+              "rubric": "a=F/m=4 m/s²；需给出依据及单位。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": "你得出这个回答时，依据的规则或材料是什么？",
+            "request": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "牛顿第二定律",
+              "course_id": "物理"
+            },
+            "seen": [
+              "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "3877a82179fe4913b9db4d3f4f56effc",
+              "objective": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "reference": "由F=ma，a=F/m=12/3=4 m/s²。",
+              "reference_origin": "teacher_authored",
+              "rubric": "a=F/m=4 m/s²；需给出依据及单位。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "4bbbb4e5ed604d72b910c3c13f7678f7",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "3877a82179fe4913b9db4d3f4f56effc",
+              "objective": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "reference": "由F=ma，a=F/m=12/3=4 m/s²。",
+              "reference_origin": "teacher_authored",
+              "rubric": "a=F/m=4 m/s²；需给出依据及单位。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "牛顿第二定律",
+              "course_id": "物理"
+            },
+            "seen": [
+              "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "3877a82179fe4913b9db4d3f4f56effc",
+              "objective": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "质量为3 kg的物体受到合外力12 N，求加速度并说明依据。",
+              "reference": "由F=ma，a=F/m=12/3=4 m/s²。",
+              "reference_origin": "teacher_authored",
+              "rubric": "a=F/m=4 m/s²；需给出依据及单位。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "3877a82179fe4913b9db4d3f4f56effc",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 12
+        }
+      ],
+      "seconds": 12.092130899429321
+    },
+    {
+      "name": "english_correct_explanation",
+      "expected": "correct",
+      "actual": "correct",
+      "passed": true,
+      "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "offer_check",
+            "reason": "当前任务完成，邀请进行新的无提示检查。"
+          },
+          "evidence_event_id": 14,
+          "input": {
+            "failures": 0,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "correct"
+          },
+          "model_calls": [
+            {
+              "at": 1794488014.4078658,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.343,
+                  10.512
+                ],
+                "seconds": 5.225754896178842,
+                "ttft_seconds": 0.23179920809343457
+              },
+              "seconds": 5.237417230848223,
+              "usage": {
+                "completion_tokens": 105,
+                "prompt_tokens": 535,
+                "total_tokens": 640
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+          "policy_version": "open-task-policy-v2",
+          "seconds": 5.239598751068115,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "ac02fe21e8d84e2180e054b52e3a9661",
+            "assisted": false,
+            "completed": true,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "英语",
+              "id": "928a68272dc04e2aa1842c8c3eac906c",
+              "objective": "改正 He play football every day. 并解释原因。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "改正 He play football every day. 并解释原因。",
+              "reference": "He plays football every day. He是第三人称单数，一般现在时用plays。",
+              "reference_origin": "teacher_authored",
+              "rubric": "play改为plays；说明主语He为第三人称单数，一般现在时动词加s。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "改正 He play football every day. 并解释原因。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "一般现在时",
+              "course_id": "英语"
+            },
+            "seen": [
+              "改正 He play football every day. 并解释原因。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "英语",
+              "id": "928a68272dc04e2aa1842c8c3eac906c",
+              "objective": "改正 He play football every day. 并解释原因。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "改正 He play football every day. 并解释原因。",
+              "reference": "He plays football every day. He是第三人称单数，一般现在时用plays。",
+              "reference_origin": "teacher_authored",
+              "rubric": "play改为plays；说明主语He为第三人称单数，一般现在时动词加s。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "ac02fe21e8d84e2180e054b52e3a9661",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "英语",
+              "id": "928a68272dc04e2aa1842c8c3eac906c",
+              "objective": "改正 He play football every day. 并解释原因。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "改正 He play football every day. 并解释原因。",
+              "reference": "He plays football every day. He是第三人称单数，一般现在时用plays。",
+              "reference_origin": "teacher_authored",
+              "rubric": "play改为plays；说明主语He为第三人称单数，一般现在时动词加s。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "改正 He play football every day. 并解释原因。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "一般现在时",
+              "course_id": "英语"
+            },
+            "seen": [
+              "改正 He play football every day. 并解释原因。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "英语",
+              "id": "928a68272dc04e2aa1842c8c3eac906c",
+              "objective": "改正 He play football every day. 并解释原因。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "改正 He play football every day. 并解释原因。",
+              "reference": "He plays football every day. He是第三人称单数，一般现在时用plays。",
+              "reference_origin": "teacher_authored",
+              "rubric": "play改为plays；说明主语He为第三人称单数，一般现在时动词加s。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "928a68272dc04e2aa1842c8c3eac906c",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 15
+        }
+      ],
+      "seconds": 5.339415073394775
+    },
+    {
+      "name": "self_claim_no_credit",
+      "expected": "unknown",
+      "actual": "unknown",
+      "passed": true,
+      "feedback": "你还没有具体解释 F=ma 的含义。请尝试用你自己的话描述一下：公式中的 F、m、a 分别代表什么物理量？它们之间是什么关系？",
+      "trace": [
+        {
+          "budget": {
+            "max_model_calls": 12,
+            "max_repairs_per_structured_call": 1
+          },
+          "context": {
+            "history": [],
+            "hypotheses": [],
+            "image_evidence_id": null,
+            "learning_memory": [],
+            "materials": [],
+            "prior_task_evidence": [],
+            "teacher_guidance": ""
+          },
+          "decision": {
+            "action": "clarify",
+            "reason": "证据不足或验证结果冲突，先澄清。"
+          },
+          "evidence_event_id": 17,
+          "input": {
+            "failures": 0,
+            "fallbacks": 0,
+            "kind": "attempt",
+            "phase": "teach",
+            "prior_support_needed": false,
+            "status": "unknown"
+          },
+          "model_calls": [
+            {
+              "at": 1794488018.4004264,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.325,
+                  10.494
+                ],
+                "seconds": 3.8743260484188795,
+                "ttft_seconds": 0.22310526203364134
+              },
+              "seconds": 3.8858759100548923,
+              "usage": {
+                "completion_tokens": 77,
+                "prompt_tokens": 488,
+                "total_tokens": 565
+              }
+            },
+            {
+              "at": 1794488020.3959882,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.27,
+                  10.438
+                ],
+                "seconds": 1.9767030007205904,
+                "ttft_seconds": 0.19479274284094572
+              },
+              "seconds": 1.9949644296430051,
+              "usage": {
+                "completion_tokens": 38,
+                "prompt_tokens": 206,
+                "total_tokens": 244
+              }
+            },
+            {
+              "at": 1794488023.0859103,
+              "metrics": {
+                "peak_allocated_gib": [
+                  7.314,
+                  10.479
+                ],
+                "seconds": 2.6711173309013247,
+                "ttft_seconds": 0.21606947761029005
+              },
+              "seconds": 2.689099063165486,
+              "usage": {
+                "completion_tokens": 52,
+                "prompt_tokens": 402,
+                "total_tokens": 454
+              }
+            }
+          ],
+          "operation": "attempt",
+          "output": "你还没有具体解释 F=ma 的含义。请尝试用你自己的话描述一下：公式中的 F、m、a 分别代表什么物理量？它们之间是什么关系？",
+          "output_validation": {
+            "candidate": "你还没有具体解释 F=ma 的含义。请尝试用你自己的话描述一下：公式中的 F、m、a 分别代表什么物理量？它们之间是什么关系？",
+            "delivered_action": "clarify",
+            "fallback": false,
+            "reasons": [],
+            "review": {
+              "acceptable": true,
+              "reason": "该回复准确指出了学生尚未解释公式含义，并明确提出了具体的追问方向（解释F、m、a的含义及关系），符合clarify动作要求，未泄露答案或进行不当引导。"
+            }
+          },
+          "policy_version": "open-task-policy-v2",
+          "seconds": 8.57704496383667,
+          "state_after": {
+            "allow_explanation": true,
+            "assignment_id": "20bd2e935aa049a78e5be30f7a19b015",
+            "assisted": true,
+            "completed": false,
+            "failures": 0,
+            "feedback_fallbacks": 0,
+            "hypotheses": [
+              {
+                "certainty": "tentative",
+                "hypothesis": "学生可能未理解题目要求，或故意不回答，导致无法提供有效答案。",
+                "quote": "我懂了"
+              }
+            ],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "a8e09a67e1784e53a3d9b08579ff0cd6",
+              "objective": "解释F=ma的含义。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解释F=ma的含义。",
+              "reference": "物体的合外力等于物体质量与加速度的乘积。",
+              "reference_origin": "teacher_authored",
+              "rubric": "描述合外力等于质量与加速度的乘积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": "你还没有具体解释 F=ma 的含义。请尝试用你自己的话描述一下：公式中的 F、m、a 分别代表什么物理量？它们之间是什么关系？",
+            "request": "解释F=ma的含义。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "牛顿第二定律",
+              "course_id": "物理"
+            },
+            "seen": [
+              "解释F=ma的含义。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "a8e09a67e1784e53a3d9b08579ff0cd6",
+              "objective": "解释F=ma的含义。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解释F=ma的含义。",
+              "reference": "物体的合外力等于物体质量与加速度的乘积。",
+              "reference_origin": "teacher_authored",
+              "rubric": "描述合外力等于质量与加速度的乘积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 1
+          },
+          "state_before": {
+            "allow_explanation": true,
+            "assignment_id": "20bd2e935aa049a78e5be30f7a19b015",
+            "assisted": false,
+            "completed": false,
+            "failures": 0,
+            "hypotheses": [],
+            "mode": "problem",
+            "needs_review": false,
+            "original": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "a8e09a67e1784e53a3d9b08579ff0cd6",
+              "objective": "解释F=ma的含义。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解释F=ma的含义。",
+              "reference": "物体的合外力等于物体质量与加速度的乘积。",
+              "reference_origin": "teacher_authored",
+              "rubric": "描述合外力等于质量与加速度的乘积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "pending_image": null,
+            "pending_question": null,
+            "request": "解释F=ma的含义。",
+            "scope": {
+              "class_id": "evaluation",
+              "concept_id": "牛顿第二定律",
+              "course_id": "物理"
+            },
+            "seen": [
+              "解释F=ma的含义。"
+            ],
+            "sources": [],
+            "task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "domain": "物理",
+              "id": "a8e09a67e1784e53a3d9b08579ff0cd6",
+              "objective": "解释F=ma的含义。",
+              "phase": "teach",
+              "prerequisite": "",
+              "question": "解释F=ma的含义。",
+              "reference": "物体的合外力等于物体质量与加速度的乘积。",
+              "reference_origin": "teacher_authored",
+              "rubric": "描述合外力等于质量与加速度的乘积。",
+              "source_ids": [],
+              "source_quote": ""
+            },
+            "teaching_note": "",
+            "version": 0
+          },
+          "task_id": "a8e09a67e1784e53a3d9b08579ff0cd6",
+          "tools": [
+            "materials.retrieve"
+          ],
+          "event_id": 18
+        }
+      ],
+      "seconds": 8.65375304222107
+    }
+  ],
+  "passed": true,
+  "false_acceptances": 0
+}

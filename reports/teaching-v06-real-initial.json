@@ -1,0 +1,1682 @@
+{
+  "scope": "scripted workflow and grading checks, not learning outcomes",
+  "cases": [
+    {
+      "name": "cross_subject_draft_generation",
+      "passed": true,
+      "details": {
+        "pack_id": "08b6bcd6b7a545269c84ff7403d5610c",
+        "items": [
+          {
+            "task_type": "reading",
+            "check_requirements": [
+              "引用材料并解释"
+            ],
+            "class_id": "Live",
+            "course_id": "语文",
+            "concept_id": "evidence",
+            "objective": "根据蒸发材料引用原文并解释原因",
+            "domain": "语文",
+            "question": "请从提供的材料中引用一句关于蒸发的原文，并解释这句话如何说明夏天洒水能降温。",
+            "rubric": "1. 准确引用原文（2分）；2. 解释清晰，能联系生活实际（3分）；3. 语言通顺，逻辑合理（2分）。",
+            "reference": "引用：'蒸发从周围环境吸收热量。' 解释：这句话说明蒸发过程会带走热量，导致环境温度降低，因此夏天洒水后，水蒸发时会吸收周围空气和地面的热量，从而让人感到凉爽。",
+            "material": "蒸发从周围环境吸收热量。英文段落应围绕一个中心观点展开。",
+            "prerequisite": "理解蒸发的基本概念及其吸热特性",
+            "teaching_note": "",
+            "allow_explanation": true,
+            "reference_origin": "teacher_reviewed_model",
+            "check_assignment_ids": [],
+            "criteria": [],
+            "algebra_initial": "",
+            "algebra_kind": "none"
+          },
+          {
+            "task_type": "writing",
+            "check_requirements": [],
+            "class_id": "Live",
+            "course_id": "英语",
+            "concept_id": "paragraph",
+            "objective": "写三个英语句子表达一个中心观点",
+            "domain": "英语",
+            "question": "请围绕“蒸发会吸收热量”这一中心观点，写出三个连贯的英语句子。",
+            "rubric": "1. 内容相关性：三个句子是否都紧扣“蒸发吸热”这一中心观点。\n2. 逻辑连贯性：句子之间是否有合理的逻辑连接，是否形成完整的表达。\n3. 语言准确性：用词是否恰当，语法是否正确，表达是否清晰。",
+            "reference": "Evaporation absorbs heat from the surrounding environment. This process causes the temperature of the remaining liquid to drop. For example, sweating helps cool our bodies because the evaporation of sweat takes away heat.",
+            "material": "蒸发从周围环境吸收热量。英文段落应围绕一个中心观点展开。",
+            "prerequisite": "理解蒸发的物理概念及其与热量变化的关系",
+            "teaching_note": "",
+            "allow_explanation": true,
+            "reference_origin": "teacher_reviewed_model",
+            "check_assignment_ids": [],
+            "criteria": [],
+            "algebra_initial": "",
+            "algebra_kind": "none"
+          }
+        ],
+        "model_calls": 3
+      },
+      "seconds": 23.05
+    },
+    {
+      "name": "quote_alone_does_not_satisfy_explanation",
+      "passed": false,
+      "error": "{'feedback': '本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。', 'status': 'correct', 'evidence': 'practice_complete', 'action': 'offer_check', 'criteria_results': [{'id': 'quote', 'description': '引用材料原文', 'concept_id': '', 'status': 'correct', 'source': 'tool'}], 'event_id': 2, 'trace_id': 3, 'session': {'session_id': 'open_3ebbcecc48c9437d882d68a2ec9862cb', 'learner': 'reader', 'version': 1, 'engine': 'open-task-v1', 'task': {'id': 'd16b4566d40a4cc39b181df7b2ef168b', 'domain': '语文', 'objective': '引用原文解释现象', 'question': '根据材料说明为什么湿衣服晾干时会吸热，引用原文并解释。', 'phase': 'teach', 'source_ids': ['material:1'], 'task_type': 'reading', 'check_requirements': [], 'criteria': [{'id': 'quote', 'description': '引用材料原文'}]}, 'pending_image': None, 'pending_question': None, 'completed': True, 'needs_review': False, 'scope': {'class_id': 'Live', 'concept_id': 'quote', 'course_id': '阅读'}, 'assignment_id': 'baa4e956674a45659a31dd868a5a16a4', 'followup_id': None, 'source_count': 1, 'history': [{'id': 2, 'type': 'turn', 'text': '水在蒸发时会从周围环境吸收热量。', 'feedback': '本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。', 'status': 'correct', 'evidence': 'practice_complete', 'action': 'offer_check', 'criteria_results': [{'id': 'quote', 'description': '引用材料原文', 'concept_id': '', 'status': 'correct', 'source': 'tool'}]}]}}",
+      "seconds": 4.04
+    },
+    {
+      "name": "teacher_bank_physics_independent_check",
+      "passed": true,
+      "details": {
+        "status": "correct",
+        "evidence": "independent_model_assessed",
+        "trace": [
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "offer_check",
+              "reason": "当前任务完成，邀请进行新的无提示检查。"
+            },
+            "evidence_event_id": 5,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "kind": "attempt",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794493172.1287549,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.355,
+                    10.527
+                  ],
+                  "seconds": 3.8527229060418904,
+                  "ttft_seconds": 0.2264343104325235
+                },
+                "seconds": 3.867503095418215,
+                "usage": {
+                  "completion_tokens": 77,
+                  "prompt_tokens": 638,
+                  "total_tokens": 715
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+            "policy_version": "open-task-policy-v2",
+            "seconds": 3.8719449043273926,
+            "state_after": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": true,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 1
+            },
+            "state_before": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": false,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 0
+            },
+            "task_id": "1bd0ff515d0c401b9888fd02928e7950",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 6
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "check_source": "teacher_bank",
+            "context": {
+              "history": [
+                {
+                  "action": "offer_check",
+                  "event_id": 5,
+                  "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+                  "status": "correct",
+                  "text": "3 m/s"
+                }
+              ],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "create_check",
+              "reason": "按当前目标生成未见检查任务，先审核再呈现。"
+            },
+            "evidence_event_id": 7,
+            "generated_task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "check_assignment_id": "47415812d26f42638b58eaabfe85d87a",
+              "check_requirements": [
+                "使用路程与时间求速度",
+                "写出速度单位"
+              ],
+              "criteria": [
+                {
+                  "concept_id": "",
+                  "description": "数值正确",
+                  "expected": "4",
+                  "id": "value",
+                  "kind": "numeric",
+                  "tolerance": 0
+                },
+                {
+                  "concept_id": "",
+                  "description": "单位正确",
+                  "expected": "m/s",
+                  "id": "unit",
+                  "kind": "unit",
+                  "tolerance": 0
+                }
+              ],
+              "domain": "物理",
+              "id": "148356cf4a1c4c9fa6b89385507ff7e6",
+              "objective": "计算速度并写单位",
+              "phase": "check",
+              "prerequisite": "",
+              "question": "小车3秒走了12米，速度是多少？写单位。",
+              "reference": "4 m/s",
+              "reference_origin": "teacher_authored",
+              "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+              "source_ids": [],
+              "source_quote": "",
+              "task_type": "experiment",
+              "verifier_binding": "unavailable"
+            },
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "kind": "check",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "status": "unknown"
+            },
+            "model_calls": [],
+            "operation": "check",
+            "output": "新的独立检查已准备好，请独立作答。",
+            "policy_version": "open-task-policy-v2",
+            "review": {
+              "acceptable": true,
+              "reason": "教师审核题库"
+            },
+            "seconds": 0.003926515579223633,
+            "state_after": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": false,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。",
+                "小车3秒走了12米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_id": "47415812d26f42638b58eaabfe85d87a",
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "4",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "148356cf4a1c4c9fa6b89385507ff7e6",
+                "objective": "计算速度并写单位",
+                "phase": "check",
+                "prerequisite": "",
+                "question": "小车3秒走了12米，速度是多少？写单位。",
+                "reference": "4 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 2
+            },
+            "state_before": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": true,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 1
+            },
+            "task_id": "1bd0ff515d0c401b9888fd02928e7950",
+            "tools": [
+              "materials.retrieve",
+              "task.teacher_bank"
+            ],
+            "event_id": 8
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "assess_only",
+              "reason": "独立检查先评估作答，不向学生提供答案或提示。"
+            },
+            "evidence_event_id": 9,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "kind": "attempt",
+              "phase": "check",
+              "prior_support_needed": false,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794493176.3123455,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.355,
+                    10.527
+                  ],
+                  "seconds": 4.02334349276498,
+                  "ttft_seconds": 0.2262315726839006
+                },
+                "seconds": 4.035575597081333,
+                "usage": {
+                  "completion_tokens": 81,
+                  "prompt_tokens": 638,
+                  "total_tokens": 719
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。",
+            "policy_version": "open-task-policy-v2",
+            "seconds": 4.039527177810669,
+            "state_after": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": true,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。",
+                "小车3秒走了12米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_id": "47415812d26f42638b58eaabfe85d87a",
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "4",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "148356cf4a1c4c9fa6b89385507ff7e6",
+                "objective": "计算速度并写单位",
+                "phase": "check",
+                "prerequisite": "",
+                "question": "小车3秒走了12米，速度是多少？写单位。",
+                "reference": "4 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 3
+            },
+            "state_before": {
+              "allow_explanation": true,
+              "assignment_id": "b73cfe6b6ad242e5bdbbb3900b481eee",
+              "assisted": false,
+              "completed": false,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [
+                  "47415812d26f42638b58eaabfe85d87a"
+                ],
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "3",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "1bd0ff515d0c401b9888fd02928e7950",
+                "objective": "计算速度并写单位",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "小车2秒走了6米，速度是多少？写单位。",
+                "reference": "3 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "小车2秒走了6米，速度是多少？写单位。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "speed",
+                "course_id": "物理"
+              },
+              "seen": [
+                "小车2秒走了6米，速度是多少？写单位。",
+                "小车3秒走了12米，速度是多少？写单位。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_id": "47415812d26f42638b58eaabfe85d87a",
+                "check_requirements": [
+                  "使用路程与时间求速度",
+                  "写出速度单位"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "数值正确",
+                    "expected": "4",
+                    "id": "value",
+                    "kind": "numeric",
+                    "tolerance": 0
+                  },
+                  {
+                    "concept_id": "",
+                    "description": "单位正确",
+                    "expected": "m/s",
+                    "id": "unit",
+                    "kind": "unit",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "物理",
+                "id": "148356cf4a1c4c9fa6b89385507ff7e6",
+                "objective": "计算速度并写单位",
+                "phase": "check",
+                "prerequisite": "",
+                "question": "小车3秒走了12米，速度是多少？写单位。",
+                "reference": "4 m/s",
+                "reference_origin": "teacher_authored",
+                "rubric": "用路程除以时间计算速度，并保留m/s单位。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "experiment",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 2
+            },
+            "task_id": "148356cf4a1c4c9fa6b89385507ff7e6",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 10
+          }
+        ]
+      },
+      "seconds": 8.22
+    },
+    {
+      "name": "generated_writing_check_preserves_contract",
+      "passed": true,
+      "details": {
+        "task": {
+          "id": "ed314dae938948fa8ca1ab6a256aef8f",
+          "domain": "英语",
+          "objective": "用because写出表示原因的英语句子",
+          "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+          "phase": "check",
+          "source_ids": [],
+          "task_type": "writing",
+          "check_requirements": [
+            "完整英语句子",
+            "because引导原因"
+          ],
+          "criteria": [
+            {
+              "id": "reason",
+              "description": "使用because引导原因并形成完整英语句子"
+            }
+          ]
+        },
+        "trace": [
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "context": {
+              "history": [],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "offer_check",
+              "reason": "当前任务完成，邀请进行新的无提示检查。"
+            },
+            "evidence_event_id": 12,
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "kind": "attempt",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "status": "correct"
+            },
+            "model_calls": [
+              {
+                "at": 1794493180.8018255,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.354,
+                    10.526
+                  ],
+                  "seconds": 4.368209351785481,
+                  "ttft_seconds": 0.22705673007294536
+                },
+                "seconds": 4.379223957657814,
+                "usage": {
+                  "completion_tokens": 88,
+                  "prompt_tokens": 580,
+                  "total_tokens": 668
+                }
+              },
+              {
+                "at": 1794493184.8103468,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.287,
+                    10.456
+                  ],
+                  "seconds": 3.9885672507807612,
+                  "ttft_seconds": 0.20546531584113836
+                },
+                "seconds": 4.00662746373564,
+                "usage": {
+                  "completion_tokens": 80,
+                  "prompt_tokens": 300,
+                  "total_tokens": 380
+                }
+              }
+            ],
+            "operation": "attempt",
+            "output": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+            "policy_version": "open-task-policy-v2",
+            "seconds": 8.3903067111969,
+            "state_after": {
+              "allow_explanation": true,
+              "assignment_id": "f0554643a0e74cd0b9d2c39e607f41a1",
+              "assisted": false,
+              "completed": true,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "用because写一句说明你为什么喜欢阅读的英文句子。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "sentence",
+                "course_id": "英语"
+              },
+              "seen": [
+                "用because写一句说明你为什么喜欢阅读的英文句子。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 1
+            },
+            "state_before": {
+              "allow_explanation": true,
+              "assignment_id": "f0554643a0e74cd0b9d2c39e607f41a1",
+              "assisted": false,
+              "completed": false,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "用because写一句说明你为什么喜欢阅读的英文句子。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "sentence",
+                "course_id": "英语"
+              },
+              "seen": [
+                "用because写一句说明你为什么喜欢阅读的英文句子。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 0
+            },
+            "task_id": "9210c40c745f497290650a459ef8564e",
+            "tools": [
+              "materials.retrieve"
+            ],
+            "event_id": 13
+          },
+          {
+            "budget": {
+              "max_model_calls": 12,
+              "max_repairs_per_structured_call": 1
+            },
+            "check_generation_attempts": [
+              {
+                "candidate": {
+                  "algebra_initial": "",
+                  "algebra_kind": "none",
+                  "check_contract": {
+                    "check_requirements": [
+                      "完整英语句子",
+                      "because引导原因"
+                    ],
+                    "criteria": [
+                      {
+                        "concept_id": "",
+                        "description": "使用because引导原因并形成完整英语句子",
+                        "id": "reason",
+                        "kind": "model"
+                      }
+                    ],
+                    "original_rubric": "英语句子完整，使用because引导原因。",
+                    "task_type": "writing"
+                  },
+                  "check_requirements": [
+                    "完整英语句子",
+                    "because引导原因"
+                  ],
+                  "citation_validation": {
+                    "discarded_model_quote": "",
+                    "status": "no_sources"
+                  },
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "使用because引导原因并形成完整英语句子",
+                      "expected": "句子结构完整，包含主语、谓语和because引导的原因状语从句",
+                      "id": "reason",
+                      "kind": "model",
+                      "tolerance": 0.0
+                    }
+                  ],
+                  "domain": "英语",
+                  "id": "ed314dae938948fa8ca1ab6a256aef8f",
+                  "objective": "用because写出表示原因的英语句子",
+                  "phase": "check",
+                  "prerequisite": "掌握because的用法",
+                  "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+                  "reference": "I like sports because they keep me healthy and happy.",
+                  "reference_origin": "model_generated_reviewed_same_model",
+                  "retrieval_mode": "none",
+                  "rubric": "英语句子完整，使用because引导原因。",
+                  "source_ids": [],
+                  "source_quote": "",
+                  "task_type": "writing",
+                  "verifier_binding": "unavailable"
+                },
+                "reference_assessment": {
+                  "confidence": "high",
+                  "evidence_quote": "I like sports because they keep me healthy and happy.",
+                  "hypothesis": "学生正确掌握了because的用法，能够构建包含原因状语从句的完整英语句子。",
+                  "observation": "学生作答完全符合题目要求，句子结构完整，且正确使用了because引导原因状语从句，与参考答案一致。",
+                  "status": "correct"
+                },
+                "review": {
+                  "acceptable": true,
+                  "reason": "题目要求用because写句子，参考答案提供了完整且正确的例句，符合考查目标。"
+                }
+              }
+            ],
+            "context": {
+              "history": [
+                {
+                  "action": "offer_check",
+                  "event_id": 12,
+                  "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+                  "status": "correct",
+                  "text": "I like reading because I can learn new things."
+                }
+              ],
+              "hypotheses": [],
+              "image_evidence_id": null,
+              "learning_memory": [],
+              "materials": [],
+              "memory_dependencies": [],
+              "prior_task_evidence": [],
+              "teacher_guidance": ""
+            },
+            "decision": {
+              "action": "create_check",
+              "reason": "按当前目标生成未见检查任务，先审核再呈现。"
+            },
+            "evidence_event_id": 14,
+            "generated_task": {
+              "algebra_initial": "",
+              "algebra_kind": "none",
+              "check_contract": {
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "id": "reason",
+                    "kind": "model"
+                  }
+                ],
+                "original_rubric": "英语句子完整，使用because引导原因。",
+                "task_type": "writing"
+              },
+              "check_requirements": [
+                "完整英语句子",
+                "because引导原因"
+              ],
+              "citation_validation": {
+                "discarded_model_quote": "",
+                "status": "no_sources"
+              },
+              "criteria": [
+                {
+                  "concept_id": "",
+                  "description": "使用because引导原因并形成完整英语句子",
+                  "expected": "句子结构完整，包含主语、谓语和because引导的原因状语从句",
+                  "id": "reason",
+                  "kind": "model",
+                  "tolerance": 0.0
+                }
+              ],
+              "domain": "英语",
+              "id": "ed314dae938948fa8ca1ab6a256aef8f",
+              "objective": "用because写出表示原因的英语句子",
+              "phase": "check",
+              "prerequisite": "掌握because的用法",
+              "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+              "reference": "I like sports because they keep me healthy and happy.",
+              "reference_origin": "model_generated_reviewed_same_model",
+              "retrieval_mode": "none",
+              "rubric": "英语句子完整，使用because引导原因。",
+              "source_ids": [],
+              "source_quote": "",
+              "task_type": "writing",
+              "verifier_binding": "unavailable"
+            },
+            "input": {
+              "failures": 0,
+              "fallbacks": 0,
+              "kind": "check",
+              "phase": "teach",
+              "prior_support_needed": false,
+              "status": "unknown"
+            },
+            "model_calls": [
+              {
+                "at": 1794493192.4765294,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.41,
+                    10.58
+                  ],
+                  "seconds": 7.6265940251760185,
+                  "ttft_seconds": 0.26516440510749817
+                },
+                "seconds": 7.639184623025358,
+                "usage": {
+                  "completion_tokens": 155,
+                  "prompt_tokens": 895,
+                  "total_tokens": 1050
+                }
+              },
+              {
+                "at": 1794493201.3697295,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.503,
+                    10.676
+                  ],
+                  "seconds": 8.872772531118244,
+                  "ttft_seconds": 0.34548445185646415
+                },
+                "seconds": 8.892717046197504,
+                "usage": {
+                  "completion_tokens": 177,
+                  "prompt_tokens": 1306,
+                  "total_tokens": 1483
+                }
+              },
+              {
+                "at": 1794493202.973042,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.314,
+                    10.479
+                  ],
+                  "seconds": 1.5847468110732734,
+                  "ttft_seconds": 0.22026774706318974
+                },
+                "seconds": 1.6014472772367299,
+                "usage": {
+                  "completion_tokens": 29,
+                  "prompt_tokens": 386,
+                  "total_tokens": 415
+                }
+              },
+              {
+                "at": 1794493207.3524997,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.372,
+                    10.537
+                  ],
+                  "seconds": 4.361029380001128,
+                  "ttft_seconds": 0.24104633694514632
+                },
+                "seconds": 4.37757712462917,
+                "usage": {
+                  "completion_tokens": 86,
+                  "prompt_tokens": 681,
+                  "total_tokens": 767
+                }
+              },
+              {
+                "at": 1794493211.5860045,
+                "metrics": {
+                  "peak_allocated_gib": [
+                    7.287,
+                    10.46
+                  ],
+                  "seconds": 4.22382059879601,
+                  "ttft_seconds": 0.19853436574339867
+                },
+                "seconds": 4.232985062990338,
+                "usage": {
+                  "completion_tokens": 84,
+                  "prompt_tokens": 320,
+                  "total_tokens": 404
+                }
+              }
+            ],
+            "operation": "check",
+            "output": "新的独立检查已准备好，请独立作答。",
+            "policy_version": "open-task-policy-v2",
+            "review": {
+              "acceptable": true,
+              "reason": "题目要求用because写句子，参考答案提供了完整且正确的例句，符合考查目标。"
+            },
+            "seconds": 26.754401683807373,
+            "state_after": {
+              "allow_explanation": true,
+              "assignment_id": "f0554643a0e74cd0b9d2c39e607f41a1",
+              "assisted": false,
+              "completed": false,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "用because写一句说明你为什么喜欢阅读的英文句子。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "sentence",
+                "course_id": "英语"
+              },
+              "seen": [
+                "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "用because写一句说明你为什么喜欢运动的英文句子。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_contract": {
+                  "check_requirements": [
+                    "完整英语句子",
+                    "because引导原因"
+                  ],
+                  "criteria": [
+                    {
+                      "concept_id": "",
+                      "description": "使用because引导原因并形成完整英语句子",
+                      "id": "reason",
+                      "kind": "model"
+                    }
+                  ],
+                  "original_rubric": "英语句子完整，使用because引导原因。",
+                  "task_type": "writing"
+                },
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "citation_validation": {
+                  "discarded_model_quote": "",
+                  "status": "no_sources"
+                },
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "句子结构完整，包含主语、谓语和because引导的原因状语从句",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0.0
+                  }
+                ],
+                "domain": "英语",
+                "id": "ed314dae938948fa8ca1ab6a256aef8f",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "check",
+                "prerequisite": "掌握because的用法",
+                "question": "用because写一句说明你为什么喜欢运动的英文句子。",
+                "reference": "I like sports because they keep me healthy and happy.",
+                "reference_origin": "model_generated_reviewed_same_model",
+                "retrieval_mode": "none",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 2
+            },
+            "state_before": {
+              "allow_explanation": true,
+              "assignment_id": "f0554643a0e74cd0b9d2c39e607f41a1",
+              "assisted": false,
+              "completed": true,
+              "failures": 0,
+              "followup_id": null,
+              "hypotheses": [],
+              "mode": "problem",
+              "needs_review": false,
+              "original": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "original_sources": [],
+              "pending_image": null,
+              "pending_question": null,
+              "request": "用because写一句说明你为什么喜欢阅读的英文句子。",
+              "scope": {
+                "class_id": "Live",
+                "concept_id": "sentence",
+                "course_id": "英语"
+              },
+              "seen": [
+                "用because写一句说明你为什么喜欢阅读的英文句子。"
+              ],
+              "sources": [],
+              "task": {
+                "algebra_initial": "",
+                "algebra_kind": "none",
+                "check_assignment_ids": [],
+                "check_requirements": [
+                  "完整英语句子",
+                  "because引导原因"
+                ],
+                "criteria": [
+                  {
+                    "concept_id": "",
+                    "description": "使用because引导原因并形成完整英语句子",
+                    "expected": "",
+                    "id": "reason",
+                    "kind": "model",
+                    "tolerance": 0
+                  }
+                ],
+                "domain": "英语",
+                "id": "9210c40c745f497290650a459ef8564e",
+                "objective": "用because写出表示原因的英语句子",
+                "phase": "teach",
+                "prerequisite": "",
+                "question": "用because写一句说明你为什么喜欢阅读的英文句子。",
+                "reference": "I like reading because I can learn new things.",
+                "reference_origin": "teacher_authored",
+                "rubric": "英语句子完整，使用because引导原因。",
+                "source_ids": [],
+                "source_quote": "",
+                "task_type": "writing",
+                "verifier_binding": "unavailable"
+              },
+              "teaching_note": "",
+              "version": 1
+            },
+            "task_id": "9210c40c745f497290650a459ef8564e",
+            "tools": [
+              "materials.retrieve",
+              "task.generate_and_review"
+            ],
+            "event_id": 15
+          }
+        ]
+      },
+      "seconds": 35.28
+    }
+  ],
+  "passed": false
+}

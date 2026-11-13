@@ -1,0 +1,110 @@
+Teaching Harness v0.2 — implementation provenance
+Date: 2026-11-11
+
+This is an independently implemented adaptation of design mechanisms read in
+public source repositories, not a fork or vendored copy. No upstream code or
+benchmark dataset was copied into the runtime. The repositories below have
+not been deployed or benchmarked on this server.
+
+1. CAHLR/OATutor, inspected revision b93222e1834e650e78aba8d069a61796c3cde1c5
+Repository declares MIT for code; content rights must be checked separately
+before importing any exercises.
+https://github.com/CAHLR/OATutor/blob/b93222e1834e650e78aba8d069a61796c3cde1c5/aws/aiAgentGeneration/agent-logic.mjs
+https://github.com/CAHLR/OATutor/blob/b93222e1834e650e78aba8d069a61796c3cde1c5/src/util/helpPenaltyMode.js
+Read: buildAgentPrompt uses problem/step, attempts and previously shown hints;
+help-penalty policies distinguish correctness from mastery credit.
+Adaptation: harness/engine.py::_context, automatic assistance accounting,
+separate independent checks. We do not adopt its default chat credit policy,
+BKT numeric mastery, React/Firebase stack or AWS generation service.
+
+2. HKUDS/DeepTutor, inspected revision 60fb3bdfddb30b7740c7ce3bd9b28d908f2af6db
+Repository declares Apache-2.0.
+https://github.com/HKUDS/DeepTutor/blob/60fb3bdfddb30b7740c7ce3bd9b28d908f2af6db/deeptutor/learning/policy.py
+https://github.com/HKUDS/DeepTutor/blob/60fb3bdfddb30b7740c7ce3bd9b28d908f2af6db/deeptutor/learning/teaching.py
+Read: policy is a pure decision layer; pending-question identity is explicit;
+teaching observations require scoped evidence and do not award mastery.
+Adaptation: harness/policy.py; reply operation distinct from graded attempt;
+quoted evidence validated against the current student message; outcome-based
+strategy changes; recorded inputs allow deterministic policy replay.
+Differences: no 0.9 threshold, numeric mastery or learner self-claim advancement.
+A mathematical correction may supersede the pending diagnostic question.
+
+3. zijinz456/OpenTutor, inspected revision cfe41f8742903aed2d9a1bed8323d03c75479ffe
+Repository declares MIT.
+https://github.com/zijinz456/OpenTutor/blob/cfe41f8742903aed2d9a1bed8323d03c75479ffe/apps/api/services/agent/agents/tutor.py
+https://github.com/zijinz456/OpenTutor/blob/cfe41f8742903aed2d9a1bed8323d03c75479ffe/apps/api/services/agent/orchestrator.py
+https://github.com/zijinz456/OpenTutor/blob/cfe41f8742903aed2d9a1bed8323d03c75479ffe/apps/api/services/agent/agents/prompts.py
+Read: per-turn context composition, conditional pedagogy and verification.
+Adaptation: bounded context packet, chosen-action verbalization, verification
+before delivery, trace/provenance. We do not adopt English-regex intent routing,
+open-ended tool execution, fatigue inference or its probability estimates.
+
+4. eth-lre/mathtutorbench, inspected revision 6faed173ec2bef55cb899b2a3e0f93982f9cb176
+https://github.com/eth-lre/mathtutorbench/tree/6faed173ec2bef55cb899b2a3e0f93982f9cb176/tasks
+Read: separately evaluates student understanding and pedagogical behavior.
+Evaluation inspiration only; no dataset imported and no benchmark score claimed.
+Its Socratic BLEU score is not used as a Chinese pedagogical quality metric.
+
+5. eth-nlped/mathdial, README inspected on 2026-11-11
+https://github.com/eth-nlped/mathdial
+Dialogue-data design inspiration: distinguish solving after help from having
+the answer revealed; test multiple student-confusion scenarios. The published
+dialogues pair human teachers with simulated students. Our scripts use new,
+project-authored Chinese examples, not translated/copied MathDial cases.
+
+Deliberately deferred: unrestricted multi-agent loops, generated curriculum,
+vector retrieval, student probability estimates and learning-outcome claims.
+Model tool use is server-owned and allowlisted: algebra.verify,
+course.retrieve, evidence.validate_quote. The model cannot execute arbitrary
+code, mutate evidence, select hidden check answers or award mastery itself.
+
+v0.3 task-oriented redesign (2026-11-11)
+The earlier adaptation kept course identifiers in its core. That coupling is
+removed from the new default path, not merely renamed:
+- harness/tasks.py: task/question/objective/rubric contracts and subject-neutral policy.
+- harness/open_engine.py: per-task evidence/state/transactions/trace execution.
+- harness/open_model.py: domain-neutral prompts and bounded model calls.
+- harness/toolbox.py: source retrieval and abstaining verifier plugins.
+- harness/gateway.py: explicit legacy/example compatibility boundary.
+
+DeepTutor learning/policy.py and learning/teaching.py informed separation of
+policy, evidence and model interpretation. OpenTutor tutor.py/orchestrator.py
+informed material-aware context and post-generation checking. OATutor's
+help-credit semantics remain applicable without importing its course structure.
+No external agent framework, curriculum or probability estimator was vendored.
+
+A custom task creates its own objective, grading rubric and private reference.
+An independent check is generated for that objective and reviewed before it
+is shown. A reference created and reviewed by the same model is not an external
+answer key; outcomes are labeled model-assessed unless a verifier proves them.
+Teacher corrections preserve original evidence and invalidate progression.
+
+
+v0.4 teaching-assistant update (2026-11-12)
+Read upstream mechanisms again; independent implementation, no upstream code vendored:
+- https://github.com/HKUDS/DeepTutor/blob/main/deeptutor/learning/policy.py
+  Read typed evidence gates and visual-evidence separation. Adaptation: tool scope
+  cannot imply whole-task success; versioned pure policy and independent-check isolation.
+- https://github.com/CAHLR/OATutor/blob/main/README.md
+  Read course/skill/step mapping and curated grading/hint content. Adaptation:
+  immutable teacher assignments with class/course/concept identities and rubric/reference.
+- https://github.com/amosblomqvist/learnharness/blob/main/README.md
+  Read measure-plan-teach-practice separation and cross-session source-linked knowledge.
+  Adaptation: evidence-derived learner memory, intervention follow-up, next-step suggestions.
+  No graph database or learner ability ratings introduced; no AGPL code copied.
+
+Locally identified fixes (not claimed as upstream designs): algebra scope regression,
+irrelevant retrieval abstention, delivered-action tracing, transitive correction invalidation,
+SQLite snapshot/optimistic commit, request-local model budgets, classroom API access control.
+The six authored grading cases are regression fixtures, not borrowed benchmark data or
+proof of pedagogical efficacy. Teacher blind evaluation and student outcome studies remain.
+
+v0.5 teaching workflow update (2026-11-12)
+Mechanism references continue to be the upstream sources listed for v0.4:
+- DeepTutor: evidence-gated next-objective policy; adapted as prerequisite DAG recommendations.
+- OATutor: explicit skill/step mapping and grading requirements; adapted as teacher-authored criteria.
+- learnharness: measure/plan/teach/practice separation; adapted as persistent teacher followups.
+These are design inspirations, not claims that upstream has identical APIs or implementations.
+Local findings/implementations: global chronological memory reduction, automatic teacher equation
+binding, criterion-level abstention, teacher review confirmation, due-task priority, and correction
+reopening followups. No upstream code copied. No automatic mastery estimator or FSRS implemented.

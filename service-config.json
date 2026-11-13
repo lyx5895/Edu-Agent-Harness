@@ -1,0 +1,5 @@
+{
+  "inference_backend": "vllm",
+  "vllm_gpus": "1",
+  "cuda_compat_path": "/usr/local/cuda-13.0/compat"
+}

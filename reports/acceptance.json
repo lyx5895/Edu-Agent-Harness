@@ -1,0 +1,90 @@
+{
+  "at_utc": "2026-11-11T10:46:39.883114+00:00",
+  "acceptance_passed": true,
+  "model": {
+    "repo": "lhpku20010120/Omni-Edu-9B",
+    "revision": "7fda599d16f5c7aff770e2869450684c8e4d72f0",
+    "bytes": 18819722392,
+    "sha256": "2740672b4b820e045c7af782cde9935836631fef5c3c7649751d375cf5560bcc",
+    "bf16": true
+  },
+  "environment": {
+    "chosen_backend": "transformers",
+    "vllm_preflight": {
+      "current_pypi_version": "0.33.0",
+      "dependencies_include_cuda13": true,
+      "host_driver": "535.129.03",
+      "decision": "Use tested Transformers fallback; vLLM runtime not installed/tested. Older vLLM versions not evaluated."
+    },
+    "python": "3.11",
+    "torch": "2.8.0",
+    "transformers": "5.2.0",
+    "bf16_cuda_probe": [
+      128.0,
+      128.0
+    ]
+  },
+  "unit_tests": {
+    "tests": 20,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "smoke": {
+    "requests": 20,
+    "passed": 20,
+    "mean_seconds": 1.677,
+    "p95_seconds": 2.725,
+    "max_peak_allocated_gib_per_gpu": [
+      7.27,
+      10.429
+    ]
+  },
+  "real_text_and_image_e2e": true,
+  "restart_and_persistence": true,
+  "comparison": {
+    "direct": {
+      "cases": 6,
+      "valid_output": 6,
+      "correct_status": 6,
+      "correct_first_error": 6,
+      "exact_answer_string_leaks": 0,
+      "mean_seconds": 2.011,
+      "total_tokens": 1850,
+      "monetary_cost": null
+    },
+    "harness": {
+      "cases": 6,
+      "valid_output": 6,
+      "correct_status": 6,
+      "correct_first_error": 6,
+      "exact_answer_string_leaks": 0,
+      "mean_seconds": 5.411,
+      "total_tokens": 3563,
+      "monetary_cost": null
+    }
+  },
+  "services": {
+    "inference": {
+      "ready": true,
+      "model": "omniedu-9b",
+      "backend": "transformers",
+      "dtype": "bfloat16"
+    },
+    "harness": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    }
+  },
+  "page_http_status": 200,
+  "gpu_snapshot": "index, memory.used [MiB]\n0, 3403 MiB\n1, 7979 MiB\n2, 11229 MiB\n3, 5 MiB\n4, 5 MiB\n5, 5 MiB\n6, 5 MiB\n7, 5 MiB\n",
+  "limitations": [
+    "Personal local demo; no real user authorization boundary.",
+    "Transformers fallback; current vLLM dependency preflight only, no vLLM runtime test.",
+    "Six authored comparison cases, automatic proxies, no learning-gain validation or human blind rating.",
+    "No monetary cost estimate without electricity and hardware accounting.",
+    "Two holdout items per skill per learner; expand bank for additional independent reviews.",
+    "Image smoke tests use synthetic printed homework, not a handwriting benchmark."
+  ]
+}

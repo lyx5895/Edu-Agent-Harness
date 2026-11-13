@@ -1,0 +1,24 @@
+{
+  "candidate": {
+    "domain": "物理",
+    "objective": "应用牛顿第二定律求解加速度",
+    "question": "一个质量为2 kg的物体，所受合外力为6 N。求其加速度并说明依据。",
+    "rubric": "1. 正确写出牛顿第二定律公式 F=ma；2. 正确代入数据 m=2 kg, F=6 N；3. 正确计算得出 a=3 m/s²；4. 明确说明依据是牛顿第二定律。",
+    "reference": "根据牛顿第二定律 F=ma，代入 F=6 N，m=2 kg，得 a=F/m=6/2=3 m/s²。",
+    "source_quote": "",
+    "prerequisite": "理解质量、力和加速度的概念",
+    "algebra_initial": "F=ma",
+    "algebra_kind": "equation",
+    "id": "b5e77375a9f54eab864e221135683166",
+    "phase": "check",
+    "source_ids": [],
+    "reference_origin": "model_generated_unverified"
+  },
+  "review": {
+    "acceptable": false,
+    "reason": "候选内容完全复制了题目描述、评分标准、参考答案及元数据，未提供任何解题过程或答案，属于无效回答。"
+  },
+  "seen": [
+    "一个质量为2 kg的物体，所受合外力为6 N。求其加速度并说明依据。"
+  ]
+}

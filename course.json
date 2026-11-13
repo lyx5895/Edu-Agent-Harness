@@ -1,0 +1,948 @@
+{
+  "version": "algebra-v1",
+  "license": "Project-authored educational examples",
+  "skills": [
+    {
+      "id": "k01",
+      "name": "正数分配律",
+      "rule": "括号外的数要乘括号内每一项。",
+      "source": "course:algebra-v1/k01",
+      "prerequisites": []
+    },
+    {
+      "id": "k02",
+      "name": "负数分配律",
+      "rule": "负号也要分配到每一项，注意符号变化。",
+      "source": "course:algebra-v1/k02",
+      "prerequisites": [
+        "k01"
+      ]
+    },
+    {
+      "id": "k03",
+      "name": "合并同类项",
+      "rule": "只有字母部分相同的项才能合并，系数相加。",
+      "source": "course:algebra-v1/k03",
+      "prerequisites": []
+    },
+    {
+      "id": "k04",
+      "name": "分数系数合并",
+      "rule": "先通分再合并系数，常数项单独保留。",
+      "source": "course:algebra-v1/k04",
+      "prerequisites": [
+        "k03"
+      ]
+    },
+    {
+      "id": "k05",
+      "name": "等式两边同加减",
+      "rule": "等式两边同时加或减同一个数，等式仍成立。",
+      "source": "course:algebra-v1/k05",
+      "prerequisites": []
+    },
+    {
+      "id": "k06",
+      "name": "等式两边同乘除",
+      "rule": "等式两边同时除以相同的非零数，等式仍成立。",
+      "source": "course:algebra-v1/k06",
+      "prerequisites": [
+        "k05"
+      ]
+    },
+    {
+      "id": "k07",
+      "name": "两步一元方程",
+      "rule": "先消去常数项，再把未知数系数化为1。",
+      "source": "course:algebra-v1/k07",
+      "prerequisites": [
+        "k05",
+        "k06"
+      ]
+    },
+    {
+      "id": "k08",
+      "name": "含括号方程",
+      "rule": "先正确去括号，再使用等式性质求解。",
+      "source": "course:algebra-v1/k08",
+      "prerequisites": [
+        "k01",
+        "k02",
+        "k07"
+      ]
+    },
+    {
+      "id": "k09",
+      "name": "两边含未知数",
+      "rule": "把未知数项移到同一边，常数项移到另一边。",
+      "source": "course:algebra-v1/k09",
+      "prerequisites": [
+        "k03",
+        "k07"
+      ]
+    },
+    {
+      "id": "k10",
+      "name": "含分母方程",
+      "rule": "先对等式两边同乘分母，注意括号，再求解。",
+      "source": "course:algebra-v1/k10",
+      "prerequisites": [
+        "k01",
+        "k06",
+        "k07"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "k01-teach-1",
+      "skill": "k01",
+      "phase": "teach",
+      "prompt": "展开并合并：2(x+3)",
+      "initial": "2(x+3)",
+      "answer": "2x+6",
+      "kind": "expression",
+      "source": "course:algebra-v1/k01",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "漏乘括号内一项",
+      "hints": [
+        "括号外的数要乘括号内每一项。",
+        "2×x + 2×3",
+        "2×x + 2×3。整理后得到 2x+6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k01-teach-2",
+      "skill": "k01",
+      "phase": "teach",
+      "prompt": "展开并合并：3(x+4)",
+      "initial": "3(x+4)",
+      "answer": "3x+12",
+      "kind": "expression",
+      "source": "course:algebra-v1/k01",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "漏乘括号内一项",
+      "hints": [
+        "括号外的数要乘括号内每一项。",
+        "3×x + 3×4",
+        "3×x + 3×4。整理后得到 3x+12。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k01-teach-3",
+      "skill": "k01",
+      "phase": "teach",
+      "prompt": "展开并合并：4(x+5)",
+      "initial": "4(x+5)",
+      "answer": "4x+20",
+      "kind": "expression",
+      "source": "course:algebra-v1/k01",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "漏乘括号内一项",
+      "hints": [
+        "括号外的数要乘括号内每一项。",
+        "4×x + 4×5",
+        "4×x + 4×5。整理后得到 4x+20。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k01-check-1",
+      "skill": "k01",
+      "phase": "check",
+      "prompt": "展开并合并：5(x+6)",
+      "initial": "5(x+6)",
+      "answer": "5x+30",
+      "kind": "expression",
+      "source": "course:algebra-v1/k01",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "漏乘括号内一项",
+      "hints": [
+        "括号外的数要乘括号内每一项。",
+        "5×x + 5×6",
+        "5×x + 5×6。整理后得到 5x+30。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k01-check-2",
+      "skill": "k01",
+      "phase": "check",
+      "prompt": "展开并合并：6(x+7)",
+      "initial": "6(x+7)",
+      "answer": "6x+42",
+      "kind": "expression",
+      "source": "course:algebra-v1/k01",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "漏乘括号内一项",
+      "hints": [
+        "括号外的数要乘括号内每一项。",
+        "6×x + 6×7",
+        "6×x + 6×7。整理后得到 6x+42。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k02-teach-1",
+      "skill": "k02",
+      "phase": "teach",
+      "prompt": "展开并合并：-2(x-3)",
+      "initial": "-2(x-3)",
+      "answer": "-2x+6",
+      "kind": "expression",
+      "source": "course:algebra-v1/k02",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "负号分配错误",
+      "hints": [
+        "负号也要分配到每一项，注意符号变化。",
+        "(-2)×x + (-2)×(-3)",
+        "(-2)×x + (-2)×(-3)。整理后得到 -2x+6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k02-teach-2",
+      "skill": "k02",
+      "phase": "teach",
+      "prompt": "展开并合并：-3(x-4)",
+      "initial": "-3(x-4)",
+      "answer": "-3x+12",
+      "kind": "expression",
+      "source": "course:algebra-v1/k02",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "负号分配错误",
+      "hints": [
+        "负号也要分配到每一项，注意符号变化。",
+        "(-3)×x + (-3)×(-4)",
+        "(-3)×x + (-3)×(-4)。整理后得到 -3x+12。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k02-teach-3",
+      "skill": "k02",
+      "phase": "teach",
+      "prompt": "展开并合并：-4(x-5)",
+      "initial": "-4(x-5)",
+      "answer": "-4x+20",
+      "kind": "expression",
+      "source": "course:algebra-v1/k02",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "负号分配错误",
+      "hints": [
+        "负号也要分配到每一项，注意符号变化。",
+        "(-4)×x + (-4)×(-5)",
+        "(-4)×x + (-4)×(-5)。整理后得到 -4x+20。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k02-check-1",
+      "skill": "k02",
+      "phase": "check",
+      "prompt": "展开并合并：-5(x-6)",
+      "initial": "-5(x-6)",
+      "answer": "-5x+30",
+      "kind": "expression",
+      "source": "course:algebra-v1/k02",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "负号分配错误",
+      "hints": [
+        "负号也要分配到每一项，注意符号变化。",
+        "(-5)×x + (-5)×(-6)",
+        "(-5)×x + (-5)×(-6)。整理后得到 -5x+30。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k02-check-2",
+      "skill": "k02",
+      "phase": "check",
+      "prompt": "展开并合并：-6(x-7)",
+      "initial": "-6(x-7)",
+      "answer": "-6x+42",
+      "kind": "expression",
+      "source": "course:algebra-v1/k02",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "负号分配错误",
+      "hints": [
+        "负号也要分配到每一项，注意符号变化。",
+        "(-6)×x + (-6)×(-7)",
+        "(-6)×x + (-6)×(-7)。整理后得到 -6x+42。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k03-teach-1",
+      "skill": "k03",
+      "phase": "teach",
+      "prompt": "化简：2x+3x-5",
+      "initial": "2x+3x-5",
+      "answer": "5x-5",
+      "kind": "expression",
+      "source": "course:algebra-v1/k03",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "不同类项合并或系数错误",
+      "hints": [
+        "只有字母部分相同的项才能合并，系数相加。",
+        "(2+3)x-5",
+        "(2+3)x-5。整理后得到 5x-5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k03-teach-2",
+      "skill": "k03",
+      "phase": "teach",
+      "prompt": "化简：3x+4x-6",
+      "initial": "3x+4x-6",
+      "answer": "7x-6",
+      "kind": "expression",
+      "source": "course:algebra-v1/k03",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "不同类项合并或系数错误",
+      "hints": [
+        "只有字母部分相同的项才能合并，系数相加。",
+        "(3+4)x-6",
+        "(3+4)x-6。整理后得到 7x-6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k03-teach-3",
+      "skill": "k03",
+      "phase": "teach",
+      "prompt": "化简：4x+5x-7",
+      "initial": "4x+5x-7",
+      "answer": "9x-7",
+      "kind": "expression",
+      "source": "course:algebra-v1/k03",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "不同类项合并或系数错误",
+      "hints": [
+        "只有字母部分相同的项才能合并，系数相加。",
+        "(4+5)x-7",
+        "(4+5)x-7。整理后得到 9x-7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k03-check-1",
+      "skill": "k03",
+      "phase": "check",
+      "prompt": "化简：5x+6x-8",
+      "initial": "5x+6x-8",
+      "answer": "11x-8",
+      "kind": "expression",
+      "source": "course:algebra-v1/k03",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "不同类项合并或系数错误",
+      "hints": [
+        "只有字母部分相同的项才能合并，系数相加。",
+        "(5+6)x-8",
+        "(5+6)x-8。整理后得到 11x-8。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k03-check-2",
+      "skill": "k03",
+      "phase": "check",
+      "prompt": "化简：6x+7x-9",
+      "initial": "6x+7x-9",
+      "answer": "13x-9",
+      "kind": "expression",
+      "source": "course:algebra-v1/k03",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "不同类项合并或系数错误",
+      "hints": [
+        "只有字母部分相同的项才能合并，系数相加。",
+        "(6+7)x-9",
+        "(6+7)x-9。整理后得到 13x-9。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k04-teach-1",
+      "skill": "k04",
+      "phase": "teach",
+      "prompt": "化简：x/2+x/3+5",
+      "initial": "x/2+x/3+5",
+      "answer": "5/6*x+5",
+      "kind": "expression",
+      "source": "course:algebra-v1/k04",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "分数未通分",
+      "hints": [
+        "先通分再合并系数，常数项单独保留。",
+        "先计算 1/2+1/3，再乘x",
+        "先计算 1/2+1/3，再乘x。整理后得到 5/6*x+5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k04-teach-2",
+      "skill": "k04",
+      "phase": "teach",
+      "prompt": "化简：x/3+x/4+6",
+      "initial": "x/3+x/4+6",
+      "answer": "7/12*x+6",
+      "kind": "expression",
+      "source": "course:algebra-v1/k04",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "分数未通分",
+      "hints": [
+        "先通分再合并系数，常数项单独保留。",
+        "先计算 1/3+1/4，再乘x",
+        "先计算 1/3+1/4，再乘x。整理后得到 7/12*x+6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k04-teach-3",
+      "skill": "k04",
+      "phase": "teach",
+      "prompt": "化简：x/4+x/5+7",
+      "initial": "x/4+x/5+7",
+      "answer": "9/20*x+7",
+      "kind": "expression",
+      "source": "course:algebra-v1/k04",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "分数未通分",
+      "hints": [
+        "先通分再合并系数，常数项单独保留。",
+        "先计算 1/4+1/5，再乘x",
+        "先计算 1/4+1/5，再乘x。整理后得到 9/20*x+7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k04-check-1",
+      "skill": "k04",
+      "phase": "check",
+      "prompt": "化简：x/5+x/6+8",
+      "initial": "x/5+x/6+8",
+      "answer": "11/30*x+8",
+      "kind": "expression",
+      "source": "course:algebra-v1/k04",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "分数未通分",
+      "hints": [
+        "先通分再合并系数，常数项单独保留。",
+        "先计算 1/5+1/6，再乘x",
+        "先计算 1/5+1/6，再乘x。整理后得到 11/30*x+8。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k04-check-2",
+      "skill": "k04",
+      "phase": "check",
+      "prompt": "化简：x/6+x/7+9",
+      "initial": "x/6+x/7+9",
+      "answer": "13/42*x+9",
+      "kind": "expression",
+      "source": "course:algebra-v1/k04",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "分数未通分",
+      "hints": [
+        "先通分再合并系数，常数项单独保留。",
+        "先计算 1/6+1/7，再乘x",
+        "先计算 1/6+1/7，再乘x。整理后得到 13/42*x+9。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k05-teach-1",
+      "skill": "k05",
+      "phase": "teach",
+      "prompt": "解方程：x+2=5",
+      "initial": "x+2=5",
+      "answer": "x=3",
+      "kind": "equation",
+      "source": "course:algebra-v1/k05",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "只改变等式一侧",
+      "hints": [
+        "等式两边同时加或减同一个数，等式仍成立。",
+        "两边同时减去2",
+        "两边同时减去2。整理后得到 x=3。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k05-teach-2",
+      "skill": "k05",
+      "phase": "teach",
+      "prompt": "解方程：x+3=7",
+      "initial": "x+3=7",
+      "answer": "x=4",
+      "kind": "equation",
+      "source": "course:algebra-v1/k05",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "只改变等式一侧",
+      "hints": [
+        "等式两边同时加或减同一个数，等式仍成立。",
+        "两边同时减去3",
+        "两边同时减去3。整理后得到 x=4。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k05-teach-3",
+      "skill": "k05",
+      "phase": "teach",
+      "prompt": "解方程：x+4=9",
+      "initial": "x+4=9",
+      "answer": "x=5",
+      "kind": "equation",
+      "source": "course:algebra-v1/k05",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "只改变等式一侧",
+      "hints": [
+        "等式两边同时加或减同一个数，等式仍成立。",
+        "两边同时减去4",
+        "两边同时减去4。整理后得到 x=5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k05-check-1",
+      "skill": "k05",
+      "phase": "check",
+      "prompt": "解方程：x+5=11",
+      "initial": "x+5=11",
+      "answer": "x=6",
+      "kind": "equation",
+      "source": "course:algebra-v1/k05",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "只改变等式一侧",
+      "hints": [
+        "等式两边同时加或减同一个数，等式仍成立。",
+        "两边同时减去5",
+        "两边同时减去5。整理后得到 x=6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k05-check-2",
+      "skill": "k05",
+      "phase": "check",
+      "prompt": "解方程：x+6=13",
+      "initial": "x+6=13",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k05",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "只改变等式一侧",
+      "hints": [
+        "等式两边同时加或减同一个数，等式仍成立。",
+        "两边同时减去6",
+        "两边同时减去6。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k06-teach-1",
+      "skill": "k06",
+      "phase": "teach",
+      "prompt": "解方程：2x=6",
+      "initial": "2x=6",
+      "answer": "x=3",
+      "kind": "equation",
+      "source": "course:algebra-v1/k06",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "乘除不一致",
+      "hints": [
+        "等式两边同时除以相同的非零数，等式仍成立。",
+        "两边同时除以2",
+        "两边同时除以2。整理后得到 x=3。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k06-teach-2",
+      "skill": "k06",
+      "phase": "teach",
+      "prompt": "解方程：3x=12",
+      "initial": "3x=12",
+      "answer": "x=4",
+      "kind": "equation",
+      "source": "course:algebra-v1/k06",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "乘除不一致",
+      "hints": [
+        "等式两边同时除以相同的非零数，等式仍成立。",
+        "两边同时除以3",
+        "两边同时除以3。整理后得到 x=4。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k06-teach-3",
+      "skill": "k06",
+      "phase": "teach",
+      "prompt": "解方程：4x=20",
+      "initial": "4x=20",
+      "answer": "x=5",
+      "kind": "equation",
+      "source": "course:algebra-v1/k06",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "乘除不一致",
+      "hints": [
+        "等式两边同时除以相同的非零数，等式仍成立。",
+        "两边同时除以4",
+        "两边同时除以4。整理后得到 x=5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k06-check-1",
+      "skill": "k06",
+      "phase": "check",
+      "prompt": "解方程：5x=30",
+      "initial": "5x=30",
+      "answer": "x=6",
+      "kind": "equation",
+      "source": "course:algebra-v1/k06",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "乘除不一致",
+      "hints": [
+        "等式两边同时除以相同的非零数，等式仍成立。",
+        "两边同时除以5",
+        "两边同时除以5。整理后得到 x=6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k06-check-2",
+      "skill": "k06",
+      "phase": "check",
+      "prompt": "解方程：6x=42",
+      "initial": "6x=42",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k06",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "乘除不一致",
+      "hints": [
+        "等式两边同时除以相同的非零数，等式仍成立。",
+        "两边同时除以6",
+        "两边同时除以6。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k07-teach-1",
+      "skill": "k07",
+      "phase": "teach",
+      "prompt": "解方程：2x+3=13",
+      "initial": "2x+3=13",
+      "answer": "x=5",
+      "kind": "equation",
+      "source": "course:algebra-v1/k07",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "移项符号错误",
+      "hints": [
+        "先消去常数项，再把未知数系数化为1。",
+        "两边先减去3，再除以2",
+        "两边先减去3，再除以2。整理后得到 x=5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k07-teach-2",
+      "skill": "k07",
+      "phase": "teach",
+      "prompt": "解方程：3x+4=22",
+      "initial": "3x+4=22",
+      "answer": "x=6",
+      "kind": "equation",
+      "source": "course:algebra-v1/k07",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "移项符号错误",
+      "hints": [
+        "先消去常数项，再把未知数系数化为1。",
+        "两边先减去4，再除以3",
+        "两边先减去4，再除以3。整理后得到 x=6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k07-teach-3",
+      "skill": "k07",
+      "phase": "teach",
+      "prompt": "解方程：4x+5=33",
+      "initial": "4x+5=33",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k07",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "移项符号错误",
+      "hints": [
+        "先消去常数项，再把未知数系数化为1。",
+        "两边先减去5，再除以4",
+        "两边先减去5，再除以4。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k07-check-1",
+      "skill": "k07",
+      "phase": "check",
+      "prompt": "解方程：5x+6=46",
+      "initial": "5x+6=46",
+      "answer": "x=8",
+      "kind": "equation",
+      "source": "course:algebra-v1/k07",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "移项符号错误",
+      "hints": [
+        "先消去常数项，再把未知数系数化为1。",
+        "两边先减去6，再除以5",
+        "两边先减去6，再除以5。整理后得到 x=8。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k07-check-2",
+      "skill": "k07",
+      "phase": "check",
+      "prompt": "解方程：6x+7=61",
+      "initial": "6x+7=61",
+      "answer": "x=9",
+      "kind": "equation",
+      "source": "course:algebra-v1/k07",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "移项符号错误",
+      "hints": [
+        "先消去常数项，再把未知数系数化为1。",
+        "两边先减去7，再除以6",
+        "两边先减去7，再除以6。整理后得到 x=9。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k08-teach-1",
+      "skill": "k08",
+      "phase": "teach",
+      "prompt": "解方程：2(x+3)=16",
+      "initial": "2(x+3)=16",
+      "answer": "x=5",
+      "kind": "equation",
+      "source": "course:algebra-v1/k08",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去括号错误",
+      "hints": [
+        "先正确去括号，再使用等式性质求解。",
+        "去括号得到2x+6=16",
+        "去括号得到2x+6=16。整理后得到 x=5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k08-teach-2",
+      "skill": "k08",
+      "phase": "teach",
+      "prompt": "解方程：3(x+4)=30",
+      "initial": "3(x+4)=30",
+      "answer": "x=6",
+      "kind": "equation",
+      "source": "course:algebra-v1/k08",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去括号错误",
+      "hints": [
+        "先正确去括号，再使用等式性质求解。",
+        "去括号得到3x+12=30",
+        "去括号得到3x+12=30。整理后得到 x=6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k08-teach-3",
+      "skill": "k08",
+      "phase": "teach",
+      "prompt": "解方程：4(x+5)=48",
+      "initial": "4(x+5)=48",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k08",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去括号错误",
+      "hints": [
+        "先正确去括号，再使用等式性质求解。",
+        "去括号得到4x+20=48",
+        "去括号得到4x+20=48。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k08-check-1",
+      "skill": "k08",
+      "phase": "check",
+      "prompt": "解方程：5(x+6)=70",
+      "initial": "5(x+6)=70",
+      "answer": "x=8",
+      "kind": "equation",
+      "source": "course:algebra-v1/k08",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去括号错误",
+      "hints": [
+        "先正确去括号，再使用等式性质求解。",
+        "去括号得到5x+30=70",
+        "去括号得到5x+30=70。整理后得到 x=8。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k08-check-2",
+      "skill": "k08",
+      "phase": "check",
+      "prompt": "解方程：6(x+7)=96",
+      "initial": "6(x+7)=96",
+      "answer": "x=9",
+      "kind": "equation",
+      "source": "course:algebra-v1/k08",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去括号错误",
+      "hints": [
+        "先正确去括号，再使用等式性质求解。",
+        "去括号得到6x+42=96",
+        "去括号得到6x+42=96。整理后得到 x=9。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k09-teach-1",
+      "skill": "k09",
+      "phase": "teach",
+      "prompt": "解方程：3x+3=x+13",
+      "initial": "3x+3=x+13",
+      "answer": "x=5",
+      "kind": "equation",
+      "source": "course:algebra-v1/k09",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "未知数项移项错误",
+      "hints": [
+        "把未知数项移到同一边，常数项移到另一边。",
+        "两边先减去x，再减去3",
+        "两边先减去x，再减去3。整理后得到 x=5。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k09-teach-2",
+      "skill": "k09",
+      "phase": "teach",
+      "prompt": "解方程：4x+4=x+22",
+      "initial": "4x+4=x+22",
+      "answer": "x=6",
+      "kind": "equation",
+      "source": "course:algebra-v1/k09",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "未知数项移项错误",
+      "hints": [
+        "把未知数项移到同一边，常数项移到另一边。",
+        "两边先减去x，再减去4",
+        "两边先减去x，再减去4。整理后得到 x=6。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k09-teach-3",
+      "skill": "k09",
+      "phase": "teach",
+      "prompt": "解方程：5x+5=x+33",
+      "initial": "5x+5=x+33",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k09",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "未知数项移项错误",
+      "hints": [
+        "把未知数项移到同一边，常数项移到另一边。",
+        "两边先减去x，再减去5",
+        "两边先减去x，再减去5。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k09-check-1",
+      "skill": "k09",
+      "phase": "check",
+      "prompt": "解方程：6x+6=x+46",
+      "initial": "6x+6=x+46",
+      "answer": "x=8",
+      "kind": "equation",
+      "source": "course:algebra-v1/k09",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "未知数项移项错误",
+      "hints": [
+        "把未知数项移到同一边，常数项移到另一边。",
+        "两边先减去x，再减去6",
+        "两边先减去x，再减去6。整理后得到 x=8。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k09-check-2",
+      "skill": "k09",
+      "phase": "check",
+      "prompt": "解方程：7x+7=x+61",
+      "initial": "7x+7=x+61",
+      "answer": "x=9",
+      "kind": "equation",
+      "source": "course:algebra-v1/k09",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "未知数项移项错误",
+      "hints": [
+        "把未知数项移到同一边，常数项移到另一边。",
+        "两边先减去x，再减去7",
+        "两边先减去x，再减去7。整理后得到 x=9。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k10-teach-1",
+      "skill": "k10",
+      "phase": "teach",
+      "prompt": "解方程：(x+3)/2=5",
+      "initial": "(x+3)/2=5",
+      "answer": "x=7",
+      "kind": "equation",
+      "source": "course:algebra-v1/k10",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去分母未整体相乘",
+      "hints": [
+        "先对等式两边同乘分母，注意括号，再求解。",
+        "两边同乘2，得到x+3=10",
+        "两边同乘2，得到x+3=10。整理后得到 x=7。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k10-teach-2",
+      "skill": "k10",
+      "phase": "teach",
+      "prompt": "解方程：(x+4)/3=6",
+      "initial": "(x+4)/3=6",
+      "answer": "x=14",
+      "kind": "equation",
+      "source": "course:algebra-v1/k10",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去分母未整体相乘",
+      "hints": [
+        "先对等式两边同乘分母，注意括号，再求解。",
+        "两边同乘3，得到x+4=18",
+        "两边同乘3，得到x+4=18。整理后得到 x=14。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k10-teach-3",
+      "skill": "k10",
+      "phase": "teach",
+      "prompt": "解方程：(x+5)/4=7",
+      "initial": "(x+5)/4=7",
+      "answer": "x=23",
+      "kind": "equation",
+      "source": "course:algebra-v1/k10",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去分母未整体相乘",
+      "hints": [
+        "先对等式两边同乘分母，注意括号，再求解。",
+        "两边同乘4，得到x+5=28",
+        "两边同乘4，得到x+5=28。整理后得到 x=23。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k10-check-1",
+      "skill": "k10",
+      "phase": "check",
+      "prompt": "解方程：(x+6)/5=8",
+      "initial": "(x+6)/5=8",
+      "answer": "x=34",
+      "kind": "equation",
+      "source": "course:algebra-v1/k10",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去分母未整体相乘",
+      "hints": [
+        "先对等式两边同乘分母，注意括号，再求解。",
+        "两边同乘5，得到x+6=40",
+        "两边同乘5，得到x+6=40。整理后得到 x=34。将结果代回原式检查。"
+      ]
+    },
+    {
+      "id": "k10-check-2",
+      "skill": "k10",
+      "phase": "check",
+      "prompt": "解方程：(x+7)/6=9",
+      "initial": "(x+7)/6=9",
+      "answer": "x=47",
+      "kind": "equation",
+      "source": "course:algebra-v1/k10",
+      "rubric": "每一步等价；完成指定的展开、合并或求解；结论正确。",
+      "misconception": "去分母未整体相乘",
+      "hints": [
+        "先对等式两边同乘分母，注意括号，再求解。",
+        "两边同乘6，得到x+7=54",
+        "两边同乘6，得到x+7=54。整理后得到 x=47。将结果代回原式检查。"
+      ]
+    }
+  ]
+}

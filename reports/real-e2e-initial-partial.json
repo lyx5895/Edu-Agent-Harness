@@ -1,0 +1,53 @@
+[
+  {
+    "path": "/api/sessions",
+    "response": {
+      "session_id": "c80faffda5d144468e46b127402eebe5",
+      "learner": "验收学生-1794393570",
+      "item": {
+        "id": "k01-teach-1",
+        "skill": "k01",
+        "phase": "teach",
+        "prompt": "展开并合并：2(x+3)",
+        "source": "course:algebra-v1/k01"
+      },
+      "hint_level": 0,
+      "failures": 0,
+      "done": false,
+      "pending_image": null,
+      "version": 0,
+      "needs_review": false,
+      "check_seen": [],
+      "practice_round": 1,
+      "history": []
+    }
+  },
+  {
+    "path": "/api/sessions/c80faffda5d144468e46b127402eebe5/attempt",
+    "response": {
+      "event_id": 1,
+      "status": "incorrect",
+      "evidence": "attempted",
+      "feedback": "请先检查第1步。",
+      "session": {
+        "session_id": "c80faffda5d144468e46b127402eebe5",
+        "learner": "验收学生-1794393570",
+        "item": {
+          "id": "k01-teach-1",
+          "skill": "k01",
+          "phase": "teach",
+          "prompt": "展开并合并：2(x+3)",
+          "source": "course:algebra-v1/k01"
+        },
+        "hint_level": 0,
+        "failures": 1,
+        "done": false,
+        "pending_image": null,
+        "version": 1,
+        "needs_review": false,
+        "check_seen": [],
+        "practice_round": 1
+      }
+    }
+  }
+]

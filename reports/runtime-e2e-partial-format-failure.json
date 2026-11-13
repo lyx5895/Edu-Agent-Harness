@@ -1,0 +1,518 @@
+{
+  "kind": "real_model_api_multiturn",
+  "started": 1794401699.3891528,
+  "cases": [
+    {
+      "name": "slip",
+      "session_id": "d55d457b13f2447988122bc5b3cfc047",
+      "expected_action": "self_correct",
+      "actual_action": "self_correct",
+      "feedback": "你确实知道规则，但这次计算时漏乘了常数项，属于疏忽。请重新检查每一步，确保括号外的数乘到括号内的每一项，再提交答案。",
+      "wrong_action": "probe",
+      "reply_evidence": "dialogue_only",
+      "practice_evidence": "assisted_complete",
+      "check_evidence": "independent_check_passed",
+      "replay": {
+        "policy_version": "evidence-policy-v1",
+        "trace_count": 4,
+        "scope": "policy decisions only; model generations are recorded, not regenerated",
+        "kind": "deterministic_policy_replay",
+        "model_called": false,
+        "passed": true,
+        "turns": [
+          {
+            "event_id": 40,
+            "supported": true,
+            "matches": true,
+            "computed": {
+              "action": "probe",
+              "reason": "仅凭错误结果不能区分概念误解与遗漏，先询问该步依据。"
+            }
+          },
+          {
+            "event_id": 42,
+            "supported": true,
+            "matches": true,
+            "computed": {
+              "action": "self_correct",
+              "reason": "学生明确描述遗漏或笔误，先让其独立修正数学步骤。"
+            }
+          },
+          {
+            "event_id": 44,
+            "supported": true,
+            "matches": true,
+            "computed": {
+              "action": "independent_check",
+              "reason": "练习完成后用未见检查题收集独立证据。"
+            }
+          },
+          {
+            "event_id": 46,
+            "supported": true,
+            "matches": true,
+            "computed": {
+              "action": "record_check",
+              "reason": "独立检查只记录验证结果，不提供解题帮助。"
+            }
+          }
+        ]
+      },
+      "traces": [
+        {
+          "event_id": 40,
+          "policy_version": "evidence-policy-v1",
+          "input": {
+            "kind": "attempt",
+            "status": "incorrect",
+            "phase": "teach",
+            "failures": 1,
+            "outcome": "unknown"
+          },
+          "decision": {
+            "action": "probe",
+            "reason": "仅凭错误结果不能区分概念误解与遗漏，先询问该步依据。"
+          },
+          "context": {
+            "question": "展开并合并：2(x+3)",
+            "student_context": {
+              "skill": "k01",
+              "source": "course:algebra-v1/k01",
+              "recent_evidence": [],
+              "budget": {
+                "max_events": 6,
+                "max_chars_per_field": 160
+              },
+              "student_work": "2(x+3)=2x+3",
+              "verification": {
+                "status": "incorrect",
+                "first_error": 1,
+                "reason": "这一步与原式不等价。",
+                "source": "sympy"
+              }
+            },
+            "learner_state": {
+              "hypotheses": [
+                {
+                  "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                  "basis": "model_diagnosis",
+                  "certainty": "tentative",
+                  "skill": "k01",
+                  "evidence_quote": "2(x+3)=2x+3"
+                }
+              ],
+              "pending": null,
+              "assisted": false,
+              "outcome": "unknown"
+            },
+            "action": "probe",
+            "reason": "仅凭错误结果不能区分概念误解与遗漏，先询问该步依据。",
+            "rule": "括号外的数要乘括号内每一项。",
+            "diagnostic_hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+            "first_error": 1
+          },
+          "candidate": "请检查你的计算过程，括号外的数需要乘以括号内的每一项，你漏掉了哪一项？",
+          "validation": {
+            "accepted": true,
+            "reasons": [],
+            "scope": "conservative_lexical_guard",
+            "replacement": false
+          },
+          "output": "先检查第1步。请检查你的计算过程，括号外的数需要乘以括号内的每一项，你漏掉了哪一项？",
+          "wait_for_student": true,
+          "tools": [
+            "course.retrieve",
+            "algebra.verify"
+          ],
+          "generation_calls_max": 2,
+          "item_id": "k01-teach-1",
+          "seconds": 6.399797673802823,
+          "model_calls": [
+            {
+              "at": 1794401704.4186234,
+              "seconds": 4.885336386039853,
+              "usage": {
+                "prompt_tokens": 460,
+                "completion_tokens": 98,
+                "total_tokens": 558
+              },
+              "metrics": {
+                "ttft_seconds": 0.24643664108589292,
+                "seconds": 4.873374154325575,
+                "peak_allocated_gib": [
+                  7.323,
+                  10.491
+                ]
+              }
+            },
+            {
+              "at": 1794401705.8930867,
+              "seconds": 1.4731493280269206,
+              "usage": {
+                "prompt_tokens": 229,
+                "completion_tokens": 27,
+                "total_tokens": 256
+              },
+              "metrics": {
+                "ttft_seconds": 0.19267948297783732,
+                "seconds": 1.4529525260441005,
+                "peak_allocated_gib": [
+                  7.27,
+                  10.438
+                ]
+              }
+            }
+          ],
+          "execution_budget": {
+            "max_model_calls": 4,
+            "max_repairs_per_call": 1
+          },
+          "state_item_after": "k01-teach-1",
+          "state_version_before": 0,
+          "state_version_after": 1,
+          "evidence_event_id": 39,
+          "learner_state_after": {
+            "hypotheses": [
+              {
+                "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                "basis": "model_diagnosis",
+                "certainty": "tentative",
+                "skill": "k01",
+                "evidence_quote": "2(x+3)=2x+3",
+                "event_id": 39
+              }
+            ],
+            "pending": "先检查第1步。请检查你的计算过程，括号外的数需要乘以括号内的每一项，你漏掉了哪一项？",
+            "assisted": true,
+            "outcome": "unknown"
+          }
+        },
+        {
+          "event_id": 42,
+          "policy_version": "evidence-policy-v1",
+          "input": {
+            "kind": "reply",
+            "status": "unknown",
+            "phase": "teach",
+            "outcome": "slip"
+          },
+          "decision": {
+            "action": "self_correct",
+            "reason": "学生明确描述遗漏或笔误，先让其独立修正数学步骤。"
+          },
+          "context": {
+            "question": "展开并合并：2(x+3)",
+            "student_context": {
+              "skill": "k01",
+              "source": "course:algebra-v1/k01",
+              "recent_evidence": [
+                {
+                  "event_id": 39,
+                  "kind": "attempt",
+                  "text": "2(x+3)=2x+3",
+                  "feedback": "先检查第1步。请检查你的计算过程，括号外的数需要乘以括号内的每一项，你漏掉了哪一项？",
+                  "status": "incorrect"
+                }
+              ],
+              "budget": {
+                "max_events": 6,
+                "max_chars_per_field": 160
+              },
+              "student_reply": "我知道括号里的每一项都要乘，我只是漏写了。"
+            },
+            "learner_state": {
+              "hypotheses": [
+                {
+                  "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                  "basis": "model_diagnosis",
+                  "certainty": "tentative",
+                  "skill": "k01",
+                  "evidence_quote": "2(x+3)=2x+3",
+                  "event_id": 39
+                },
+                {
+                  "outcome": "slip",
+                  "evidence_quote": "我知道括号里的每一项都要乘，我只是漏写了。",
+                  "hypothesis": "学生知道分配律规则，但在执行计算时漏乘了常数项，属于疏忽导致的笔误。",
+                  "basis": "student_quote_model_interpretation",
+                  "certainty": "tentative",
+                  "skill": "k01"
+                }
+              ],
+              "pending": "先检查第1步。请检查你的计算过程，括号外的数需要乘以括号内的每一项，你漏掉了哪一项？",
+              "assisted": true,
+              "outcome": "slip"
+            },
+            "action": "self_correct",
+            "reason": "学生明确描述遗漏或笔误，先让其独立修正数学步骤。",
+            "rule": "括号外的数要乘括号内每一项。",
+            "diagnostic_hypothesis": "",
+            "first_error": null
+          },
+          "candidate": "你确实知道规则，但这次计算时漏乘了常数项，属于疏忽。请重新检查每一步，确保括号外的数乘到括号内的每一项，再提交答案。",
+          "validation": {
+            "accepted": true,
+            "reasons": [],
+            "scope": "conservative_lexical_guard",
+            "replacement": false
+          },
+          "output": "你确实知道规则，但这次计算时漏乘了常数项，属于疏忽。请重新检查每一步，确保括号外的数乘到括号内的每一项，再提交答案。",
+          "wait_for_student": true,
+          "tools": [
+            "course.retrieve",
+            "evidence.validate_quote"
+          ],
+          "generation_calls_max": 2,
+          "interpretation": {
+            "outcome": "slip",
+            "evidence_quote": "我知道括号里的每一项都要乘，我只是漏写了。",
+            "hypothesis": "学生知道分配律规则，但在执行计算时漏乘了常数项，属于疏忽导致的笔误。"
+          },
+          "item_id": "k01-teach-1",
+          "seconds": 5.083327680826187,
+          "model_calls": [
+            {
+              "at": 1794401708.778246,
+              "seconds": 2.8258744021877646,
+              "usage": {
+                "prompt_tokens": 384,
+                "completion_tokens": 55,
+                "total_tokens": 439
+              },
+              "metrics": {
+                "ttft_seconds": 0.208111850079149,
+                "seconds": 2.8146562902256846,
+                "peak_allocated_gib": [
+                  7.304,
+                  10.477
+                ]
+              }
+            },
+            {
+              "at": 1794401711.0350223,
+              "seconds": 2.254673752002418,
+              "usage": {
+                "prompt_tokens": 279,
+                "completion_tokens": 43,
+                "total_tokens": 322
+              },
+              "metrics": {
+                "ttft_seconds": 0.20402538031339645,
+                "seconds": 2.2379291681572795,
+                "peak_allocated_gib": [
+                  7.287,
+                  10.454
+                ]
+              }
+            }
+          ],
+          "execution_budget": {
+            "max_model_calls": 4,
+            "max_repairs_per_call": 1
+          },
+          "state_item_after": "k01-teach-1",
+          "state_version_before": 1,
+          "state_version_after": 2,
+          "evidence_event_id": 41,
+          "learner_state_after": {
+            "hypotheses": [
+              {
+                "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                "basis": "model_diagnosis",
+                "certainty": "tentative",
+                "skill": "k01",
+                "evidence_quote": "2(x+3)=2x+3",
+                "event_id": 39
+              },
+              {
+                "outcome": "slip",
+                "evidence_quote": "我知道括号里的每一项都要乘，我只是漏写了。",
+                "hypothesis": "学生知道分配律规则，但在执行计算时漏乘了常数项，属于疏忽导致的笔误。",
+                "basis": "student_quote_model_interpretation",
+                "certainty": "tentative",
+                "skill": "k01",
+                "event_id": 41
+              }
+            ],
+            "pending": null,
+            "assisted": true,
+            "outcome": "slip"
+          }
+        },
+        {
+          "event_id": 44,
+          "policy_version": "evidence-policy-v1",
+          "input": {
+            "kind": "attempt",
+            "status": "correct",
+            "phase": "teach",
+            "failures": 0,
+            "outcome": "slip"
+          },
+          "decision": {
+            "action": "independent_check",
+            "reason": "练习完成后用未见检查题收集独立证据。"
+          },
+          "tools": [
+            "algebra.verify"
+          ],
+          "verification": {
+            "status": "correct",
+            "first_error": null,
+            "reason": "各步等价，已完成。",
+            "source": "sympy"
+          },
+          "output": "这道练习已完成。接下来做一题无提示检查。",
+          "wait_for_student": true,
+          "validation": {
+            "accepted": true,
+            "scope": "server_transition"
+          },
+          "item_id": "k01-teach-1",
+          "seconds": 5.184603543020785,
+          "model_calls": [
+            {
+              "at": 1794401716.2737226,
+              "seconds": 5.1797709302045405,
+              "usage": {
+                "prompt_tokens": 762,
+                "completion_tokens": 103,
+                "total_tokens": 865
+              },
+              "metrics": {
+                "ttft_seconds": 0.2406377880834043,
+                "seconds": 5.168014565948397,
+                "peak_allocated_gib": [
+                  7.382,
+                  10.554
+                ]
+              }
+            }
+          ],
+          "execution_budget": {
+            "max_model_calls": 4,
+            "max_repairs_per_call": 1
+          },
+          "state_item_after": "k01-check-1",
+          "state_version_before": 2,
+          "state_version_after": 3,
+          "evidence_event_id": 43,
+          "learner_state_after": {
+            "hypotheses": [
+              {
+                "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                "basis": "model_diagnosis",
+                "certainty": "tentative",
+                "skill": "k01",
+                "evidence_quote": "2(x+3)=2x+3",
+                "event_id": 39
+              },
+              {
+                "outcome": "slip",
+                "evidence_quote": "我知道括号里的每一项都要乘，我只是漏写了。",
+                "hypothesis": "学生知道分配律规则，但在执行计算时漏乘了常数项，属于疏忽导致的笔误。",
+                "basis": "student_quote_model_interpretation",
+                "certainty": "tentative",
+                "skill": "k01",
+                "event_id": 41
+              }
+            ],
+            "pending": null,
+            "assisted": false,
+            "outcome": "unknown"
+          }
+        },
+        {
+          "event_id": 46,
+          "policy_version": "evidence-policy-v1",
+          "input": {
+            "kind": "attempt",
+            "status": "correct",
+            "phase": "check",
+            "failures": 0,
+            "outcome": "unknown"
+          },
+          "decision": {
+            "action": "record_check",
+            "reason": "独立检查只记录验证结果，不提供解题帮助。"
+          },
+          "tools": [
+            "algebra.verify"
+          ],
+          "verification": {
+            "status": "correct",
+            "first_error": null,
+            "reason": "各步等价，已完成。",
+            "source": "sympy"
+          },
+          "output": "本次独立检查通过，已保存原始作答。以后仍需复习验证。",
+          "wait_for_student": false,
+          "validation": {
+            "accepted": true,
+            "scope": "server_transition"
+          },
+          "item_id": "k01-check-1",
+          "seconds": 3.9530622866004705,
+          "model_calls": [
+            {
+              "at": 1794401720.3108451,
+              "seconds": 3.949031443800777,
+              "usage": {
+                "prompt_tokens": 624,
+                "completion_tokens": 79,
+                "total_tokens": 703
+              },
+              "metrics": {
+                "ttft_seconds": 0.2259326009079814,
+                "seconds": 3.936100940220058,
+                "peak_allocated_gib": [
+                  7.354,
+                  10.526
+                ]
+              }
+            }
+          ],
+          "execution_budget": {
+            "max_model_calls": 4,
+            "max_repairs_per_call": 1
+          },
+          "state_item_after": "k01-check-1",
+          "state_version_before": 3,
+          "state_version_after": 4,
+          "evidence_event_id": 45,
+          "learner_state_after": {
+            "hypotheses": [
+              {
+                "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，或者在计算时出现了疏忽。",
+                "basis": "model_diagnosis",
+                "certainty": "tentative",
+                "skill": "k01",
+                "evidence_quote": "2(x+3)=2x+3",
+                "event_id": 39
+              },
+              {
+                "outcome": "slip",
+                "evidence_quote": "我知道括号里的每一项都要乘，我只是漏写了。",
+                "hypothesis": "学生知道分配律规则，但在执行计算时漏乘了常数项，属于疏忽导致的笔误。",
+                "basis": "student_quote_model_interpretation",
+                "certainty": "tentative",
+                "skill": "k01",
+                "event_id": 41
+              }
+            ],
+            "pending": null,
+            "assisted": false,
+            "outcome": "unknown"
+          }
+        }
+      ],
+      "seconds": 20.986896087881178,
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "scripted student replies, not real learners",
+    "lexical output guard, not semantic proof",
+    "policy replay does not regenerate model output"
+  ]
+}

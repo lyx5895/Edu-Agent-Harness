@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "session_id": "03b4ae6832ac4036b46fd507a75f843c",
+  "image_transcription": {
+    "event_id": 73,
+    "text": "Expand: 2(x + 3)\nStudent: 2x + 3",
+    "uncertain": false,
+    "note": "题目要求展开表达式 2(x + 3)，学生作答为 2x + 3。"
+  },
+  "pending_question": "先检查第1步。你刚才的这一步，括号外的数只乘了第一项，漏掉了后面的一项。请回忆一下分配律的规则：括号外的数应该乘到括号里的哪些项？",
+  "identical_after_restart": true,
+  "continued_reply_action": "self_correct",
+  "replay": {
+    "policy_version": "evidence-policy-v1",
+    "trace_count": 2,
+    "scope": "policy decisions only; model generations are recorded, not regenerated",
+    "kind": "deterministic_policy_replay",
+    "model_called": false,
+    "passed": true,
+    "turns": [
+      {
+        "event_id": 75,
+        "supported": true,
+        "matches": true,
+        "computed": {
+          "action": "probe",
+          "reason": "仅凭错误结果不能区分概念误解与遗漏，先询问该步依据。"
+        }
+      },
+      {
+        "event_id": 77,
+        "supported": true,
+        "matches": true,
+        "computed": {
+          "action": "self_correct",
+          "reason": "学生明确描述遗漏或笔误，先让其独立修正数学步骤。"
+        }
+      }
+    ]
+  }
+}

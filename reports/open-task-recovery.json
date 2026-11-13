@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "image_session": "open_6bf130f6c88441b29685826f965c8c89",
+  "transcription": {
+    "text": "Explain why evaporation can occur below the boiling point",
+    "uncertain": false,
+    "note": "题目要求解释为什么蒸发可以在沸点以下发生。",
+    "purpose": "task"
+  },
+  "identical_after_restart": true,
+  "continued_reply": {
+    "feedback": "蒸发和沸腾虽然都是液体变成气体的过程，但它们的“发生地点”和“所需条件”不同。蒸发只发生在液体表面，就像水坑表面慢慢变干；而沸腾是在液体内部和表面同时发生的剧烈汽化，像烧开水时气泡翻滚。蒸发不需要液体达到沸点，只要液体表面的分子获得足够能量就能跑出去，所以它能在任何温度下发生。",
+    "evidence": "dialogue_only",
+    "action": "change_explanation",
+    "event_id": 167,
+    "trace_id": 168,
+    "session": {
+      "session_id": "open_6bf130f6c88441b29685826f965c8c89",
+      "learner": "image-recovery-34891ee5",
+      "version": 3,
+      "engine": "open-task-v1",
+      "task": {
+        "id": "d1cc9962c7644035a3099b8402399fda",
+        "domain": "物理",
+        "objective": "解释蒸发与沸腾的区别，并说明蒸发为何能在低于沸点的温度发生",
+        "question": "为什么蒸发可以在低于沸点的温度发生？",
+        "phase": "teach",
+        "source_ids": []
+      },
+      "pending_image": null,
+      "pending_question": "蒸发和沸腾虽然都是液体变成气体的过程，但它们的“发生地点”和“所需条件”不同。蒸发只发生在液体表面，就像水坑表面慢慢变干；而沸腾是在液体内部和表面同时发生的剧烈汽化，像烧开水时气泡翻滚。蒸发不需要液体达到沸点，只要液体表面的分子获得足够能量就能跑出去，所以它能在任何温度下发生。",
+      "completed": false,
+      "needs_review": false,
+      "source_count": 0,
+      "history": [
+        {
+          "id": 163,
+          "type": "turn",
+          "text": "为什么蒸发可以在低于沸点的温度发生？",
+          "feedback": "题目已确认。请提交你的尝试，或请求提示。",
+          "evidence": "interaction_only"
+        },
+        {
+          "id": 165,
+          "type": "turn",
+          "text": "",
+          "feedback": "蒸发和沸腾虽然都是汽化现象，但发生的位置和条件不同。蒸发只发生在液体表面，而沸腾是在液体内部和表面同时发生的剧烈汽化。由于蒸发不需要液体达到沸点，只要液体表面的分子获得足够能量就能脱离液体进入空气，所以它可以在任何温度下发生。",
+          "evidence": "interaction_only",
+          "action": "scaffold"
+        },
+        {
+          "id": 167,
+          "type": "turn",
+          "text": "这个说明没有帮助，我还是不懂蒸发和沸腾的区别。",
+          "feedback": "蒸发和沸腾虽然都是液体变成气体的过程，但它们的“发生地点”和“所需条件”不同。蒸发只发生在液体表面，就像水坑表面慢慢变干；而沸腾是在液体内部和表面同时发生的剧烈汽化，像烧开水时气泡翻滚。蒸发不需要液体达到沸点，只要液体表面的分子获得足够能量就能跑出去，所以它能在任何温度下发生。",
+          "evidence": "dialogue_only",
+          "action": "change_explanation"
+        }
+      ]
+    }
+  },
+  "material_learning_task": {
+    "id": "2d9e2ebc1a224e26ae11c6902249a386",
+    "domain": "信息技术",
+    "objective": "理解二进制与字节的基本概念，掌握信息编码的定义",
+    "question": "请解释为什么计算机内部使用二进制，并说明一个字节由多少位组成。",
+    "phase": "teach",
+    "source_ids": [
+      "material:1"
+    ]
+  },
+  "material_explanation": "计算机内部使用二进制是因为它只有 0 和 1 两种状态，容易用电子元件的“开”和“关”来表示，稳定且便于处理。一个字节由 8 个二进制位组成，是计算机存储信息的基本单位。"
+}

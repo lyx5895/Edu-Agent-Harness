@@ -1,0 +1,394 @@
+{
+  "passed": true,
+  "scope": "live scripted teaching workflow; not learner outcome study",
+  "steps": [
+    {
+      "name": "missing_explanation",
+      "result": {
+        "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+        "status": "incomplete",
+        "evidence": "interaction_only",
+        "action": "probe",
+        "criteria_results": [
+          {
+            "id": "answer",
+            "description": "正确求解方程",
+            "concept_id": "",
+            "status": "correct",
+            "source": "tool"
+          },
+          {
+            "id": "reason",
+            "description": "说明等式两边进行相同运算",
+            "concept_id": "",
+            "status": "incomplete",
+            "source": "tool"
+          }
+        ],
+        "event_id": 2,
+        "trace_id": 3,
+        "session": {
+          "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+          "learner": "A",
+          "version": 1,
+          "engine": "open-task-v1",
+          "task": {
+            "id": "d236143b7b6242f8af686fd1350ad60f",
+            "domain": "数学",
+            "objective": "解一元一次方程",
+            "question": "解方程 2*x+3=7，并解释依据。",
+            "phase": "teach",
+            "source_ids": [],
+            "criteria": [
+              {
+                "id": "answer",
+                "description": "正确求解方程"
+              },
+              {
+                "id": "reason",
+                "description": "说明等式两边进行相同运算"
+              }
+            ]
+          },
+          "pending_image": null,
+          "pending_question": "你得出这个回答时，依据的规则或材料是什么？",
+          "completed": false,
+          "needs_review": false,
+          "scope": {
+            "class_id": "验收班",
+            "concept_id": "linear",
+            "course_id": "代数"
+          },
+          "assignment_id": "d7aa4b95511149ec9db9d67773c5b095",
+          "followup_id": null,
+          "source_count": 0,
+          "history": [
+            {
+              "id": 2,
+              "type": "turn",
+              "text": "x=2",
+              "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+              "status": "incomplete",
+              "evidence": "interaction_only",
+              "action": "probe",
+              "criteria_results": [
+                {
+                  "id": "answer",
+                  "description": "正确求解方程",
+                  "concept_id": "",
+                  "status": "correct",
+                  "source": "tool"
+                },
+                {
+                  "id": "reason",
+                  "description": "说明等式两边进行相同运算",
+                  "concept_id": "",
+                  "status": "incomplete",
+                  "source": "tool"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "complete_explanation",
+      "result": {
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "status": "correct",
+        "evidence": "assisted_complete",
+        "action": "offer_check",
+        "criteria_results": [
+          {
+            "id": "answer",
+            "description": "正确求解方程",
+            "concept_id": "",
+            "status": "correct",
+            "source": "model"
+          },
+          {
+            "id": "reason",
+            "description": "说明等式两边进行相同运算",
+            "concept_id": "",
+            "status": "correct",
+            "source": "model"
+          }
+        ],
+        "event_id": 4,
+        "trace_id": 5,
+        "session": {
+          "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+          "learner": "A",
+          "version": 2,
+          "engine": "open-task-v1",
+          "task": {
+            "id": "d236143b7b6242f8af686fd1350ad60f",
+            "domain": "数学",
+            "objective": "解一元一次方程",
+            "question": "解方程 2*x+3=7，并解释依据。",
+            "phase": "teach",
+            "source_ids": [],
+            "criteria": [
+              {
+                "id": "answer",
+                "description": "正确求解方程"
+              },
+              {
+                "id": "reason",
+                "description": "说明等式两边进行相同运算"
+              }
+            ]
+          },
+          "pending_image": null,
+          "pending_question": null,
+          "completed": true,
+          "needs_review": false,
+          "scope": {
+            "class_id": "验收班",
+            "concept_id": "linear",
+            "course_id": "代数"
+          },
+          "assignment_id": "d7aa4b95511149ec9db9d67773c5b095",
+          "followup_id": null,
+          "source_count": 0,
+          "history": [
+            {
+              "id": 2,
+              "type": "turn",
+              "text": "x=2",
+              "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+              "status": "incomplete",
+              "evidence": "interaction_only",
+              "action": "probe",
+              "criteria_results": [
+                {
+                  "id": "answer",
+                  "description": "正确求解方程",
+                  "concept_id": "",
+                  "status": "correct",
+                  "source": "tool"
+                },
+                {
+                  "id": "reason",
+                  "description": "说明等式两边进行相同运算",
+                  "concept_id": "",
+                  "status": "incomplete",
+                  "source": "tool"
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "type": "turn",
+              "text": "x=2；等式两边同时减去3，得到2*x=4，再同时除以2。",
+              "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+              "status": "correct",
+              "evidence": "assisted_complete",
+              "action": "offer_check",
+              "criteria_results": [
+                {
+                  "id": "answer",
+                  "description": "正确求解方程",
+                  "concept_id": "",
+                  "status": "correct",
+                  "source": "model"
+                },
+                {
+                  "id": "reason",
+                  "description": "说明等式两边进行相同运算",
+                  "concept_id": "",
+                  "status": "correct",
+                  "source": "model"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "independent_review",
+      "result": {
+        "feedback": "本次作答通过工具验证。",
+        "status": "correct",
+        "evidence": "independent_verified",
+        "action": "assess_only",
+        "criteria_results": [
+          {
+            "id": "answer",
+            "description": "正确求解方程",
+            "concept_id": "",
+            "status": "correct",
+            "source": "tool"
+          }
+        ],
+        "event_id": 7,
+        "trace_id": 8,
+        "session": {
+          "session_id": "open_3e3bd6096e8e4011b45bbf8a6c26c306",
+          "learner": "A",
+          "version": 1,
+          "engine": "open-task-v1",
+          "task": {
+            "id": "548e13538e13405bac90d6eb3077d9bb",
+            "domain": "数学",
+            "objective": "解一元一次方程",
+            "question": "解方程 3*x+1=10。",
+            "phase": "check",
+            "source_ids": [],
+            "criteria": [
+              {
+                "id": "answer",
+                "description": "正确求解方程"
+              }
+            ]
+          },
+          "pending_image": null,
+          "pending_question": null,
+          "completed": true,
+          "needs_review": false,
+          "scope": {
+            "class_id": "验收班",
+            "concept_id": "linear",
+            "course_id": "代数"
+          },
+          "assignment_id": "d8c2d287db0b475993f4dd49c519bea4",
+          "followup_id": "a63ca04a337c435f9e36d7cd2e4cdf3d",
+          "source_count": 0,
+          "history": [
+            {
+              "id": 7,
+              "type": "turn",
+              "text": "x=3",
+              "feedback": "本次作答通过工具验证。",
+              "status": "correct",
+              "evidence": "independent_verified",
+              "action": "assess_only",
+              "criteria_results": [
+                {
+                  "id": "answer",
+                  "description": "正确求解方程",
+                  "concept_id": "",
+                  "status": "correct",
+                  "source": "tool"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "memory": [
+    {
+      "goal_id": "cdb45c2fe56854f20b22f1cf",
+      "objective": "解一元一次方程",
+      "scope": {
+        "class_id": "验收班",
+        "concept_id": "linear",
+        "course_id": "代数"
+      },
+      "source_sessions": [
+        "open_9f5c34217abb425c90dd0100a4a0edb4",
+        "open_3e3bd6096e8e4011b45bbf8a6c26c306"
+      ],
+      "evidence": [
+        {
+          "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+          "event_id": 2,
+          "at": 1794491413.2384984,
+          "status": "incomplete",
+          "kind": "interaction_only",
+          "student_quote": "x=2",
+          "hypothesis": "学生掌握了移项和系数化为1的基本步骤，能够直接得出正确结果。",
+          "certainty": "tentative",
+          "criteria": [
+            {
+              "concept_id": "",
+              "description": "正确求解方程",
+              "id": "answer",
+              "reason": "各步等价，已完成。",
+              "source": "tool",
+              "status": "correct"
+            },
+            {
+              "concept_id": "",
+              "description": "说明等式两边进行相同运算",
+              "id": "reason",
+              "reason": "只有算式或结果，缺少要求的解释",
+              "source": "tool",
+              "status": "incomplete"
+            }
+          ]
+        },
+        {
+          "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+          "event_id": 4,
+          "at": 1794491427.8763793,
+          "status": "correct",
+          "kind": "assisted_complete",
+          "student_quote": "x=2；等式两边同时减去3，得到2*x=4，再同时除以2。",
+          "hypothesis": "学生掌握了等式的基本性质，能够正确运用等式两边同时进行相同运算的规则来解一元一次方程。",
+          "certainty": "tentative",
+          "criteria": [
+            {
+              "concept_id": "",
+              "description": "正确求解方程",
+              "evidence_quote": "x=2；等式两边同时减去3，得到2*x=4，再同时除以2。",
+              "id": "answer",
+              "reason": "学生完整展示了移项和化简步骤，最终答案正确。",
+              "source": "model",
+              "status": "correct"
+            },
+            {
+              "concept_id": "",
+              "description": "说明等式两边进行相同运算",
+              "evidence_quote": "等式两边同时减去3，得到2*x=4，再同时除以2。",
+              "id": "reason",
+              "reason": "学生完整展示了方程求解过程，明确说明了等式两边同时进行相同运算（减3、除以2）的依据。",
+              "source": "model",
+              "status": "correct"
+            }
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+          "event_id": 2,
+          "at": 1794491413.2384984,
+          "action": "clarify",
+          "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+          "student_reply": "x=2",
+          "effect": "not_established",
+          "next_observation": {
+            "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+            "event_id": 4,
+            "at": 1794491427.8763793,
+            "status": "correct",
+            "kind": "assisted_complete"
+          }
+        }
+      ],
+      "invalidated_sessions": [
+        "open_3e3bd6096e8e4011b45bbf8a6c26c306"
+      ],
+      "invalidated_at": 1794491432.4800334,
+      "independent_count": 0,
+      "last_independent_at": null,
+      "state": "needs_recheck",
+      "latest_observation": {
+        "session_id": "open_9f5c34217abb425c90dd0100a4a0edb4",
+        "event_id": 4,
+        "at": 1794491427.8763793,
+        "status": "correct",
+        "kind": "assisted_complete"
+      },
+      "last_difficulty_at": 1794491413.2384984,
+      "independent_current": false,
+      "review_due": false,
+      "next_step": "重新独立检查修订后的知识点"
+    }
+  ]
+}

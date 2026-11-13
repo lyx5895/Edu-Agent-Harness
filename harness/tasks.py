@@ -1,0 +1,80 @@
+"""Subject-neutral contracts. No course ids or subject allowlist."""
+from typing import Literal
+from pydantic import BaseModel, Field, field_validator
+from .criteria import Criterion
+from .pedagogy import TeachingContract, validate_requirements
+
+
+class TaskDraft(TeachingContract):
+    criteria: list[Criterion] = Field(default_factory=list, max_length=4)
+
+    _requirements = field_validator("check_requirements")(validate_requirements)
+
+    domain: str = Field(min_length=1, max_length=80)
+    objective: str = Field(min_length=1, max_length=240)
+    question: str = Field(min_length=1, max_length=900)
+    rubric: str = Field(min_length=1, max_length=600)
+    reference: str = Field(min_length=1, max_length=700)
+    source_quote: str = Field(default='', max_length=250)
+    prerequisite: str = Field(default='', max_length=240)
+    algebra_initial: str = Field(default='', max_length=160)
+    algebra_kind: Literal['none', 'expression', 'equation'] = 'none'
+
+
+class Assessment(BaseModel):
+    status: Literal['correct', 'incorrect', 'incomplete', 'unknown']
+    confidence: Literal['high', 'medium', 'low']
+    evidence_quote: str = Field(min_length=1, max_length=250)
+    observation: str = Field(max_length=350)
+    hypothesis: str = Field(max_length=250)
+
+
+class ReplyMeaning(BaseModel):
+    outcome: Literal['slip', 'misconception', 'not_helped', 'helped', 'unknown']
+    hypothesis: str = Field(max_length=240)
+
+
+class Review(BaseModel):
+    acceptable: bool
+    reason: str = Field(max_length=250)
+
+
+POLICY_VERSION = 'open-task-policy-v2'
+
+
+def choose_v1(o):
+    if o['phase'] == 'check':
+        return {'action': 'assess_only', 'reason': '独立检查先评估作答，不向学生提供答案或提示。'}
+    if o['kind'] == 'check':
+        return {'action': 'create_check', 'reason': '按当前目标生成未见检查任务，先审核再呈现。'}
+    if o['kind'] == 'explain':
+        return {'action': 'explain', 'reason': '学生明确请求讲解，之后的完成记为辅助完成。'}
+    if o['kind'] == 'hint':
+        return {'action': 'scaffold', 'reason': '根据当前困难和已用帮助给出下一步提示。'}
+    if o['kind'] == 'reply':
+        outcome = o.get('outcome', 'unknown')
+        action = {'slip':'self_correct', 'helped':'self_correct',
+                  'not_helped':'change_explanation', 'misconception':'prerequisite'}.get(outcome, 'clarify')
+        return {'action': action, 'reason': '根据学生原文支持的暂时解释调整帮助，不将自述记为能力证据。'}
+    if o['status'] == 'correct':
+        return {'action': 'offer_check', 'reason': '当前任务完成，邀请进行新的无提示检查。'}
+    if o['status'] == 'unknown':
+        return {'action': 'clarify', 'reason': '证据不足或验证结果冲突，先澄清。'}
+    if o.get('failures', 0) > 1:
+        return {'action': 'change_explanation', 'reason': '重复失败，需要改变解释方式而非重复同一提示。'}
+    return {'action': 'probe', 'reason': '询问作答依据，区分知识缺口与操作失误。'}
+
+
+def public_task(task):
+    return {**{k: task[k] for k in ('id', 'domain', 'objective', 'question', 'phase', 'source_ids')},
+            'task_type': task.get('task_type', 'open'),
+            'check_requirements': task.get('check_requirements', []),
+            'criteria':[{'id':x['id'],'description':x['description']} for x in task.get('criteria',[])]}
+
+
+def choose(o):
+    if o['phase']=='teach' and o.get('fallbacks',0)>=2 and o['kind'] not in ('check','explain') and o.get('status')!='correct':
+        return {'action':'teacher_review','reason':'连续反馈未通过审核，需要教师介入而非重复无效提示。'}
+    if o['phase']=='teach' and o['kind']=='attempt' and o.get('status') in ('incorrect','incomplete') and o.get('prior_support_needed'):
+        return {'action':'prerequisite','reason':'同一课程目标已有困难证据，接续先修诊断，避免重新重复首次追问。'}
+    return choose_v1(o)

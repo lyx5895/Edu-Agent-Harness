@@ -1,0 +1,129 @@
+[
+  {
+    "index": 0,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 1,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 2,
+    "ok": true,
+    "client_seconds": 4.576831529848278,
+    "id": "chatcmpl-200a1b1190124ee69ed528a26a31ac3a",
+    "object": "chat.completion",
+    "created": 1794393429,
+    "model": "omniedu-9b",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "学生作答：2x + 3\n\n是否漏乘：是\n\n说明：题目要求展开 2(x + 3)，正确结果应为 2x + 6。学生只将 2 乘到了 x 上，漏乘了括号内的常数项 3，导致结果错误。"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 181,
+      "completion_tokens": 64,
+      "total_tokens": 245
+    },
+    "metrics": {
+      "ttft_seconds": 1.5610931566916406,
+      "seconds": 4.568396901711822,
+      "peak_allocated_gib": [
+        7.274,
+        10.43
+      ]
+    }
+  },
+  {
+    "index": 3,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 4,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 5,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 6,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 7,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 8,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 9,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 10,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 11,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 12,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 13,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 14,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 15,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 16,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 17,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 18,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  },
+  {
+    "index": 19,
+    "ok": false,
+    "error": "Client error '400 Bad Request' for url 'http://127.0.0.1:8000/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+  }
+]

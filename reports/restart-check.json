@@ -1,0 +1,52 @@
+{
+  "inference": {
+    "old_pid": 4092038,
+    "new_pid": 4092857,
+    "health": {
+      "ready": true,
+      "model": "omniedu-9b",
+      "backend": "transformers",
+      "dtype": "bfloat16"
+    }
+  },
+  "harness": {
+    "old_pid": 4092284,
+    "new_pid": 4092944,
+    "health": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    }
+  },
+  "post_restart_inference": {
+    "id": "chatcmpl-621be3afb9c248c5bd83d6f997c01df9",
+    "object": "chat.completion",
+    "created": 1794393868,
+    "model": "omniedu-9b",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "将求得的未知数的值代入原方程，检查方程左右两边是否相等。"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 20,
+      "completion_tokens": 18,
+      "total_tokens": 38
+    },
+    "metrics": {
+      "ttft_seconds": 0.8276221686974168,
+      "seconds": 1.6631560469977558,
+      "peak_allocated_gib": [
+        7.231,
+        10.397
+      ]
+    }
+  },
+  "session_restored_exactly": true,
+  "session_id": "84e01b9fb639477891318844d15e5886"
+}

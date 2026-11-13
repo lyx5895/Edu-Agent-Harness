@@ -1,0 +1,8 @@
+[
+  {"name":"equation_missing_explanation","domain":"数学","concept_id":"等式性质","question":"解方程 2*x+3=7，并解释移项的依据。","rubric":"必须给出x=2，并说明等式两边同时减3、再同时除以2；只有结果属于未完成。","reference":"等式两边同时减3得到2*x=4，再同时除以2得到x=2。","answer":"x=2","expected":"incomplete"},
+  {"name":"factorization_wrong_form","domain":"数学","concept_id":"平方差","question":"将 x*x-1 因式分解。","rubric":"必须写成两个一次因式的积；仅写展开形式未完成。","reference":"(x-1)*(x+1)","answer":"x**2-1","expected":"incomplete"},
+  {"name":"factorization_complete","domain":"数学","concept_id":"平方差","question":"将 x*x-1 因式分解。","rubric":"必须写成两个一次因式的积。","reference":"(x-1)*(x+1)","answer":"(x-1)*(x+1)","expected":"correct"},
+  {"name":"physics_wrong_operation","domain":"物理","concept_id":"牛顿第二定律","question":"质量为3 kg的物体受到合外力12 N，求加速度并说明依据。","rubric":"a=F/m=4 m/s²；需给出依据及单位。","reference":"由F=ma，a=F/m=12/3=4 m/s²。","answer":"加速度是36 m/s²，因为力乘质量就是加速度。","expected":"incorrect"},
+  {"name":"english_correct_explanation","domain":"英语","concept_id":"一般现在时","question":"改正 He play football every day. 并解释原因。","rubric":"play改为plays；说明主语He为第三人称单数，一般现在时动词加s。","reference":"He plays football every day. He是第三人称单数，一般现在时用plays。","answer":"He plays football every day. 主语He是第三人称单数，因此一般现在时动词用plays。","expected":"correct"},
+  {"name":"self_claim_no_credit","domain":"物理","concept_id":"牛顿第二定律","question":"解释F=ma的含义。","rubric":"描述合外力等于质量与加速度的乘积。","reference":"物体的合外力等于物体质量与加速度的乘积。","answer":"我懂了","expected":"unknown"}
+]

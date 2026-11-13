@@ -1,0 +1,285 @@
+{
+  "passed": true,
+  "scope": "real model cross-task memory and correction recovery, not learning gain",
+  "first_status": "incorrect",
+  "next_feedback": "你注意到主语是 'She' 了吗？在一般现在时中，当主语是第三人称单数（如 he, she, it）时，动词通常要加 's'。请试着把 'walk' 改成正确的形式。",
+  "trace": [
+    {
+      "budget": {
+        "max_model_calls": 12,
+        "max_repairs_per_structured_call": 1
+      },
+      "context": {
+        "history": [],
+        "hypotheses": [],
+        "image_evidence_id": null,
+        "learning_memory": [
+          {
+            "evidence": [
+              {
+                "at": 1794488070.484365,
+                "certainty": "tentative",
+                "event_id": 2,
+                "hypothesis": "学生可能尚未掌握一般现在时中第三人称单数主语后动词需加-s的规则，导致无法正确修改句子。",
+                "kind": "interaction_only",
+                "session_id": "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+                "status": "incorrect",
+                "student_quote": "我认为主语不影响动词。"
+              }
+            ],
+            "goal_id": "a15eeb5a94198b71545a30a4",
+            "independent_count": 0,
+            "interventions": [
+              {
+                "action": "clarify",
+                "at": 1794488070.484365,
+                "effect": "not_established",
+                "event_id": 2,
+                "feedback": "你得出这个回答时，依据的规则或材料是什么？",
+                "session_id": "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+                "student_reply": "He play football every day. 我认为主语不影响动词。"
+              }
+            ],
+            "invalidated_sessions": [],
+            "last_independent_at": null,
+            "next_step": "补充先修诊断并换用教学方法",
+            "objective": "使用第三人称单数动词",
+            "review_due": false,
+            "scope": {
+              "class_id": "验收班",
+              "concept_id": "一般现在时第三人称单数",
+              "course_id": "英语"
+            },
+            "state": "needs_support"
+          }
+        ],
+        "materials": [],
+        "memory_dependencies": [
+          "open_1f06d38314604e54a0cd3bb8aa51fc8c"
+        ],
+        "prior_task_evidence": [
+          {
+            "certainty": "tentative",
+            "event_id": 2,
+            "hypothesis": "学生可能尚未掌握一般现在时中第三人称单数主语后动词需加-s的规则，导致无法正确修改句子。",
+            "session_id": "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+            "student_quote": "我认为主语不影响动词。"
+          }
+        ],
+        "teacher_guidance": ""
+      },
+      "decision": {
+        "action": "scaffold",
+        "reason": "根据当前困难和已用帮助给出下一步提示。"
+      },
+      "evidence_event_id": 5,
+      "input": {
+        "failures": 0,
+        "fallbacks": 0,
+        "kind": "hint",
+        "phase": "teach",
+        "prior_support_needed": true,
+        "status": "unknown"
+      },
+      "model_calls": [
+        {
+          "at": 1794488073.386515,
+          "metrics": {
+            "peak_allocated_gib": [
+              7.37,
+              10.534
+            ],
+            "seconds": 2.744959283154458,
+            "ttft_seconds": 0.2427746169269085
+          },
+          "seconds": 2.761114423163235,
+          "usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 659,
+            "total_tokens": 712
+          }
+        },
+        {
+          "at": 1794488076.223329,
+          "metrics": {
+            "peak_allocated_gib": [
+              7.316,
+              10.483
+            ],
+            "seconds": 2.81434196094051,
+            "ttft_seconds": 0.2098396746441722
+          },
+          "seconds": 2.835386188700795,
+          "usage": {
+            "completion_tokens": 55,
+            "prompt_tokens": 437,
+            "total_tokens": 492
+          }
+        }
+      ],
+      "operation": "hint",
+      "output": "你注意到主语是 'She' 了吗？在一般现在时中，当主语是第三人称单数（如 he, she, it）时，动词通常要加 's'。请试着把 'walk' 改成正确的形式。",
+      "output_validation": {
+        "candidate": "你注意到主语是 'She' 了吗？在一般现在时中，当主语是第三人称单数（如 he, she, it）时，动词通常要加 's'。请试着把 'walk' 改成正确的形式。",
+        "delivered_action": "scaffold",
+        "fallback": false,
+        "reasons": [],
+        "review": {
+          "acceptable": true,
+          "reason": "该回复正确识别了主语'She'为第三人称单数，并准确指出了动词需要加's'的语法规则，同时引导学生进行修正，完全符合scaffold（搭建脚手架）的行动定义。"
+        }
+      },
+      "policy_version": "open-task-policy-v2",
+      "seconds": 5.599964141845703,
+      "state_after": {
+        "allow_explanation": true,
+        "assignment_id": "dffa1c11f4464c5bb429bf04e7a936a8",
+        "assisted": true,
+        "completed": false,
+        "failures": 0,
+        "feedback_fallbacks": 0,
+        "hypotheses": [],
+        "mode": "problem",
+        "needs_review": false,
+        "original": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "domain": "英语",
+          "id": "e7b67735c07440ea85c1e42ea0a86b03",
+          "objective": "将第三人称单数规则用于新句子",
+          "phase": "teach",
+          "prerequisite": "",
+          "question": "改正 She walk to school every morning. 并解释原因。",
+          "reference": "She walks to school every morning. She是第三人称单数，因此用walks。",
+          "reference_origin": "teacher_authored",
+          "rubric": "walk改为walks，并说明主语是第三人称单数。",
+          "source_ids": [],
+          "source_quote": ""
+        },
+        "pending_image": null,
+        "pending_question": "你注意到主语是 'She' 了吗？在一般现在时中，当主语是第三人称单数（如 he, she, it）时，动词通常要加 's'。请试着把 'walk' 改成正确的形式。",
+        "request": "改正 She walk to school every morning. 并解释原因。",
+        "scope": {
+          "class_id": "验收班",
+          "concept_id": "一般现在时第三人称单数",
+          "course_id": "英语"
+        },
+        "seen": [
+          "改正 She walk to school every morning. 并解释原因。"
+        ],
+        "sources": [],
+        "task": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "domain": "英语",
+          "id": "e7b67735c07440ea85c1e42ea0a86b03",
+          "objective": "将第三人称单数规则用于新句子",
+          "phase": "teach",
+          "prerequisite": "",
+          "question": "改正 She walk to school every morning. 并解释原因。",
+          "reference": "She walks to school every morning. She是第三人称单数，因此用walks。",
+          "reference_origin": "teacher_authored",
+          "rubric": "walk改为walks，并说明主语是第三人称单数。",
+          "source_ids": [],
+          "source_quote": ""
+        },
+        "teaching_note": "",
+        "version": 1
+      },
+      "state_before": {
+        "allow_explanation": true,
+        "assignment_id": "dffa1c11f4464c5bb429bf04e7a936a8",
+        "assisted": false,
+        "completed": false,
+        "failures": 0,
+        "hypotheses": [],
+        "mode": "problem",
+        "needs_review": false,
+        "original": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "domain": "英语",
+          "id": "e7b67735c07440ea85c1e42ea0a86b03",
+          "objective": "将第三人称单数规则用于新句子",
+          "phase": "teach",
+          "prerequisite": "",
+          "question": "改正 She walk to school every morning. 并解释原因。",
+          "reference": "She walks to school every morning. She是第三人称单数，因此用walks。",
+          "reference_origin": "teacher_authored",
+          "rubric": "walk改为walks，并说明主语是第三人称单数。",
+          "source_ids": [],
+          "source_quote": ""
+        },
+        "pending_image": null,
+        "pending_question": null,
+        "request": "改正 She walk to school every morning. 并解释原因。",
+        "scope": {
+          "class_id": "验收班",
+          "concept_id": "一般现在时第三人称单数",
+          "course_id": "英语"
+        },
+        "seen": [
+          "改正 She walk to school every morning. 并解释原因。"
+        ],
+        "sources": [],
+        "task": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "domain": "英语",
+          "id": "e7b67735c07440ea85c1e42ea0a86b03",
+          "objective": "将第三人称单数规则用于新句子",
+          "phase": "teach",
+          "prerequisite": "",
+          "question": "改正 She walk to school every morning. 并解释原因。",
+          "reference": "She walks to school every morning. She是第三人称单数，因此用walks。",
+          "reference_origin": "teacher_authored",
+          "rubric": "walk改为walks，并说明主语是第三人称单数。",
+          "source_ids": [],
+          "source_quote": ""
+        },
+        "teaching_note": "",
+        "version": 0
+      },
+      "task_id": "e7b67735c07440ea85c1e42ea0a86b03",
+      "tools": [
+        "materials.retrieve"
+      ],
+      "event_id": 6
+    }
+  ],
+  "correction": {
+    "event_id": 2,
+    "status": "unknown",
+    "reason": "验收：模拟教师撤回旧判定",
+    "invalidated_sessions": [
+      "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+      "open_641430e43d934881b3b253182f72d56e"
+    ]
+  },
+  "memory_after_correction": [
+    {
+      "goal_id": "a15eeb5a94198b71545a30a4",
+      "objective": "使用第三人称单数动词",
+      "scope": {
+        "class_id": "验收班",
+        "concept_id": "一般现在时第三人称单数",
+        "course_id": "英语"
+      },
+      "source_sessions": [
+        "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+        "open_641430e43d934881b3b253182f72d56e"
+      ],
+      "evidence": [],
+      "interventions": [],
+      "invalidated_sessions": [
+        "open_1f06d38314604e54a0cd3bb8aa51fc8c",
+        "open_641430e43d934881b3b253182f72d56e"
+      ],
+      "independent_count": 0,
+      "last_independent_at": null,
+      "state": "needs_recheck",
+      "review_due": false,
+      "next_step": "重新独立检查修订后的知识点"
+    }
+  ]
+}

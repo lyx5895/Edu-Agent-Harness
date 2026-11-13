@@ -1,0 +1,82 @@
+{
+  "version": "0.6.0",
+  "passed": true,
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "109",
+    "time": "36.076",
+    "timestamp": "2026-11-12T14:21:28.000130+00:00",
+    "hostname": "244941aa7a59"
+  },
+  "real_cases": [
+    {
+      "name": "cross_subject_draft_generation",
+      "passed": true,
+      "seconds": 22.95
+    },
+    {
+      "name": "quote_alone_does_not_satisfy_explanation",
+      "passed": true,
+      "seconds": 10.18
+    },
+    {
+      "name": "teacher_bank_physics_independent_check",
+      "passed": true,
+      "seconds": 8.15
+    },
+    {
+      "name": "generated_writing_check_preserves_contract",
+      "passed": true,
+      "seconds": 34.33
+    }
+  ],
+  "live_smoke": {
+    "health": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    },
+    "page_status": 200,
+    "version": "0.6.0",
+    "new_routes": [
+      "/api/teacher/packs",
+      "/api/teacher/packs/generate",
+      "/api/teacher/packs/{pack_id}/publish",
+      "/api/learning/inbox"
+    ],
+    "ui_present": true
+  },
+  "limitations": [
+    "Scripted regression, not teacher blind evaluation or learning outcomes",
+    "Classroom authentication remains API-only; default UI is a trusted local demo",
+    "No PDF library, automatic mastery calibration, LMS or concurrent storage redesign"
+  ],
+  "source_sha256": {
+    "harness/__init__.py": "0a4561dcaec6c8d2368cf31876175d4ca6df3094e8dda69f5dcaddd3ba02d616",
+    "harness/access.py": "0a28c2968929aadeb20cccb6601732bd525e54d264467f5d400ba465c3b4b8b5",
+    "harness/algebra.py": "1dce6a779217cab28fec3cdb75ca4de5ee8c6120a3b6da4f926aaf199ec1ea95",
+    "harness/app.py": "de290537729770ef20f1640a53ce3d4108c23fd0afdf65d221999695807508fa",
+    "harness/assessment.py": "f60edcc0466479f70c36b57ff5143a347b393cedc1b3944970e10b0c09ac2e46",
+    "harness/course.py": "212427a875479b4a470d71931e6a36995aba47c8aada0ae72439eea7da7ed589",
+    "harness/criteria.py": "6d0ec758b0bb9e82f9deb169241ebf669826aa3767eed797633f087530675bc8",
+    "harness/engine.py": "09ae440c855576ff6f65e04186edbdc5c84f6c66211f2e8202a300dbe0c8daf4",
+    "harness/errors.py": "18b211e7793fa0c8577cbebdc461745d153b6205f87744a0f7bfaad374b262be",
+    "harness/gateway.py": "cdc6b73db280d92b7bc838dd764670fd94f3f53524019a91fe8e5c7c4c9f9bea",
+    "harness/memory.py": "2d747630f76353f30c4d909e2cc512abc81ee754c2aff4f9c34c711daad005f9",
+    "harness/model.py": "cbc2ac46ce6bf624e74e5ee9b23f705d0a8b288627d084e3c062a78d7c56bc94",
+    "harness/open_engine.py": "9243ba7476dbe48e5efc052a72da11a630d0f4f3fec9c341082ec449c79dc8b2",
+    "harness/open_model.py": "7611c241f6eee5605a051284ea3eebf16c773447956bc9e65b1f7f9f17443152",
+    "harness/pedagogy.py": "923e9a9260616975ad5dfd7d5372a0047a08adccafd5a88d40cb2a33e1a17685",
+    "harness/planning.py": "2a0e0761a81fe5e0851ce8d372f24e87f6518a82019d985f0c82d97b72db5d25",
+    "harness/policy.py": "678f8a6828f34899ed332ef215ee43bdf8995715db4f9d4cd78dace0dc097eb4",
+    "harness/preparation.py": "5c7388fa82d4d249aa7b49f6ca03b397ba58597e071e807c884cf00c3f7f72dd",
+    "harness/runtime.py": "e41efbca9aa94327fd886e43ec21c8cb3c351bfaf77363a19b701dc9af7f5a4b",
+    "harness/storage.py": "5949e555553e0fcacd8f2530c44a9e65745bb0b25340a1e06b2c811a87c17530",
+    "harness/tasks.py": "edd7670c91dc040c9994f8ed70a7584a892222da3af082304195da6e383b9496",
+    "harness/teacher.py": "797983a660824e56be6f9a6ad2a97c31fd5c9f8901b13c93ae1a06cf75b06a32",
+    "harness/toolbox.py": "63c4f14da43203c8a6bbc6b20c2a94589304d7508b164e7fa3da033fa6cd3edf"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "version": "0.5.0",
+  "passed": true,
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "93",
+    "time": "30.556",
+    "timestamp": "2026-11-12T13:49:56.769002+00:00",
+    "hostname": "244941aa7a59"
+  },
+  "grading": {
+    "cases": 6,
+    "harness_pass": 6,
+    "raw_model_matches": 4
+  },
+  "workflow_passed": true,
+  "live_smoke": {
+    "health": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    },
+    "version": "0.5.0",
+    "page_status": 200,
+    "new_routes": [
+      "/api/teacher/paths",
+      "/api/learning/next",
+      "/api/teacher/followups",
+      "/api/learning/followups",
+      "/api/teacher/followups/{key}"
+    ]
+  },
+  "limitations": [
+    "Scripted grading and workflow evaluation, not student learning outcomes",
+    "No authenticated classroom web UI, LMS, PDF library or high-concurrency storage redesign",
+    "Teacher-authored curriculum and review dates; no FSRS or background notification"
+  ],
+  "source_sha256": {
+    "harness/__init__.py": "0a4561dcaec6c8d2368cf31876175d4ca6df3094e8dda69f5dcaddd3ba02d616",
+    "harness/access.py": "29e07e13d7869fabd82501ed42871c37ba8fcc83f3a0b7a11720e57daf2b7b6d",
+    "harness/algebra.py": "1dce6a779217cab28fec3cdb75ca4de5ee8c6120a3b6da4f926aaf199ec1ea95",
+    "harness/app.py": "74b8c03976d744fbc7cfa76b1b06601c406552e068bd2fdc58ae9472ed615950",
+    "harness/assessment.py": "d83c5767cd882b8ea6a94d1a6d40b2e5e7221e7face39d8f5d8c48fa55f0f16a",
+    "harness/course.py": "212427a875479b4a470d71931e6a36995aba47c8aada0ae72439eea7da7ed589",
+    "harness/criteria.py": "0c3705c1e7265b71fc554d22d7b34c6598dd46168bcc43f2d591794c1f571795",
+    "harness/engine.py": "09ae440c855576ff6f65e04186edbdc5c84f6c66211f2e8202a300dbe0c8daf4",
+    "harness/errors.py": "18b211e7793fa0c8577cbebdc461745d153b6205f87744a0f7bfaad374b262be",
+    "harness/gateway.py": "cdc6b73db280d92b7bc838dd764670fd94f3f53524019a91fe8e5c7c4c9f9bea",
+    "harness/memory.py": "eee8ef313f832286bd7a6f1cd91e6a758888857ef9682416ce00b53a2f2f5d17",
+    "harness/model.py": "9d42f2fe8bac35da9ec6cf9ccabf270dec66276ff0e079ccf2cbab60c6ead0af",
+    "harness/open_engine.py": "d34246a6aab095482c271ddfdc520298e68b40818307ed00ecef3ea9b298127b",
+    "harness/open_model.py": "75a81992b348653af4c68206f33c9336bafd9d3b1725213e8fbf3b2130f10ee4",
+    "harness/planning.py": "2a0e0761a81fe5e0851ce8d372f24e87f6518a82019d985f0c82d97b72db5d25",
+    "harness/policy.py": "678f8a6828f34899ed332ef215ee43bdf8995715db4f9d4cd78dace0dc097eb4",
+    "harness/runtime.py": "e41efbca9aa94327fd886e43ec21c8cb3c351bfaf77363a19b701dc9af7f5a4b",
+    "harness/storage.py": "5949e555553e0fcacd8f2530c44a9e65745bb0b25340a1e06b2c811a87c17530",
+    "harness/tasks.py": "bab83e47b8032c86547f721f0d6576d5db62794a10ecbe0620dd079064ea5419",
+    "harness/teacher.py": "7653ff9c4ea719cfe742da990661052be7e318844b8b674bfcc234e2eecec2dd",
+    "harness/toolbox.py": "63c4f14da43203c8a6bbc6b20c2a94589304d7508b164e7fa3da033fa6cd3edf"
+  }
+}

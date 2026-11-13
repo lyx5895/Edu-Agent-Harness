@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "policy_version": "evidence-policy-v1",
+  "unit_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "33",
+    "time": "7.664",
+    "timestamp": "2026-11-11T12:57:45.950975+00:00",
+    "hostname": "244941aa7a59"
+  },
+  "real_model_branches": [
+    {
+      "name": "slip",
+      "expected_action": "self_correct",
+      "actual_action": "self_correct",
+      "passed": true,
+      "seconds": 20.6422110889107
+    },
+    {
+      "name": "misconception",
+      "expected_action": "prerequisite_review",
+      "actual_action": "prerequisite_review",
+      "passed": true,
+      "seconds": 20.17908376501873
+    },
+    {
+      "name": "not_helped",
+      "expected_action": "prerequisite_review",
+      "actual_action": "prerequisite_review",
+      "passed": true,
+      "seconds": 21.811721392907202
+    }
+  ],
+  "generated_interventions": 6,
+  "guard_fallbacks": 0,
+  "recovery_passed": true,
+  "passed": true,
+  "scope": "API-only scripted tutoring, state safety and deterministic policy replay; not a learning efficacy study",
+  "known_limits": [
+    "fixed course and finite checks",
+    "lexical guard not semantic proof",
+    "model interpretation can be wrong despite a valid quote",
+    "no teacher blind rating",
+    "no full database event replay",
+    "SQLite serialized writes"
+  ],
+  "pre_fix_findings": [
+    "Gradio SSE connections delayed shutdown; added 30-second graceful shutdown timeout",
+    "Full math in conceptual-generation context induced unrequested computation and answer disclosure; guarded and filtered",
+    "Model repeatedly ignored JSON wrapper for verbalization; changed only verbalization to guarded plain text"
+  ],
+  "source_hashes": {
+    "harness/__init__.py": "0a4561dcaec6c8d2368cf31876175d4ca6df3094e8dda69f5dcaddd3ba02d616",
+    "harness/course.py": "212427a875479b4a470d71931e6a36995aba47c8aada0ae72439eea7da7ed589",
+    "harness/engine.py": "c2dae54bd28b4d2c9d0ea590d80d1068165f2069cedd3229e96ff96d586fa041",
+    "harness/app.py": "d0bdbfd123a1ac9511c2939a8c5a96810f05cdac4b548cf74df6e8fb76cb09d9",
+    "harness/algebra.py": "1dce6a779217cab28fec3cdb75ca4de5ee8c6120a3b6da4f926aaf199ec1ea95",
+    "harness/model.py": "4c68e5674fca86cebb869740bf488197f0544fb485498c40bdcf2e98cf0dd32f",
+    "harness/policy.py": "678f8a6828f34899ed332ef215ee43bdf8995715db4f9d4cd78dace0dc097eb4",
+    "harness/runtime.py": "e41efbca9aa94327fd886e43ec21c8cb3c351bfaf77363a19b701dc9af7f5a4b"
+  }
+}

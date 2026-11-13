@@ -1,0 +1,86 @@
+{
+  "version": "0.3.0",
+  "passed": true,
+  "unit_tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "58",
+    "time": "11.742",
+    "timestamp": "2026-11-11T13:22:29.991460+00:00",
+    "hostname": "244941aa7a59"
+  },
+  "real_cases": [
+    {
+      "name": "english",
+      "passed": true,
+      "seconds": 64.57489657402039,
+      "generated_check_fixture_status": "correct",
+      "error": null
+    },
+    {
+      "name": "physics",
+      "passed": true,
+      "seconds": 65.7281539440155,
+      "generated_check_fixture_status": "correct",
+      "error": null
+    },
+    {
+      "name": "biology_material",
+      "passed": true,
+      "seconds": 45.610698223114014,
+      "generated_check_fixture_status": "correct",
+      "error": null
+    },
+    {
+      "name": "computer_science",
+      "passed": true,
+      "seconds": 54.54848289489746,
+      "generated_check_fixture_status": "correct",
+      "error": null
+    }
+  ],
+  "image_material_and_restart": true,
+  "feedback_checks": 8,
+  "feedback_fallbacks": 5,
+  "core_modules": [
+    "tasks.py",
+    "open_engine.py",
+    "open_model.py",
+    "toolbox.py"
+  ],
+  "fixed_courses_required": false,
+  "example_compatibility": "gateway.py -> legacy engine only for explicit skill or legacy session",
+  "sources": "REFERENCES.txt",
+  "limits": [
+    "Model evaluations and same-model check review can be wrong",
+    "No teacher blind evaluation or learner outcome experiment",
+    "Material files: UTF-8 txt/md; images require transcription confirmation",
+    "Context bounded to recent evidence and retrieved text, not entire documents",
+    "Verifier coverage is optional; unsupported domains use labeled model rubric assessment",
+    "Single-server demo identity, no multi-user isolation"
+  ],
+  "prior_failure_artifacts": [
+    "open-task-e2e-initial-failures.json",
+    "open-task-e2e-before-source-and-action-fix.json",
+    "open-check-rejection.json",
+    "open-task-e2e-before-reference-validation.json"
+  ],
+  "code_sha256": {
+    "harness/open_model.py": "7471a3fe04a867d8e1595d74e05d79e518ff0d9b809e371335dddef753357a28",
+    "harness/toolbox.py": "b10b1fe36b65841eb96264c901a2c6016f16d953734debdfc50977558aa31f0e",
+    "harness/open_engine.py": "2090221d3dc05ee981fff4efd8fbc533fb2be6a64dfdda653f1331e72d9c8e00",
+    "harness/__init__.py": "0a4561dcaec6c8d2368cf31876175d4ca6df3094e8dda69f5dcaddd3ba02d616",
+    "harness/tasks.py": "87417d98be7ddf8804a2788aa18384aea7564dc01398738d7738adb93aeadd6b",
+    "harness/errors.py": "18b211e7793fa0c8577cbebdc461745d153b6205f87744a0f7bfaad374b262be",
+    "harness/course.py": "212427a875479b4a470d71931e6a36995aba47c8aada0ae72439eea7da7ed589",
+    "harness/engine.py": "09ae440c855576ff6f65e04186edbdc5c84f6c66211f2e8202a300dbe0c8daf4",
+    "harness/app.py": "1d04a474078b751b67b9b0a090c01ab24d3bb31733140fb3519cf9d93556bb4b",
+    "harness/algebra.py": "1dce6a779217cab28fec3cdb75ca4de5ee8c6120a3b6da4f926aaf199ec1ea95",
+    "harness/gateway.py": "cdc6b73db280d92b7bc838dd764670fd94f3f53524019a91fe8e5c7c4c9f9bea",
+    "harness/model.py": "97d37c079d5cf0dedf65cd9a21a61afcf53c9112f4fb043480d01655d8119d68",
+    "harness/policy.py": "678f8a6828f34899ed332ef215ee43bdf8995715db4f9d4cd78dace0dc097eb4",
+    "harness/runtime.py": "e41efbca9aa94327fd886e43ec21c8cb3c351bfaf77363a19b701dc9af7f5a4b"
+  }
+}

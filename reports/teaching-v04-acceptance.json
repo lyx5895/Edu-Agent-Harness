@@ -1,0 +1,52 @@
+{
+  "version": "0.4.0",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "78",
+    "time": "20.589",
+    "timestamp": "2026-11-12T12:54:55.045848+00:00",
+    "hostname": "244941aa7a59"
+  },
+  "real_grading": true,
+  "real_memory": true,
+  "live_smoke": {
+    "version": "0.4.0",
+    "page": true,
+    "dashboard": true,
+    "health": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    }
+  },
+  "limitations": [
+    "No teacher blind evaluation or student learning-gain study",
+    "Authenticated classroom mode is API-only; default UI is trusted local demo",
+    "Single inference worker; optimistic database-wide write conflicts",
+    "Same-model generated check review; semantic leakage not guaranteed absent"
+  ],
+  "code_sha256": {
+    "harness/access.py": "afa8fcdaf74e3a67f7371f4ef72d2048a176407a6f641f2d2c973b24c2cf74c1",
+    "harness/open_model.py": "6e41639999e8f9b4d1cf5436a24de55ab9457aca964a5621a19929a549589595",
+    "harness/teacher.py": "d7d5636fdd7d419c859d2bdcf5974f0c44779dd1e9d1d532fe0132e4647c0a09",
+    "harness/toolbox.py": "63c4f14da43203c8a6bbc6b20c2a94589304d7508b164e7fa3da033fa6cd3edf",
+    "harness/assessment.py": "d83c5767cd882b8ea6a94d1a6d40b2e5e7221e7face39d8f5d8c48fa55f0f16a",
+    "harness/open_engine.py": "d118de6b810d2890053797a9d8ee07d8185819e68c16ec4744be2c3b3c3f5000",
+    "harness/__init__.py": "0a4561dcaec6c8d2368cf31876175d4ca6df3094e8dda69f5dcaddd3ba02d616",
+    "harness/tasks.py": "37d18620be81e488b4ae6ba2e8d7cc47b9cdc9a776693141b9e1d9ef20b77946",
+    "harness/errors.py": "18b211e7793fa0c8577cbebdc461745d153b6205f87744a0f7bfaad374b262be",
+    "harness/course.py": "212427a875479b4a470d71931e6a36995aba47c8aada0ae72439eea7da7ed589",
+    "harness/engine.py": "09ae440c855576ff6f65e04186edbdc5c84f6c66211f2e8202a300dbe0c8daf4",
+    "harness/app.py": "1b9cedebb1a485a0e160c706a77298e1a4350b414dcafc9618f978f91b4df6bc",
+    "harness/memory.py": "0ebbd7e0fdaa3bf027369df7aa6ce22b188d94f86a2fc19c854417e6817d6449",
+    "harness/storage.py": "5949e555553e0fcacd8f2530c44a9e65745bb0b25340a1e06b2c811a87c17530",
+    "harness/algebra.py": "1dce6a779217cab28fec3cdb75ca4de5ee8c6120a3b6da4f926aaf199ec1ea95",
+    "harness/gateway.py": "cdc6b73db280d92b7bc838dd764670fd94f3f53524019a91fe8e5c7c4c9f9bea",
+    "harness/model.py": "9d42f2fe8bac35da9ec6cf9ccabf270dec66276ff0e079ccf2cbab60c6ead0af",
+    "harness/policy.py": "678f8a6828f34899ed332ef215ee43bdf8995715db4f9d4cd78dace0dc097eb4",
+    "harness/runtime.py": "e41efbca9aa94327fd886e43ec21c8cb3c351bfaf77363a19b701dc9af7f5a4b"
+  }
+}

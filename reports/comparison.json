@@ -1,0 +1,311 @@
+{
+  "limitations": "Six authored holdout cases, automated status/first-error/exact-answer-string proxies only. No human rating or learning-gain claims. Local API monetary price unknown; no fabricated cost.",
+  "rows": [
+    {
+      "case": "eval-11",
+      "mode": "direct",
+      "expected": "incorrect",
+      "work": "11x+7",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "请检查你是否将括号外的11乘到了括号内的每一项上，特别是常数项7。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 267,
+        "completion_tokens": 39,
+        "total_tokens": 306
+      },
+      "model_calls": 1,
+      "seconds": 2.0235323668457568
+    },
+    {
+      "case": "eval-11",
+      "mode": "harness",
+      "expected": "incorrect",
+      "work": "11x+7",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "incorrect",
+          "first_error": 1,
+          "observation": "学生在展开 11(x+7) 时，只将 11 乘到了 x 上，得到 11x+7，漏乘了括号内的常数项 7。",
+          "hypothesis": "学生可能没有完全掌握分配律，即括号外的数需要乘以括号内的每一项，导致计算错误。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 483,
+        "completion_tokens": 121,
+        "total_tokens": 604
+      },
+      "model_calls": 2,
+      "seconds": 5.968232716899365
+    },
+    {
+      "case": "eval-12",
+      "mode": "direct",
+      "expected": "incorrect",
+      "work": "12x+8",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "请检查你是否将括号外的12乘到了括号内的每一项上，而不仅仅是第一项。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 267,
+        "completion_tokens": 38,
+        "total_tokens": 305
+      },
+      "model_calls": 1,
+      "seconds": 1.9211212531663477
+    },
+    {
+      "case": "eval-12",
+      "mode": "harness",
+      "expected": "incorrect",
+      "work": "12x+8",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "incorrect",
+          "first_error": 1,
+          "observation": "学生将12只乘了括号内的x，而漏乘了常数项8，导致结果错误。",
+          "hypothesis": "学生未掌握分配律中括号外数字需与括号内每一项相乘的规则。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 483,
+        "completion_tokens": 98,
+        "total_tokens": 581
+      },
+      "model_calls": 2,
+      "seconds": 4.862352009862661
+    },
+    {
+      "case": "eval-13",
+      "mode": "direct",
+      "expected": "incorrect",
+      "work": "13x+9",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "请检查你是否将括号外的数13乘到了括号内的每一项上。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 268,
+        "completion_tokens": 35,
+        "total_tokens": 303
+      },
+      "model_calls": 1,
+      "seconds": 1.8176705110818148
+    },
+    {
+      "case": "eval-13",
+      "mode": "harness",
+      "expected": "incorrect",
+      "work": "13x+9",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "incorrect",
+          "first_error": 1,
+          "observation": "学生只将13乘了括号内的第一项x，漏乘了第二项9，导致结果错误。",
+          "hypothesis": "学生未掌握分配律中“括号外的数要乘括号内每一项”的规则，属于概念理解缺失。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 484,
+        "completion_tokens": 103,
+        "total_tokens": 587
+      },
+      "model_calls": 2,
+      "seconds": 5.13915615202859
+    },
+    {
+      "case": "eval-14",
+      "mode": "direct",
+      "expected": "correct",
+      "work": "14x+140",
+      "ok": true,
+      "output": {
+        "status": "correct",
+        "first_error": null,
+        "hint": "你正确应用了分配律，将14分别乘以括号内的x和10，结果完全正确。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 41,
+        "total_tokens": 312
+      },
+      "model_calls": 1,
+      "seconds": 2.0890523572452366
+    },
+    {
+      "case": "eval-14",
+      "mode": "harness",
+      "expected": "correct",
+      "work": "14x+140",
+      "ok": true,
+      "output": {
+        "status": "correct",
+        "first_error": null,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "correct",
+          "first_error": null,
+          "observation": "学生直接给出了正确答案 14x+140，且该结果与标准答案完全一致。",
+          "hypothesis": "学生正确应用了分配律，将 14 分别乘以括号内的 x 和 10，并正确合并了结果。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 486,
+        "completion_tokens": 107,
+        "total_tokens": 593
+      },
+      "model_calls": 2,
+      "seconds": 5.338932758197188
+    },
+    {
+      "case": "eval-15",
+      "mode": "direct",
+      "expected": "correct",
+      "work": "15x+165",
+      "ok": true,
+      "output": {
+        "status": "correct",
+        "first_error": null,
+        "hint": "你正确应用了分配律，将15分别乘以括号内的每一项，结果完全正确。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 271,
+        "completion_tokens": 38,
+        "total_tokens": 309
+      },
+      "model_calls": 1,
+      "seconds": 1.957292619626969
+    },
+    {
+      "case": "eval-15",
+      "mode": "harness",
+      "expected": "correct",
+      "work": "15x+165",
+      "ok": true,
+      "output": {
+        "status": "correct",
+        "first_error": null,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "correct",
+          "first_error": null,
+          "observation": "学生直接给出了正确答案 15x+165，计算过程正确。",
+          "hypothesis": "学生掌握了分配律，正确地将 15 乘以括号内的每一项。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 486,
+        "completion_tokens": 89,
+        "total_tokens": 575
+      },
+      "model_calls": 2,
+      "seconds": 4.4817127347923815
+    },
+    {
+      "case": "eval-16",
+      "mode": "direct",
+      "expected": "incorrect",
+      "work": "16x+12",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "请检查你是否将括号外的数16乘到了括号内的每一项上，特别是常数项12是否被正确计算。"
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 270,
+        "completion_tokens": 45,
+        "total_tokens": 315
+      },
+      "model_calls": 1,
+      "seconds": 2.2565843360498548
+    },
+    {
+      "case": "eval-16",
+      "mode": "harness",
+      "expected": "incorrect",
+      "work": "16x+12",
+      "ok": true,
+      "output": {
+        "status": "incorrect",
+        "first_error": 1,
+        "hint": "在去括号的步骤中，括号外的数需要与括号内的每一项相乘吗？",
+        "diagnosis": {
+          "status": "incorrect",
+          "first_error": 1,
+          "observation": "学生在展开表达式 16(x+12) 时，只将 16 乘以了括号内的第一项 x，而忽略了括号内的第二项 12，导致结果错误。",
+          "hypothesis": "学生可能没有完全掌握分配律（即 a(b+c) = ab + ac）的规则，或者在计算时出现了疏忽，未能将括号外的数与括号内的每一项相乘。",
+          "confidence": "high"
+        }
+      },
+      "status_correct": true,
+      "first_error_correct": true,
+      "answer_string_leak": false,
+      "usage": {
+        "prompt_tokens": 486,
+        "completion_tokens": 137,
+        "total_tokens": 623
+      },
+      "model_calls": 2,
+      "seconds": 6.673471890389919
+    }
+  ]
+}

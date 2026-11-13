@@ -1,0 +1,37 @@
+{
+  "host": "bysz1",
+  "root": "/default-filesys/workspace/ysb/Edu",
+  "conda": "/default-filesys/workspace/ysb/miniconda3/bin/conda",
+  "environments": [
+    "/default-filesys/workspace/ysb/Edu/.envs/harness",
+    "/default-filesys/workspace/ysb/Edu/.envs/inference"
+  ],
+  "verified_at": "2026-11-13T14:54:03.818143+08:00",
+  "model": {
+    "repo": "lhpku20010120/Omni-Edu-9B",
+    "revision": "7fda599d16f5c7aff770e2869450684c8e4d72f0",
+    "bytes": 18819722392,
+    "sha256": "2740672b4b820e045c7af782cde9935836631fef5c3c7649751d375cf5560bcc",
+    "bf16": true
+  },
+  "tests_passed": 109,
+  "smoke_passed": 20,
+  "health": {
+    "8000": {
+      "ready": true,
+      "model": "omniedu-9b",
+      "backend": "transformers",
+      "dtype": "bfloat16"
+    },
+    "7860": {
+      "ready": true,
+      "mode": "local-demo",
+      "model_base_url": "http://127.0.0.1:8000/v1"
+    }
+  },
+  "gpus": [
+    1,
+    2
+  ],
+  "download_parts_removed": true
+}
