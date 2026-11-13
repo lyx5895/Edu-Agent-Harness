@@ -1,6 +1,16 @@
 # OmniEdu 教学 Harness
 
-当前 bysz1 默认推理后端已切换为 **vLLM 0.23.0**；部署参数与命令见文末“bysz1 部署”。下文 Transformers 双卡设置保留为后备方案与历史记录。
+当前 bysz1 默认推理后端已切换为 **vLLM 0.23.0**；部署参数与命令见文末“bysz1 部署”。下文 Transformers 双卡设置保留为后备方案与历史记录。项目已纳入 git 管理。
+
+## v0.7：vLLM 适配与教学策略补强
+
+- **图片**：上传图片统一校正 EXIF 方向并缩到最长边1536像素（约1.7k视觉 token），可用 `OMNIEDU_IMAGE_MAX_SIDE` 调整；页面上传上限放宽到30MB。超出上下文的请求单独提示“输入材料或图片过长”，不再报“模型服务不可用”。
+- **结构化输出**：`ModelClient.structured` 通过 `response_format: json_schema` 约束解码，原有任务说明与一次修复重试保留；`OMNIEDU_JSON_SCHEMA=0` 可关闭。约束只保证格式，不保证判定正确。
+- **并发**：整题评估与各分项评估并行发出，共享同一轮调用预算（线程安全）。
+- **分级提示**（策略 `open-task-policy-v3`）：同一任务内连续请求提示依次为概念提示、步骤提示、同构半完成例子；旧轨迹按原策略版本回放。
+- **复习间隔**：按连续独立通过次数取1/3/7/14/30天，出现困难后重置；这是规则建议，不是遗忘模型。
+- **教师复核队列**：抽检由固定 `id%10` 改为风险分层（负面判定、低置信、仅模型判定的独立检查、模型生成参考答案、分项未定），其余按哈希抽样约10%；每项列出风险原因。
+- **部署**：上下文32768、最多32路并发、60%显存；启动后先预热文本、图片、长输入、批处理和 JSON schema 路径，再标记就绪。参数在 `service-config.json` 的 `vllm` 段配置。`requirements-vllm.lock` 改为完整版本锁定。
 
 ## v0.6：跨学科任务协议与批量备课
 
@@ -110,7 +120,7 @@
 
 ### 教学证据与记忆
 
-`harness/memory.py` 从追加事件重建学习状态，重启后保留。记忆包含作答证据、暂时误区、实际交付的教学动作、提示内容及其后的作答观察；不把相关性宣称为教学因果效果。独立检查次数与辅助完成分开，24小时后的复习提示是规则建议，不是已校准遗忘模型。自由任务只做精确目标关联，不自动将语义近似目标合并；跨题稳定关联请使用教师知识点编号。
+`harness/memory.py` 从追加事件重建学习状态，重启后保留。记忆包含作答证据、暂时误区、实际交付的教学动作、提示内容及其后的作答观察；不把相关性宣称为教学因果效果。独立检查次数与辅助完成分开，复习提示按连续独立通过次数取1/3/7/14/30天（v0.7起，原为固定24小时），是规则建议，不是已校准遗忘模型。自由任务只做精确目标关联，不自动将语义近似目标合并；跨题稳定关联请使用教师知识点编号。
 
 教师修订使原会话及读取过其记忆的下游会话失效，包含传递依赖；原始事件不删除。新的教学上下文排除这些证据，教师可见失效记录并要求重新检查。独立检查清空历史提示、学习记忆和教师指导文字；检查题仍可能由同一模型生成和审核，不能作为外部标准答案。
 
@@ -330,7 +340,7 @@ curl --noproxy '*' http://127.0.0.1:7860/api/sessions \
 
 工作目录：`/default-filesys/workspace/ysb/Edu`。Conda：`/default-filesys/workspace/ysb/miniconda3/bin/conda`。应用使用 `.envs/harness`（Python 3.11），推理使用 `.envs/vllm`（Python 3.12）。默认后端在 `service-config.json` 中设为 vLLM。
 
-vLLM 0.23.0 + PyTorch 2.11.0/CUDA 13.0 + Transformers 5.22.2，使用物理 GPU 1、BF16、TP=1、4096 token 上下文、最多16个并发序列、40%显存预算。启用异步调度、分块预填充、FlashAttention 3、Triton/FLA 线性注意力及 CUDA Graph。思考模式默认关闭。
+vLLM 0.23.0 + PyTorch 2.11.0/CUDA 13.0 + Transformers 5.22.2，使用物理 GPU 1、BF16、TP=1、32768 token 上下文、最多32个并发序列、60%显存预算（KV cache 约115万 token）；参数见 `service-config.json` 的 `vllm` 段。启动后先预热再标记就绪。启用异步调度、分块预填充、FlashAttention 3、Triton/FLA 线性注意力及 CUDA Graph。思考模式默认关闭。
 
 服务脚本为 vLLM 进程配置 `/usr/local/cuda-13.0/compat` 兼容库，不修改系统驱动；临时目录与编译缓存位于项目 `.cache/`。模型通过镜像取得并通过完整 SHA256 校验，原始权重及分词器未改动。
 
@@ -347,7 +357,7 @@ cd /default-filesys/workspace/ysb/Edu
 .envs/harness/bin/python scripts/service.py stop inference
 ```
 
-重建环境：`bash scripts/bootstrap_vllm.sh`，使用 ysb Conda 与清华 PyPI 镜像。主要版本固定于 `requirements-vllm.lock`，完整安装版本快照见 `reports/vllm-pip-freeze.txt`。模型下载仍可用 `HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py`。
+重建环境：`bash scripts/bootstrap_vllm.sh`，使用 ysb Conda 与清华 PyPI 镜像。`requirements-vllm.lock` 锁定全部依赖版本（与 `reports/vllm-pip-freeze.txt` 一致）。模型下载仍可用 `HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py`。
 
 在个人电脑执行：
 
@@ -357,6 +367,6 @@ ssh -N -L 7860:127.0.0.1:7860 -L 8000:127.0.0.1:8000 bysz1
 
 浏览器打开 http://127.0.0.1:7860 ，推理接口为 `http://127.0.0.1:8000/v1`，模型名 `omniedu-9b`。当前为本地演示模式，服务不随服务器重启自动启动。
 
-验证：正式端口上20次文本、多轮、图片请求全部通过；8路并发、流式输出、Edu结构化诊断与应用页面检查均通过。报告见 `reports/vllm-deployment.json`、`reports/vllm-validation.json`、`reports/vllm-production-smoke.json`。
+验证：正式端口上20次文本、多轮、图片请求全部通过；8路并发、流式输出、Edu结构化诊断与应用页面检查均通过。报告见 `reports/vllm-deployment.json`、`reports/vllm-validation.json`、`reports/vllm-production-smoke.json`。v0.7 在 vLLM 上重跑了教学端到端（`reports/teaching-v07-vllm-real.json`，4项通过，总耗时由75.6秒降到15.7秒）和评分案例（`reports/teaching-eval-v07-vllm.json`、对照 `reports/teaching-eval-v07-vllm-compare.json`：6个案例裸模型判对3个，harness判对6个）。
 
 保留 `.envs/inference` 的 Transformers 后备环境。如需临时回退，先停止推理，再运行 `.envs/harness/bin/python scripts/service.py start inference --backend transformers`；后备仍使用 GPU 1、2，需空闲。此覆盖仅针对该次启动，默认配置仍为 vLLM。

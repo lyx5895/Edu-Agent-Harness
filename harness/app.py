@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from .course import SKILLS
 from .errors import Conflict
 from .gateway import Gateway
+from .images import file_to_data_url
 from .model import ModelUnavailable
 from .teacher import Assignment
 from .planning import Curriculum, FollowupBatch
@@ -19,7 +20,7 @@ from .pedagogy import PROFILES
 from typing import Literal
 
 engine = Gateway(db=os.getenv('HARNESS_DB'))
-app = FastAPI(title='OmniEdu Teaching Harness', version='0.6.0')
+app = FastAPI(title='OmniEdu Teaching Harness', version='0.7.0')
 
 
 @app.middleware('http')
@@ -170,11 +171,8 @@ def operate(action,s,text='',image=None,request_id=None):
     if action in ('attempt','confirm','reply','confirm_task'): body={'text':text}
     if action=='image':
         if not image: raise gr.Error('请先选择图片')
-        path=Path(image)
-        if path.stat().st_size>8*1024**2: raise gr.Error('图片需小于8MB')
-        from PIL import Image
-        with Image.open(path) as im: fmt=im.format.lower()
-        body={'image_url':f'data:image/{fmt};base64,'+base64.b64encode(path.read_bytes()).decode()}
+        try: body={'image_url':image_data(image)}
+        except ValueError as e: raise gr.Error(str(e))
     try:
         # Same UI submission/state/body has the same key, including after a retry.
         import hashlib
@@ -201,10 +199,8 @@ def revision(event_id,status,reason):
 def image_data(path):
     if not path: return ''
     path=Path(path)
-    if path.stat().st_size > 8*1024**2: raise ValueError('图片需小于8MB')
-    from PIL import Image
-    with Image.open(path) as im: fmt=im.format.lower()
-    return f'data:image/{fmt};base64,'+base64.b64encode(path.read_bytes()).decode()
+    if path.stat().st_size > 30*1024**2: raise ValueError('图片需小于30MB')
+    return file_to_data_url(path)
 
 
 def start_task(learner,task,material,mode,task_image,material_file,assignment_id="",followup_id=""):

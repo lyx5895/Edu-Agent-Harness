@@ -12,7 +12,7 @@
   "concurrent_requests": [
     {
       "index": 0,
-      "seconds": 3.502595104277134,
+      "seconds": 0.4458593036979437,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -22,7 +22,7 @@
     },
     {
       "index": 1,
-      "seconds": 3.5047260373830795,
+      "seconds": 0.45215994119644165,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -32,7 +32,7 @@
     },
     {
       "index": 2,
-      "seconds": 3.5021345391869545,
+      "seconds": 0.4539917837828398,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -42,7 +42,7 @@
     },
     {
       "index": 3,
-      "seconds": 3.5035147489979863,
+      "seconds": 0.4518315028399229,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -52,7 +52,7 @@
     },
     {
       "index": 4,
-      "seconds": 3.5032922765240073,
+      "seconds": 0.45307871140539646,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -62,7 +62,7 @@
     },
     {
       "index": 5,
-      "seconds": 3.5025604981929064,
+      "seconds": 0.45211303140968084,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -72,7 +72,7 @@
     },
     {
       "index": 6,
-      "seconds": 3.501776940189302,
+      "seconds": 0.45044850185513496,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -82,7 +82,7 @@
     },
     {
       "index": 7,
-      "seconds": 3.501778312958777,
+      "seconds": 0.451013270765543,
       "usage": {
         "prompt_tokens": 23,
         "total_tokens": 77,
@@ -91,7 +91,7 @@
       }
     }
   ],
-  "batch_seconds": 3.5308065842837095,
+  "batch_seconds": 0.4566860757768154,
   "diagnosis": {
     "status": "incorrect",
     "first_error": 1,
@@ -99,5 +99,5 @@
     "hypothesis": "学生可能对分配律的理解不够全面，或者在计算过程中出现了疏忽，未能将括号外的因子乘到括号内的每一项。",
     "confidence": "high"
   },
-  "seconds": 5.969470358453691
+  "seconds": 3.6479630367830396
 }

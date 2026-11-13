@@ -1,5 +1,6 @@
 """OmniEdu adapter for arbitrary learning tasks; no subject-specific prompt."""
 import json
+import threading
 import time
 from contextvars import ContextVar
 from contextlib import contextmanager
@@ -13,17 +14,19 @@ class OpenModel(ModelClient):
 
     @contextmanager
     def budget(self):
-        token=self._budget.set({'remaining':12,'deadline':time.monotonic()+240})
+        # Parallel criterion calls share this dict through copied contexts.
+        token=self._budget.set({'remaining':12,'deadline':time.monotonic()+240,'lock':threading.Lock()})
         try: yield
         finally: self._budget.reset(token)
 
     def chat(self,*a,**kw):
         budget=self._budget.get()
         if budget is not None:
-            remaining=budget['deadline']-time.monotonic()
-            if budget['remaining']<=0 or remaining<=0:
-                raise ModelUnavailable('本轮执行预算已用完，未写入学习结论，请重试。')
-            budget['remaining']-=1
+            with budget['lock']:
+                remaining=budget['deadline']-time.monotonic()
+                if budget['remaining']<=0 or remaining<=0:
+                    raise ModelUnavailable('本轮执行预算已用完，未写入学习结论，请重试。')
+                budget['remaining']-=1
             kw['timeout']=max(.01,min(300,remaining))
         return super().chat(*a,**kw)
 
@@ -86,6 +89,9 @@ class OpenModel(ModelClient):
         instructions={'probe':'只写一个简短问题询问学生作答依据。不得纠正事实、介绍知识、给出正确做法或替学生猜原因。',
             'clarify':'请学生补充可判断的作答内容，最多一个问题。',
             'scaffold':'根据学生当前困难给一个下一步提示，不给完整答案。',
+            'scaffold_concept':'第一级提示：只点明本题涉及的关键概念、规则或材料位置，不涉及具体步骤，最多一个问题。',
+            'scaffold_step':'第二级提示：指出下一步该做什么以及依据，不替学生完成这一步，不给最终答案。',
+            'scaffold_example':'第三级提示：给一个结构相同但数据或情境不同的半完成例子，留出关键一步让学生对照完成；不得直接解答本题。',
             'prerequisite':'围绕必要基础做简短解释，并提出一个引导问题。',
             'change_explanation':'不要重复历史提示，换用另一种解释或类比，最多一个问题，不给完整答案。',
             'self_correct':'请学生按刚才说明的思路自行修正并提交，不代做。',

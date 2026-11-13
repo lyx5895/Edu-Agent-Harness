@@ -1,19 +1,15 @@
-import base64
 from contextlib import contextmanager
 import hashlib
-import io
 import json
 from pathlib import Path
-import re
 import sqlite3
 import threading
 import time
 import uuid
 
-from PIL import Image
-
 from .algebra import verify
 from .course import ITEMS, SKILLS, public_item, retrieve
+from .images import normalize_image
 from .model import ModelClient
 from . import runtime
 from .policy import VERSION, decide
@@ -121,8 +117,7 @@ class Engine:
             started = time.monotonic()
             if kind == 'image':
                 if s['pending_image']: raise Conflict('请先确认当前图片转写')
-                url = body['image_url']
-                self.validate_image(url)
+                url = self.validate_image(body['image_url'])
                 transcript = self.model.transcribe(url)
                 event = self.event(c, sid, learner, 'image', {'image_url':url, 'transcription':transcript})
                 s['pending_image'] = {'event_id':event, **transcript}
@@ -294,14 +289,7 @@ class Engine:
 
     @staticmethod
     def validate_image(url):
-        if not isinstance(url,str) or len(url)>12_000_000 or not re.match(r'^data:image/(png|jpeg|webp);base64,',url):
-            raise ValueError('请上传PNG、JPEG或WebP图片，最多8MB')
-        try:
-            raw=base64.b64decode(url.split(',',1)[1],validate=True)
-            im=Image.open(io.BytesIO(raw))
-            if im.width*im.height>20_000_000: raise ValueError('图片分辨率过大')
-            im.verify()
-        except Exception as e: raise ValueError('图片无法读取') from e
+        return normalize_image(url)
 
     def report(self, learner=None):
         with self.connect() as c:

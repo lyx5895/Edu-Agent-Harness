@@ -39,7 +39,12 @@ class Review(BaseModel):
     reason: str = Field(max_length=250)
 
 
-POLICY_VERSION = 'open-task-policy-v2'
+POLICY_VERSION = 'open-task-policy-v3'
+HINT_LEVELS = (
+    ('scaffold_concept', '第一级提示：只点明关键概念或依据。'),
+    ('scaffold_step', '第二级提示：说明下一步做什么及依据。'),
+    ('scaffold_example', '第三级提示：给同构的半完成例子，留关键一步。'),
+)
 
 
 def choose_v1(o):
@@ -72,9 +77,18 @@ def public_task(task):
             'criteria':[{'id':x['id'],'description':x['description']} for x in task.get('criteria',[])]}
 
 
-def choose(o):
+def choose_v2(o):
     if o['phase']=='teach' and o.get('fallbacks',0)>=2 and o['kind'] not in ('check','explain') and o.get('status')!='correct':
         return {'action':'teacher_review','reason':'连续反馈未通过审核，需要教师介入而非重复无效提示。'}
     if o['phase']=='teach' and o['kind']=='attempt' and o.get('status') in ('incorrect','incomplete') and o.get('prior_support_needed'):
         return {'action':'prerequisite','reason':'同一课程目标已有困难证据，接续先修诊断，避免重新重复首次追问。'}
     return choose_v1(o)
+
+
+def choose(o):
+    decision = choose_v2(o)
+    if decision['action'] != 'scaffold':
+        return decision
+    # Escalate support only as hints accumulate on the same task.
+    action, reason = HINT_LEVELS[min(o.get('hints', 0), len(HINT_LEVELS)-1)]
+    return {'action': action, 'reason': reason}

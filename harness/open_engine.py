@@ -1,20 +1,20 @@
 """Persistent task-oriented teaching runtime, independent of all example courses."""
-import base64
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager, nullcontext
+from contextvars import copy_context
 from copy import deepcopy
 import hashlib
-import io
 import json
 from pathlib import Path
 import re
 import sqlite3
 import time
 import uuid
-from PIL import Image
 from .errors import Conflict
+from .images import normalize_image
 from .model import ModelUnavailable
 from .open_model import OpenModel
-from .tasks import POLICY_VERSION, choose, choose_v1, public_task
+from .tasks import HINT_LEVELS, POLICY_VERSION, choose, choose_v1, choose_v2, public_task
 from .toolbox import Toolbox, chunks, retrieve
 from .assessment import adjudicate
 from .memory import summarize, goal_key
@@ -27,20 +27,19 @@ from .pedagogy import check_contract, bind_check_contract
 def dump(x): return json.dumps(x,ensure_ascii=False,sort_keys=True)
 
 
+def review_risks(p):
+    risks=[]
+    if p.get('status') in ('incorrect','incomplete'): risks.append('negative_judgment')
+    if p.get('assessment',{}).get('confidence')!='high': risks.append('low_confidence')
+    if p.get('evidence')=='independent_model_assessed': risks.append('independent_by_model_only')
+    if str(p.get('task',{}).get('reference_origin','')).startswith('model_generated'): risks.append('model_reference')
+    if any(x.get('source')=='model' and x.get('status')=='unknown' for x in p.get('criteria_results',[])): risks.append('criterion_undetermined')
+    return risks
+
+
 def public_dimensions(rows):
     # Assessment observations can contain the private reference; keep them teacher-only.
     return [{k:r[k] for k in ('id','description','concept_id','status','source') if k in r} for r in rows]
-
-
-def validate_image(url):
-    if not isinstance(url,str) or len(url)>12_000_000 or not re.match(r'^data:image/(png|jpeg|webp);base64,',url):
-        raise ValueError('图片须为PNG/JPEG/WebP，最大8MB')
-    try:
-        raw=base64.b64decode(url.split(',',1)[1],validate=True)
-        im=Image.open(io.BytesIO(raw))
-        if im.width*im.height>20_000_000: raise ValueError('图片过大')
-        im.verify()
-    except Exception as e: raise ValueError('图片无法读取') from e
 
 
 class OpenEngine:
@@ -144,7 +143,7 @@ class OpenEngine:
                    'allow_explanation':assignment.get('allow_explanation',True) if assignment else True}
             if assignment and image_url: raise ValueError('教师任务已有题目，不接受替换题目图片')
             if image_url:
-                validate_image(image_url)
+                image_url=normalize_image(image_url)
                 transcription=self.model.transcribe(image_url)
                 state['pending_image']={**transcription,'purpose':'task'}
                 self.event(c,sid,'image',{'image_url':image_url,'transcription':transcription,'purpose':'task'})
@@ -284,10 +283,10 @@ class OpenEngine:
             elif kind=='image':
                 if s['completed']: raise Conflict('当前任务已完成，请先开始检查或回到练习')
                 if s['pending_image']: raise Conflict('请先确认已有图片')
-                validate_image(body.get('image_url'))
-                t=self.model.transcribe(body['image_url'])
+                image_url=normalize_image(body.get('image_url'))
+                t=self.model.transcribe(image_url)
                 s['pending_image']={**t,'purpose':'work'}
-                self.event(c,sid,'image',{'image_url':body['image_url'],'transcription':t,'purpose':'work'})
+                self.event(c,sid,'image',{'image_url':image_url,'transcription':t,'purpose':'work'})
                 payload['feedback']='请确认或修正识别出的作答，再进行判定。';trace['tools']=['image.transcribe']
             else:
                 if not s['task']: raise Conflict('请先确认题目')
@@ -298,7 +297,8 @@ class OpenEngine:
                 memory=ctx.get('learning_memory',[])
                 o={'kind':kind,'phase':task['phase'],'status':'unknown','failures':s['failures'],
                    'prior_support_needed':any(m['state']=='needs_support' for m in memory),
-                   'fallbacks':s.get('feedback_fallbacks',0)}
+                   'fallbacks':s.get('feedback_fallbacks',0),
+                   'hints':s.get('hints_by_task',{}).get(task['id'],0)}
                 if kind=='check':
                     if task['phase']=='check': raise Conflict('请先完成当前独立检查')
                     if not s['completed']: raise Conflict('先完成当前练习，再创建独立检查')
@@ -373,12 +373,14 @@ class OpenEngine:
                     if ctx.get('image_evidence_id'):
                         img=c.execute('SELECT payload FROM learning_events WHERE id=?',(ctx['image_evidence_id'],)).fetchone()
                         assessment_ctx['image_url']=json.loads(img[0])['image_url']
-                    assessment=self.model.assess(task,text,assessment_ctx,verification)
+                    with ThreadPoolExecutor(max_workers=1) as pool:
+                        graded=pool.submit(copy_context().run,self.grade_dimensions,task,text,assessment_ctx) if task.get('criteria') else None
+                        assessment=self.model.assess(task,text,assessment_ctx,verification)
+                        dimensions=graded.result() if graded else None
                     quote=assessment['evidence_quote']
                     if quote not in text: raise ModelUnavailable('判定引用不属于当前作答，未更新记录。')
                     status,source=adjudicate(task,text,verification,assessment)
                     if task.get('criteria'):
-                        dimensions=self.grade_dimensions(task,text,assessment_ctx)
                         payload['criteria_results']=dimensions
                         dimension_status=aggregate(dimensions)
                         payload['whole_task_status']=status
@@ -425,6 +427,9 @@ class OpenEngine:
                 if kind=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
                 trace.update(input=o,decision=decision)
                 payload['action']=decision['action']
+                if decision['action'] in [level for level,_ in HINT_LEVELS]:
+                    counts=s.setdefault('hints_by_task',{})
+                    counts[task['id']]=counts.get(task['id'],0)+1
                 if 'feedback' not in payload:
                     output,validation=self.feedback(task,decision['action'],text,ctx,assessment)
                     payload['feedback']=output;trace['output_validation']=validation
@@ -457,7 +462,8 @@ class OpenEngine:
         checks=[]
         for t in self.traces(sid):
             if 'input' not in t: continue
-            decision=(choose if t['policy_version']==POLICY_VERSION else choose_v1 if t['policy_version']=='open-task-policy-v1' else lambda _:None)(t['input'])
+            policies={POLICY_VERSION:choose,'open-task-policy-v2':choose_v2,'open-task-policy-v1':choose_v1}
+            decision=policies.get(t['policy_version'],lambda _:None)(t['input'])
             if t['operation']=='resume_practice': decision={'action':'resume_practice','reason':'学生选择回到原任务继续学习。'}
             checks.append({'event_id':t['event_id'],'matches':decision==t['decision']})
         return {'passed':all(t['matches'] for t in checks),'turns':checks,'model_called':False,
@@ -541,11 +547,13 @@ class OpenEngine:
                 corrected=c.execute("SELECT payload FROM learning_events WHERE session=? AND kind IN ('correction','review_confirmed')",(row['session'],)).fetchall()
                 if any(json.loads(x[0])['event_id']==row['id'] for x in corrected): continue
                 urgent=p.get('status')=='unknown' or p.get('grading_conflict') or p.get('rubric_conflict') or p.get('delivered_action') in ('clarify','teacher_review')
-                sample=p.get('source')=='model_rubric' and (p.get('status') in ('incorrect','incomplete') or row['id']%10==0)
-                if urgent or sample:
+                risks=review_risks(p) if p.get('source')=='model_rubric' else []
+                sampled=p.get('source')=='model_rubric' and int(hashlib.sha256(f"{row['session']}:{row['id']}".encode()).hexdigest(),16)%10==0
+                if urgent or risks or sampled:
                     pending.append({'session_id':row['session'],'event_id':row['id'],'learner':row['learner'],
                         'status':p.get('status'),'text':p.get('text'),'feedback':p.get('feedback'),
-                        'priority':'urgent' if urgent else 'sample','criteria_results':p.get('criteria_results',[])})
+                        'priority':'urgent' if urgent else 'risk' if risks else 'sample','risks':risks,
+                        'criteria_results':p.get('criteria_results',[])})
             groups={}
             for row in rows:
                 if row['state'] not in ('needs_support','needs_recheck'):continue
@@ -556,26 +564,32 @@ class OpenEngine:
                     group=groups.setdefault(key,{'scope':row['scope'],'objective':row['objective'],'criterion':failure['description'],'learners':[],'examples':[]})
                     group['learners'].append(row['learner'])
                     if last:group['examples'].append(last)
-            pending.sort(key=lambda p:p['priority']!='urgent')
+            pending.sort(key=lambda p:({'urgent':0,'risk':1}.get(p['priority'],2),-len(p['risks'])))
             return {'learning':rows,'review_queue':pending[:100],'support_groups':list(groups.values()),
                     'followups':planning.list_followups(c,class_id),
-                    'limits':'教师工作台；证据状态不是掌握概率，复习间隔暂为24小时。'}
+                    'limits':'教师工作台；证据状态不是掌握概率；复习间隔按连续独立通过次数取1/3/7/14/30天，是规则建议而非遗忘模型。'}
 
 
     def grade_dimensions(self,task,text,context):
-        results=[]
+        from .criteria import GRADERS
+        results=[];pending=[]
         for criterion in task['criteria']:
             result=tool_grade(criterion,{**task,'material':'\n'.join(x['text'] for x in context.get('materials',[]))},text)
-            from .criteria import GRADERS
             if criterion['kind'] not in GRADERS and criterion['kind'] != 'model':
                 result['reason']='未安装该评分插件：'+criterion['kind']
             elif result['status']=='unknown' and criterion['kind'] not in ('source_quote','word_count') and hasattr(self.model,'assess_criterion'):
-                assessment=self.model.assess_criterion(task,criterion,text,context)
-                quote=assessment['evidence_quote']
-                valid=bool(quote) and quote in text and assessment['confidence']=='high'
-                result.update(status=assessment['status'] if valid else 'unknown',source='model',
-                              reason=assessment['observation'],evidence_quote=quote if quote in text else '')
+                pending.append((criterion,result))
             results.append(result)
+        if pending:
+            with ThreadPoolExecutor(max_workers=len(pending)) as pool:
+                futures=[(result,pool.submit(copy_context().run,self.model.assess_criterion,task,criterion,text,context))
+                         for criterion,result in pending]
+                for result,future in futures:
+                    assessment=future.result()
+                    quote=assessment['evidence_quote']
+                    valid=bool(quote) and quote in text and assessment['confidence']=='high'
+                    result.update(status=assessment['status'] if valid else 'unknown',source='model',
+                                  reason=assessment['observation'],evidence_quote=quote if quote in text else '')
         return results
 
     def publish_path(self,data):

@@ -13,6 +13,30 @@ import urllib.request
 ROOT=Path(__file__).resolve().parents[1]
 CONFIG={'inference':('inference','inference_server:app',8000), 'harness':('harness','harness.app:app',7860)}
 VLLM_MODULE='vllm.entrypoints.openai.api_server'
+VLLM_DEFAULTS={'max_model_len':32768,'max_num_seqs':32,'max_num_batched_tokens':8192,'gpu_memory_utilization':0.6}
+
+
+def warmup(port):
+    """Exercise text, image, long-prompt, batched and JSON-schema paths so Triton
+    kernels compile before real students hit them."""
+    import base64,io
+    from concurrent.futures import ThreadPoolExecutor
+    from PIL import Image
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    def post(body):
+        data=json.dumps({'model':'omniedu-9b','temperature':0,'max_tokens':16,
+            'chat_template_kwargs':{'enable_thinking':False},**body}).encode()
+        req=urllib.request.Request(f'http://127.0.0.1:{port}/v1/chat/completions',data,{'Content-Type':'application/json'})
+        with opener.open(req,timeout=300) as r: r.read()
+    buf=io.BytesIO();Image.new('RGB',(1024,768),'white').save(buf,format='PNG')
+    image='data:image/png;base64,'+base64.b64encode(buf.getvalue()).decode()
+    schema={'type':'object','properties':{'ok':{'type':'boolean'}},'required':['ok']}
+    requests=[{'messages':[{'role':'user','content':'你好'}]},
+        {'messages':[{'role':'user','content':[{'type':'text','text':'描述图片'},{'type':'image_url','image_url':{'url':image}}]}]},
+        {'messages':[{'role':'user','content':'材料：'+'学习'*3000+'\n请概括。'}]},
+        {'messages':[{'role':'user','content':'回答ok'}],'response_format':{'type':'json_schema','json_schema':{'name':'w','schema':schema}}}]
+    for body in requests: post(body)
+    with ThreadPoolExecutor(8) as pool: list(pool.map(post,[{'messages':[{'role':'user','content':f'第{i}题'}],'max_tokens':32} for i in range(8)]))
 
 def identity(pid,module):
     try:
@@ -98,12 +122,13 @@ def main():
                 'VLLM_ENABLE_CUDA_COMPATIBILITY':'1','VLLM_CUDA_COMPATIBILITY_PATH':compat,
                 'VLLM_NO_USAGE_STATS':'1','DO_NOT_TRACK':'1','TMPDIR':str(temporary),
                 'FLASHINFER_WORKSPACE_BASE':str(ROOT/'.cache/flashinfer'),'MAX_JOBS':'4'})
+            vllm={**VLLM_DEFAULTS,**settings.get('vllm',{})}
             command=[str(ROOT/'.envs/vllm/bin/python'),'-m',VLLM_MODULE,
                 '--model',str(ROOT/'models/Omni-Edu-9B'),'--served-model-name','omniedu-9b',
                 '--host','127.0.0.1','--port',str(port),'--dtype','bfloat16',
-                '--tensor-parallel-size',str(len(indices)),'--max-model-len','4096',
-                '--max-num-seqs','16','--max-num-batched-tokens','4096',
-                '--gpu-memory-utilization','0.40','--limit-mm-per-prompt','{"image":1,"video":0}',
+                '--tensor-parallel-size',str(len(indices)),'--max-model-len',str(vllm['max_model_len']),
+                '--max-num-seqs',str(vllm['max_num_seqs']),'--max-num-batched-tokens',str(vllm['max_num_batched_tokens']),
+                '--gpu-memory-utilization',str(vllm['gpu_memory_utilization']),'--limit-mm-per-prompt','{"image":1,"video":0}',
                 '--gdn-prefill-backend','triton',
                 '--default-chat-template-kwargs','{"enable_thinking":false}',
                 '--generation-config','vllm']
@@ -115,11 +140,17 @@ def main():
         opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
         for _ in range(900 if backend=='vllm' and a.service=='inference' else 300):
             if proc.poll() is not None:raise SystemExit('Service exited; inspect log')
+            vllm=a.service=='inference' and backend=='vllm'
             try:
                 with opener.open(f'http://127.0.0.1:{port}/health',timeout=2) as r:
-                    if (a.service=='inference' and backend=='vllm' and r.status==200) or json.load(r).get('ready'):
-                        print('Ready',f'http://127.0.0.1:{port}',flush=True);return
-            except Exception:pass
+                    up=(vllm and r.status==200) or json.load(r).get('ready')
+            except Exception:up=False
+            if up:
+                if vllm:
+                    print('Warming up kernels',flush=True)
+                    try:warmup(port)
+                    except Exception as e:raise SystemExit(f'Warmup failed ({e}); process retained for inspection, not declared healthy')
+                print('Ready',f'http://127.0.0.1:{port}',flush=True);return
             time.sleep(1)
         raise SystemExit('Readiness timeout; process retained for inspection, not declared healthy')
 

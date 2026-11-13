@@ -12,6 +12,13 @@ class ModelUnavailable(Exception):
     pass
 
 
+class InputTooLong(ModelUnavailable):
+    pass
+
+
+CONTEXT_LIMIT_MARKERS = ('maximum context length', 'exceeds model', 'exceeds 4096')
+
+
 class Diagnosis(BaseModel):
     status: Literal['correct', 'incorrect', 'incomplete', 'unknown']
     first_error: int | None = Field(default=None, ge=1, le=20)
@@ -35,14 +42,19 @@ class ModelClient:
         self.base_url = base_url or os.getenv('OMNIEDU_BASE_URL', 'http://127.0.0.1:8000/v1')
         self.logs = Path(__file__).resolve().parents[1] / 'logs/model-calls.jsonl'
         self.calls = []
+        self.json_schema_output = os.getenv('OMNIEDU_JSON_SCHEMA', '1') != '0'
 
-    def chat(self, messages, max_tokens=512, timeout=300):
+    def chat(self, messages, max_tokens=512, timeout=300, response_format=None):
         start = time.monotonic()
+        body = {'model': 'omniedu-9b', 'messages': messages, 'max_tokens': max_tokens,
+                'temperature': 0, 'chat_template_kwargs': {'enable_thinking': False}}
+        if response_format:
+            body['response_format'] = response_format
         try:
             with httpx.Client(timeout=timeout, trust_env=False) as client:
-                response = client.post(self.base_url + '/chat/completions', json={
-                    'model': 'omniedu-9b', 'messages': messages, 'max_tokens': max_tokens,
-                    'temperature': 0, 'chat_template_kwargs': {'enable_thinking': False}})
+                response = client.post(self.base_url + '/chat/completions', json=body)
+                if response.status_code in (400, 413) and any(m in response.text for m in CONTEXT_LIMIT_MARKERS):
+                    raise InputTooLong('输入材料或图片过长，超出模型可处理范围。请缩短材料、减少历史内容或裁剪图片后重试；本次未更新学习记录。')
                 response.raise_for_status()
                 data = response.json()
                 text = data['choices'][0]['message']['content']
@@ -87,8 +99,13 @@ class ModelClient:
                     '\n只输出一个JSON数据对象。字段名必须保持英文，不要输出schema、properties、required或Markdown。'
                     '\n结构示例（请填写实际内容）：'+shape+'\n'+'；'.join(contracts)},
                     {'role': 'user', 'content': content}]
+        # Constrained decoding guarantees shape only; the instruction text above
+        # still carries the judging rules and must stay.
+        response_format = {'type': 'json_schema', 'json_schema': {
+            'name': schema.__name__, 'schema': definition}} if self.json_schema_output else None
         for attempt in range(2):
-            raw = self.chat(messages, max_tokens=1024 if any(s.get('type')=='array' for s in fields.values()) else 512)
+            raw = self.chat(messages, max_tokens=1024 if any(s.get('type')=='array' for s in fields.values()) else 512,
+                            response_format=response_format)
             try:
                 clean = raw.strip()
                 if clean.startswith('```'):

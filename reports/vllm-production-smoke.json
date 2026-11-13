@@ -2,10 +2,10 @@
   {
     "index": 0,
     "ok": true,
-    "client_seconds": 3.947896105237305,
-    "id": "chatcmpl-be4ad1e4326823db",
+    "client_seconds": 0.294989543966949,
+    "id": "chatcmpl-a913c497eb776ef8",
     "object": "chat.completion",
-    "created": 1794555758,
+    "created": 1794557304,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -28,7 +28,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 19,
       "total_tokens": 62,
@@ -43,10 +43,10 @@
   {
     "index": 1,
     "ok": true,
-    "client_seconds": 0.08901152666658163,
-    "id": "chatcmpl-8547f64d439d3d87",
+    "client_seconds": 0.04884558729827404,
+    "id": "chatcmpl-bf74c8ec9c972fcc",
     "object": "chat.completion",
-    "created": 1794555762,
+    "created": 1794557304,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -69,7 +69,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 59,
       "total_tokens": 62,
@@ -84,10 +84,10 @@
   {
     "index": 2,
     "ok": true,
-    "client_seconds": 1.6209541698917747,
-    "id": "chatcmpl-b1ca3352df144ef7",
+    "client_seconds": 0.48406105022877455,
+    "id": "chatcmpl-aa18dfc94569060f",
     "object": "chat.completion",
-    "created": 1794555762,
+    "created": 1794557304,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -110,7 +110,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 181,
       "total_tokens": 245,
@@ -125,10 +125,10 @@
   {
     "index": 3,
     "ok": true,
-    "client_seconds": 0.25414050556719303,
-    "id": "chatcmpl-9b4a6d5248b10a17",
+    "client_seconds": 0.23943449649959803,
+    "id": "chatcmpl-8d098a85eca7cb59",
     "object": "chat.completion",
-    "created": 1794555763,
+    "created": 1794557305,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -151,7 +151,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 31,
       "total_tokens": 65,
@@ -166,10 +166,10 @@
   {
     "index": 4,
     "ok": true,
-    "client_seconds": 0.24450469110161066,
-    "id": "chatcmpl-b12d93287d05efbd",
+    "client_seconds": 0.23883013054728508,
+    "id": "chatcmpl-a42d8a79211e9baf",
     "object": "chat.completion",
-    "created": 1794555764,
+    "created": 1794557305,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -192,7 +192,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 31,
       "total_tokens": 65,
@@ -207,10 +207,10 @@
   {
     "index": 5,
     "ok": true,
-    "client_seconds": 0.23861195985227823,
-    "id": "chatcmpl-82cdb85e321e9493",
+    "client_seconds": 0.23928880412131548,
+    "id": "chatcmpl-a29fcb3fe750c57d",
     "object": "chat.completion",
-    "created": 1794555764,
+    "created": 1794557305,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -233,7 +233,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 31,
       "total_tokens": 65,
@@ -248,10 +248,10 @@
   {
     "index": 6,
     "ok": true,
-    "client_seconds": 0.23782828357070684,
-    "id": "chatcmpl-a5149b7db94729f9",
+    "client_seconds": 0.2386449808254838,
+    "id": "chatcmpl-b683ca6e1e5df3ce",
     "object": "chat.completion",
-    "created": 1794555764,
+    "created": 1794557305,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -274,7 +274,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 32,
       "total_tokens": 66,
@@ -289,10 +289,10 @@
   {
     "index": 7,
     "ok": true,
-    "client_seconds": 0.23878687247633934,
-    "id": "chatcmpl-85c775616ce73b69",
+    "client_seconds": 0.237974651157856,
+    "id": "chatcmpl-a2372e0d8491d0cd",
     "object": "chat.completion",
-    "created": 1794555764,
+    "created": 1794557306,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -315,7 +315,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 32,
       "total_tokens": 66,
@@ -330,10 +330,10 @@
   {
     "index": 8,
     "ok": true,
-    "client_seconds": 0.23902074806392193,
-    "id": "chatcmpl-85a8667f84ce04ca",
+    "client_seconds": 0.23769153840839863,
+    "id": "chatcmpl-9d1f8710af992a08",
     "object": "chat.completion",
-    "created": 1794555765,
+    "created": 1794557306,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -356,7 +356,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 32,
       "total_tokens": 66,
@@ -371,10 +371,10 @@
   {
     "index": 9,
     "ok": true,
-    "client_seconds": 0.23865609429776669,
-    "id": "chatcmpl-9b00a698ce854460",
+    "client_seconds": 0.23764451872557402,
+    "id": "chatcmpl-b36e291414532bb0",
     "object": "chat.completion",
-    "created": 1794555765,
+    "created": 1794557306,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -397,7 +397,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 32,
       "total_tokens": 66,
@@ -412,10 +412,10 @@
   {
     "index": 10,
     "ok": true,
-    "client_seconds": 0.2748911315575242,
-    "id": "chatcmpl-867406a404df5029",
+    "client_seconds": 0.23855234496295452,
+    "id": "chatcmpl-a6724bdfa1b355f9",
     "object": "chat.completion",
-    "created": 1794555765,
+    "created": 1794557306,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -438,7 +438,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 67,
@@ -453,10 +453,10 @@
   {
     "index": 11,
     "ok": true,
-    "client_seconds": 0.25250768568366766,
-    "id": "chatcmpl-9c129fe708c552f4",
+    "client_seconds": 0.23721911944448948,
+    "id": "chatcmpl-a631bd176b33cd50",
     "object": "chat.completion",
-    "created": 1794555765,
+    "created": 1794557307,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -479,7 +479,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 67,
@@ -494,10 +494,10 @@
   {
     "index": 12,
     "ok": true,
-    "client_seconds": 0.2535450365394354,
-    "id": "chatcmpl-b5afa49524636c8b",
+    "client_seconds": 0.23749759700149298,
+    "id": "chatcmpl-81dc9cd71160e823",
     "object": "chat.completion",
-    "created": 1794555766,
+    "created": 1794557307,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -520,7 +520,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 67,
@@ -535,10 +535,10 @@
   {
     "index": 13,
     "ok": true,
-    "client_seconds": 0.2528450880199671,
-    "id": "chatcmpl-b5c8d26d39ef8eee",
+    "client_seconds": 0.237279349938035,
+    "id": "chatcmpl-982ef27b0259c92b",
     "object": "chat.completion",
-    "created": 1794555766,
+    "created": 1794557307,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -561,7 +561,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 67,
@@ -576,10 +576,10 @@
   {
     "index": 14,
     "ok": true,
-    "client_seconds": 0.2338563296943903,
-    "id": "chatcmpl-9fb4d093aef654b3",
+    "client_seconds": 0.21895733196288347,
+    "id": "chatcmpl-83df2ae16742e020",
     "object": "chat.completion",
-    "created": 1794555766,
+    "created": 1794557307,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -602,7 +602,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 64,
@@ -617,10 +617,10 @@
   {
     "index": 15,
     "ok": true,
-    "client_seconds": 0.23405196890234947,
-    "id": "chatcmpl-93f00a22acba2f3f",
+    "client_seconds": 0.2187930140644312,
+    "id": "chatcmpl-b7e0a37f2f3fd193",
     "object": "chat.completion",
-    "created": 1794555766,
+    "created": 1794557308,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -643,7 +643,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 64,
@@ -658,10 +658,10 @@
   {
     "index": 16,
     "ok": true,
-    "client_seconds": 0.2335038874298334,
-    "id": "chatcmpl-afff265a29c6d5d2",
+    "client_seconds": 0.21873270720243454,
+    "id": "chatcmpl-8f6850ece76b1dd7",
     "object": "chat.completion",
-    "created": 1794555767,
+    "created": 1794557308,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -684,7 +684,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 64,
@@ -699,10 +699,10 @@
   {
     "index": 17,
     "ok": true,
-    "client_seconds": 0.2708288449794054,
-    "id": "chatcmpl-800eacea71857f61",
+    "client_seconds": 0.25574926659464836,
+    "id": "chatcmpl-814fd742d41e6e41",
     "object": "chat.completion",
-    "created": 1794555767,
+    "created": 1794557308,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -725,7 +725,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 70,
@@ -740,10 +740,10 @@
   {
     "index": 18,
     "ok": true,
-    "client_seconds": 0.23341229744255543,
-    "id": "chatcmpl-b91f519ab110b31a",
+    "client_seconds": 0.2184527274221182,
+    "id": "chatcmpl-a434e9f8ab6ae6fa",
     "object": "chat.completion",
-    "created": 1794555767,
+    "created": 1794557308,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -766,7 +766,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 64,
@@ -781,10 +781,10 @@
   {
     "index": 19,
     "ok": true,
-    "client_seconds": 0.2639672076329589,
-    "id": "chatcmpl-88e20cf6faff46b9",
+    "client_seconds": 0.2501121750101447,
+    "id": "chatcmpl-99dec637fa6cd936",
     "object": "chat.completion",
-    "created": 1794555767,
+    "created": 1794557309,
     "model": "omniedu-9b",
     "choices": [
       {
@@ -807,7 +807,7 @@
       }
     ],
     "service_tier": null,
-    "system_fingerprint": "vllm-0.23.0-140fdfce",
+    "system_fingerprint": "vllm-0.23.0-7b68c6df",
     "usage": {
       "prompt_tokens": 33,
       "total_tokens": 69,
