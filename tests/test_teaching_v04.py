@@ -117,12 +117,12 @@ def test_repeated_feedback_failures_escalate(engine):
     assert engine.replay(s['session_id'])['passed']
 
 
-def test_no_database_write_lock_during_model_and_conflict_is_atomic(engine):
+def test_no_database_write_lock_during_model_and_stale_snapshot_is_replayed(engine):
     s=assigned(engine)
-    entered=threading.Event();release=threading.Event();errors=[]
+    entered=threading.Event();release=threading.Event();errors=[];calls=[]
     old=engine.model.assess
     def slow(*args):
-        entered.set();assert release.wait(5)
+        calls.append(1);entered.set();assert release.wait(5)
         return old(*args)
     engine.model.assess=slow
     def operation():
@@ -132,9 +132,32 @@ def test_no_database_write_lock_during_model_and_conflict_is_atomic(engine):
     other=OpenEngine(engine.db,FakeOpenModel())
     other.publish_assignment(assignment())  # Must complete while model is blocked.
     release.set();t.join(5)
-    assert len(errors)==1 and isinstance(errors[0],Conflict)
-    assert engine.session(s['session_id'])['version']==0
-    assert engine.traces(s['session_id'])==[]
+    # The stale computation is re-run on fresh data with the recorded model result.
+    assert errors==[] and len(calls)==1
+    assert engine.session(s['session_id'])['version']==1
+    assert len([t for t in engine.traces(s['session_id']) if t.get('operation')=='attempt'])==1
+
+
+def test_concurrent_students_do_not_conflict(tmp_path):
+    class Slow(FakeOpenModel):
+        def assess(self,*a):
+            time.sleep(.3);return super().assess(*a)
+    e=OpenEngine(tmp_path/'db.sqlite',Slow())
+    sessions=[e.create(f'stu{i}','解释四季成因') for i in range(8)]
+    results=[]
+    def go(s):
+        try:results.append(act(e,s,'attempt','错误解释')['status'])
+        except Exception as x:results.append(x)
+    threads=[threading.Thread(target=go,args=(s,)) for s in sessions]
+    [t.start() for t in threads];[t.join(10) for t in threads]
+    assert results==['incorrect']*8
+
+
+def test_stale_client_version_still_conflicts(engine):
+    s=assigned(engine)
+    act(engine,s,'attempt','错误解释')
+    with pytest.raises(Conflict):
+        engine.operation(s['session_id'],'late','attempt',{'text':'正确解释'},version=0)
 
 
 def test_authenticated_api_cannot_cross_students_classes_or_use_gradio(tmp_path,monkeypatch):

@@ -1,8 +1,13 @@
 """Compute on a SQLite snapshot; hold a write lock only while committing.
-Conservative database-wide optimistic conflicts protect cross-session evidence reads.
+Conservative database-wide optimistic conflicts protect cross-session evidence reads;
+callers re-run the computation (with replayed model results) instead of failing.
 """
 import sqlite3
 from .errors import Conflict
+
+
+class StaleSnapshot(Conflict):
+    pass
 
 
 class Snapshot:
@@ -25,7 +30,7 @@ class Snapshot:
             return
         self.disk.execute('BEGIN IMMEDIATE')
         if self.disk.execute('PRAGMA data_version').fetchone()[0] != self.version:
-            raise Conflict('学习记录已被其他操作更新，请刷新后重试；本轮未提交。')
+            raise StaleSnapshot('学习记录已被其他操作更新，请刷新后重试；本轮未提交。')
         for sql, args in self.writes:
             self.disk.execute(sql, args)
         self.disk.commit()

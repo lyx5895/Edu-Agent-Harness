@@ -22,6 +22,7 @@ from .memory import summarize, goal_key
 from . import teacher, planning, preparation
 from .criteria import tool_grade, aggregate, bind_algebra
 from .storage import Snapshot
+from .replay import ReplayableModel, retry_stale, started as replay_started
 from .pedagogy import check_contract, bind_check_contract
 
 
@@ -105,7 +106,7 @@ class OpenEngine:
         if self.policy not in POLICIES: raise ValueError(f'未知教学策略：{self.policy}')
         self.db=str(db or Path(__file__).resolve().parents[1]/'data/learning.sqlite')
         Path(self.db).parent.mkdir(parents=True,exist_ok=True)
-        self.model=model or OpenModel();self.tools=tools or Toolbox()
+        self.model=ReplayableModel(model or OpenModel());self.tools=tools or Toolbox()
         with self.connect() as c:
             teacher.initialize(c)
             planning.initialize(c)
@@ -172,6 +173,7 @@ class OpenEngine:
             'source_ids':[x['id'] for x in selected], 'reference_origin':'model_generated_unverified','retrieval_mode':retrieval_mode})
         return task
 
+    @retry_stale
     def create(self,learner,request='',material='',mode='problem',image_url='',request_id=None,assignment_id=None,followup_id=None):
         if not learner.strip() or len(learner)>80: raise ValueError('请输入有效学生名称')
         if mode not in ('problem','learn'): raise ValueError('模式应为problem或learn')
@@ -325,8 +327,9 @@ class OpenEngine:
             if reasons: delivered='locate_template'
         return (fallback if reasons else candidate),{'candidate':candidate,'review':review,'reasons':reasons,'fallback':bool(reasons),'delivered_action':delivered}
 
+    @retry_stale
     def operation(self,sid,key,kind,body,version=None):
-        started=time.time()
+        started=replay_started()
         with self.transaction() as c:
             digest,old=self.cached(c,sid,key,[kind,body,version])
             if old: return old
@@ -570,6 +573,7 @@ class OpenEngine:
                     'needs_review':s['needs_review'],'turns':turns})
             return reports
 
+    @retry_stale
     def correct(self,sid,event_id,status,reason,key):
         if status not in ('correct','incorrect','incomplete','unknown') or not reason.strip(): raise ValueError('需有效判定及依据')
         with self.transaction() as c:
@@ -601,6 +605,7 @@ class OpenEngine:
             self.remember(c,sid,key,digest,result);return result
 
 
+    @retry_stale
     def publish_assignment(self, data):
         with self.transaction() as c:
             return teacher.publish(c, data)
@@ -668,12 +673,14 @@ class OpenEngine:
                                   reason=assessment['observation'],evidence_quote=quote or '')
         return results
 
+    @retry_stale
     def publish_path(self,data):
         with self.transaction() as c: return planning.publish_path(c,data)
 
     def next_step(self,path_id,learner):
         with self.connect() as c: return planning.next_step(c,path_id,learner)
 
+    @retry_stale
     def assign_followups(self,data,request_id):
         with self.transaction() as c:
             digest,old=self.cached(c,'followups:'+data['class_id'],request_id,data)
@@ -685,6 +692,7 @@ class OpenEngine:
     def followups(self,class_id=None,learner=None):
         with self.connect() as c: return planning.list_followups(c,class_id,learner)
 
+    @retry_stale
     def revise_followup(self,key,action,due_at,reason,request_id):
         if not reason.strip():raise ValueError('请填写调整原因')
         with self.transaction() as c:
@@ -695,6 +703,7 @@ class OpenEngine:
             return result
 
 
+    @retry_stale
     def confirm_review(self,sid,event_id,reason,request_id):
         if not reason.strip():raise ValueError('请填写复核依据')
         with self.transaction() as c:
@@ -712,6 +721,7 @@ class OpenEngine:
             return result
 
 
+    @retry_stale
     def save_pack(self, data, request_id, pack_id=None, version=None):
         with self.transaction() as c:
             scope='pack:'+pack_id if pack_id else 'packs:'+data['class_id']
@@ -721,6 +731,7 @@ class OpenEngine:
             self.remember(c,scope,request_id,digest,result)
             return result
 
+    @retry_stale
     def generate_pack(self, data, request_id):
         body=preparation.GeneratePack.model_validate(data).model_dump()
         with self.transaction() as c:
@@ -749,6 +760,7 @@ class OpenEngine:
     def load_pack(self,pack_id):
         with self.connect() as c:return preparation.load(c,pack_id)
 
+    @retry_stale
     def publish_pack(self,pack_id,version,distribution,request_id,edited_body=None):
         with self.transaction() as c:
             scope='pack:'+pack_id
