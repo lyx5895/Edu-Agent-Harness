@@ -1,0 +1,135 @@
+{
+  "mock_model": false,
+  "models": [
+    "omniedu-9b",
+    "qwen3.5-27b"
+  ],
+  "session_id": "open_9dc1f71b57ea41139fb31df7d77cdf56",
+  "cases": [
+    {
+      "name": "task_selection_before_start",
+      "passed": true,
+      "details": {
+        "send_hidden": true
+      }
+    },
+    {
+      "name": "restored_pending_question",
+      "passed": true,
+      "details": {
+        "state": {
+          "session_id": "open_9dc1f71b57ea41139fb31df7d77cdf56",
+          "learner": "界面复测学生",
+          "version": 1,
+          "engine": "open-task-v1",
+          "task": {
+            "id": "447d3f91f9a74e20b464a8957d705d76",
+            "domain": "数学",
+            "objective": "用路程和时间求平均速度",
+            "question": "小明骑车3小时行了45千米，他的平均速度是多少千米每小时？",
+            "phase": "teach",
+            "source_ids": [],
+            "task_type": "problem_solving",
+            "source_pages": [],
+            "check_requirements": [],
+            "criteria": []
+          },
+          "pending_image": null,
+          "pending_question": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "completed": false,
+          "needs_review": false,
+          "scope": {
+            "class_id": "界面优化复测班",
+            "concept_id": "speed",
+            "course_id": "数学"
+          },
+          "assignment_id": "7b93e6c19cfa49358f497abb57fabc6a",
+          "followup_id": null,
+          "source_count": 0,
+          "history": [
+            {
+              "id": 17,
+              "type": "turn",
+              "text": "平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时。",
+              "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+              "status": "incorrect",
+              "evidence": "interaction_only",
+              "action": "prerequisite"
+            }
+          ]
+        },
+        "task_picker_collapsed": true,
+        "current_question_visible": true
+      }
+    },
+    {
+      "name": "mobile_guidance",
+      "passed": true,
+      "details": {
+        "width": 390,
+        "horizontal_overflow": false,
+        "content_width": 362
+      }
+    },
+    {
+      "name": "send_routes_reply",
+      "passed": true,
+      "details": {
+        "id": 19,
+        "type": "turn",
+        "text": "每小时的路程应该比45千米少，因为总共3小时才走了45千米。",
+        "feedback": "请根据你刚才说明的思路自行修正作答，并写出依据。",
+        "evidence": "dialogue_only",
+        "action": "self_correct"
+      }
+    },
+    {
+      "name": "send_routes_complete_answer",
+      "passed": true,
+      "details": {
+        "id": 21,
+        "type": "turn",
+        "text": "平均速度表示每小时行驶的路程，用路程除以时间：45 ÷ 3 = 15，所以平均速度是15千米每小时。",
+        "feedback": "本次作答通过模型评分规则检查（仍可请教师复核）。可以开始一题新的独立检查。",
+        "status": "correct",
+        "evidence": "assisted_complete",
+        "action": "offer_check"
+      }
+    },
+    {
+      "name": "check_mode_disables_help",
+      "passed": true,
+      "details": {
+        "task": {
+          "id": "8468a743ebad4aee945960f35ac8769e",
+          "domain": "数学",
+          "objective": "用路程和时间求平均速度",
+          "question": "小红步行2小时走了18千米，她的平均速度是多少千米每小时？",
+          "phase": "check",
+          "source_ids": [],
+          "task_type": "problem_solving",
+          "source_pages": [],
+          "check_requirements": [],
+          "criteria": [
+            {
+              "id": "calculation",
+              "description": "正确运用平均速度公式进行计算"
+            },
+            {
+              "id": "unit",
+              "description": "答案包含正确的速度单位"
+            }
+          ]
+        },
+        "help_disabled": true
+      }
+    },
+    {
+      "name": "teacher_workspace_loads",
+      "passed": true,
+      "details": {}
+    }
+  ],
+  "browser_errors": [],
+  "passed": true
+}

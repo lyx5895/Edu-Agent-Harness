@@ -1,0 +1,61 @@
+{
+  "scope": "scripted behaviour checks on the live model, not learning outcomes",
+  "cases": [
+    {
+      "name": "english_wrong_attempt_is_located_in_english",
+      "passed": true,
+      "details": {
+        "feedback": "You identified the cost of earbuds as half the total, but the problem states that half the tickets were spent on the koala, while the earbuds and bracelets together made up the other half. Can you re-read the sentence about the koala to determine which part of the total tickets represents the first half?",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 3,
+        "evidence_quote": "So she had 10 x 2 = 20 tickets."
+      },
+      "seconds": 2.12
+    },
+    {
+      "name": "chinese_wrong_attempt_is_located_in_chinese",
+      "passed": true,
+      "details": {
+        "feedback": "请再检查这一处：「平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时」。这一步依据的是什么，结果成立吗？",
+        "delivered": "locate_template",
+        "reasons": [
+          "locate_must_end_with_one_question"
+        ],
+        "model_calls": 4
+      },
+      "seconds": 1.83
+    },
+    {
+      "name": "hint_ladder_escalates",
+      "passed": true,
+      "details": {
+        "actions": [
+          "scaffold_concept",
+          "scaffold_step",
+          "scaffold_example"
+        ]
+      },
+      "seconds": 4.02
+    },
+    {
+      "name": "eight_students_submit_concurrently",
+      "passed": true,
+      "details": {
+        "statuses": [
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect"
+        ],
+        "wall_seconds": 2.6
+      },
+      "seconds": 2.62
+    }
+  ],
+  "passed": true
+}

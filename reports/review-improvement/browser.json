@@ -1,0 +1,153 @@
+{
+  "mock_model": false,
+  "models": [
+    "omniedu-9b",
+    "qwen3.5-27b"
+  ],
+  "cases": [
+    {
+      "name": "empty_state_hides_decisions",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "select_shows_task_answer_reason",
+      "passed": true,
+      "details": {
+        "session_id": "open_01da9eac781e4d6e96984f29cf5e93a6",
+        "event_id": 2,
+        "learner": "林同学",
+        "scope": {},
+        "task": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "check_requirements": [],
+          "citation_validation": {
+            "discarded_model_quote": "",
+            "status": "no_sources"
+          },
+          "criteria": [],
+          "domain": "数学",
+          "id": "0b67ffb4b83345dd814321287f3bc1e6",
+          "objective": "运用数量关系解决实际问题",
+          "phase": "teach",
+          "prerequisite": "掌握速度、时间、路程之间的数量关系",
+          "question": "小明骑车3小时行了45千米，他的平均速度是多少千米每小时？请写出计算过程和单位。",
+          "reference": "根据数量关系：速度=路程÷时间，列式为45÷3=15（千米/小时）。答：他的平均速度是15千米每小时。",
+          "reference_origin": "model_generated_unverified",
+          "retrieval_mode": "none",
+          "rubric": "1. 正确列出数量关系式（速度=路程÷时间）；2. 计算过程正确，得出45÷3=15；3. 单位书写正确，结果为15千米/小时。",
+          "source_ids": [],
+          "source_pages": [],
+          "source_quote": "",
+          "task_type": "problem_solving"
+        },
+        "text": "平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时。",
+        "status": "incorrect",
+        "observation": "学生错误地使用了数量关系，将速度计算为路程乘以时间（45×3），而正确的关系应为路程除以时间。",
+        "feedback": "你算出了45乘3的结果，但平均速度是每小时行的路程。把45千米分给3小时，每小时的量应该比45大还是小？",
+        "criteria_results": [],
+        "image_event_id": null,
+        "decisions": [],
+        "needs_review": false,
+        "can_confirm": true,
+        "can_correct": true
+      }
+    },
+    {
+      "name": "dashboard_opens_same_answer",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "confirm_removes_pending_record",
+      "passed": true,
+      "details": {}
+    },
+    {
+      "name": "linked_photo_loads",
+      "passed": true,
+      "details": {
+        "session_id": "open_cadc2035a1fa4537a94944f4f4ac816f",
+        "event_id": 8,
+        "learner": "陈同学",
+        "scope": {},
+        "task": {
+          "algebra_initial": "",
+          "algebra_kind": "none",
+          "check_requirements": [],
+          "citation_validation": {
+            "discarded_model_quote": "",
+            "status": "no_sources"
+          },
+          "criteria": [],
+          "domain": "数学",
+          "id": "6574a4a0611a4eb6910bd0431c7778d3",
+          "objective": "运用数量关系解决实际问题",
+          "phase": "teach",
+          "prerequisite": "掌握速度、时间、路程之间的数量关系",
+          "question": "小明骑车3小时行了45千米，他的平均速度是多少千米每小时？请写出计算过程和单位。",
+          "reference": "根据数量关系：速度=路程÷时间，列式为45÷3=15（千米/小时）。答：他的平均速度是15千米每小时。",
+          "reference_origin": "model_generated_unverified",
+          "retrieval_mode": "none",
+          "rubric": "1. 正确列出数量关系式（速度=路程÷时间）；2. 计算过程正确，得出45÷3=15；3. 单位书写正确，结果为15千米/小时。",
+          "source_ids": [],
+          "source_pages": [],
+          "source_quote": "",
+          "task_type": "problem_solving"
+        },
+        "text": "平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时。",
+        "status": "incorrect",
+        "observation": "学生错误地使用了速度计算公式，将速度计算为路程乘以时间（45 × 3），而正确的公式应为路程除以时间。",
+        "feedback": "你找对了路程45千米和时间3小时，但平均速度是每小时行的路程，不是把路程和时间相乘。 如果3小时共行45千米，那么1小时行的路程应该比45千米多还是少？",
+        "criteria_results": [],
+        "image_event_id": 5,
+        "decisions": [],
+        "needs_review": false,
+        "can_confirm": true,
+        "can_correct": true
+      }
+    },
+    {
+      "name": "mobile_layout",
+      "passed": true,
+      "details": {
+        "content_width": 362,
+        "horizontal_overflow": false
+      }
+    },
+    {
+      "name": "correction_preserves_history_and_invalidates",
+      "passed": true,
+      "details": {
+        "needs_review": true,
+        "last_event": {
+          "id": 11,
+          "type": "correction",
+          "status": "unknown"
+        }
+      }
+    },
+    {
+      "name": "technical_replay_available_in_details",
+      "passed": true,
+      "details": {}
+    }
+  ],
+  "browser_errors": [],
+  "fixtures": [
+    {
+      "name": "林同学",
+      "sid": "open_01da9eac781e4d6e96984f29cf5e93a6",
+      "event_id": 2,
+      "status": "incorrect"
+    },
+    {
+      "name": "陈同学",
+      "sid": "open_cadc2035a1fa4537a94944f4f4ac816f",
+      "event_id": 8,
+      "status": "incorrect"
+    }
+  ],
+  "passed": true
+}

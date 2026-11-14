@@ -1,0 +1,917 @@
+{
+  "tag": "after-reviewer-gate",
+  "scope": "live model outputs on four tasks; not a learning-outcome measure",
+  "summary": {
+    "runs": 12,
+    "errors": 0,
+    "ladder_completed": "12/12",
+    "reached_teacher_review": 0,
+    "per_level": {
+      "scaffold_concept": {
+        "model": 8,
+        "template": 4
+      },
+      "scaffold_step": {
+        "model": 5,
+        "template": 7
+      },
+      "scaffold_example": {
+        "model": 9,
+        "template": 3
+      }
+    },
+    "hints_leaking_answer": 0,
+    "explanations_delivered_by_model": "12/12",
+    "explanations_reaching_answer_numeric_tasks": "9/9",
+    "seconds": 134
+  },
+  "runs": [
+    {
+      "task": "speed-zh",
+      "repeat": 0,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "速度说的是每小时走了多少路。如果 3 小时一共走了 45 千米，那要把总路程分给这 3 个小时，每个小时分到的路程才是速度。你是用乘法把路程变大了，还是该用除法把路程分一分？",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗语言解释了速度的含义（每小时走的路程）和解题思路（将总路程分给时间），指出了学生可能混淆乘除法，但未直接给出公式、代入数据或计算结果，也未直接纠正错误。",
+          "cross_review": "",
+          "first_draft": "你刚才把速度算成了路程乘以时间，但速度的定义是单位时间内走的路程，也就是路程除以时间。你可以想象一下，如果每小时都走同样的距离，那总路程除以总小时数，得到的就是每小时走多少。现在请你用这个思路，重新算一下 45 除以 3 等于多少，并写出单位。",
+          "candidate": "速度说的是每小时走了多少路。如果 3 小时一共走了 45 千米，那要把总路程分给这 3 个小时，每个小时分到的路程才是速度。你是用乘法把路程变大了，还是该用除法把路程分一分？",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step",
+          "feedback": "这一步要用到平均速度的定义：平均速度 = 总路程 ÷ 总时间。请找出题目中的总路程和总时间，根据这个关系列出算式并计算结果，记得带上单位。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示给出了平均速度的一般公式（总路程÷总时间），解释了使用该规则的原因，但未代入本题具体数据，也未直接给出计算结果或完整算式，留给学生完成。",
+          "cross_review": "",
+          "first_draft": "速度表示单位时间内行驶的路程，应该用总路程除以总时间。你刚才用了乘法，这会把结果算得比实际大。现在请你用 45 除以 3，算出每小时行驶多少千米。",
+          "candidate": "这一步要用到平均速度的定义：平均速度 = 总路程 ÷ 总时间。请找出题目中的总路程和总时间，根据这个关系列出算式并计算结果，记得带上单位。",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "看这个例子：小红骑车 2 小时行了 20 千米。求平均速度，用总路程除以总时间：20 ÷ 2 = 10（千米每小时）。\n\n现在请你仿照这个步骤，找出小明题目中的总路程和总时间，列出算式并计算结果，记得带上单位。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子（小红骑车），并引导学生仿照步骤解决原题，未直接给出原题答案或计算过程。",
+          "cross_review": "",
+          "first_draft": "平均速度 = 总路程 ÷ 总时间。题目中总路程是 45 千米，总时间是 3 小时。请列出算式：45 ÷ 3，算出结果并写上单位“千米每小时”。",
+          "candidate": "看这个例子：小红骑车 2 小时行了 20 千米。求平均速度，用总路程除以总时间：20 ÷ 2 = 10（千米每小时）。\n\n现在请你仿照这个步骤，找出小明题目中的总路程和总时间，列出算式并计算结果，记得带上单位。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "平均速度表示单位时间内行驶的路程，公式是：速度 = 路程 ÷ 时间。你之前误用了乘法，导致结果比总路程还大，这是概念错误。正确计算应为：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整计算过程、纠正了学生错误并写出最终答案，未以提问结尾。",
+        "cross_review": "",
+        "first_draft": "你之前的计算把速度和路程、时间的关系搞反了。平均速度表示每小时走多远，应该是用总路程除以总时间，而不是相乘。正确的公式是：速度 = 路程 ÷ 时间。所以这道题应该用 45 除以 3。请重新计算并写出单位。",
+        "candidate": "平均速度表示单位时间内行驶的路程，公式是：速度 = 路程 ÷ 时间。你之前误用了乘法，导致结果比总路程还大，这是概念错误。正确计算应为：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "speed-zh",
+      "repeat": 1,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "平均速度指的是每小时骑行的距离。如果小明 3 小时一共骑了 45 千米，那么要把这 45 千米分到 3 个小时里，应该用哪种运算来求每小时骑多少千米？",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗话解释了平均速度的含义，并引导学生思考运算方法，未直接给出公式、代入数据或计算结果。",
+          "cross_review": "",
+          "first_draft": "平均速度表示每小时骑行的距离。你算出的135比总路程45还大，这合理吗？请重新思考速度、路程和时间之间的关系。",
+          "candidate": "平均速度指的是每小时骑行的距离。如果小明 3 小时一共骑了 45 千米，那么要把这 45 千米分到 3 个小时里，应该用哪种运算来求每小时骑多少千米？",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step",
+          "feedback": "这一步要用到平均速度的定义：速度 = 路程 ÷ 时间。因为速度表示单位时间内行驶的距离，所以需要用总路程除以总时间。请根据这个关系，找出题目中的路程和时间，自己列出算式并计算结果，记得写上单位。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容正确指出了下一步应使用的规则（速度=路程÷时间）及其一般形式，解释了原因，但未代入本题数据或给出计算结果，留给学生完成。",
+          "cross_review": "",
+          "first_draft": "平均速度的计算公式是：速度 = 路程 ÷ 时间。你之前误将路程和时间相乘，但速度表示的是单位时间内走过的距离，所以应该用除法。请重新列出算式：45 ÷ 3，并计算出结果，记得带上单位“千米每小时”。",
+          "candidate": "这一步要用到平均速度的定义：速度 = 路程 ÷ 时间。因为速度表示单位时间内行驶的距离，所以需要用总路程除以总时间。请根据这个关系，找出题目中的路程和时间，自己列出算式并计算结果，记得写上单位。",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "看这个例子：小红骑车 2 小时行了 10 千米。求平均速度，用路程除以时间：10 ÷ 2 = 5（千米/小时）。\n\n现在请你仿照这个例子，用题目中的 45 千米和 3 小时，列出算式并计算结果，记得写上单位。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子，未直接解答本题或给出本题结果，符合scaffold_example的要求。",
+          "cross_review": "",
+          "first_draft": "你刚才把速度算成了路程乘以时间，这其实算出的是“路程×时间”的数值，而不是每小时走多少。平均速度的定义是“单位时间内走的路程”，所以应该用总路程除以总时间。\n\n我们换个例子：如果一个人 2 小时走了 10 千米，那每小时走多少？应该是 10 ÷ 2 = 5 千米/小时。\n\n现在请你按照这个思路，用题目中的 45 千米和 3 小时，列出正确的算式并算出结果，记得写上单位。",
+          "candidate": "看这个例子：小红骑车 2 小时行了 10 千米。求平均速度，用路程除以时间：10 ÷ 2 = 5（千米/小时）。\n\n现在请你仿照这个例子，用题目中的 45 千米和 3 小时，列出算式并计算结果，记得写上单位。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "平均速度等于路程除以时间，而非相乘。依据公式：速度 = 路程 ÷ 时间。将题目数据代入：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整计算过程、正确公式和最终答案，且与reference一致。",
+        "cross_review": "",
+        "first_draft": "你混淆了速度和路程、时间的关系。平均速度应该是路程除以时间，而不是相乘。请重新计算：45 除以 3 等于多少？单位是千米每小时。",
+        "candidate": "平均速度等于路程除以时间，而非相乘。依据公式：速度 = 路程 ÷ 时间。将题目数据代入：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "speed-zh",
+      "repeat": 2,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept_template",
+          "feedback": "先不急着算。这道题的学习目标是：能根据路程和时间求平均速度，并写出计算过程和单位。想一想：题目要你求出或解释的到底是什么，它和题目给出的哪些条件有关？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反了scaffold_concept标准：提示中直接引用了学生错误的计算结果'135千米每小时'，并引导学生用该错误数值进行验证，这属于变相确认错误答案，且未仅停留在概念层面，而是涉及了具体数值的错误运算逻辑。",
+          "cross_review": "",
+          "first_draft": "你刚才把速度算成了路程乘时间，但速度其实是路程除以时间。就像你分糖果，3 小时走 45 千米，就是问每小时走多少，应该用 45 除以 3。你能试着重新列一下算式吗？",
+          "candidate": "速度说的是每小时走了多少路。如果 3 小时一共走了 45 千米，那要把这 45 千米分到 3 个小时里，每个小时走多少？试着用刚才的乘法结果 135 千米每小时，算算 3 小时能走多远，看看和题目里的 45 千米对得上吗？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "把题目拆成小步：先写清楚要求什么、已知什么，再找出能把它们联系起来的规则或关系，最后只完成第一小步。你的第一小步是什么？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_step标准：提示中未说明下一步应使用的规则（速度=路程÷时间）及其一般形式，而是以提问方式让学生自行描述关系，属于概念引导而非步骤提示。",
+          "cross_review": "",
+          "first_draft": "你刚才把速度和路程、时间的关系记反了。平均速度的定义是：速度 = 路程 ÷ 时间。请重新看题目，找出已知的路程和时间，用这个公式列式计算。",
+          "candidate": "先别急着算。想一想：题目里“平均速度”到底表示什么？它和“路程”“时间”之间通常存在怎样的数量关系？试着用文字描述这种关系，再对照题目给出的 3 小时和 45 千米，看看该用哪种运算。",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example_template",
+          "feedback": "按这个顺序检查一遍自己的思路：①题目要求什么；②用到了哪些条件或依据；③每一步是否由上一步得出；④结论是否回答了题目。先写出第①条。",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "answer_disclosure",
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_example标准：例子中直接写出了本题要用的运算关系（路程除以时间）和计算过程，且提示中要求‘列出算式’，这超出了仅给不同数据例子的范围，泄露了本题的解题方法。",
+          "cross_review": "",
+          "first_draft": "速度 = 路程 ÷ 时间。小明骑了 45 千米，用了 3 小时，所以平均速度是 45 ÷ 3 = 15 千米/小时。请你也用这个公式算一算：如果路程是 60 千米，时间是 4 小时，平均速度是多少？",
+          "candidate": "看这个例子：小红骑车 2 小时行了 20 千米。求平均速度，用路程除以时间：20 ÷ 2 = 10 千米/小时。\n\n现在请你用同样的方法处理小明的题目：先写出已知路程和时间，再列出算式（不要算出结果），最后加上单位。你的第一步是什么？",
+          "outcome": "template",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "平均速度等于路程除以时间，而非相乘。依据公式：速度 = 路程 ÷ 时间。将题目数据代入：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整计算过程、正确公式和最终答案，且与reference一致。",
+        "cross_review": "",
+        "first_draft": "你混淆了速度和路程、时间的关系。平均速度应该是路程除以时间，而不是相乘。请重新计算：45 除以 3 等于多少？记得写上单位“千米/小时”。",
+        "candidate": "平均速度等于路程除以时间，而非相乘。依据公式：速度 = 路程 ÷ 时间。将题目数据代入：45 ÷ 3 = 15。因此，小明的平均速度是 15 千米/小时。接下来要做一道新题检查自己能否独立完成。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 0,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗语言解释了加速度的含义，并通过类比引导学生思考力、质量与加速度的关系，未直接给出公式、代入数据或结论。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这表示加速度等于力乘以质量。但根据牛顿第二定律，加速度其实是力除以质量。你可以试着想一下，如果质量变大，在同样的力作用下，物体变快还是变慢？",
+          "candidate": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "把题目拆成小步：先写清楚要求什么、已知什么，再找出能把它们联系起来的规则或关系，最后只完成第一小步。你的第一小步是什么？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_step标准：提示中直接给出了本题要用的正确运算关系（加速度等于合力除以质量），相当于写出了本题的公式，未留给学生完成关键步骤。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算大了。牛顿第二定律的正确关系是加速度与力成正比，与质量成反比。请回忆一下，正确的公式应该是 a = F 除以 m，还是 a = F 乘以 m？",
+          "candidate": "这一步要用到牛顿第二定律中力、质量与加速度的关系。请回忆该定律的一般形式：加速度等于合力除以质量。对比你刚才使用的“加速度 = 力 × 质量”，思考一下：当力不变时，质量越大，加速度应该是变大还是变小？根据这个逻辑，重新确定正确的运算关系，再尝试列出公式。",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "看这个例子：一个 3 kg 的物体受 12 N 合力。先写公式 $a = F/m$，再代入：$a = 12/3 = 4 \\text{ m/s}^2$。现在请你用同样的步骤，先写出本题的公式，再代入 10 N 和 2 kg 计算。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子，未直接给出本题的计算结果，且引导学生模仿步骤，未泄露本题答案。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算大了。牛顿第二定律的正确关系是 a = F / m，意思是加速度与力成正比，与质量成反比。就像推一辆空车和一辆装满货物的车，同样的力，空车（质量小）跑得更快。现在请你用正确的公式 a = F / m，把题目中的 10 N 和 2 kg 代入，算出正确的加速度。",
+          "candidate": "看这个例子：一个 3 kg 的物体受 12 N 合力。先写公式 $a = F/m$，再代入：$a = 12/3 = 4 \\text{ m/s}^2$。现在请你用同样的步骤，先写出本题的公式，再代入 10 N 和 2 kg 计算。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你刚才把公式写成了 a = F × m，这导致结果算错了。牛顿第二定律的正确公式是 a = F / m，意思是加速度等于合力除以质量。根据这个公式，把题目中的 F = 10 N 和 m = 2 kg 代入，计算过程是 10 ÷ 2 = 5。所以，物体的加速度是 5 m/s²。接下来请尝试用这个正确的公式独立计算一道新题。",
+        "reasons": [],
+        "first_reasons": [],
+        "rewrite_model": null,
+        "review": "符合explain标准：纠正了学生错误，给出了正确公式、代入过程及最终答案5 m/s²，并以新题练习结尾，未留关键步骤给学生。",
+        "cross_review": "",
+        "first_draft": "",
+        "candidate": "你刚才把公式写成了 a = F × m，这导致结果算错了。牛顿第二定律的正确公式是 a = F / m，意思是加速度等于合力除以质量。根据这个公式，把题目中的 F = 10 N 和 m = 2 kg 代入，计算过程是 10 ÷ 2 = 5。所以，物体的加速度是 5 m/s²。接下来请尝试用这个正确的公式独立计算一道新题。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 1,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗语言解释了加速度的含义，并通过类比引导学生思考力、质量与加速度的关系，未直接给出公式、代入数据或结论。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这表示加速度等于力乘以质量。但根据牛顿第二定律，加速度其实是力除以质量。你可以试着想一下：如果质量变大，在同样的力作用下，物体变快还是变慢？",
+          "candidate": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "把题目拆成小步：先写清楚要求什么、已知什么，再找出能把它们联系起来的规则或关系，最后只完成第一小步。你的第一小步是什么？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反了scaffold_step标准：提示中直接给出了本题要用的具体关系式（加速度等于合力除以质量），而本级标准只允许写出规则的一般形式，不得直接给出本题要解释的结论或关系。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算大了。牛顿第二定律的正确关系是加速度与力成正比，与质量成反比。请回忆一下，正确的公式应该是 a = F 除以 m，还是 a = F 乘以 m？",
+          "candidate": "你之前的算式把质量当作乘数，这会让结果变大。请回想牛顿第二定律：加速度等于合力除以质量。试着用这个关系，把题目中的力和质量代入，自己写出正确的算式并计算。",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "看这个例子：一个 3 kg 的物体受 12 N 合力。先写公式 $a = F/m$，再代入数据 $a = 12/3$，算出 $4 \\text{ m/s}^2$。现在请你用同样的步骤，先写出本题的公式，再代入 10 N 和 2 kg 进行计算。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子，未直接给出本题的计算结果或最终答案，仅引导学生模仿步骤。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算大了。牛顿第二定律的正确关系是 a = F / m，意思是加速度与力成正比，与质量成反比。就像推一辆空车和一辆装满货物的车，同样的力，空车（质量小）跑得更快。现在请你用正确的公式 a = F / m，把题目中的 10 N 和 2 kg 代入，算出正确的加速度。",
+          "candidate": "看这个例子：一个 3 kg 的物体受 12 N 合力。先写公式 $a = F/m$，再代入数据 $a = 12/3$，算出 $4 \\text{ m/s}^2$。现在请你用同样的步骤，先写出本题的公式，再代入 10 N 和 2 kg 进行计算。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你的错误在于公式写成了 $a = F \\times m$，这是概念错误。牛顿第二定律指出加速度等于合力除以质量，正确公式是 $a = F / m$。代入数据：$F = 10\\text{ N}$，$m = 2\\text{ kg}$，计算得 $a = 10 \\div 2 = 5\\text{ m/s}^2$。最终答案是 $5\\text{ m/s}^2$。接下来要做一道新题检查自己能否独立完成。",
+        "reasons": [],
+        "first_reasons": [
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整解题过程、正确公式、代入数据及最终答案，且与reference一致。",
+        "cross_review": "",
+        "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算错了。牛顿第二定律的正确公式是 a = F / m，意思是加速度等于合力除以质量。根据题目，F = 10 N，m = 2 kg，所以 a = 10 / 2 = 5 m/s²。请重新计算并写出正确公式。接下来要做一道新题检查自己能否独立完成。",
+        "candidate": "你的错误在于公式写成了 $a = F \\times m$，这是概念错误。牛顿第二定律指出加速度等于合力除以质量，正确公式是 $a = F / m$。代入数据：$F = 10\\text{ N}$，$m = 2\\text{ kg}$，计算得 $a = 10 \\div 2 = 5\\text{ m/s}^2$。最终答案是 $5\\text{ m/s}^2$。接下来要做一道新题检查自己能否独立完成。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 2,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗语言解释了加速度的含义，并通过类比引导学生思考力、质量与加速度的关系，未直接给出公式、代入数据或结论。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这表示加速度等于力乘以质量。但根据牛顿第二定律，加速度其实是力除以质量。你可以试着想一下，如果质量变大，在同样的力作用下，物体变快还是变慢？",
+          "candidate": "加速度描述的是物体速度变化的快慢。想象一下，用同样的力气推一辆空车和一辆装满货物的车，哪辆车更容易被推得越来越快？这说明在力不变时，物体的质量大小和它加速的快慢之间有什么关系？",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step",
+          "feedback": "这一步要用到牛顿第二定律：加速度 = 合力 ÷ 质量。请根据这个关系，重新列出本题的算式并计算结果。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示给出了牛顿第二定律的一般形式（加速度 = 合力 ÷ 质量），未代入本题数据，也未直接给出计算结果，留给学生完成。",
+          "cross_review": "",
+          "first_draft": "你刚才把公式写成了 a = F × m，这导致结果算大了。牛顿第二定律的正确关系是加速度与力成正比，与质量成反比。请回忆一下，正确的公式应该是 a = F 除以 m，还是 a = F 乘以 m？",
+          "candidate": "这一步要用到牛顿第二定律：加速度 = 合力 ÷ 质量。请根据这个关系，重新列出本题的算式并计算结果。",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example_template",
+          "feedback": "按这个顺序检查一遍自己的思路：①题目要求什么；②用到了哪些条件或依据；③每一步是否由上一步得出；④结论是否回答了题目。先写出第①条。",
+          "reasons": [
+            "answer_disclosure"
+          ],
+          "first_reasons": [
+            "answer_disclosure",
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个数据不同的完整示例，展示了正确的计算过程，但未直接给出原题的答案或计算步骤，符合scaffold_example的要求。",
+          "cross_review": "",
+          "first_draft": "你刚才的算式把质量和力相乘了，这不符合牛顿第二定律。我们来看一个例子：如果一个 5 kg 的物体受到 15 N 的力，加速度应该是 15 除以 5，等于 3 m/s²。在这个例子里，力不变，质量越大，加速度越小。回到你的题目，力是 10 N，质量是 2 kg，你应该用除法而不是乘法。请重新列出算式：加速度 = 合力 ÷ 质量。",
+          "candidate": "看这个例子：一个 5 kg 的物体受 15 N 合力。根据牛顿第二定律，加速度等于合力除以质量。算式是 $a = 15 \\div 5 = 3 \\text{ m/s}^2$。\n\n现在回到你的题目：质量 2 kg，合力 10 N。请模仿上面的步骤，列出你的算式并计算结果。",
+          "outcome": "template",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "依据牛顿第二定律，加速度等于合力除以质量，公式为 $a = F / m$。你之前误用了乘法，导致结果错误。正确计算步骤如下：将 $F=10\\text{ N}$ 和 $m=2\\text{ kg}$ 代入公式，得 $a = 10 \\div 2 = 5$。因此，该物体的加速度是 $5\\text{ m/s}^2$。接下来要做一道新题检查自己能否独立完成。",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整公式、代入数据、计算过程及最终答案，且与reference一致。",
+        "cross_review": "",
+        "first_draft": "你刚才把公式写成了 a = F × m，这表示加速度与质量成正比，但牛顿第二定律告诉我们，在力一定时，质量越大，加速度反而越小。正确的公式是 a = F / m。请你用这个正确的公式重新计算一下：10 除以 2 等于多少？单位是 m/s²。",
+        "candidate": "依据牛顿第二定律，加速度等于合力除以质量，公式为 $a = F / m$。你之前误用了乘法，导致结果错误。正确计算步骤如下：将 $F=10\\text{ N}$ 和 $m=2\\text{ kg}$ 代入公式，得 $a = 10 \\div 2 = 5$。因此，该物体的加速度是 $5\\text{ m/s}^2$。接下来要做一道新题检查自己能否独立完成。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 0,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "\"Half\" means splitting something into two equal parts. In this story, Connie spent half her tickets on a koala, and the rest on earbuds and bracelets. If you add the tickets for earbuds and bracelets, what does that sum represent in relation to the total?",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容用通俗话解释了'half'的含义，并引导学生思考耳塞和手链的票数总和与总数的关系，未直接给出公式、代入数据或最终结论。",
+          "cross_review": "",
+          "first_draft": "You calculated that the total tickets were 20 based on the earbuds cost, but the problem states the earbuds cost 10 tickets, which is only part of the total. Can you identify which part of the total tickets Connie spent on the koala, earbuds, and bracelets combined?",
+          "candidate": "\"Half\" means splitting something into two equal parts. In this story, Connie spent half her tickets on a koala, and the rest on earbuds and bracelets. If you add the tickets for earbuds and bracelets, what does that sum represent in relation to the total?",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step",
+          "feedback": "This step requires the part-whole relationship: Total = Part 1 + Part 2. Here, the total tickets are split into two equal halves: one for the koala and the other for the remaining items. Identify which items make up the second half and use their sum to find the total. Apply this relationship to solve for the initial number of tickets.",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示说明了下一步需使用的部分-整体关系规则及其一般形式，解释了为何使用（因为总数被分为两半），但未代入本题具体数据，也未直接给出计算过程或最终答案，留给学生完成。",
+          "cross_review": "",
+          "first_draft": "You calculated that the earbuds cost half of the total tickets, but the problem states that the earbuds cost 10 tickets and the bracelets cost 15 tickets, which together make up the remaining half. Can you re-read the sentence about the koala to see what fraction of the total tickets was spent on it",
+          "candidate": "This step requires the part-whole relationship: Total = Part 1 + Part 2. Here, the total tickets are split into two equal halves: one for the koala and the other for the remaining items. Identify which items make up the second half and use their sum to find the total. Apply this relationship to solv",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "Consider this example: Sam spent half his coins on a toy, 5 on candy, and 7 on stickers. First, add the candy and stickers: 5 + 7 = 12. This sum equals the other half. So, the total is 12 + 12 = 24.\n\nNow, apply these same steps to Connie's problem. First, add the tickets she spent on earbuds and bracelets. What is that sum?",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子，并引导学生将相同步骤应用于原题，未直接给出原题答案或计算过程。",
+          "cross_review": "",
+          "first_draft": "You calculated the total as 20, but that only accounts for the earbuds. Remember, the 20 tickets you found represent the sum of the koala cost and the remaining items. Can you figure out how much the koala cost by subtracting the earbuds and bracelets from that total?",
+          "candidate": "Consider this example: Sam spent half his coins on a toy, 5 on candy, and 7 on stickers. First, add the candy and stickers: 5 + 7 = 12. This sum equals the other half. So, the total is 12 + 12 = 24.\n\nNow, apply these same steps to Connie's problem. First, add the tickets she spent on earbuds and bra",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You incorrectly assumed only earbuds cost half the tickets. First, add earbuds (10) and bracelets (15) to get 25. This sum represents the other half of her tickets. Since 25 is half, multiply by 2 to find the total: 25 × 2 = 50. Connie had 50 tickets at first. Next, try a new problem to check if you can solve it independently.",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合action为explain的要求：给出了完整解题过程（先加10和15得25，再乘2得50），并写出最终答案50，未以提问结尾，与reference一致。",
+        "cross_review": "",
+        "first_draft": "You calculated the total based only on the earbuds cost, but the problem states that the earbuds and bracelets together cost the other half of her tickets. Can you add the costs of the earbuds and bracelets to find that missing half first?",
+        "candidate": "You incorrectly assumed only earbuds cost half the tickets. First, add earbuds (10) and bracelets (15) to get 25. This sum represents the other half of her tickets. Since 25 is half, multiply by 2 to find the total: 25 × 2 = 50. Connie had 50 tickets at first. Next, try a new problem to check if you",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 1,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "\"Half\" means splitting the total into two equal parts. In this story, which item did Connie pay for using exactly half of her tickets? Check if your calculation matches that specific condition.",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示用通俗话解释了'half'的概念，并引导学生识别题目中哪部分对应一半，未直接给出公式、代入数据或最终答案。",
+          "cross_review": "",
+          "first_draft": "You calculated that the total tickets were 20 based on the earbuds cost, but the problem states the earbuds cost 10 tickets, which is only part of the spending. If 10 tickets is half of the total, what would the total be? Let's re-read the sentence about the koala to see what fraction of the total w",
+          "candidate": "\"Half\" means splitting the total into two equal parts. In this story, which item did Connie pay for using exactly half of her tickets? Check if your calculation matches that specific condition.",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "Break the task into small steps: write down what is asked and what is given, find the rule or relationship that connects them, then do only the first step. What is your first step?",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "提示中直接给出了本题所需的运算规则（Total = Part × 2）和解题步骤，违反了scaffold_step不得写出本题计算过程或结果的要求，且未引导学生发现其将10误认为一半的错误。",
+          "cross_review": "",
+          "first_draft": "You calculated that half the tickets were 20, but the problem states 10 tickets were spent on earbuds, which is half of the total. If 10 is half, what is the full amount? Once you find the total, check if subtracting the koala cost (half) and the other items matches the original total.",
+          "candidate": "Recall the rule: Total = Part × 2 when the part is half. Identify which item in the story represents exactly half of the tickets. Use that specific number to find the total, then check if the remaining items fit the story.",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example_template",
+          "feedback": "Check your reasoning in this order: (1) what the task asks; (2) which conditions or evidence you used; (3) whether each step follows from the previous one; (4) whether your conclusion answers the task. Start by writing (1).",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反了scaffold_example标准：例子中直接给出了本题的解题方程（half the total plus 10 plus 15 equals the total），这属于写出本题的运算关系式，而非仅提供一个结构相同但数据不同的例子。",
+          "cross_review": "",
+          "first_draft": "You calculated that half the tickets were 10, but the problem says half were spent on a koala, not on earbuds. Can you identify which part of the total cost represents exactly half of Connie's original tickets?",
+          "candidate": "Example: Sam spent half his coins on a toy, 5 on candy, and 8 on gum. He had 26 coins. Check: Half is 13. 13 + 5 + 8 = 26. Correct.\n\nNow try your problem: Connie spent half on a koala, 10 on earbuds, and 15 on bracelets. Write the equation where half the total plus 10 plus 15 equals the total. What ",
+          "outcome": "template",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You incorrectly assumed earbuds cost half the total. The problem states half was spent on a koala, so the remaining half covers earbuds (10) and bracelets (15). First, sum these: 10 + 15 = 25 tickets. Since this is half, multiply by 2: 25 × 2 = 50. Connie started with 50 tickets. Next, try a new problem to check your understanding.",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合action为explain的要求：给出了完整解题过程（先求剩余一半25，再乘2得50），纠正了学生错误，并写出了最终答案50，未以提问结尾。",
+        "cross_review": "",
+        "first_draft": "You treated the earbuds cost as half the total, but the problem says half was spent on a koala. The remaining tickets (for earbuds and bracelets) represent the other half. Can you calculate the sum of the earbuds and bracelets costs first?",
+        "candidate": "You incorrectly assumed earbuds cost half the total. The problem states half was spent on a koala, so the remaining half covers earbuds (10) and bracelets (15). First, sum these: 10 + 15 = 25 tickets. Since this is half, multiply by 2: 25 × 2 = 50. Connie started with 50 tickets. Next, try a new pro",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 2,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept",
+          "feedback": "\"Half\" means splitting something into two equal parts. In this story, Connie split her total tickets in half to buy a koala. If you know how many tickets she had left after buying the koala, how does that remaining amount relate to the half she spent?",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示仅用通俗话解释了'half'的概念并引导学生思考剩余量与已用量的关系，未直接给出本题的解题公式、运算过程或最终答案。",
+          "cross_review": "",
+          "first_draft": "You calculated that 10 tickets is half of the total, but the problem states she spent half on a koala, not on earbuds. Can you identify which part of the problem describes the amount spent on the koala?",
+          "candidate": "\"Half\" means splitting something into two equal parts. In this story, Connie split her total tickets in half to buy a koala. If you know how many tickets she had left after buying the koala, how does that remaining amount relate to the half she spent?",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "Break the task into small steps: write down what is asked and what is given, find the rule or relationship that connects them, then do only the first step. What is your first step?",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_step标准：提示中直接给出了本题的具体关系式（Total = ...），并代入了本题的特定项（koala, earbuds, bracelets），而非仅说明一般规则。",
+          "cross_review": "",
+          "first_draft": "You calculated that the total was 20 tickets based on the earbuds cost, but the problem states she spent half on a koala, not half on earbuds. Can you identify which part of the total tickets was actually spent on the koala?",
+          "candidate": "To find the total, use the relationship: Total = (Amount spent on koala) + (Amount spent on earbuds) + (Amount spent on bracelets). Since the koala cost half the total, the other items together must equal the other half. Identify the sum of tickets spent on earbuds and bracelets, then apply this rel",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "Consider this example: Sam had some coins. He spent half on a toy, 5 on candy, and 8 on stickers. First, add the known parts: 5 + 8 = 13. Since these equal the other half, the total is 13 + 13 = 26. Now, apply these steps to Connie's tickets. What is your first step?",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但数据不同的完整例子，未直接解答原题或给出原题结果，且以提问结尾引导学生应用步骤。",
+          "cross_review": "",
+          "first_draft": "You calculated that the earbuds cost half of the total, but the problem states that the earbuds cost 10 tickets, while the koala cost half of the total. Let's re-read: if the koala cost half the tickets, and the earbuds cost 10, what is the relationship between the koala's cost and the earbuds' cost",
+          "candidate": "Consider this example: Sam had some coins. He spent half on a toy, 5 on candy, and 8 on stickers. First, add the known parts: 5 + 8 = 13. Since these equal the other half, the total is 13 + 13 = 26. Now, apply these steps to Connie's tickets. What is your first step?",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You incorrectly assumed earbuds cost half the total. Actually, half was spent on the koala, so the remaining half covers earbuds (10) and bracelets (15). First, add these: 10 + 15 = 25 tickets. Since 25 is half the total, multiply by 2: 25 × 2 = 50. Connie had 50 tickets at first. Next, try a new problem to check your understanding.",
+        "reasons": [],
+        "first_reasons": [
+          "explain_incomplete",
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合action为explain的要求：给出了完整解题过程、纠正了学生错误、得出了正确答案50，并以新练习结尾，未遗漏关键步骤。",
+        "cross_review": "",
+        "first_draft": "You treated the earbuds cost as half the total, but the problem states half was spent on the koala. The remaining tickets (for earbuds and bracelets) represent the other half. Can you identify which part of the total cost corresponds to the 'other half'?",
+        "candidate": "You incorrectly assumed earbuds cost half the total. Actually, half was spent on the koala, so the remaining half covers earbuds (10) and bracelets (15). First, add these: 10 + 15 = 25 tickets. Since 25 is half the total, multiply by 2: 25 × 2 = 50. Connie had 50 tickets at first. Next, try a new pr",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 0,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept_template",
+          "feedback": "先不急着算。这道题的学习目标是：能用日、地、月的相对位置解释月相变化。想一想：题目要你求出或解释的到底是什么，它和题目给出的哪些条件有关？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_concept标准：直接给出了本题要解释的结论（月相变化与地球影子无关，是三者位置导致被照亮部分变化），而非仅点明概念或提问。",
+          "cross_review": "",
+          "first_draft": "你提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "月相变化指的是我们看到的月亮亮面形状在一个月里的改变。这其实和地球的影子无关，那叫月食。想象一下，太阳、地球和月球三者位置不同，我们看到的被太阳照亮的月球部分就会不一样。如果月球绕着地球转，它被太阳照亮的那一面，有多少能转到我们地球这边来呢？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "把题目拆成小步：先写清楚要求什么、已知什么，再找出能把它们联系起来的规则或关系，最后只完成第一小步。你的第一小步是什么？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_step标准：提示中直接给出了本题要解释的核心结论（月相取决于日地月相对位置），而题目本身要求解释该概念，三级提示均不得直接给出完整解释或结论。",
+          "cross_review": "",
+          "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "这一步要用到“月相取决于日、地、月三者相对位置”的关系。想象太阳、地球和月球排成不同队形时，从地球看月球被照亮的部分会怎样变化？试着画出或描述当月球在地球和太阳之间，以及当地球在中间时，我们看到的月亮形状有什么不同？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "请看这个例子：为什么我们看到的“木卫一”形状会变化？因为木卫一绕木星转，太阳光照在木卫一上的亮面朝向我们的角度在变。当木卫一在木星和太阳之间时，我们几乎看不到亮面；当它在木星侧面时，我们看到半圆亮面。\n\n现在，请模仿这个例子的逻辑：假设有一个“小行星”绕“行星”转，被“恒星”照亮。请描述当“小行星”运行到“行星”和“恒星”之间时，我们看到的亮面形状是怎样的？并解释原因。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但情境不同的完整例子（木卫一），并引导学生用该逻辑解决新情境（小行星），未直接给出本题（月相）的结论或解释。",
+          "cross_review": "",
+          "first_draft": "你之前的回答把月相变化归因于地球的影子，这其实是月食的原理。月相变化是因为月球绕地球公转，太阳照射月球的角度不同，导致我们看到的亮面形状改变。\n\n我们来看一个例子：假设今天是农历初一（新月），月球位于地球和太阳之间，我们几乎看不到月球的亮面。过了一周，月球运行到地球侧面，我们能看到半个月球被照亮，这就是上弦月。再过一周，月球运行到地球另一侧，我们看到整个亮面，这就是满月。\n\n请试着用这个思路，画出太阳、地球和月球在新月、上弦月、满月时的相对位置，并解释为什么我们看到的形状不同。",
+          "candidate": "请看这个例子：为什么我们看到的“木卫一”形状会变化？因为木卫一绕木星转，太阳光照在木卫一上的亮面朝向我们的角度在变。当木卫一在木星和太阳之间时，我们几乎看不到亮面；当它在木星侧面时，我们看到半圆亮面。\n\n现在，请模仿这个例子的逻辑：假设有一个“小行星”绕“行星”转，被“恒星”照亮。请描述当“小行星”运行到“行星”和“恒星”之间时，我们看到的亮面形状是怎样的？并解释原因。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的改变，导致我们看到的月亮形状在一个月内周期性变化。接下来请做一道新题，检验你能否独立解释上弦月与下弦月的成因。",
+        "reasons": [],
+        "first_reasons": [
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整解释（月球不发光、反射太阳光、相对位置变化导致可见亮面变化），纠正了学生错误（非地球影子遮挡），并提供了具体例子（新月、满月），最后给出结论。",
+        "cross_review": "",
+        "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因，不是月相变化的主因。月相变化是因为月球绕地球转，太阳照在月球上的亮面朝向地球的角度在变。比如，当月球在地球和太阳之间时，我们看不到亮面（新月）；当地球在中间时，我们看到满月。接下来，请你用这个原理解释一下，为什么农历初一和十五的月亮形状不同。",
+        "candidate": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的改变，导致我们看到的月亮形状在一个月内周期性变化。接下来请做一道新题，检验你能否独立解释上弦月与下弦月的成因。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 1,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept_template",
+          "feedback": "先不急着算。这道题的学习目标是：能用日、地、月的相对位置解释月相变化。想一想：题目要你求出或解释的到底是什么，它和题目给出的哪些条件有关？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_concept标准：直接给出了本题要解释的结论（月相变化与地球影子无关，是三者位置导致被照亮部分变化），而非仅点明概念或提问。",
+          "cross_review": "",
+          "first_draft": "你提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "月相变化指的是我们看到的月亮亮面形状在一个月里的改变。这其实和地球的影子无关，那叫月食。想象一下，太阳、地球和月球三者位置不同，我们看到的被太阳照亮的月球部分就会不一样。如果月球绕着地球转，它被太阳照亮的那一面，有多少能转到我们地球这边来呢？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step",
+          "feedback": "这一步要用到“月相取决于日、地、月三者相对位置”这一关系。请想象：当月球在地球和太阳之间时，我们能看到它的哪一面？当月球转到地球另一侧时，情况又会有什么不同？试着画出这两种位置下，太阳光照亮月球的部分以及我们能看到的部分，看看形状有何变化。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。提示说明了下一步要用的关系（日地月相对位置决定月相），并引导学生通过想象和画图来理解不同位置下的光照情况，未直接给出本题的结论或计算过程。",
+          "cross_review": "",
+          "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "这一步要用到“月相取决于日、地、月三者相对位置”这一关系。请想象：当月球在地球和太阳之间时，我们能看到它的哪一面？当月球转到地球另一侧时，情况又会有什么不同？试着画出这两种位置下，太阳光照亮月球的部分以及我们能看到的部分，看看形状有何变化。",
+          "outcome": "model",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "请看这个例子：假设你站在操场中央（代表地球），朋友A（代表太阳）站在你左边不动，朋友B（代表月球）绕着你转。当B走到你和A中间时，你只能看到B背对A的暗面；当B走到你身后时，你看到B被A照亮的整个正面。\n\n现在回到原题：请想象太阳、地球、月球的位置关系。当月球转到地球和太阳之间时，你推测能看到月球的哪一面？当它转到地球另一侧时，情况有何不同？试着描述这两种位置下你看到的形状，并解释原因。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相同但情境不同的例子（操场模拟），完整解释了该例子中的现象，未直接给出原题答案或完整解释，而是引导学生基于例子进行推测和描述。",
+          "cross_review": "",
+          "first_draft": "你之前的回答把月相变化归因于地球的影子，这其实是月食的原理。月相变化是因为月球绕着地球公转，太阳光照射月球的角度不同，导致我们看到的亮面形状改变。\n\n我们来看一个例子：想象太阳在左边，地球在中间。当月球运行到地球和太阳之间时（新月），月球的暗面朝向地球，我们几乎看不到它；当月球运行到地球背对太阳的一侧时（满月），月球的亮面完全朝向地球，我们看到的是圆圆的月亮。\n\n请试着画出月球在地球两侧时的位置，标出太阳光照亮的部分和我们能看到的部分，比较一下形状有什么不同。",
+          "candidate": "请看这个例子：假设你站在操场中央（代表地球），朋友A（代表太阳）站在你左边不动，朋友B（代表月球）绕着你转。当B走到你和A中间时，你只能看到B背对A的暗面；当B走到你身后时，你看到B被A照亮的整个正面。\n\n现在回到原题：请想象太阳、地球、月球的位置关系。当月球转到地球和太阳之间时，你推测能看到月球的哪一面？当它转到地球另一侧时，情况有何不同？试着描述这两种位置下你看到的形状，并解释原因。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的改变，导致我们看到的月亮形状在一个月内周期性变化。接下来请做一道新题，检验你能否独立解释为何上弦月出现在农历初七、初八。",
+        "reasons": [],
+        "first_reasons": [
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合explain标准：给出了完整解释（月球不发光、反射太阳光、相对位置变化导致可见亮面变化），纠正了学生错误，并写出了最终结论。",
+        "cross_review": "",
+        "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因，不是月相变化的主因。月相变化是因为月球绕地球公转，太阳照在月球上的亮面朝向地球的角度在变。比如，当月球在地球和太阳之间时，我们看到的是新月；当地球在太阳和月球之间时，我们看到的是满月。接下来，请你用这个原理解释一下，为什么农历初一和十五的月亮形状不同？",
+        "candidate": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的改变，导致我们看到的月亮形状在一个月内周期性变化。接下来请做一道新题，检验你能否独立解释为何上弦月出现在农历初七、初八。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 2,
+      "errors": [],
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "scaffold_concept_template",
+          "feedback": "先不急着算。这道题的学习目标是：能用日、地、月的相对位置解释月相变化。想一想：题目要你求出或解释的到底是什么，它和题目给出的哪些条件有关？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_concept标准：在解释概念时直接给出了‘月相变化’的定义（‘指的是我们看到的月亮亮面形状在一个月里的改变’），而题目本身要求解释该概念，三级提示均不得给出完整定义或结论。",
+          "cross_review": "",
+          "first_draft": "你提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "月相变化指的是我们看到的月亮亮面形状在一个月里的改变。这跟太阳、地球和月球三者的位置有关。如果地球的影子挡住了月亮，那会发生什么现象？这和平时看到的月亮变缺是一回事吗？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "scaffold_step_template",
+          "feedback": "把题目拆成小步：先写清楚要求什么、已知什么，再找出能把它们联系起来的规则或关系，最后只完成第一小步。你的第一小步是什么？",
+          "reasons": [
+            "model_review"
+          ],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "违反scaffold_step标准：提示中直接给出了本题要解释的结论（月相取决于日地月相对位置），而题目本身要求解释该概念，三级提示均不得给出完整解释或结论。",
+          "cross_review": "",
+          "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因。月相变化是因为月球绕着地球转，太阳照在月球上的亮面朝向地球的角度在变。如果月球绕地球转一圈，我们看到的亮面形状会怎么变？",
+          "candidate": "这一步要用到“月相取决于日、地、月三者相对位置”的关系。想象太阳、地球和月球排成不同队形时，从地球看月球被照亮的部分会怎样变化？试着画出或描述当月球在地球和太阳之间，以及当地球在中间时，我们看到的月亮形状有什么不同？",
+          "outcome": "template",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_example",
+          "delivered_action": "scaffold_example",
+          "feedback": "让我们先看一个类似例子：为什么地球上的影子长度在一天中会变化？这是因为太阳位置改变，照射角度不同。例如，正午太阳高，影子短；傍晚太阳低，影子长。\n\n现在回到本题：请模仿这个例子，用太阳、地球、月球的位置关系，描述一个具体时刻（如新月）的相对位置，并说明此时我们看到的亮面情况。",
+          "reasons": [],
+          "first_reasons": [
+            "model_review"
+          ],
+          "rewrite_model": "qwen3.5-27b",
+          "review": "符合本级标准。候选内容提供了一个结构相似但情境不同的完整例子（影子变化），未直接解答本题或给出月相变化的结论，仅引导学生模仿例子描述具体时刻的位置关系。",
+          "cross_review": "",
+          "first_draft": "你之前的回答把月相变化归因于地球的影子，这其实是月食的原理。月相变化是因为月球绕地球公转时，太阳照射月球的角度不同，导致我们看到的亮面形状改变。\n\n我们来看一个例子：假设今天是农历初一（新月），月球位于地球和太阳之间，我们几乎看不到月球的亮面。过了半个月，月球运行到地球背向太阳的一侧，我们就能看到满月。\n\n现在请你试着描述：如果月球继续绕地球转，从满月之后，我们看到的亮面会如何变化？",
+          "candidate": "让我们先看一个类似例子：为什么地球上的影子长度在一天中会变化？这是因为太阳位置改变，照射角度不同。例如，正午太阳高，影子短；傍晚太阳低，影子长。\n\n现在回到本题：请模仿这个例子，用太阳、地球、月球的位置关系，描述一个具体时刻（如新月）的相对位置，并说明此时我们看到的亮面情况。",
+          "outcome": "model",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的周期性改变，导致我们看到的月亮形状在一个月内呈现盈亏变化。接下来请做一道新题，尝试用此原理解释上弦月与下弦月的区别，并说明判断依据。",
+        "reasons": [],
+        "first_reasons": [
+          "model_review"
+        ],
+        "rewrite_model": "qwen3.5-27b",
+        "review": "符合action为explain的要求：给出了完整解释（月球不发光、反射太阳光、相对位置变化导致可见亮面变化），纠正了学生错误（非地球影子遮挡），并提供了具体例子（新月、满月），最后给出结论。虽以新题结尾，但已完整解答本题，未将关键步骤留给学生。",
+        "cross_review": "",
+        "first_draft": "你之前的回答提到了地球的影子，这其实是月食的原因，不是月相变化的主因。月相变化是因为月球绕地球公转，太阳照在月球上的亮面朝向地球的角度在变。比如，当月球在地球和太阳之间时，我们看到的是新月；当地球在太阳和月球之间时，我们看到的是满月。接下来，请你用这个原理解释一下，为什么农历初一和十五的月亮形状不同？",
+        "candidate": "月相变化并非地球影子遮挡（那是月食），而是因月球不发光，仅反射太阳光。当月球绕地球公转时，太阳照亮月球的半球中，朝向地球的部分不断变化。例如：月球位于日地之间时，亮面背对地球，我们看到新月；当地球位于日月之间时，亮面正对地球，我们看到满月。因此，日、地、月三者相对位置的周期性改变，导致我们看到的月亮形状在一个月内呈现盈亏变化。接下来请做一道新题，尝试用此原理解释上弦月与下弦月的区别，并说明判断依据。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "runs": 16,
+  "errors": 0,
+  "ladder_completed": "16/16",
+  "reached_teacher_review": 0,
+  "per_level": {
+    "scaffold_concept": {
+      "model": 10,
+      "template": 6
+    },
+    "scaffold_step": {
+      "model": 14,
+      "template": 2
+    },
+    "scaffold_example": {
+      "model": 16
+    }
+  },
+  "hints_leaking_answer": 0,
+  "explanations_delivered_by_model": "12/16",
+  "explanations_reaching_answer_numeric_tasks": "12/12",
+  "seconds": 50
+}

@@ -1,0 +1,58 @@
+{
+  "scope": "scripted behaviour checks on the live models, not learning outcomes",
+  "cases": [
+    {
+      "name": "pdf_material_cites_page",
+      "passed": true,
+      "details": {
+        "question": "What does Newton's second law state about the relationship between the net force on an object, its mass, and its acceleration?",
+        "source_pages": [
+          2
+        ]
+      },
+      "seconds": 1.53
+    },
+    {
+      "name": "chinese_candidate_is_translated",
+      "passed": true,
+      "details": {
+        "translation": "You calculated the total amount, but subtracting the taken part gives the remaining amount. What is the basis for this step?"
+      },
+      "seconds": 0.2
+    },
+    {
+      "name": "reviewer_confirms_wrong_answer",
+      "passed": true,
+      "details": {
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "The student incorrectly identifies the cost of earbuds (10 tickets) as half of the total, ignoring the bracelets (15 tickets). The correct half is the sum of earbuds and bracelets (25 tickets).",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        },
+        "feedback_review": {
+          "acceptable": false,
+          "reason": "候选内容错误地声称学生正确计算了10乘以2，但学生实际是将10误认为一半并计算了10x2=20，这并非正确的乘法应用。此外，候选内容直接给出了'earbuds and bracelets together make up the other half'这一关键解题结论，违反了locate动作不得给出正确关系或结论的规定。",
+          "reviewer": "qwen3.5-27b"
+        }
+      },
+      "seconds": 11.91
+    },
+    {
+      "name": "v5_escalates_hints_for_stubborn_student",
+      "passed": true,
+      "details": {
+        "actions": [
+          "locate",
+          "prerequisite",
+          "scaffold_concept",
+          "change_explanation"
+        ]
+      },
+      "seconds": 6.84
+    }
+  ],
+  "passed": true
+}

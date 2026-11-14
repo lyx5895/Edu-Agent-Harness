@@ -1,0 +1,204 @@
+{
+  "started_at": "2026-11-14T04:21:25.810675+00:00",
+  "url": "http://127.0.0.1:7861",
+  "git_head": "1a019ff79c96da1a12e5b02c12d5c023f45b5e64",
+  "source_has_uncommitted_changes": true,
+  "models": [
+    "omniedu-9b",
+    "qwen3.5-27b"
+  ],
+  "mock_model": false,
+  "database": "/tmp/edu-functional-audit/learning.sqlite",
+  "cases": [
+    {
+      "id": "01-workspace-entry",
+      "title": "独立学生与教师入口",
+      "passed": true,
+      "details": {
+        "student_menu": [
+          "我的学习"
+        ],
+        "teacher_menu": [
+          "班级概览",
+          "发布任务",
+          "批量备课",
+          "路径与跟进",
+          "复核与证据"
+        ]
+      },
+      "screenshot": "docs/screenshots/functional-audit/01-workspace-entry.png",
+      "seconds": 0.51
+    },
+    {
+      "id": "02-publish-assignment",
+      "title": "教师通过页面发布任务",
+      "passed": true,
+      "details": {
+        "assignment_id": "a9091716d52c45cfac474213527a682e",
+        "question": "小明骑车3小时行了45千米，平均速度是多少千米每小时？请写出计算过程和单位。",
+        "check_source": "teacher_bank",
+        "bank_setup": "API"
+      },
+      "screenshot": "docs/screenshots/functional-audit/02-publish-assignment.png",
+      "seconds": 2.11
+    },
+    {
+      "id": "03-assign-followup",
+      "title": "教师通过页面分发补救任务",
+      "passed": true,
+      "details": {
+        "followup_id": "e765aaca3e0049e9ba6382f50996cce7",
+        "kind": "remediation",
+        "learners": [
+          "验收学生A"
+        ]
+      },
+      "screenshot": "docs/screenshots/functional-audit/03-assign-followup.png",
+      "seconds": 1.45
+    },
+    {
+      "id": "04-student-inbox",
+      "title": "学生加载并开始教师任务",
+      "passed": false,
+      "error": "AssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for locator(\".start-panel\").get_by_text(\"数学 · 根据路程和时间求平均速度，写出计算过程和单位 · queued\", exact=True)\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 学生工作台\n  - group:\n    - text: 学生工作台\n    - radio \"我的学习\" [checked] [disabled]\n    - text: 我的学习\n  - strong: 学习，不止于一个答案\n  - paragraph: 把思路写下来，让每一次尝试都有所收获。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 学生工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - text: LEARNING SPACE\n    - heading \"今天，解开一个新问题。\" [level=2]\n    - paragraph: 不用急着找到答案。写下你的思路，我们一步一步来。\n    - text: 准备好开始了吗？\n    - paragraph: 从右侧领取老师的任务，或带着自己的问题来。\n    - text: 01 选择任务 02 写下思路 03 一起探究\n    - log \"chatbot conversation\":\n      - complementary:\n        - img\n        - strong: 把思考的过程，留在这里\n        - paragraph: 开始任务后，你的解答、老师的追问和提示都会出现在这里。\n        - text: 尝试表达 → 发现问题 → 再进一步\n    - text: Textbox\n    - textbox \"Textbox\":\n      - /placeholder: 写下你的解答、步骤或不确定的地方…\n    - button \"提交作答 →\"\n    - button \"回答追问\"\n    - button \"给我一点提示\"\n    - button \"请完整讲解\"\n    - button \"照片作答 · 拍照上传手写过程 ▼\"\n    - text: 开始一次学习 选择任务，或探索自己的问题 我的名字\n    - textbox \"我的名字\":\n      - /placeholder: \"\"\n      - text: 验收学生A\n    - tablist:\n      - tab \"老师的任务\" [selected]\n      - tab \"我的问题\"\n    - tabpanel:\n      - text: 班级\n      - textbox \"班级\":\n        - /placeholder: 例如：七年一班\n        - text: 功能验收班\n      - button \"加载我的任务\"\n      - text: 选择任务\n      - listbox \"选择任务\": 数学 · 根据路程和时间求平均速度，写出计算过程和单位 · queued\n      - img\n      - button \"开始这个任务 →\"\n    - text: 这一次的学习 选择任务 尝试作答 独立检查 每个好问题，都是一个新的起点。开始任务后，这里会记录你的学习过程。\n    - button \"开始独立检查\"\n    - button \"回到原任务\"\n    - button \"我的复习与学习路径 ▼\"\n    - button \"高级：编号、恢复会话与示例课程 ▼\"",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 169, in inbox\n    expect(page.locator('.start-panel').get_by_text('数学 · '+REQUIREMENT+' · queued',exact=True)).to_be_visible()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/sync_api/_generated.py\", line 23019, in to_be_visible\n    self._sync(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 841, in to_be_visible\n    await self._expect_impl(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 126, in _expect_impl\n    _record_soft_or_raise(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for locator(\".start-panel\").get_by_text(\"数学 · 根据路程和时间求平均速度，写出计算过程和单位 · queued\", exact=True)\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 学生工作台\n  - group:\n    - text: 学生工作台\n    - radio \"我的学习\" [checked] [disabled]\n    - text: 我的学习\n  - strong: 学习，不止于一个答案\n  - paragraph: 把思路写下来，让每一次尝试都有所收获。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 学生工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - text: LEARNING SPACE\n    - heading \"今天，解开一个新问题。\" [level=2]\n    - paragraph: 不用急着找到答案。写下你的思路，我们一步一步来。\n    - text: 准备好开始了吗？\n    - paragraph: 从右侧领取老师的任务，或带着自己的问题来。\n    - text: 01 选择任务 02 写下思路 03 一起探究\n    - log \"chatbot conversation\":\n      - complementary:\n        - img\n        - strong: 把思考的过程，留在这里\n        - paragraph: 开始任务后，你的解答、老师的追问和提示都会出现在这里。\n        - text: 尝试表达 → 发现问题 → 再进一步\n    - text: Textbox\n    - textbox \"Textbox\":\n      - /placeholder: 写下你的解答、步骤或不确定的地方…\n    - button \"提交作答 →\"\n    - button \"回答追问\"\n    - button \"给我一点提示\"\n    - button \"请完整讲解\"\n    - button \"照片作答 · 拍照上传手写过程 ▼\"\n    - text: 开始一次学习 选择任务，或探索自己的问题 我的名字\n    - textbox \"我的名字\":\n      - /placeholder: \"\"\n      - text: 验收学生A\n    - tablist:\n      - tab \"老师的任务\" [selected]\n      - tab \"我的问题\"\n    - tabpanel:\n      - text: 班级\n      - textbox \"班级\":\n        - /placeholder: 例如：七年一班\n        - text: 功能验收班\n      - button \"加载我的任务\"\n      - text: 选择任务\n      - listbox \"选择任务\": 数学 · 根据路程和时间求平均速度，写出计算过程和单位 · queued\n      - img\n      - button \"开始这个任务 →\"\n    - text: 这一次的学习 选择任务 尝试作答 独立检查 每个好问题，都是一个新的起点。开始任务后，这里会记录你的学习过程。\n    - button \"开始独立检查\"\n    - button \"回到原任务\"\n    - button \"我的复习与学习路径 ▼\"\n    - button \"高级：编号、恢复会话与示例课程 ▼\"\n",
+      "screenshot": "docs/screenshots/functional-audit/04-student-inbox-failed.png",
+      "seconds": 6.41
+    },
+    {
+      "id": "05-wrong-answer",
+      "title": "真实模型判错并定位问题",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 183, in wrong\n    result=operation('提交作答 →','locate')\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 105, in operation\n    version=state()['version']\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 102, in state\n    def state():return api('GET','/api/sessions/'+context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/05-wrong-answer-failed.png",
+      "seconds": 0.48
+    },
+    {
+      "id": "06-hint-ladder",
+      "title": "真实模型三级提示",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 194, in hints\n    result=operation('给我一点提示',action)\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 105, in operation\n    version=state()['version']\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 102, in state\n    def state():return api('GET','/api/sessions/'+context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/06-hint-ladder-failed.png",
+      "seconds": 0.46
+    },
+    {
+      "id": "07-full-explanation",
+      "title": "真实模型提供完整解答",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 200, in explain\n    result=operation('请完整讲解','explain')\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 105, in operation\n    version=state()['version']\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 102, in state\n    def state():return api('GET','/api/sessions/'+context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/07-full-explanation-failed.png",
+      "seconds": 0.47
+    },
+    {
+      "id": "08-assisted-completion",
+      "title": "看过讲解后标记为辅助完成",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 208, in assisted\n    result=operation('提交作答 →','offer_check')\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 105, in operation\n    version=state()['version']\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 102, in state\n    def state():return api('GET','/api/sessions/'+context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/08-assisted-completion-failed.png",
+      "seconds": 0.48
+    },
+    {
+      "id": "09-independent-check",
+      "title": "新题独立检查与禁止提示",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 215, in independent\n    result=operation('开始独立检查','create_check')\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 105, in operation\n    version=state()['version']\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 102, in state\n    def state():return api('GET','/api/sessions/'+context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/09-independent-check-failed.png",
+      "seconds": 0.47
+    },
+    {
+      "id": "10-teacher-dashboard",
+      "title": "教师查看真实学习过程汇总",
+      "passed": false,
+      "error": "AssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for get_by_role(\"cell\", name=\"验收学生A\", exact=True).first\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 教师工作台\n  - group:\n    - text: 教师工作台\n    - radio \"班级概览\" [checked]\n    - text: 班级概览\n    - radio \"发布任务\"\n    - text: 发布任务\n    - radio \"批量备课\"\n    - text: 批量备课\n    - radio \"路径与跟进\"\n    - text: 路径与跟进\n    - radio \"复核与证据\"\n    - text: 复核与证据\n  - strong: 让每次指导，更有依据\n  - paragraph: 从作答证据出发，关注进展，安排有针对性的教学。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 教师工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - tabpanel:\n      - text: CLASSROOM OVERVIEW\n      - heading \"看见进展，也看见需要帮助的人。\" [level=2]\n      - paragraph: 从学习证据出发，安排下一次有针对性的指导。\n      - text: Textbox\n      - textbox \"Textbox\":\n        - /placeholder: 输入班级名称，留空查看全部\n        - text: 功能验收班\n      - button \"刷新学情\"\n      - text: 学习中的学生 0人 覆盖 0 个学习目标 需要支持的目标 0项 需要帮助或重新检查 独立通过的目标 0项 已通过无提示的新题检查 等待教师复核 0条 其中 0 条需优先关注 学生学习情况 按学习目标汇总的证据和建议的下一步\n      - grid:\n        - button \"Drop CSV or TSV files here to import data into dataframe\":\n          - table:\n            - rowgroup:\n              - row \"学生 学习目标 状态 独立检查 下一步\":\n                - columnheader \"学生\":\n                  - button \"学生\":\n                    - button \"学生\"\n                - columnheader \"学习目标\":\n                  - button \"学习目标\":\n                    - button \"学习目标\"\n                - columnheader \"状态\":\n                  - button \"状态\":\n                    - button \"状态\"\n                - columnheader \"独立检查\":\n                  - button \"独立检查\":\n                    - button \"独立检查\"\n                - columnheader \"下一步\":\n                  - button \"下一步\":\n                    - button \"下一步\"\n            - rowgroup\n            - rowgroup\n      - text: 建议分组补救 相同知识点、相同问题的学生\n      - strong: 把帮助给到合适的人\n      - paragraph: 出现相同知识点、相同困难时，会在这里推荐补救分组。\n      - text: 待复核作答 按风险排序；点击一行可直接到“复核与证据”处理\n      - grid:\n        - button \"Drop CSV or TSV files here to import data into dataframe\":\n          - table:\n            - rowgroup:\n              - row \"优先级 学生 作答 判定 风险 会话 作答编号\":\n                - columnheader \"优先级\":\n                  - button \"优先级\":\n                    - button \"优先级\"\n                - columnheader \"学生\":\n                  - button \"学生\":\n                    - button \"学生\"\n                - columnheader \"作答\":\n                  - button \"作答\":\n                    - button \"作答\"\n                - columnheader \"判定\":\n                  - button \"判定\":\n                    - button \"判定\"\n                - columnheader \"风险\":\n                  - button \"风险\":\n                    - button \"风险\"\n                - columnheader \"会话\":\n                  - button \"会话\":\n                    - button \"会话\"\n                - columnheader \"作答编号\":\n                  - button \"作答编号\":\n                    - button \"作答编号\"\n            - rowgroup\n            - rowgroup",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 231, in overview\n    expect(page.get_by_role('cell',name=LEARNER,exact=True).first).to_be_visible()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/sync_api/_generated.py\", line 23019, in to_be_visible\n    self._sync(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 841, in to_be_visible\n    await self._expect_impl(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 126, in _expect_impl\n    _record_soft_or_raise(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for get_by_role(\"cell\", name=\"验收学生A\", exact=True).first\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 教师工作台\n  - group:\n    - text: 教师工作台\n    - radio \"班级概览\" [checked]\n    - text: 班级概览\n    - radio \"发布任务\"\n    - text: 发布任务\n    - radio \"批量备课\"\n    - text: 批量备课\n    - radio \"路径与跟进\"\n    - text: 路径与跟进\n    - radio \"复核与证据\"\n    - text: 复核与证据\n  - strong: 让每次指导，更有依据\n  - paragraph: 从作答证据出发，关注进展，安排有针对性的教学。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 教师工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - tabpanel:\n      - text: CLASSROOM OVERVIEW\n      - heading \"看见进展，也看见需要帮助的人。\" [level=2]\n      - paragraph: 从学习证据出发，安排下一次有针对性的指导。\n      - text: Textbox\n      - textbox \"Textbox\":\n        - /placeholder: 输入班级名称，留空查看全部\n        - text: 功能验收班\n      - button \"刷新学情\"\n      - text: 学习中的学生 0人 覆盖 0 个学习目标 需要支持的目标 0项 需要帮助或重新检查 独立通过的目标 0项 已通过无提示的新题检查 等待教师复核 0条 其中 0 条需优先关注 学生学习情况 按学习目标汇总的证据和建议的下一步\n      - grid:\n        - button \"Drop CSV or TSV files here to import data into dataframe\":\n          - table:\n            - rowgroup:\n              - row \"学生 学习目标 状态 独立检查 下一步\":\n                - columnheader \"学生\":\n                  - button \"学生\":\n                    - button \"学生\"\n                - columnheader \"学习目标\":\n                  - button \"学习目标\":\n                    - button \"学习目标\"\n                - columnheader \"状态\":\n                  - button \"状态\":\n                    - button \"状态\"\n                - columnheader \"独立检查\":\n                  - button \"独立检查\":\n                    - button \"独立检查\"\n                - columnheader \"下一步\":\n                  - button \"下一步\":\n                    - button \"下一步\"\n            - rowgroup\n            - rowgroup\n      - text: 建议分组补救 相同知识点、相同问题的学生\n      - strong: 把帮助给到合适的人\n      - paragraph: 出现相同知识点、相同困难时，会在这里推荐补救分组。\n      - text: 待复核作答 按风险排序；点击一行可直接到“复核与证据”处理\n      - grid:\n        - button \"Drop CSV or TSV files here to import data into dataframe\":\n          - table:\n            - rowgroup:\n              - row \"优先级 学生 作答 判定 风险 会话 作答编号\":\n                - columnheader \"优先级\":\n                  - button \"优先级\":\n                    - button \"优先级\"\n                - columnheader \"学生\":\n                  - button \"学生\":\n                    - button \"学生\"\n                - columnheader \"作答\":\n                  - button \"作答\":\n                    - button \"作答\"\n                - columnheader \"判定\":\n                  - button \"判定\":\n                    - button \"判定\"\n                - columnheader \"风险\":\n                  - button \"风险\":\n                    - button \"风险\"\n                - columnheader \"会话\":\n                  - button \"会话\":\n                    - button \"会话\"\n                - columnheader \"作答编号\":\n                  - button \"作答编号\":\n                    - button \"作答编号\"\n            - rowgroup\n            - rowgroup\n",
+      "screenshot": "docs/screenshots/functional-audit/10-teacher-dashboard-failed.png",
+      "seconds": 6.38
+    },
+    {
+      "id": "11-policy-replay",
+      "title": "教师回放教学策略且不调用模型",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 239, in replay\n    page.get_by_role('textbox',name='会话编号',exact=True).last.fill(context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/11-policy-replay-failed.png",
+      "seconds": 0.66
+    },
+    {
+      "id": "12-teacher-correction",
+      "title": "教师改判与证据失效",
+      "passed": false,
+      "error": "KeyError: 'sid'",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 248, in correction\n    page.get_by_role('textbox',name='会话编号',exact=True).first.fill(context['sid'])\nKeyError: 'sid'\n",
+      "screenshot": "docs/screenshots/functional-audit/12-teacher-correction-failed.png",
+      "seconds": 0.43
+    },
+    {
+      "id": "13-preparation-pack",
+      "title": "真实模型起草并通过页面审核发布备课包",
+      "passed": true,
+      "details": {
+        "generated_via": "real-model API",
+        "published_via": "browser UI",
+        "pack_id": "bc623c440c8b488186205ebbfd87db17",
+        "status": "published",
+        "distributed_tasks": 1,
+        "content_review": "scripted confirmation, not independent human review"
+      },
+      "screenshot": "docs/screenshots/functional-audit/13-preparation-pack.png",
+      "seconds": 3.25
+    },
+    {
+      "id": "14-learning-path",
+      "title": "学生查看课程路径下一步",
+      "passed": false,
+      "error": "AssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for get_by_text(\"请教师安排复习\", exact=True)\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 学生工作台\n  - group:\n    - text: 学生工作台\n    - radio \"我的学习\" [checked] [disabled]\n    - text: 我的学习\n  - strong: 学习，不止于一个答案\n  - paragraph: 把思路写下来，让每一次尝试都有所收获。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 学生工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - text: LEARNING SPACE\n    - heading \"今天，解开一个新问题。\" [level=2]\n    - paragraph: 不用急着找到答案。写下你的思路，我们一步一步来。\n    - text: 准备好开始了吗？\n    - paragraph: 从右侧领取老师的任务，或带着自己的问题来。\n    - text: 01 选择任务 02 写下思路 03 一起探究\n    - log \"chatbot conversation\":\n      - complementary:\n        - img\n        - strong: 把思考的过程，留在这里\n        - paragraph: 开始任务后，你的解答、老师的追问和提示都会出现在这里。\n        - text: 尝试表达 → 发现问题 → 再进一步\n    - text: Textbox\n    - textbox \"Textbox\":\n      - /placeholder: 写下你的解答、步骤或不确定的地方…\n    - button \"提交作答 →\"\n    - button \"回答追问\"\n    - button \"给我一点提示\"\n    - button \"请完整讲解\"\n    - button \"照片作答 · 拍照上传手写过程 ▼\"\n    - text: 开始一次学习 选择任务，或探索自己的问题 我的名字\n    - textbox \"我的名字\":\n      - /placeholder: \"\"\n      - text: 验收学生A\n    - tablist:\n      - tab \"老师的任务\" [selected]\n      - tab \"我的问题\"\n    - tabpanel:\n      - text: 班级\n      - textbox \"班级\":\n        - /placeholder: 例如：七年一班\n      - button \"加载我的任务\"\n      - text: 选择任务\n      - listbox \"选择任务\"\n      - img\n      - button \"开始这个任务 →\"\n    - text: 这一次的学习 选择任务 尝试作答 独立检查 每个好问题，都是一个新的起点。开始任务后，这里会记录你的学习过程。\n    - button \"开始独立检查\"\n    - button \"回到原任务\"\n    - button \"我的复习与学习路径 ▼\"\n    - text: 班级\n    - textbox \"班级\":\n      - /placeholder: \"\"\n      - text: 功能验收班\n    - button \"查看复习与补救任务\"\n    - text: 课程路径编号\n    - textbox \"课程路径编号\":\n      - /placeholder: \"\"\n      - text: 1514d75fe920482a8d15bb26e6bc13f4\n    - button \"查看下一步\"\n    - heading \"完成教师跟进任务\" [level=3]\n    - paragraph: 先完成教师布置的到期复习或补救任务。\n    - paragraph:\n      - text: 跟进任务编号：\n      - code: e765aaca3e0049e9ba6382f50996cce7\n    - button \"高级：编号、恢复会话与示例课程 ▼\"",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 286, in path\n    expect(page.get_by_text('请教师安排复习',exact=True)).to_be_visible()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/sync_api/_generated.py\", line 23019, in to_be_visible\n    self._sync(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 841, in to_be_visible\n    await self._expect_impl(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 126, in _expect_impl\n    _record_soft_or_raise(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_assertions.py\", line 60, in _record_soft_or_raise\n    raise error\nAssertionError: Locator expected to be visible\nActual value: None\nError: element(s) not found \nCall log:\n  - Expect \"to_be_visible\" with timeout 5000ms\n  - waiting for get_by_text(\"请教师安排复习\", exact=True)\n\nAria snapshot:\n- main:\n  - button \"Toggle Sidebar\"\n  - strong: OmniEdu 学生工作台\n  - group:\n    - text: 学生工作台\n    - radio \"我的学习\" [checked] [disabled]\n    - text: 我的学习\n  - strong: 学习，不止于一个答案\n  - paragraph: 把思路写下来，让每一次尝试都有所收获。\n  - link \"← 返回身份选择\":\n    - /url: /\n  - text: OMNIEDU / 学生工作台\n  - paragraph: 专注思考，看见进步。\n  - text: 2026 年 11 月 14 日 本地演示\n  - tabpanel:\n    - text: LEARNING SPACE\n    - heading \"今天，解开一个新问题。\" [level=2]\n    - paragraph: 不用急着找到答案。写下你的思路，我们一步一步来。\n    - text: 准备好开始了吗？\n    - paragraph: 从右侧领取老师的任务，或带着自己的问题来。\n    - text: 01 选择任务 02 写下思路 03 一起探究\n    - log \"chatbot conversation\":\n      - complementary:\n        - img\n        - strong: 把思考的过程，留在这里\n        - paragraph: 开始任务后，你的解答、老师的追问和提示都会出现在这里。\n        - text: 尝试表达 → 发现问题 → 再进一步\n    - text: Textbox\n    - textbox \"Textbox\":\n      - /placeholder: 写下你的解答、步骤或不确定的地方…\n    - button \"提交作答 →\"\n    - button \"回答追问\"\n    - button \"给我一点提示\"\n    - button \"请完整讲解\"\n    - button \"照片作答 · 拍照上传手写过程 ▼\"\n    - text: 开始一次学习 选择任务，或探索自己的问题 我的名字\n    - textbox \"我的名字\":\n      - /placeholder: \"\"\n      - text: 验收学生A\n    - tablist:\n      - tab \"老师的任务\" [selected]\n      - tab \"我的问题\"\n    - tabpanel:\n      - text: 班级\n      - textbox \"班级\":\n        - /placeholder: 例如：七年一班\n      - button \"加载我的任务\"\n      - text: 选择任务\n      - listbox \"选择任务\"\n      - img\n      - button \"开始这个任务 →\"\n    - text: 这一次的学习 选择任务 尝试作答 独立检查 每个好问题，都是一个新的起点。开始任务后，这里会记录你的学习过程。\n    - button \"开始独立检查\"\n    - button \"回到原任务\"\n    - button \"我的复习与学习路径 ▼\"\n    - text: 班级\n    - textbox \"班级\":\n      - /placeholder: \"\"\n      - text: 功能验收班\n    - button \"查看复习与补救任务\"\n    - text: 课程路径编号\n    - textbox \"课程路径编号\":\n      - /placeholder: \"\"\n      - text: 1514d75fe920482a8d15bb26e6bc13f4\n    - button \"查看下一步\"\n    - heading \"完成教师跟进任务\" [level=3]\n    - paragraph: 先完成教师布置的到期复习或补救任务。\n    - paragraph:\n      - text: 跟进任务编号：\n      - code: e765aaca3e0049e9ba6382f50996cce7\n    - button \"高级：编号、恢复会话与示例课程 ▼\"\n",
+      "screenshot": "docs/screenshots/functional-audit/14-learning-path-failed.png",
+      "seconds": 6.43
+    },
+    {
+      "id": "15-image-confirmation",
+      "title": "真实视觉识别、学生确认后判定",
+      "passed": true,
+      "details": {
+        "input": "synthetic printed work, not real handwriting",
+        "transcription": "Student work Distance: 45 km Time: 3 hours Average speed = 45 / 3 = 15 km/h",
+        "confirmed_status": "correct",
+        "confirmation_required": true
+      },
+      "screenshot": "docs/screenshots/functional-audit/15-image-confirmation.png",
+      "seconds": 6.04
+    },
+    {
+      "id": "16-pdf-material",
+      "title": "上传文字PDF并引用材料页码",
+      "passed": false,
+      "error": "TimeoutError: Locator.set_input_files: Timeout 20000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=file][accept=\\\".txt,.md,.pdf\\\"]\")\n",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 78, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 316, in pdf_material\n    page.locator('input[type=file][accept=\".txt,.md,.pdf\"]').set_input_files(str(ROOT/'reports/functional-audit/material.pdf'))\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/sync_api/_generated.py\", line 19950, in set_input_files\n    self._sync(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_locator.py\", line 654, in set_input_files\n    return await self._frame.set_input_files(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_frame.py\", line 831, in set_input_files\n    await self._channel.send(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_connection.py\", line 69, in send\n    return await self._connection.wrap_api_call(\n  File \"/root/miniconda3/lib/python3.10/site-packages/playwright/_impl/_connection.py\", line 563, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Locator.set_input_files: Timeout 20000ms exceeded.\nCall log:\n  - waiting for locator(\"input[type=file][accept=\\\".txt,.md,.pdf\\\"]\")\n\n",
+      "screenshot": "docs/screenshots/functional-audit/16-pdf-material-failed.png",
+      "seconds": 21.45
+    },
+    {
+      "id": "17-mobile-layout",
+      "title": "手机端布局与侧栏收起",
+      "passed": true,
+      "details": {
+        "viewport": [
+          390,
+          844
+        ],
+        "horizontal_overflow": false
+      },
+      "screenshot": "docs/screenshots/functional-audit/17-mobile-layout.png",
+      "seconds": 1.68
+    }
+  ],
+  "browser_errors": [],
+  "passed": false,
+  "finished_at": "2026-11-14T04:22:25.409515+00:00"
+}

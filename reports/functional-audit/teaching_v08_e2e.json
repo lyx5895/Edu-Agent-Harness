@@ -1,0 +1,58 @@
+{
+  "scope": "scripted behaviour checks on the live models, not learning outcomes",
+  "cases": [
+    {
+      "name": "pdf_material_cites_page",
+      "passed": true,
+      "details": {
+        "question": "What does Newton's second law state about the relationship between the net force on an object, its mass, and its acceleration?",
+        "source_pages": [
+          2
+        ]
+      },
+      "seconds": 1.38
+    },
+    {
+      "name": "chinese_candidate_is_translated",
+      "passed": true,
+      "details": {
+        "translation": "You calculated the total amount, but subtracting the taken part gives the remaining amount. What is the basis for this step?"
+      },
+      "seconds": 0.21
+    },
+    {
+      "name": "reviewer_confirms_wrong_answer",
+      "passed": true,
+      "details": {
+        "cross_review": {
+          "agreed": true,
+          "confidence": "high",
+          "observation": "The student incorrectly assumes that the cost of earbuds (10 tickets) represents half of the total tickets, ignoring the bracelets (15 tickets) which are also part of the remaining half.",
+          "overturned": false,
+          "reviewer": "qwen3.5-27b",
+          "status": "incorrect"
+        },
+        "feedback_review": {
+          "acceptable": true,
+          "reason": "The candidate correctly identifies the student's error in assuming earbuds cost half the total, without revealing the correct answer or steps.",
+          "reviewer": "qwen3.5-27b"
+        }
+      },
+      "seconds": 5.49
+    },
+    {
+      "name": "v5_escalates_hints_for_stubborn_student",
+      "passed": true,
+      "details": {
+        "actions": [
+          "locate",
+          "prerequisite",
+          "scaffold_concept",
+          "change_explanation"
+        ]
+      },
+      "seconds": 5.2
+    }
+  ],
+  "passed": true
+}

@@ -1,0 +1,223 @@
+{
+  "scope": "real-model browser workflows on an isolated database; observations, not learning outcomes",
+  "url": "http://127.0.0.1:7861",
+  "started_at": 1794663859.23532,
+  "seconds": 36.5,
+  "passed": false,
+  "summary": {
+    "passed": 15,
+    "total": 16
+  },
+  "console_errors": [],
+  "cases": [
+    {
+      "name": "publish",
+      "title": "教师在页面上发布检查题和练习，并把检查题加入练习的题库",
+      "observed": {
+        "check_assignment": "af90d284b42e42f7a64f04ee17e5f3bd",
+        "screenshot_form": "docs/screenshots/functional-audit-v010/02-publish-form.png",
+        "assignment": "e7a123acab7d4e6aac69644769aca75e",
+        "screenshot": "docs/screenshots/functional-audit-v010/02-publish-result.png"
+      },
+      "passed": true,
+      "seconds": 0.9
+    },
+    {
+      "name": "assign",
+      "title": "教师在“学习安排”中按名单布置补救任务",
+      "observed": {
+        "followups": 3,
+        "screenshot": "docs/screenshots/functional-audit-v010/03-assign.png"
+      },
+      "passed": true,
+      "seconds": 0.3
+    },
+    {
+      "name": "student-inbox",
+      "title": "学生领取老师布置的任务；学生端拿不到参考答案",
+      "observed": {
+        "inbox": [
+          "能根据路程和时间求平均速度，并写出计算过程和单位\n待开始\n七年级数学\n· 11/15 21:44"
+        ],
+        "followup_linked": true,
+        "screenshot": "docs/screenshots/functional-audit-v010/04-student-inbox.png"
+      },
+      "passed": true,
+      "seconds": 0.3
+    },
+    {
+      "name": "wrong-answer",
+      "title": "提交错误作答，判定为有错，并指出问题",
+      "observed": {
+        "status": "incorrect",
+        "action": "locate",
+        "feedback": "先只检查这一处：「平均速度等于路程乘以时间，45 × 3 = 135」。把这一步得到的结果代回题目，看看是否满足给出的条件，哪一条条件对不上？",
+        "screenshot": "docs/screenshots/functional-audit-v010/05-wrong-answer.png"
+      },
+      "passed": true,
+      "seconds": 6.9
+    },
+    {
+      "name": "explanation",
+      "title": "学生请求完整讲解",
+      "observed": {
+        "action": "explain",
+        "feedback": "你混淆了速度、路程和时间之间的关系。平均速度应该是路程除以时间，而不是相乘。请重新计算：45 ÷ 3 = 15，所以平均速度是 15 千米每小时。",
+        "gives_result_15": true,
+        "screenshot": "docs/screenshots/functional-audit-v010/06-explanation.png"
+      },
+      "passed": true,
+      "seconds": 1.3
+    },
+    {
+      "name": "assisted-completion",
+      "title": "看过讲解后做对，记为借助帮助完成",
+      "observed": {
+        "status": "correct",
+        "evidence": "assisted_complete",
+        "banner": "借助帮助完成了练习\n接下来试一道新题，看看不借助提示能不能独立做出来。\n开始独立检查",
+        "screenshot": "docs/screenshots/functional-audit-v010/07-assisted-completion.png"
+      },
+      "passed": true,
+      "seconds": 1.3
+    },
+    {
+      "name": "independent-check",
+      "title": "用老师题库里的新题做独立检查；检查中不提供提示",
+      "observed": {
+        "check_question": "小红步行 4 小时行了 20 千米，她的平均速度是多少千米每小时？请写出计算过程和单位。",
+        "from_teacher_bank": true,
+        "hint_buttons": 0,
+        "hint_api_status": 409,
+        "status": "correct",
+        "evidence": "independent_model_assessed",
+        "screenshot": "docs/screenshots/functional-audit-v010/08-independent-check.png"
+      },
+      "passed": true,
+      "seconds": 1.7
+    },
+    {
+      "name": "hint-ladder",
+      "title": "答错后连续请求三级提示：概念、步骤、例子",
+      "observed": {
+        "first_turn": "locate",
+        "hint_actions": [
+          "scaffold_concept",
+          "scaffold_step",
+          "teacher_review"
+        ],
+        "feedbacks": [
+          "平均速度表示每小时行多少千米，也就是把总路程按时间平均分。你算出的135比总路程45还大，这合理吗？",
+          "你最不确定的是哪一步，这一步使用了什么依据？",
+          "你最不确定的是哪一步，这一步使用了什么依据？",
+          "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。"
+        ],
+        "screenshot": "docs/screenshots/functional-audit-v010/09-hint-ladder.png"
+      },
+      "passed": false,
+      "error": "AssertionError: ['scaffold_concept', 'scaffold_step', 'teacher_review']",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 91, in case\n    fn(row['observed'])\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 302, in ladder\n    assert actions[:3] == ['scaffold_concept', 'scaffold_step', 'scaffold_example'], actions\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ['scaffold_concept', 'scaffold_step', 'teacher_review']\n",
+      "screenshot": "docs/screenshots/functional-audit-v010/hint-ladder-failed.png",
+      "seconds": 13.3
+    },
+    {
+      "name": "photo-answer",
+      "title": "拍照作答：先核对识别文字，确认后再判定",
+      "observed": {
+        "transcription": "Student work Distance: 45 km Time: 3 hours Average speed = 45 / 3 = 15 km/h",
+        "screenshot_transcription": "docs/screenshots/functional-audit-v010/10-photo-transcription.png",
+        "status": "correct",
+        "action": "offer_check",
+        "screenshot": "docs/screenshots/functional-audit-v010/11-photo-judged.png"
+      },
+      "passed": true,
+      "seconds": 2.6
+    },
+    {
+      "name": "pdf-material",
+      "title": "自己提问并上传两页文字版 PDF，任务引用正确的页码",
+      "observed": {
+        "question": "根据牛顿第二定律 F=ma，当作用力 F 保持不变时，物体的质量 m 增大，加速度 a 会如何变化？",
+        "source_pages": [
+          2
+        ],
+        "source_count": 2,
+        "screenshot": "docs/screenshots/functional-audit-v010/12-pdf-material.png"
+      },
+      "passed": true,
+      "seconds": 2.2
+    },
+    {
+      "name": "dashboard",
+      "title": "班级学情显示本次真实作答产生的记录和复核队列",
+      "observed": {
+        "kpis": [
+          "学生\n3人\n涉及 3 个学习目标",
+          "需要帮助\n1项\n需要帮助或重新检查",
+          "独立完成\n1项\n通过了无提示的新题检查",
+          "待复核\n4条\n其中 3 条紧急"
+        ],
+        "learning_rows": 3,
+        "queue_rows": 4,
+        "screenshot": "docs/screenshots/functional-audit-v010/13-teacher-dashboard.png"
+      },
+      "passed": true,
+      "seconds": 0.3
+    },
+    {
+      "name": "review-replay",
+      "title": "复核页查看作答、教学轨迹，策略回放一致（不调用模型）",
+      "observed": {
+        "replay_notice": "策略回放一致：每一步的教学决定都能由记录的输入重新算出（不调用模型）。",
+        "turns": 5,
+        "screenshot": "docs/screenshots/functional-audit-v010/14-review-replay.png"
+      },
+      "passed": true,
+      "seconds": 0.4
+    },
+    {
+      "name": "correction",
+      "title": "教师改判后，原会话标记为需要重新检查",
+      "observed": {
+        "needs_review": true,
+        "screenshot": "docs/screenshots/functional-audit-v010/15-correction.png"
+      },
+      "passed": true,
+      "seconds": 0.3
+    },
+    {
+      "name": "pack",
+      "title": "批量出题：真实模型起草，教师审核后发布并分发",
+      "observed": {
+        "draft_question": "夏天，人们出汗后为什么会感到凉快？请结合蒸发的特点进行解释。",
+        "screenshot_draft": "docs/screenshots/functional-audit-v010/16-pack-draft.png",
+        "inbox_for_E": 1,
+        "screenshot": "docs/screenshots/functional-audit-v010/17-pack-published.png"
+      },
+      "passed": true,
+      "seconds": 2.4
+    },
+    {
+      "name": "learning-path",
+      "title": "教师发布学习顺序；学生按路径查看下一步（改判后的证据不再算数）",
+      "observed": {
+        "next_step": "补一补这个知识点\n按有效学习证据选择可开始的目标；诊断后再决定是否需要讲解。",
+        "screenshot": "docs/screenshots/functional-audit-v010/18-learning-path.png"
+      },
+      "passed": true,
+      "seconds": 0.5
+    },
+    {
+      "name": "mobile",
+      "title": "手机宽度（390px）下学生端和教师端没有横向溢出",
+      "observed": {
+        "student_overflow": false,
+        "screenshot": "docs/screenshots/functional-audit-v010/19-mobile-student.png",
+        "teacher_overflow": false,
+        "screenshot_teacher": "docs/screenshots/functional-audit-v010/20-mobile-teacher.png"
+      },
+      "passed": true,
+      "seconds": 0.5
+    }
+  ]
+}

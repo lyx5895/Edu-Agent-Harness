@@ -1,0 +1,45 @@
+........................................................................ [ 48%]
+........................................................................ [ 96%]
+.....                                                                    [100%]
+=============================== warnings summary ===============================
+.envs/harness/lib/python3.11/site-packages/starlette/testclient.py:45
+  /default-filesys/workspace/ysb/Edu/.envs/harness/lib/python3.11/site-packages/starlette/testclient.py:45: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/harness/interfaces/web.py:266: DeprecationWarning: The 'theme' parameter in the Blocks constructor will be removed in Gradio 6.0. You will need to pass 'theme' to Blocks.launch() instead.
+    with gr.Blocks(title='OmniEdu · 学生工作台' if role=='student' else 'OmniEdu · 教师工作台',theme=THEME,css=CSS,fill_width=True) as demo:
+
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/harness/interfaces/web.py:266: DeprecationWarning: The 'css' parameter in the Blocks constructor will be removed in Gradio 6.0. You will need to pass 'css' to Blocks.launch() instead.
+    with gr.Blocks(title='OmniEdu · 学生工作台' if role=='student' else 'OmniEdu · 教师工作台',theme=THEME,css=CSS,fill_width=True) as demo:
+
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/harness/interfaces/web.py:286: DeprecationWarning: The default value of 'allow_tags' in gr.Chatbot will be changed from False to True in Gradio 6.0. You will need to explicitly set allow_tags=False if you want to disable tags in your chatbot.
+    chat=gr.Chatbot(type='messages',height=340,show_label=False,elem_classes='chat-panel',
+
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/.envs/harness/lib/python3.11/site-packages/gradio/component_meta.py:189: DeprecationWarning: Passing a tuple to 'row_count' will be removed in Gradio 6.0. You will need to use 'row_count' for the initial row count and 'row_limits' for min/max constraints instead. For example, row_count=(5, 'fixed') should become row_count=5, row_limits=(5, 5).
+    return fn(self, **kwargs)
+
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/.envs/harness/lib/python3.11/site-packages/gradio/component_meta.py:189: DeprecationWarning: The 'col_count' parameter will be removed in Gradio 6.0. You will need to use 'column_count' instead.
+    return fn(self, **kwargs)
+
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+tests/test_api.py::test_page_and_api_flow
+  /default-filesys/workspace/ysb/Edu/.envs/harness/lib/python3.11/site-packages/gradio/component_meta.py:189: DeprecationWarning: Passing a tuple to 'col_count' will be removed in Gradio 6.0. You will need to use 'column_count' for the initial column count and 'column_limits' for min/max constraints instead. For example, col_count=(3, 'fixed') should become column_count=3, column_limits=(3, 3).
+    return fn(self, **kwargs)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+149 passed, 18 warnings in 7.23s

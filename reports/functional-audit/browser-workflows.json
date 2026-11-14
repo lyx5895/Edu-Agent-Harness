@@ -1,0 +1,391 @@
+{
+  "started_at": "2026-11-14T12:24:32.589226+08:00",
+  "url": "http://127.0.0.1:7861",
+  "git_head": "1a019ff79c96da1a12e5b02c12d5c023f45b5e64",
+  "source_has_uncommitted_changes": true,
+  "models": [
+    "omniedu-9b",
+    "qwen3.5-27b"
+  ],
+  "mock_model": false,
+  "class_id": "功能验收班-122432",
+  "database": "/tmp/edu-functional-audit/learning.sqlite",
+  "cases": [
+    {
+      "id": "01-workspace-entry",
+      "title": "独立学生与教师入口",
+      "passed": true,
+      "details": {
+        "student_menu": [
+          "我的学习"
+        ],
+        "teacher_menu": [
+          "班级概览",
+          "发布任务",
+          "批量备课",
+          "路径与跟进",
+          "复核与证据"
+        ]
+      },
+      "screenshot": "docs/screenshots/functional-audit/01-workspace-entry.png",
+      "seconds": 0.5
+    },
+    {
+      "id": "02-publish-assignment",
+      "title": "教师通过页面发布任务",
+      "passed": true,
+      "details": {
+        "assignment_id": "e13d6e8e3b7a43338810c3444c505c3b",
+        "question": "小明骑车3小时行了45千米，平均速度是多少千米每小时？请写出计算过程和单位。",
+        "check_source": "teacher_bank",
+        "bank_setup": "API"
+      },
+      "screenshot": "docs/screenshots/functional-audit/02-publish-assignment.png",
+      "seconds": 2.01
+    },
+    {
+      "id": "03-assign-followup",
+      "title": "教师通过页面分发补救任务",
+      "passed": true,
+      "details": {
+        "followup_id": "533cb624f46b46c094dcf3910f1d434e",
+        "kind": "remediation",
+        "learners": [
+          "验收学生A"
+        ]
+      },
+      "screenshot": "docs/screenshots/functional-audit/03-assign-followup.png",
+      "seconds": 1.46
+    },
+    {
+      "id": "04-student-inbox",
+      "title": "学生加载并开始教师任务",
+      "passed": true,
+      "details": {
+        "session_id": "open_f158d3dad1834dd39e0ff19c4ccf36c1",
+        "reference_hidden": true,
+        "phase": "teach"
+      },
+      "screenshot": "docs/screenshots/functional-audit/04-student-inbox.png",
+      "seconds": 1.81
+    },
+    {
+      "id": "05-wrong-answer",
+      "title": "真实模型判错并定位问题",
+      "passed": true,
+      "details": {
+        "student_work": "平均速度等于路程乘以时间，45 × 3 = 135，所以平均速度是135千米每小时。",
+        "status": "incorrect",
+        "action": "locate",
+        "feedback": "请再检查这一处：「平均速度等于路程乘以时间，45 × 3 = 135」。这一步依据的是什么，结果成立吗？",
+        "audit": {
+          "candidate": "你混淆了平均速度的计算公式，平均速度应该是路程除以时间，而不是乘以时间。请重新检查公式，用45除以3再试一次。",
+          "delivered_action": "locate_template",
+          "fallback": true,
+          "first_draft": {
+            "candidate": "你混淆了平均速度的计算公式，平均速度应该是路程除以时间，而不是乘以时间。请重新检查公式，用45除以3再试一次。",
+            "reasons": [
+              "locate_must_end_with_one_question"
+            ],
+            "review": "学生错误地使用了乘法计算平均速度，而正确的方法应该是用路程除以时间。候选回答正确指出了公式错误并给出了正确的计算方向，但未直接给出最终答案，符合locate的要求。"
+          },
+          "reasons": [
+            "locate_must_end_with_one_question"
+          ],
+          "review": {
+            "acceptable": true,
+            "reason": "学生错误地使用了乘法计算平均速度，而正确的方法应该是用路程除以时间。候选回答正确指出了公式错误并给出了正确的计算方向，但未直接给出最终答案，符合locate的要求。"
+          }
+        }
+      },
+      "screenshot": "docs/screenshots/functional-audit/05-wrong-answer.png",
+      "seconds": 4.79
+    },
+    {
+      "id": "06-hint-ladder",
+      "title": "真实模型三级提示",
+      "passed": false,
+      "error": "AssertionError: {'id': 38, 'type': 'turn', 'text': '', 'feedback': '当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。', 'evidence': 'interaction_only', 'action': 'teacher_review'}",
+      "traceback": "Traceback (most recent call last):\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 80, in run\n    details=fn()\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 198, in hints\n    result=operation('给我一点提示',action)\n  File \"/default-filesys/workspace/ysb/Edu/scripts/capture_functional_audit.py\", line 114, in operation\n    assert current['history'][-1]['action']==expected_action,current['history'][-1]\nAssertionError: {'id': 38, 'type': 'turn', 'text': '', 'feedback': '当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。', 'evidence': 'interaction_only', 'action': 'teacher_review'}\n",
+      "observed_state": {
+        "session_id": "open_f158d3dad1834dd39e0ff19c4ccf36c1",
+        "learner": "验收学生A",
+        "version": 4,
+        "engine": "open-task-v1",
+        "task": {
+          "id": "8d0d3bba684b45089c1459d65d254561",
+          "domain": "数学",
+          "objective": "根据路程和时间求平均速度，写出计算过程和单位",
+          "question": "小明骑车3小时行了45千米，平均速度是多少千米每小时？请写出计算过程和单位。",
+          "phase": "teach",
+          "source_ids": [],
+          "task_type": "open",
+          "source_pages": [],
+          "check_requirements": [
+            "根据路程和时间求平均速度，写出计算过程和单位"
+          ],
+          "criteria": []
+        },
+        "pending_image": null,
+        "pending_question": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+        "completed": false,
+        "needs_review": false,
+        "scope": {
+          "class_id": "功能验收班-122432",
+          "concept_id": "平均速度",
+          "course_id": "数学"
+        },
+        "assignment_id": "e13d6e8e3b7a43338810c3444c505c3b",
+        "followup_id": "533cb624f46b46c094dcf3910f1d434e",
+        "source_count": 0,
+        "history": [
+          {
+            "id": 32,
+            "type": "turn",
+            "text": "平均速度等于路程乘以时间，45 × 3 = 135，所以平均速度是135千米每小时。",
+            "feedback": "请再检查这一处：「平均速度等于路程乘以时间，45 × 3 = 135」。这一步依据的是什么，结果成立吗？",
+            "status": "incorrect",
+            "evidence": "interaction_only",
+            "action": "locate"
+          },
+          {
+            "id": 34,
+            "type": "turn",
+            "text": "",
+            "feedback": "请指出你最不确定的部分，并说明你目前的思路？",
+            "evidence": "interaction_only",
+            "action": "scaffold_concept"
+          },
+          {
+            "id": 36,
+            "type": "turn",
+            "text": "",
+            "feedback": "请指出你最不确定的部分，并说明你目前的思路？",
+            "evidence": "interaction_only",
+            "action": "scaffold_step"
+          },
+          {
+            "id": 38,
+            "type": "turn",
+            "text": "",
+            "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+            "evidence": "interaction_only",
+            "action": "teacher_review"
+          }
+        ]
+      },
+      "screenshot": "docs/screenshots/functional-audit/06-hint-ladder-failed.png",
+      "seconds": 7.35
+    },
+    {
+      "id": "07-full-explanation",
+      "title": "真实模型提供完整解答",
+      "passed": true,
+      "details": {
+        "action": "explain",
+        "feedback": "你刚才把公式记反了，平均速度应该是路程除以时间，而不是相乘。就像你分糖果，45颗糖分给3个人，每人得到多少？用除法。所以正确算式是 45 ÷ 3 = 15。请重新计算并写出单位“千米/小时”。",
+        "has_answer_15": true
+      },
+      "screenshot": "docs/screenshots/functional-audit/07-full-explanation.png",
+      "seconds": 1.94
+    },
+    {
+      "id": "08-assisted-completion",
+      "title": "看过讲解后标记为辅助完成",
+      "passed": true,
+      "details": {
+        "status": "correct",
+        "evidence": "assisted_complete",
+        "completed": true
+      },
+      "screenshot": "docs/screenshots/functional-audit/08-assisted-completion.png",
+      "seconds": 1.96
+    },
+    {
+      "id": "09-independent-check",
+      "title": "新题独立检查与禁止提示",
+      "passed": true,
+      "details": {
+        "question": "小红步行4小时行了20千米，平均速度是多少千米每小时？请写出计算过程和单位。",
+        "status": "correct",
+        "evidence": "independent_model_assessed",
+        "hint_rejected_http": 409
+      },
+      "screenshot": "docs/screenshots/functional-audit/09-independent-check.png",
+      "seconds": 2.71
+    },
+    {
+      "id": "10-teacher-dashboard",
+      "title": "教师查看真实学习过程汇总",
+      "passed": true,
+      "details": {
+        "learning_goals": 1,
+        "review_queue": 4
+      },
+      "screenshot": "docs/screenshots/functional-audit/10-teacher-dashboard.png",
+      "seconds": 1.45
+    },
+    {
+      "id": "11-policy-replay",
+      "title": "教师回放教学策略且不调用模型",
+      "passed": true,
+      "details": {
+        "passed": true,
+        "turns": [
+          {
+            "event_id": 33,
+            "matches": true
+          },
+          {
+            "event_id": 35,
+            "matches": true
+          },
+          {
+            "event_id": 37,
+            "matches": true
+          },
+          {
+            "event_id": 39,
+            "matches": true
+          },
+          {
+            "event_id": 41,
+            "matches": true
+          },
+          {
+            "event_id": 43,
+            "matches": true
+          },
+          {
+            "event_id": 45,
+            "matches": true
+          },
+          {
+            "event_id": 47,
+            "matches": true
+          }
+        ],
+        "model_called": false,
+        "scope": "deterministic policy replay, not regeneration of model content"
+      },
+      "screenshot": "docs/screenshots/functional-audit/11-policy-replay.png",
+      "seconds": 0.8
+    },
+    {
+      "id": "12-teacher-correction",
+      "title": "教师改判与证据失效",
+      "passed": true,
+      "details": {
+        "needs_review": true,
+        "correction": {
+          "id": 48,
+          "type": "correction",
+          "status": "unknown"
+        }
+      },
+      "screenshot": "docs/screenshots/functional-audit/12-teacher-correction.png",
+      "seconds": 1.62
+    },
+    {
+      "id": "13-preparation-pack",
+      "title": "真实模型起草并通过页面审核发布备课包",
+      "passed": true,
+      "details": {
+        "generated_via": "real-model API",
+        "published_via": "browser UI",
+        "pack_id": "ce99576019d54bcc9d2764e4403f5fda",
+        "status": "published",
+        "distributed_tasks": 1,
+        "content_review": "scripted confirmation, not independent human review"
+      },
+      "screenshot": "docs/screenshots/functional-audit/13-preparation-pack.png",
+      "seconds": 3.31
+    },
+    {
+      "id": "14-learning-path",
+      "title": "学生查看课程路径下一步",
+      "passed": true,
+      "details": {
+        "path_created_via": "API",
+        "next_step_via": "browser UI",
+        "result": {
+          "path_id": "1b0e70dee17b41208b28605a63661412",
+          "learner": "验收学生A",
+          "nodes": [
+            {
+              "concept_id": "平均速度",
+              "title": "平均速度",
+              "assignment_id": "e13d6e8e3b7a43338810c3444c505c3b",
+              "prerequisite_ids": [],
+              "state": "needs_recheck"
+            }
+          ],
+          "action": "remediate",
+          "concept_id": "平均速度",
+          "assignment_id": "e13d6e8e3b7a43338810c3444c505c3b",
+          "session_id": null,
+          "reason": "按有效学习证据选择可开始的目标；诊断后再决定是否需要讲解。"
+        }
+      },
+      "screenshot": "docs/screenshots/functional-audit/14-learning-path.png",
+      "seconds": 1.67
+    },
+    {
+      "id": "15-image-confirmation",
+      "title": "真实视觉识别、学生确认后判定",
+      "passed": true,
+      "details": {
+        "input": "synthetic printed work, not real handwriting",
+        "transcription": "Student work Distance: 45 km Time: 3 hours Average speed = 45 / 3 = 15 km/h",
+        "confirmed_status": "correct",
+        "confirmation_required": true
+      },
+      "screenshot": "docs/screenshots/functional-audit/15-image-confirmation.png",
+      "seconds": 4.97
+    },
+    {
+      "id": "16-pdf-material",
+      "title": "上传文字PDF并引用材料页码",
+      "passed": true,
+      "details": {
+        "task": {
+          "id": "e457d6f423fe4743847bb5c40e6b34fb",
+          "domain": "Physics",
+          "objective": "Explain the relationship between net force, mass, and acceleration as described by Newton's second law.",
+          "question": "What does Newton's second law state about the relationship between net force, mass, and acceleration?",
+          "phase": "teach",
+          "source_ids": [
+            "material:2"
+          ],
+          "task_type": "concept",
+          "source_pages": [
+            2
+          ],
+          "check_requirements": [],
+          "criteria": []
+        },
+        "source_count": 2,
+        "uploaded_via": "browser file input"
+      },
+      "screenshot": "docs/screenshots/functional-audit/16-pdf-material.png",
+      "seconds": 3.32
+    },
+    {
+      "id": "17-mobile-layout",
+      "title": "手机端布局与侧栏收起",
+      "passed": true,
+      "details": {
+        "viewport": [
+          390,
+          844
+        ],
+        "horizontal_overflow": false
+      },
+      "screenshot": "docs/screenshots/functional-audit/17-mobile-layout.png",
+      "seconds": 1.67
+    }
+  ],
+  "browser_errors": [],
+  "passed": false,
+  "finished_at": "2026-11-14T12:25:16.337794+08:00"
+}

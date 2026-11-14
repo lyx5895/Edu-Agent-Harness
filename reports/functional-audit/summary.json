@@ -1,0 +1,16 @@
+{
+  "unit": {
+    "passed": 149,
+    "total": 149
+  },
+  "live": {
+    "passed": 8,
+    "total": 8
+  },
+  "browser": {
+    "passed": 16,
+    "total": 17
+  },
+  "date": "2026-11-14",
+  "full_explanation_variable": true
+}

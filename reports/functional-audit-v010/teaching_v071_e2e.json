@@ -1,0 +1,59 @@
+{
+  "scope": "scripted behaviour checks on the live model, not learning outcomes",
+  "cases": [
+    {
+      "name": "english_wrong_attempt_is_located_in_english",
+      "passed": true,
+      "details": {
+        "feedback": "You mistakenly treated the cost of the earphones as half the total votes, but the problem states that half the votes were used to buy koalas. The remaining votes (for earphones and bracelets) add up to the other half. How many votes did the earphones and bracelets cost in total?",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 4,
+        "evidence_quote": "So she had 10 x 2 = 20 tickets."
+      },
+      "seconds": 2.86
+    },
+    {
+      "name": "chinese_wrong_attempt_is_located_in_chinese",
+      "passed": true,
+      "details": {
+        "feedback": "平均速度的计算需要用到路程和时间的关系，正确的公式是速度等于路程除以时间。 请检查你的计算过程，平均速度应该是用45除以3，而不是用45乘以3，你能重新计算一下吗？",
+        "delivered": "locate",
+        "reasons": [],
+        "model_calls": 3
+      },
+      "seconds": 1.69
+    },
+    {
+      "name": "hint_ladder_escalates",
+      "passed": true,
+      "details": {
+        "actions": [
+          "scaffold_concept",
+          "scaffold_step",
+          "scaffold_example"
+        ]
+      },
+      "seconds": 2.7
+    },
+    {
+      "name": "eight_students_submit_concurrently",
+      "passed": true,
+      "details": {
+        "statuses": [
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect",
+          "correct",
+          "incorrect"
+        ],
+        "wall_seconds": 3.2
+      },
+      "seconds": 3.22
+    }
+  ],
+  "passed": true
+}

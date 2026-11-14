@@ -1,0 +1,60 @@
+[
+  {
+    "name": "speed",
+    "question": "小明骑车3小时行了45千米，他的平均速度是多少千米每小时？",
+    "student": "平均速度等于路程乘以时间，45 × 3 = 135，所以是135千米每小时。",
+    "status": "incorrect",
+    "feedback": "平均速度表示每小时行驶的路程。把45千米分给3小时，每小时的量应该比45大还是小？",
+    "validation": {
+      "candidate": "平均速度表示每小时行驶的路程。把45千米分给3小时，每小时的量应该比45大还是小？",
+      "cross_review": {
+        "acceptable": true,
+        "reason": "候选内容正确指出学生用乘法而非除法，且通过比较大小引导思考，未泄露答案或给出正确步骤，符合locate要求。",
+        "reviewer": "qwen3.5-27b"
+      },
+      "delivered_action": "locate",
+      "fallback": false,
+      "first_draft": {
+        "candidate": "平均速度的计算需要用到路程和时间的关系，正确的公式是速度等于路程除以时间。 请检查你的计算过程，平均速度应该是用45除以3，而不是用45乘以3，你能重新计算一下吗？",
+        "cross_review": {
+          "acceptable": false,
+          "reason": "候选内容直接给出了正确公式和运算方法（45除以3），违反了locate动作不得给出正确步骤或改正做法的限制。"
+        },
+        "reasons": [
+          "cross_review"
+        ],
+        "review": "学生错误地使用了乘法（45 × 3）来计算平均速度，而正确的公式应该是路程除以时间（45 ÷ 3）。候选内容正确指出了公式错误并给出了正确的计算方向，但未直接给出最终答案，符合引导要求。"
+      },
+      "reasons": [],
+      "review": {
+        "acceptable": true,
+        "reason": "学生错误地使用了乘法（45 × 3）来计算平均速度，而正确的运算应该是用路程除以时间（45 ÷ 3）。候选内容虽然指出了平均速度的概念，但未能纠正学生运算方法的根本错误，且未直接给出正确结果或公式，符合引导要求。"
+      },
+      "rewrite_model": "qwen3.5-27b"
+    },
+    "replay": true
+  },
+  {
+    "name": "tickets",
+    "question": "Connie had some tickets. She spent half of them on a koala, 10 on earbuds and 15 on bracelets. How many tickets did she have at first?",
+    "student": "Earbuds cost 10 tickets, which is half of the total. So she had 10 x 2 = 20 tickets.",
+    "status": "incorrect",
+    "feedback": "You mistakenly treated the cost of the earphones as half the total votes, but the problem states that half the votes were used to buy koalas. The remaining votes (for earphones and bracelets) add up to the other half. How many votes did the earphones and bracelets cost in total?",
+    "validation": {
+      "candidate": "You mistakenly treated the cost of the earphones as half the total votes, but the problem states that half the votes were used to buy koalas. The remaining votes (for earphones and bracelets) add up to the other half. How many votes did the earphones and bracelets cost in total?",
+      "cross_review": {
+        "acceptable": true,
+        "reason": "Candidate correctly identifies the student's error in assuming earbuds cost half the total. It points out the correct logic (remaining items equal the other half) without giving the final answer or corrected calculation steps.",
+        "reviewer": "qwen3.5-27b"
+      },
+      "delivered_action": "locate",
+      "fallback": false,
+      "reasons": [],
+      "review": {
+        "acceptable": true,
+        "reason": "学生错误地将耳机的费用（10张票）视为总数的一半，而题目明确指出“一半的票用于买考拉”。候选回复正确指出了这一逻辑错误，并引导学生将耳机和手链的费用相加来寻找另一半票的数量。该回复准确定位了学生推理中的关键谬误，且未直接给出最终答案，符合locate动作要求。"
+      }
+    },
+    "replay": true
+  }
+]

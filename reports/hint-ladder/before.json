@@ -1,0 +1,434 @@
+{
+  "tag": "before",
+  "scope": "live model outputs on four tasks; not a learning-outcome measure",
+  "summary": {
+    "runs": 12,
+    "ladder_completed": "0/12",
+    "reached_teacher_review": 12,
+    "per_level": {
+      "scaffold_concept": {
+        "generic_fallback": 12
+      },
+      "scaffold_step": {
+        "generic_fallback": 12
+      },
+      "scaffold_example": {
+        "teacher_review": 12
+      }
+    },
+    "hints_leaking_answer": 0,
+    "explanations_delivered_by_model": 10,
+    "explanations_reaching_answer_numeric_tasks": "2/9",
+    "seconds": 67
+  },
+  "runs": [
+    {
+      "task": "speed-zh",
+      "repeat": 0,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你混淆了速度、路程和时间之间的关系。平均速度应该是路程除以时间，而不是相乘。请重新计算：45 ÷ 3 = 15，所以平均速度是 15 千米每小时。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "speed-zh",
+      "repeat": 1,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "clarify",
+        "feedback": "这次生成的讲解未通过检查，请重试或请教师核对。",
+        "reaches_answer": false,
+        "delivered": "clarify"
+      }
+    },
+    {
+      "task": "speed-zh",
+      "repeat": 2,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你混淆了速度和路程、时间的关系。平均速度应该是路程除以时间，而不是相乘。请重新计算：45 ÷ 3 = 15，单位是千米每小时。",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 0,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你计算时把公式记成了 a = F × m，这导致结果偏大。实际上，质量越大，同样的力产生的加速度越小，所以加速度与质量成反比。正确的公式是 a = F / m。请重新计算：10 N 除以 2 kg 等于多少？",
+        "reaches_answer": false,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 1,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你计算时把加速度当成了力和质量的乘积，但根据牛顿第二定律，加速度应该是力除以质量。如果质量变大，同样的力产生的加速度是变大还是变小？试着重新写出正确的公式并计算。",
+        "reaches_answer": false,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "force-zh",
+      "repeat": 2,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你最不确定的是哪一步，这一步使用了什么依据？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "clarify",
+        "feedback": "这次生成的讲解未通过检查，请重试或请教师核对。",
+        "reaches_answer": false,
+        "delivered": "clarify"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 0,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You treated the earbuds cost as half the total, but the problem says half was spent on a koala. Can you identify which part of the total tickets represents the 'half' mentioned in the first sentence?",
+        "reaches_answer": false,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 1,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You treated the earbuds cost as half the total, but the problem says half was spent on a koala. Can you identify which part of the total tickets represents the 'half' mentioned in the first sentence?",
+        "reaches_answer": false,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "tickets-en",
+      "repeat": 2,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "Which step are you least sure about, and what did you base that step on?",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "This feedback needs a teacher to review it. Please keep your work and questions; your teacher will follow up.",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "You treated the earbuds cost as half the total, but the problem says half the tickets were spent on the koala. Can you identify which part of the total tickets was actually half, and how the remaining half was split between the earbuds and bracelets?",
+        "reaches_answer": false,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 0,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你混淆了月相变化和月食的概念。月相变化是因为月球绕地球公转，太阳照射月球的角度不同，导致我们看到的亮面形状改变；而地球影子挡住月球是月食现象。请思考：如果月球绕地球转一圈，我们看到的亮面会从什么形状变到什么形状？",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 1,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你混淆了月相变化和月食的概念。月相变化是因为月球绕地球公转，太阳照射月球的角度不同，导致我们看到的亮面形状改变；而地球影子挡住月球是月食现象。请思考：如果月球绕地球转一圈，我们看到的亮面会从什么形状变到什么形状？",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    },
+    {
+      "task": "moon-zh",
+      "repeat": 2,
+      "hints": [
+        {
+          "action": "scaffold_concept",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "scaffold_step",
+          "delivered_action": "clarify",
+          "feedback": "你能给出一个例子，说明你现在怎样理解这个概念吗？",
+          "outcome": "generic_fallback",
+          "leaks_answer": false
+        },
+        {
+          "action": "teacher_review",
+          "delivered_action": "teacher_review",
+          "feedback": "当前自动反馈需要教师复核。请保留你的作答和疑问，等待老师指导。",
+          "outcome": "teacher_review",
+          "leaks_answer": false
+        }
+      ],
+      "explanation": {
+        "action": "explain",
+        "delivered_action": "explain",
+        "feedback": "你混淆了月相变化和月食的概念。月相变化是因为月球绕地球公转，太阳照射月球的角度不同，导致我们看到的亮面形状改变；而地球影子挡住月球是月食现象。请思考：如果月球绕地球转一圈，我们看到的亮面会从什么形状变到什么形状？",
+        "reaches_answer": true,
+        "delivered": "explain"
+      }
+    }
+  ]
+}
