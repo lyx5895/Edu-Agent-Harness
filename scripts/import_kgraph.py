@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from harness.knowledge import DEFAULT_DB, import_kgraph  # noqa: E402
 
-URL = 'https://huggingface.co/datasets/lhpku20010120/K12-KGraph/resolve/main/global_KG/{}'
+URL = 'https://huggingface.co/datasets/lhpku20010120/K12-KGraph/resolve/main/K12-KGraph/global_KG/{}'
 
 
 def main():

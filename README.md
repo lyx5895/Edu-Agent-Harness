@@ -1,414 +1,190 @@
 # OmniEdu 教学 Harness
 
-当前 bysz1 默认推理后端已切换为 **vLLM 0.23.0**；部署参数与命令见文末“bysz1 部署”。下文 Transformers 双卡设置保留为后备方案与历史记录。项目已纳入 git 管理。
+给 [OmniEdu-9B](https://huggingface.co/lhpku20010120/Omni-Edu-9B) 加的一层教学执行系统：学生在这里做教师布置的任务，系统判断作答、决定下一步怎么教、生成并审核回复，把每一步的证据记下来，交给教师复核。
 
-## v0.9：OmniEdu 系统指令与知识点库
+模型负责理解和表达；**是否答对、是否学会，由服务器按可核对的证据决定**。当前版本 v0.9.0。
 
-- **系统指令**：评分和知识点调用改用 OmniEdu 训练时的系统指令（`harness/omniedu_prompts.py`）。评测中转教师由 5.5–6.4% 降到 1.8–2.5%，准确率略升。教学回复仍用自写提示词，因为全部换用训练指令时回复评分略低。`OMNIEDU_PROMPT_STYLE` 取 `mixed`（默认）、`omniedu`（全部调用）或 `harness`（旧提示词）。
-- **知识点库**：`python scripts/import_kgraph.py` 下载 K12-KGraph 并导入 `data/knowledge.sqlite`（人教版数学、物理、化学、生物，小学到高中，7,938 个知识点和技能，带先修关系）。教师发布任务时可点"从知识点库推荐知识点"，模型从库内候选中选择，教师确认；课程路径可按库补全先修。K12-KGraph 采用 CC BY-NC-SA 4.0 许可，**只能用于研究和非商业教学**；未导入时这些功能提示先导入，其余功能不受影响。
-- 评测见 `HARNESS_REVIEW.md` 第十节；打标评测脚本为 `scripts/eval_knowledge.py`（需要 `references/k12-kgraph/` 中的图谱和 K12-Bench 文件）。
+## 为什么需要它
 
-## v0.8：并发、材料检索、交叉复核与扩展评测
+直接让大模型辅导学生，主要有三个问题：把错的判成对的、直接说出答案、说"你已经掌握了"却没有依据。这个 harness 针对这三点：
 
-- **并发**：快照提交冲突时自动重算，重算期间持有写锁，已完成的模型调用按输入复用不重发；40 名学生同时提交 80 次全部成功。客户端带旧 `version` 时仍返回 409。
-- **结构**：`operation()` 拆为按操作类型的处理函数；轨迹只存状态差异（`state_diff`）；图片按内容哈希存为文件（`data/<库名>-images/`），旧库中的内联图片仍可读取。
-- **材料**：页面和接口可上传文字版 PDF（`pypdf`，≤20MB；扫描件会提示改用图片），按页切块，任务记录 `source_pages`，页面显示“材料出处：第 N 页”。检索由词重叠计数改为 BM25（中文按二字词，英文按单词）。
-- **交叉复核**（可选）：设置 `OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1`（模型名 `OMNIEDU_REVIEW_MODEL`，默认 `qwen3.5-27b`）后，第二个模型复核两类输出：模型给出的负面判定（复核判为正确且高置信时改为 unknown 转教师；复核同意时该条不再因“负面判定”进入复核队列），以及通过一审的教学回复（复核否决则改用兜底句）。未设置时行为不变。
-- **策略 v5**（`OMNIEDU_POLICY=open-task-policy-v5`）：同一任务连续多轮作答或回复没有进展时，不再反复追问依据，而是沿概念→步骤→半完成例子的提示阶梯升级，阶梯用完转教师。评测中没有超过 v4，默认策略仍为 v4，见 `HARNESS_REVIEW.md` 第八节。
-- **反馈修正**：OmniEdu-9B 原样复述中文导致“先翻译再审核”从未生效，已改写翻译提示词；`locate` 回复删去问号后的附加指令；引用学生原句的模板不计入“连续兜底转教师”。
-- **v0.8.1**：教学回复被审核否决后带理由重写一次；开启交叉复核时，主模型没把握的判定由 27B 给出有引用的负面判定（27B 判为正确时不采用）；引用核对忽略空白、引号和全半角；评分引用缩短到出错的算式或分句；`scripts/migrate_images.py` 把旧库内联图片迁移为文件（先备份）。复测见 `HARNESS_REVIEW.md` 第九节。
-- **评测**：新增中文数学（StepVerify 译本 392 份）与五科简答（166 份，模型生成并经独立解题和人工抽查过滤）判定集，以及三种更难的模拟学生（坚持错误、索要答案、敷衍）。
+| 问题 | 做法 |
+|---|---|
+| 误判 | 判定必须逐字引用学生原文，引不出或没把握就转教师；可用的确定性工具（代数、数值、单位等）优先；可选第二个模型（Qwen3.5-27B）复核负面判定 |
+| 泄露答案 | 每条回复先审核（泄露答案、事实错误、冒充系统、语言不符），不合格带理由重写一次，仍不合格用固定兜底句 |
+| 虚假掌握 | 模型不能写学习结论；练习完成、辅助完成、模型评估的独立检查、工具验证的独立检查分开记录；"懂了"不算正确；独立检查必须是未见过的新题 |
 
-```bash
-.envs/harness/bin/python bench/build_data.py            # 生成 bench/data/*.jsonl（需 27B 裁判服务）
-.envs/harness/bin/python scripts/benchmark.py correctness-zh correctness-multi \
-  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-xr
-.envs/harness/bin/python scripts/benchmark.py dialogue --persona persistent \
-  --systems raw-baseline,raw-omniedu,harness-omniedu-v4,harness-omniedu-v5 --limit 40 --tag persistent
-PYTHONPATH=scripts .envs/harness/bin/python scripts/teaching_v08_e2e.py   # 真实模型回归
-```
+此外：教学动作由有版本号的纯函数策略决定，每轮的输入、决策、候选回复和审核结果都记入轨迹，可以不调用模型重放；教师改判后，依赖这条证据的后续会话和任务会连带失效。
 
-## v0.7：vLLM 适配与教学策略补强
+## 效果
 
-- **图片**：上传图片统一校正 EXIF 方向并缩到最长边1536像素（约1.7k视觉 token），可用 `OMNIEDU_IMAGE_MAX_SIDE` 调整；页面上传上限放宽到30MB。超出上下文的请求单独提示“输入材料或图片过长”，不再报“模型服务不可用”。
-- **结构化输出**：`ModelClient.structured` 通过 `response_format: json_schema` 约束解码，原有任务说明与一次修复重试保留；`OMNIEDU_JSON_SCHEMA=0` 可关闭。约束只保证格式，不保证判定正确。
-- **并发**：整题评估与各分项评估并行发出，共享同一轮调用预算（线程安全）。
-- **分级提示**（策略 `open-task-policy-v3`）：同一任务内连续请求提示依次为概念提示、步骤提示、同构半完成例子；旧轨迹按原策略版本回放。
-- **复习间隔**：按连续独立通过次数取1/3/7/14/30天，出现困难后重置；这是规则建议，不是遗忘模型。
-- **教师复核队列**：抽检由固定 `id%10` 改为风险分层（负面判定、低置信、仅模型判定的独立检查、模型生成参考答案、分项未定），其余按哈希抽样约10%；每项列出风险原因。
-- **部署**：上下文32768、最多32路并发、60%显存；启动后先预热文本、图片、长输入、批处理和 JSON schema 路径，再标记就绪。参数在 `service-config.json` 的 `vllm` 段配置。`requirements-vllm.lock` 改为完整版本锁定。
+对照对象是不加 harness 的同一模型（OmniEdu-9B）和基座 Qwen3.5-9B，裁判和模拟学生为 Qwen3.5-27B。详见 [HARNESS_REVIEW.md](HARNESS_REVIEW.md) 第七至十节。
 
-### 对照评测与 v0.7.1 修正
-
-`scripts/benchmark.py` 对比裸 Qwen3.5-9B、裸 OmniEdu-9B 与 OmniEdu-9B + harness，裁判和模拟学生为 Qwen3.5-27B（需先 `scripts/service.py start judge` 与 `start baseline`，分别占用 GPU 3、4）。结果与局限见 `HARNESS_REVIEW.md` 第七节。
-
-```bash
-.envs/harness/bin/python scripts/benchmark.py calibration correctness location response dialogue \
-  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-v4 --tag full
-.envs/harness/bin/python scripts/benchmark.py --rescore reports/benchmark/dialogue-full.json
-```
-
-评测暴露并已修正的问题：
-- 回复语言跟随学生作答；模型给出中文候选时先翻译再审核；兜底句和系统提示中英两套。
-- 证据引用：评分模型同时返回 `student_sentences` 中的句子编号，转述时绑定该原句。
-- 新增策略 `open-task-policy-v4`：评分已逐字定位到问题时，指出出错步骤并追问，不给正确结果；审核未通过时用引用学生原句的模板，而不是通用追问。现为默认策略（v4 在 v3 分级提示的基础上只改动首次答错的动作）；需要旧行为时用 `OMNIEDU_POLICY=open-task-policy-v3` 或 `OpenEngine(policy=...)`，旧轨迹仍按原策略版本回放。
-- 审核结构先写理由再给结论；`locate` 审核同时查看学生原作答。
-
-## v0.6：跨学科任务协议与批量备课
-
-继续支持任意学科与多课程，不限制为单个单元。新增默认教学类型为开放任务、解题推理、概念理解、阅读证据、写作表达、实验分析和编程算法；类型用于选择教学指导和回退反馈，不是学科白名单。
-
-### 页面操作
-
-1. 打开 **批量备课与发布**，填写班级、备课包名称、参考材料，并在目标表中填写课程、知识点、学科、教学类型和学习目标。一次生成最多6个目标，以控制本轮模型预算；可多次创建不同课程的备课包。
-2. 生成内容保存在草稿中。逐题编辑题目、评分要求、参考答案、独立检查要求和分项标准；可保存草稿，使用备课包编号恢复。分项表中的题号从1开始。
-3. 填写学生名单，确认已核对全部内容并填写审核说明，然后发布。页面上的编辑与发布在同一事务提交；失败不会发布部分任务。留空学生名单时仅发布到教师题库。
-4. 学生在 **我的班级任务** 填写班级并加载任务，下拉选择课程任务后直接开始，无需复制每题编号。
-5. 原有教师学情、风险复核、课程路径、批量补救和改判失效机制继续使用。备课包可含多个课程；课程路径仍按课程组织。
-
-### 教学契约与评分
-
-- `task_type`：教学类型，可通过服务器端注册扩展；未注册类型使用开放任务策略。
-- `check_requirements`：最多8条可迁移的检查要求，每条最多200字，例如“解释证据与结论的关系”，不要填写本题答案。
-- `criteria`：最多4项评分维度。新生成检查题必须保留原分项的编号、类型、描述和知识点关联，重新计算新题的预期值；缺项会拒绝生成，不推进状态。完整原rubric也进入出题和审核上下文。语义覆盖仍有模型审核局限。
-- `check_assignment_ids`：教师可选已审核检查题，须属于同一班级、课程、知识点和教学类型，并覆盖独立检查要求和分项。配置后从未见题中选择；题库耗尽时请教师补题，不自动降低到未审核题。未配置时仍支持模型生成、审核和参考答案检查。
-- 分项通过不能覆盖整题的错误、未知或未完成判定；冲突进入教师风险队列。最终判定依赖模型整题判断时统一标记 `independent_model_assessed`，不把局部工具验证宣称为完整确定性证明。
-- 对明确要求“引用并解释”的任务，只有指定引文、没有额外解释的作答不授予完成。该规则只覆盖直接缺失解释的情况，不证明论证正确。
-- 分项模型评分接收当前已确认的图像证据；独立检查继续隔离旧题提示和图像。
-
-### 可扩展教学和工具
-
-`harness/pedagogy.py` 的 `register_profile(key, label, strategy)` 注册教学类型；`harness/criteria.py` 的 `register_grader(kind, callable)` 注册服务器端分项验证器。模型和学生不能安装或执行插件。
-
-现有代数、数值、单位、解释缺项与因式分解验证继续使用，新增：
-
-| 类型 | 预期值 | 验证范围 |
+| 评测 | 裸模型 | harness |
 |---|---|---|
-| `source_quote` | 材料中的指定原文 | 仅核对引文出现，不证明推断正确；缺少可核对材料时保留未知 |
-| `word_count` | `最小值:最大值`，例如 `30:80` | 英文单词和中文单字计数，仅检查长度，不评价质量 |
-| `model` | 可选参考要求 | 模型评价，必须有有效学生原文引用；不是确定性验证 |
+| 错误解答被判为正确（英文数学 StepVerify，400 份） | 35–46%；给参考答案后 13% | **1.5%**，转教师 2.5% |
+| 错误解答被判为正确（中文数学，392 份） | 50–77%；给参考答案后 13–23% | **2.0%**，转教师 1.8% |
+| 单轮辅导回复（MRBench，145 段） | 找出错误 0.97，泄露 0–1.4% | 找出错误 0.93–0.98，泄露 0–2% |
+| 多轮对话，模拟学生解出率（40–60 题） | 0.85–1.00 | 0.88–0.96 |
 
-实验数据可组合 `numeric`、`unit` 和解释分项；阅读和写作可组合来源、长度和语义分项。编程类型目前提供教学指导，没有运行学生代码的沙箱；不声称已覆盖每个学科的专门验证器。
+harness 的主要价值在判定可靠性；回复质量与裸模型大致持平；多轮对话中对"索要答案"型学生略低于裸模型，因为它坚持不给答案。所有结果来自模型裁判和模拟学生，**没有真实师生参与**，不能当作学习效果证据。
 
-### 备课 API
+## 快速开始
 
-| 接口 | 用途 |
-|---|---|
-| `POST /api/teacher/packs` | 保存教师输入的备课草稿，最多30题 |
-| `POST /api/teacher/packs/generate` | 按最多6个目标生成待审核草稿 |
-| `GET /api/teacher/packs?class_id=...` | 查询本班备课包 |
-| `GET /api/teacher/packs/{id}` | 恢复备课包 |
-| `PUT /api/teacher/packs/{id}` | 携带version编辑草稿 |
-| `POST /api/teacher/packs/{id}/publish` | 审核确认后原子发布，可附学生名单 |
-| `GET /api/learning/inbox?class_id=...&learner=...` | 查询学生任务箱，不暴露参考答案或未见检查题 |
-
-写入接口携带 `request_id`；发布接口需要 `version`、`reviewed: true`、`review_note` 和可选 `learners`。草稿有版本冲突保护，已发布包不可原位修改；重新备课请建新包。生成草稿标记为 `model_generated_unverified`，教师确认发布后标记为 `teacher_reviewed_model`。审核记录保存在 `preparation_events`。
-
-新 API 沿用原班级认证隔离：学生不能访问草稿和答案，教师不能操作其他班级备课包。页面仍为本地可信演示；配置 `HARNESS_ACCOUNTS_FILE` 后仅开放认证 API，尚无登录网页。
-
-### 验证与已知边界
-
-```bash
-.envs/harness/bin/python -m pytest tests -q --junitxml=reports/teaching-v06-tests.xml
-.envs/harness/bin/python scripts/teaching_v06_e2e.py
-```
-
-真实模型脚本使用临时数据库，覆盖跨学科草稿生成、阅读完整性、物理教师题库检查和英语检查契约。结果见 `reports/teaching-v06-real.json`，首次失败见 `reports/teaching-v06-real-initial.json`。这些是固定案例执行与评分回归，不是教师盲评或学生学习收益实验。
-
-本版未引入PDF教材库、自动知识图谱、校准后的掌握概率、LMS或并发数据库重构。复习周期、模型上下文和推理并发限制仍见后文；多课程工作流可用不代表已经通过整班并发验收。源码修改前快照位于 `/tmp/edu-before-v06.tar.gz`（临时目录，不是长期备份）。
-
-
-默认入口已改为自定义教学任务，可输入不同学科的题目或学习目标、确认题目图片、提供学习材料。固定代数题库仅作为可选示例和旧会话兼容层。
-
-## v0.5：分项评分、课程路径与教师跟进（历史版本，评分聚合已由v0.6修订）
-
-在 v0.4 基础上增加以下闭环，原记录继续兼容：
-
-- **分项评分**：教师可配置最多4项标准，分别判断结果、解释、数值、单位或因式分解形式。工具能确定的先验证，其余交给模型；无有效学生原文引用或置信不足则保留未知。配置分项后以分项聚合为最终判定，请完整列出必要要求。教师方程自动绑定符号验证；页面支持预览绑定和手动指定。
-- **课程路径**：教师用知识点编号和先修编号发布无环课程图。下一步建议综合当前证据、未完成会话、到期任务与先修条件；历史独立通过后再次出错，不能靠辅助完成直接推进。
-- **持久跟进**：按学生名单批量安排补救、复习或诊断，支持延期、撤销和审计记录。复习/诊断必须使用该学生未见过的题，作为独立检查；补救练习需要后续独立检查通过才完成。教师改判会将相关已完成跟进标为需重查。
-- **教师复核**：优先显示未知判定、模型与工具冲突等风险，并按知识点和失败分项汇总建议补救组。可以“确认原判定”关闭待审项，也可改判并使依赖证据失效。学生仅看到分项状态，评分内部解释保留在教师证据中。
-- **记忆修正**：跨会话事件按时间统一归并，避免会话创建顺序覆盖后发生的证据。
-
-页面操作：先在“教师备课与跟进”发布任务及可选分项，再在“课程路径与补救安排”发布路径或安排跟进。学生填写跟进编号开始任务，可按路径编号查看下一步建议。
-
-新增接口（请求字段与示例结构以 `/docs` 为准）：
-
-| 接口 | 用途 |
-|---|---|
-| `POST /api/teacher/paths` | 发布知识点先修图 |
-| `GET /api/learning/next?path_id=...&learner=...` | 查询下一步 |
-| `POST /api/teacher/followups` | 批量安排跟进，携带 request_id |
-| `GET /api/learning/followups?class_id=...&learner=...` | 查询持久跟进 |
-| `PATCH /api/teacher/followups/{id}` | 延期或撤销 |
-| `POST /api/teacher/tasks/{sid}/attempts/{event_id}/reviews` | 教师确认原判定 |
-
-`POST /api/sessions` 新增 `followup_id`。新接口沿用班级和学生身份隔离。默认页面仍为本地演示；配置认证后仍仅开放API，没有新增登录网页。
-
-验证：`python -m pytest tests -q --junitxml=reports/teaching-v05-tests.xml`；使用 `.envs/harness/bin/python scripts/teaching_eval.py --compare` 运行6题评分对照，使用 `scripts/teaching_v05_e2e.py` 验证真实模型的分项评分、复习完成、路径推进与改判恢复。脚本使用临时数据库。结果见 `reports/teaching-v05-*.json`，不是学生学习效果实验。
-
-边界：课程图和复习日期由教师设置，没有自动知识图谱、FSRS或后台提醒；单位验证只检查指定单位，不做任意单位换算；代数工具仅覆盖受支持语法。分项模型判断尚未校准。材料库/PDF、LMS和高并发存储改造仍未实现。设计参考与自主发现的修复分别记录在 [REFERENCES.txt](REFERENCES.txt)。
-
-## v0.4：教师任务、教学记忆与可信评分
-
-本版本将教师备课、学生练习、跨会话证据与待复核工作接在一起。旧会话继续可读；新表与索引自动创建，不删除原学习记录。
-
-### 页面使用
-
-1. 在“教师备课与跟进”填写班级、课程、知识点编号、题目、评分要求、参考答案与教学材料，发布任务。
-2. 学生在“学生练习”填写教师任务编号开始学习。无需再填题目；同一学生、班级、课程、知识点的不同任务会接续记忆。
-3. 教师按班级查看学情摘要、下一步建议及待复核作答。通过“教师证据”修订具体作答。
-4. 修改题目或评分规则时发布新任务版本；同一课程目标保持相同知识点编号。版本不可原位覆盖，旧判定的依据仍可回查。
-
-### 教学证据与记忆
-
-`harness/memory.py` 从追加事件重建学习状态，重启后保留。记忆包含作答证据、暂时误区、实际交付的教学动作、提示内容及其后的作答观察；不把相关性宣称为教学因果效果。独立检查次数与辅助完成分开，复习提示按连续独立通过次数取1/3/7/14/30天（v0.7起，原为固定24小时），是规则建议，不是已校准遗忘模型。自由任务只做精确目标关联，不自动将语义近似目标合并；跨题稳定关联请使用教师知识点编号。
-
-教师修订使原会话及读取过其记忆的下游会话失效，包含传递依赖；原始事件不删除。新的教学上下文排除这些证据，教师可见失效记录并要求重新检查。独立检查清空历史提示、学习记忆和教师指导文字；检查题仍可能由同一模型生成和审核，不能作为外部标准答案。
-
-### 评分、检索与运行
-
-- 符号工具声明只验证代数等价，不能覆盖解释、单位或目标形式；最终判定按完整任务要求聚合。缺少解释与因式分解形式的回归案例已加入测试。
-- 教师提供的rubric和参考答案直接进入评分；模型生成任务仍明确标记来源。模型评分未进行教师盲评校准。
-- 材料分块保留偏移和文档摘要，关键词/中文双字词检索允许无命中。任务规划可以查看材料开头作为概览，记录为`overview`；不把概览算成相关检索命中。仍仅支持txt/md与单张图片，没有PDF解析或向量数据库。
-- 确认后的当前作答图片或教学题原图可再次提供给评分模型；轨迹只保存图片事件编号，独立检查不会带入旧教学题图片。一次只支持一张图，不构成完整的多模态教学系统。
-- 反馈记录计划动作与实际交付动作；连续两次回退后请求教师复核。审核提示增加定义类题目的语义泄漏检查，但同模型审核不能保证阻止所有泄漏。
-- 模型执行在内存数据库快照上进行，提交时短暂持有写锁并检查数据库是否变化。并发写入采用保守的数据库级冲突检测，返回409且不提交本轮；请刷新后重试。快照复制与全库冲突检测仍适合小规模内测，尚非班级高并发吞吐方案。
-- 每轮12次调用/240秒派发预算约束底层HTTP等待时间；推理后端仍单并发。
-
-### API与访问隔离
-
-新增接口：
-
-| 接口 | 内容 |
-|---|---|
-| `POST /api/teacher/assignments` | 发布教师任务；字段见页面或OpenAPI中的Assignment |
-| `POST /api/sessions` | 传`learner`、`assignment_id`、`request_id`开始教师任务 |
-| `GET /api/teacher/dashboard?class_id=...` | 班级学情与待复核队列 |
-| `GET /api/teacher/memory/{learner}?class_id=...` | 指定学生的来源可追溯记忆 |
-
-默认仍为**受信任的本地演示模式**，教师和学生标签不构成身份认证。共享使用时可设置`HARNESS_ACCOUNTS_FILE`为服务器上的账号JSON文件，格式如下（示例令牌必须替换为独立的高熵令牌，文件不要提交到仓库）：
-
-```json
-{
-  "replace-with-teacher-token": {"role":"teacher","class_id":"七年一班"},
-  "replace-with-student-token": {"role":"student","class_id":"七年一班","learner":"学生A"}
-}
-```
-
-请求携带`Authorization: Bearer <token>`。认证模式要求学生通过所属班级的教师任务创建会话，并隔离学生和班级。教师班级汇总请求必须提供匹配的`class_id`。为避免Gradio回调绕过权限，**认证模式仅开放API，演示UI与旧课程API禁用**；尚未实现带登录的班级网页、账号管理或LMS集成。没有配置文件时不要将演示端口暴露给不受信任用户。
-
-### 验证与边界
-
-```bash
-.envs/harness/bin/python -m pytest tests -q --junitxml=reports/teaching-v04-tests.xml
-.envs/harness/bin/python scripts/teaching_eval.py
-.envs/harness/bin/python scripts/teaching_memory_e2e.py
-```
-
-真实模型回归使用`evaluations/teaching_cases.json`中6个项目编写的固定评分案例，临时数据库不写入应用学生记录。结果保存在`reports/teaching-v04-real.json`，初次失败保留在`reports/teaching-v04-real-initial.json`。这是评分与执行回归，不是独立教师标注基准、模型对照实验或学习收益证据。完整参考来源及采用机制见`REFERENCES.txt`。
-
-## 启动与访问
-
-工作目录：`/home/miniconda/DCAI/Edu`。推理环境 `.envs/inference` 和应用环境 `.envs/harness` 相互独立。GPU 默认使用物理编号 1、2；其他进程的显存超过 1GB 时启动脚本会拒绝占用，不会清理其他任务。
-
-```bash
-cd /home/miniconda/DCAI/Edu
-.envs/harness/bin/python scripts/service.py start inference
-.envs/harness/bin/python scripts/service.py start harness
-.envs/harness/bin/python scripts/service.py status inference
-.envs/harness/bin/python scripts/service.py status harness
-```
-
-在自己的电脑上建立 SSH 转发，将 `<服务器地址>` 替换为实际 SSH 主机：
-
-```bash
-ssh -N -L 7860:127.0.0.1:7860 -L 8000:127.0.0.1:8000 miniconda@<服务器地址>
-```
-
-浏览器访问 **http://127.0.0.1:7860**。推理 API 为 `http://127.0.0.1:8000/v1`，模型名 `omniedu-9b`。服务只监听 loopback，无公网链接，无真实多用户认证；教师与学生标签是演示视图。
-
-```bash
-.envs/harness/bin/python scripts/service.py stop harness
-.envs/harness/bin/python scripts/service.py stop inference
-```
-
-脚本管理本项目的 PID 并验证进程身份。日志位于 `logs/inference.log` 和 `logs/harness.log`，数据位于 `data/learning.sqlite`。进程独立于 SSH 会话运行，但不随服务器开机自动启动。端口冲突时保留原进程并报告错误。
-
-## 模型与环境复现
-
-固定模型：[`lhpku20010120/Omni-Edu-9B`](https://huggingface.co/lhpku20010120/Omni-Edu-9B)，revision `7fda599d16f5c7aff770e2869450684c8e4d72f0`，未量化 BF16，权重 18,819,722,392 bytes。模型与许可文件存于 `models/Omni-Edu-9B`。
-
-```bash
-bash scripts/bootstrap.sh
-# 标准下载器：支持 HF_ENDPOINT，失败时回退官方源
-HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py
-# 慢速单连接可改用分段下载器（先用标准下载器取得配置文件）
-.envs/harness/bin/python scripts/download_parallel.py
-.envs/harness/bin/python scripts/download_model.py --verify-only
-```
-
-镜像当前可能跳转官方站。分段下载器保留 `.parts` 实现断点续传，并核对响应范围与大小；合并后验证官方 LFS SHA256。已验证完成后可手动删除 `.parts` 释放约 18.8GB 空间。不要同时运行两个权重下载器。
-
-实际后备后端为 Transformers 5.2.0 + PyTorch 2.8.0/CUDA 12.8，模型通过双卡层分配加载；这是**层分配**，并非 vLLM 张量并行。使用标准 PyTorch 的线性注意力回退，未安装 FlashAttention/FLA，不改系统驱动。当前 vLLM 发布包的 CUDA 13 依赖未通过此主机的驱动预检；未对旧版 vLLM 进行运行验证，不能将此解释为所有 vLLM 版本都不兼容。
-
-`requirements-inference.lock`、`requirements-harness.lock` 记录实际安装版本。首次部署复用了服务器已有 PyTorch 包的**独立副本**，不依赖原环境运行；bootstrap 提供重新下载安装路径。
-
-推理服务限制：单并发、4096 token 总上下文（输入＋输出）、单张图、图片缩放到最长边768、最大输出1024 token、关闭 thinking；仅支持非流式 chat completions。响应含 usage、生成首 token 时间及峰值 PyTorch allocated 显存。短上下文和保守配置优先服务原型，不代表吞吐上限。
-
-
-## 当前版本 v0.3：自定义任务
-
-VS Code 转发 **7860** 后刷新页面。默认输入题目或目标，选择“辅导这道题”或“根据目标或材料学习”；材料支持粘贴文字和 UTF-8 `.txt` / `.md` 文件，题目图片识别后需确认。没有学科白名单，不需要知识点编号。默认不会自动进入代数题。
-
-教学链路：解析任务与目标 → 检索当前材料 → 适用工具验证或模型按规则评估 → 选择教学动作 → 生成并审核反馈 → 保存证据 → 等待学生。模型无法直接写入学习结论。对无法确定的作答返回不确定；引用的学生原文和材料原文必须能核对。
-
-- `tasks.py` 定义题目、目标与评分协议；`open_engine.py` 负责状态、证据、预算与执行。
-- `open_model.py` 不含代数学科角色；反馈允许必要的英语、数字与公式，通过答案泄漏/事实审核，而非禁止所有字母。
-- `toolbox.py` 中验证器可注册或移除。SymPy 只是其中一个插件，无法处理时明确放弃判定，不限制任务创建。
-- `gateway.py` 才导入旧课程引擎。旧会话可继续，新会话不要求固定题目或技能编号。
-- 新检查题围绕当前目标动态生成，经题目审核和参考答案自洽检查后呈现；没有“只剩两道检查题”的限制。重复或不合格题最多重生成一次，本轮模型调用总预算为12次，仍不合格则不推进状态。完整讲解需用户明确请求，并使后续练习标记为辅助完成。
-
-创建自定义任务：
-
-```bash
-curl --noproxy '*' http://127.0.0.1:7860/api/sessions \
-  -H 'Content-Type: application/json' \
-  -d '{"learner":"学生A","task":"解释哈希表中的哈希冲突。","mode":"problem","request_id":"create-demo-1"}'
-```
-
-可选字段：`material` 为材料全文；`image_url` 为图片 data URL。只传 `learner` 会要求提供任务，不再暗中选取代数题。显式传 `skill` 才使用旧示例课程。
-
-会话操作仍用 `POST /api/sessions/{sid}/{action}`，请求体为 `request_id`、可选 `version` 和 `text`。支持：
-
-| action | 用途 |
-| --- | --- |
-| attempt | 提交当前任务作答 |
-| reply | 回答教师追问，不授予独立完成证据 |
-| hint / explain | 请求提示 / 明确请求完整讲解 |
-| check | 完成练习后创建新独立检查 |
-| resume_practice | 从检查返回原任务继续学习 |
-| image / confirm | 上传作答图片 / 确认转写 |
-| confirm_task | 确认或修正创建时上传的题目图片 |
-
-教师接口：`GET /api/teacher/sessions/{sid}/trace` 与 `/replay`；自定义任务修订使用 `POST /api/teacher/tasks/{sid}/attempts/{event_id}/corrections`。学生进度接口不返回隐藏参考答案。原始图片可由 `GET /api/teacher/tasks/{sid}/images/{event_id}` 查看。
-
-**证据含义**：`independent_verified` 表示适用确定性工具验证；`independent_model_assessed` 表示无提示作答经模型评估，不是数学证明或已校准掌握概率。模型自己生成并审核的新题可能仍有错误，教师可以修订。材料检索是有来源编号的文本片段检索，未声称支持完整 PDF/扫描教材解析或互联网事实核验。
-
-验证：
-
-```bash
-.envs/harness/bin/python -m pytest tests -q --junitxml=reports/open-task-tests.xml
-.envs/harness/bin/python scripts/open_task_e2e.py
-.envs/harness/bin/python scripts/open_task_recovery.py
-.envs/harness/bin/python scripts/open_task_report.py
-```
-
-当前验收汇总见 `reports/open-task-acceptance.json`，真实跨学科逐轮结果见 `reports/open-task-e2e.json`。测试使用脚本作答；生成检查题的参考作答仅用于验证执行链路，不代表真实学生学习效果。下面 v0.1/v0.2 的固定课程说明仅适用于“示例课程”和历史验收。
-
-## 旧示例课程：学习流程与证据
-
-- 10个知识点、30道教学题、20道检查题；`course.json` 是生成的课程清单，权威模板在 `harness/course.py`。题目与规则均为项目编写。
-- 学生每行写一个代数步骤。系统定位第一处不等价变形；只有完成展开、合并或求解才算完成。复杂文字或未支持语法由模型按rubric判断，并记录来源；不确定结果不计为掌握。
-- 提示分三级：概念引导、步骤提示、完整讲解。连续两次有效失败增加一级。第一级模型文本若含公式等不允许内容，回退到课程提示。
-- 辅助完成与独立检查分开记录。独立检查不提供提示；失败后回到教学题，再选新的检查题。同一演示学生的检查题跨会话不重复分配，题库耗尽时不再声称获得新的独立检查证据。
-- 图片先转写，学生确认或修正后再评估。保存原图、转写、确认文本及关联事件；教师可用 `image_event_id` 查看原图。
-- SQLite 保存会话和追加事件；每个提交有幂等键，冲突返回409。模型异常回滚本轮状态。教师修正保留原判定与修订历史，进度按最新修正重算，相关会话要求重新检查。
-- 进度显示实际证据，不显示未经校准的掌握概率。通过检查24小时后标记待复习；首版没有后台通知或FSRS。两道检查题耗尽后需扩充题库才能取得新的独立题证据。
-
-## 接口
-
-应用 API 文档：`http://127.0.0.1:7860/docs`。
-
-| 接口 | 用途 |
-|---|---|
-| `GET /api/skills` | 知识点与课程依据 |
-| `POST /api/sessions` | `{learner, skill}` 创建会话 |
-| `GET /api/sessions/{id}` | 恢复状态与学生可见历史 |
-| `POST /api/sessions/{id}/attempt` | `{request_id, version?, text}` 提交步骤 |
-| `POST /api/sessions/{id}/hint` | `{request_id, version?}` 请求下一层帮助 |
-| `POST /api/sessions/{id}/image` | `{request_id, image_url}` 上传base64图片 |
-| `POST /api/sessions/{id}/confirm` | `{request_id, text}` 确认或修改转写 |
-| `GET /api/progress/{learner}` | 历史进度、待复习知识点、会话编号 |
-| `GET /api/teacher/report?learner=...` | 聚合学情、原始作答、判定和修订 |
-| `GET /api/teacher/images/{event_id}` | 原始图片及转写 |
-| `POST /api/teacher/attempts/{event_id}/corrections` | `{request_id, status, reason}` 教师修正 |
-
-一个request_id重试必须携带相同内容和版本；不同内容返回409。503表示模型不可用/格式失败，可按相同request_id重试。新建会话不支持幂等键。
-
-## 验证
-
-```bash
-.envs/harness/bin/python -m pytest -q tests --junitxml=reports/unit-tests.xml
-.envs/harness/bin/python scripts/smoke_inference.py
-.envs/harness/bin/python scripts/real_e2e.py
-.envs/harness/bin/python scripts/evaluate.py
-```
-
-真实验收会在数据库中创建以“验收学生”命名的演示记录；单元测试使用临时数据库和假模型。`reports/deployment-smoke.json` 保存20次真实请求，`reports/real-e2e.json` 保存教学闭环，`reports/comparison.json` 保存独立案例对照。最终验收状态以 `reports/acceptance.json` 为准，不能仅凭文件存在判断通过。
-
-对照评测只有6道项目编写的独立案例，检查状态、首错位置和明确答案字符串泄漏，不能捕捉所有语义泄漏，也没有教师盲评或真实学生学习效果验证。日志记录token与耗时；本机GPU电价、折旧未知，因此不估造货币成本。环境与服务重启验证另行记录在reports目录。
-
-## 教学 Harness v0.2：带证据的执行闭环
-
-本次重构的设计来源与固定版本链接见 [REFERENCES.txt](REFERENCES.txt)。参考 OATutor 的历史/帮助计分、DeepTutor 的纯策略和教学证据、OpenTutor 的上下文组装与验证；这是独立实现，不是直接移植整个项目。
-
-运行链路为：学生输入 → 符号验证及模型诊断 → 纯策略选择教学动作 → 带历史证据的 OmniEdu 表达 → 输出校验/课程回退 → 原子保存状态与教学轨迹。模型没有直接修改学习状态或执行任意工具的权限。
-
-- `harness/policy.py`：版本化纯策略，区分原因探测、自行修正、基础规则复习、澄清、概念提示、步骤提示、完整讲解和独立检查。
-- `harness/runtime.py`：相关历史上下文、教学执行、保守输出校验，以及不调用模型的策略回放。
-- `POST /api/sessions/{sid}/reply`：回答教师追问；请求体与 attempt 相同。解释回答只产生 `dialogue_only` 证据，不授予掌握信用。
-- `GET /api/teacher/sessions/{sid}/trace`：每轮策略输入、原因、上下文来源、生成候选、校验/回退、证据编号和状态版本。
-- `GET /api/teacher/sessions/{sid}/replay`：以记录的输入重算策略，检查与原决策一致；不是重新生成模型回复，也不是完整数据库事件溯源重建。
-
-页面使用：提交错误步骤后，在同一输入框写出对教师追问的回答，点击“回答老师追问”；如果已经修正数学步骤，直接点“提交作答”。教师页可按会话编号查看轨迹和回放。仍通过 VS Code 转发端口 7860 访问。
-
-例如同样写出 `2(x+3)=2x+3`，系统先探测依据。回答“我知道每项都要乘，只是漏写了”应进入自行修正；回答“只乘第一项”应进入基础规则复习。任何提示后的正确答案只算辅助完成，只有未见检查题的正确作答提供独立证据。自述“懂了”即使模型高置信认可，也不能代替本课程要求的代数验证。
-
-验证命令：
-
-```bash
-.envs/harness/bin/python -m pytest tests -q --junitxml=reports/runtime-tests.xml
-.envs/harness/bin/python scripts/runtime_e2e.py
-.envs/harness/bin/python scripts/runtime_recovery.py
-```
-
-本轮结果以 `reports/runtime-tests.xml` 和 `reports/runtime-e2e.json` 为准；原 `reports/acceptance.json` 是 v0.1 的历史验收，不代表新教学策略已证明有效。
-
-当前边界：固定代数课程和检查题仍然保留；基础复习围绕当前技能规则，不是完整先修课程规划。策略依赖模型对学生原文的解释，原文引用正确不保证原因判断正确。生成式概念反馈使用保守词法约束，违规回退到课程内容；这不是语义答案泄漏的完整证明。二、三级帮助使用预设且明确分级的数学内容。真实多轮测试使用脚本学生，不代表真实学习效果；尚无教师盲评或长期实验。每个操作最多两项模型任务；结构化诊断最多修复一次，教学文字只生成一次并在不合规时回退。SQLite 写事务仍串行，适合个人内测。
-
-
-## bysz1 部署
-
-工作目录：`/default-filesys/workspace/ysb/Edu`。Conda：`/default-filesys/workspace/ysb/miniconda3/bin/conda`。应用使用 `.envs/harness`（Python 3.11），推理使用 `.envs/vllm`（Python 3.12）。默认后端在 `service-config.json` 中设为 vLLM。
-
-vLLM 0.23.0 + PyTorch 2.11.0/CUDA 13.0 + Transformers 5.22.2，使用物理 GPU 1、BF16、TP=1、32768 token 上下文、最多32个并发序列、60%显存预算（KV cache 约115万 token）；参数见 `service-config.json` 的 `vllm` 段。启动后先预热再标记就绪。启用异步调度、分块预填充、FlashAttention 3、Triton/FLA 线性注意力及 CUDA Graph。思考模式默认关闭。
-
-服务脚本为 vLLM 进程配置 `/usr/local/cuda-13.0/compat` 兼容库，不修改系统驱动；临时目录与编译缓存位于项目 `.cache/`。模型通过镜像取得并通过完整 SHA256 校验，原始权重及分词器未改动。
+以下命令以 bysz1（`/default-filesys/workspace/ysb/Edu`）为例。启动脚本只使用空闲 GPU（其他进程占用超过 1GB 时拒绝启动），不会结束别人的进程。
 
 ```bash
 cd /default-filesys/workspace/ysb/Edu
-# 查看状态
-.envs/harness/bin/python scripts/service.py status inference
+.envs/harness/bin/python scripts/service.py start inference   # OmniEdu-9B，vLLM，GPU 1，端口 8000
+.envs/harness/bin/python scripts/service.py start harness     # 应用，端口 7860
 .envs/harness/bin/python scripts/service.py status harness
-# 启动（默认 vLLM）
-.envs/harness/bin/python scripts/service.py start inference
-.envs/harness/bin/python scripts/service.py start harness
-# 停止
-.envs/harness/bin/python scripts/service.py stop harness
-.envs/harness/bin/python scripts/service.py stop inference
 ```
 
-重建环境：`bash scripts/bootstrap_vllm.sh`，使用 ysb Conda 与清华 PyPI 镜像。`requirements-vllm.lock` 锁定全部依赖版本（与 `reports/vllm-pip-freeze.txt` 一致）。模型下载仍可用 `HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py`。
-
-在个人电脑执行：
+在自己电脑上转发端口后打开 http://127.0.0.1:7860 ，接口文档在 http://127.0.0.1:7860/docs ：
 
 ```bash
-ssh -N -L 7860:127.0.0.1:7860 -L 8000:127.0.0.1:8000 bysz1
+ssh -N -L 7860:127.0.0.1:7860 bysz1
 ```
 
-浏览器打开 http://127.0.0.1:7860 ，推理接口为 `http://127.0.0.1:8000/v1`，模型名 `omniedu-9b`。当前为本地演示模式，服务不随服务器重启自动启动。
+可选功能：
 
-验证：正式端口上20次文本、多轮、图片请求全部通过；8路并发、流式输出、Edu结构化诊断与应用页面检查均通过。报告见 `reports/vllm-deployment.json`、`reports/vllm-validation.json`、`reports/vllm-production-smoke.json`。v0.7 在 vLLM 上重跑了教学端到端（`reports/teaching-v07-vllm-real.json`，4项通过，总耗时由75.6秒降到15.7秒）和评分案例（`reports/teaching-eval-v07-vllm.json`、对照 `reports/teaching-eval-v07-vllm-compare.json`：6个案例裸模型判对3个，harness判对6个）。
+```bash
+# 知识点库：下载 K12-KGraph 并导入 data/knowledge.sqlite（仅限研究和非商业教学，见“许可”）
+.envs/harness/bin/python scripts/import_kgraph.py
 
-保留 `.envs/inference` 的 Transformers 后备环境。如需临时回退，先停止推理，再运行 `.envs/harness/bin/python scripts/service.py start inference --backend transformers`；后备仍使用 GPU 1、2，需空闲。此覆盖仅针对该次启动，默认配置仍为 vLLM。
+# 交叉复核：启动 Qwen3.5-27B（GPU 3，端口 8002），再带环境变量重启应用
+.envs/harness/bin/python scripts/service.py start judge
+.envs/harness/bin/python scripts/service.py stop harness
+OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1 .envs/harness/bin/python scripts/service.py start harness
+```
+
+停止：`scripts/service.py stop harness|inference|judge|baseline`。服务不随服务器重启自动启动。日志在 `logs/`，学习记录在 `data/learning.sqlite`，图片在 `data/learning-images/`。
+
+## 使用流程
+
+页面分五个标签：
+
+1. **批量备课与发布** / **教师备课与跟进**：教师填写班级、课程、题目、评分要求和参考答案，可附材料（文字或文字版 PDF）和最多 4 项分项标准。导入知识点库后，可点“从知识点库推荐知识点”自动填入知识点和先修，教师确认后发布。批量备课可由模型一次起草最多 6 个目标，逐题审核后发布给学生名单。
+2. **学生练习**：学生加载班级任务后作答。可以请求提示（依次为概念提示、步骤提示、半完成的同构例子）、请求完整讲解（之后的完成记为辅助完成）、回答老师追问、上传作答照片（先确认识别结果再判定）。答对后可开始一道未见过的独立检查题。
+3. **课程路径与补救安排**：用知识点和先修关系发布课程路径，系统给出每个学生的下一步；按名单批量布置补救、复习或诊断任务。
+4. **教师证据**：查看班级学情和待复核队列（按风险排序：未确定判定、负面判定、低置信等），确认或修改判定，查看每轮的教学决策、证据和原始图片，回放策略决策。
+
+学生答错时的默认处理（策略 `open-task-policy-v4`）：如果判定能定位到学生原文中的具体问题，就指出那一步并追问，不给正确结果，例如“请再检查这一处：‘her base pay is 150 x 4 = 600’，这一步依据的是什么？”。
+
+## 接口
+
+完整字段见 `/docs`。写入接口都带 `request_id`（幂等）和可选 `version`（版本冲突返回 409）；模型不可用返回 503，可用相同 `request_id` 重试。
+
+| 接口 | 用途 |
+|---|---|
+| `POST /api/teacher/assignments` | 发布教师任务 |
+| `POST /api/teacher/packs`、`.../packs/generate`、`.../packs/{id}/publish` | 批量备课：保存草稿、模型起草、审核发布 |
+| `GET /api/learning/inbox?class_id=&learner=` | 学生任务箱（不含参考答案） |
+| `POST /api/sessions` | 开始会话（`learner` + `assignment_id`，或自定义 `task`、`material`、`image_url`） |
+| `POST /api/sessions/{sid}/{action}` | 会话操作，见下表 |
+| `GET /api/teacher/dashboard?class_id=` | 班级学情与待复核队列 |
+| `POST /api/teacher/tasks/{sid}/attempts/{event_id}/corrections` | 教师改判（依赖证据连带失效） |
+| `POST /api/teacher/tasks/{sid}/attempts/{event_id}/reviews` | 确认原判定 |
+| `GET /api/teacher/sessions/{sid}/trace`、`/replay` | 教学轨迹、不调用模型的策略回放 |
+| `POST /api/teacher/paths`、`GET /api/learning/next` | 课程路径、下一步建议 |
+| `POST /api/teacher/followups`、`PATCH /api/teacher/followups/{id}` | 批量跟进任务、延期或撤销 |
+
+| action | 用途 |
+|---|---|
+| `attempt` | 提交作答 |
+| `reply` | 回答追问（不算作答证据） |
+| `hint` / `explain` | 请求下一级提示 / 完整讲解 |
+| `check` / `resume_practice` | 开始独立检查 / 回到原任务 |
+| `image` / `confirm` / `confirm_task` | 上传作答图片 / 确认转写 / 确认题目图片 |
+
+默认是**本地可信演示模式**，页面上的教师、学生只是视图，不是身份认证；服务只监听 127.0.0.1。共享使用时设置 `HARNESS_ACCOUNTS_FILE`（令牌到角色、班级、学生的 JSON 映射，请求带 `Authorization: Bearer <token>`），此时只开放 API、关闭演示页面；目前没有带登录的网页。
+
+## 配置
+
+| 环境变量 | 默认 | 作用 |
+|---|---|---|
+| `OMNIEDU_BASE_URL` / `OMNIEDU_MODEL` | `http://127.0.0.1:8000/v1` / `omniedu-9b` | 主模型 |
+| `OMNIEDU_REVIEW_BASE_URL` / `OMNIEDU_REVIEW_MODEL` | 未设置 / `qwen3.5-27b` | 设置后开启交叉复核 |
+| `OMNIEDU_POLICY` | `open-task-policy-v4` | 教学策略；可选 v1–v5，旧轨迹按原版本回放 |
+| `OMNIEDU_PROMPT_STYLE` | `mixed` | `mixed`：评分和知识点用 OmniEdu 训练时的系统指令；`omniedu`：全部调用都用；`harness`：全部用自写提示词 |
+| `OMNIEDU_JSON_SCHEMA` | `1` | 结构化输出使用 `json_schema` 约束解码 |
+| `OMNIEDU_IMAGE_MAX_SIDE` | `1536` | 图片缩放的最长边像素 |
+| `HARNESS_DB` / `OMNIEDU_KNOWLEDGE_DB` | `data/learning.sqlite` / `data/knowledge.sqlite` | 数据库路径 |
+| `HARNESS_ACCOUNTS_FILE` | 未设置 | 认证模式的账号文件 |
+
+推理服务参数在 `service-config.json`：vLLM 0.23.0，GPU 1，BF16，上下文 32768，最多 32 路并发，显存 60%。
+
+## 架构
+
+一次作答的处理顺序：
+
+```
+学生作答 → 确定性工具验证（能用时）→ 模型评分（必须引用学生原文）→ 可选 27B 复核
+        → 纯函数策略选择教学动作 → 模型写回复 → 审核（不合格重写一次 / 兜底）
+        → 一个事务内写入证据、状态差异和轨迹
+```
+
+| 模块 | 职责 |
+|---|---|
+| `harness/open_engine.py` | 会话状态、各操作的处理函数、证据、复核队列、改判传播 |
+| `harness/tasks.py` | 任务协议、评分结构、教学策略 v1–v5 |
+| `harness/open_model.py`、`model.py`、`omniedu_prompts.py` | 模型调用：评分、回复、审核、翻译；结构化输出；系统指令 |
+| `harness/assessment.py`、`criteria.py`、`toolbox.py`、`algebra.py` | 判定聚合、分项评分器、代数验证、材料切块与 BM25 检索 |
+| `harness/teacher.py`、`planning.py`、`preparation.py` | 教师任务、课程路径与跟进、批量备课 |
+| `harness/memory.py` | 从事件重建跨会话学习记录和复习间隔 |
+| `harness/knowledge.py` | 知识点库与自动打标 |
+| `harness/storage.py`、`replay.py` | SQLite 快照事务；并发冲突时持写锁重算，复用已完成的模型调用 |
+| `harness/images.py`、`materials.py` | 图片规范化与按哈希存文件；PDF 按页提取 |
+| `harness/app.py` | FastAPI 接口和 Gradio 页面 |
+| `inference_server.py`、`scripts/service.py` | Transformers 后备推理服务；服务启停 |
+
+`engine.py`、`gateway.py`、`course.py`、`policy.py`、`runtime.py` 是早期固定代数课程的实现，只为兼容旧会话保留。
+
+## 测试与评测
+
+```bash
+.envs/harness/bin/python -m pytest -q tests                        # 单元测试（假模型，临时数据库）
+PYTHONPATH=scripts .envs/harness/bin/python scripts/teaching_v08_e2e.py   # 真实模型回归（需 27B 服务）
+.envs/harness/bin/python scripts/teaching_v071_e2e.py               # 真实模型回归（只需主模型），另有 teaching_v06_e2e.py
+```
+
+对照评测需要裁判（`service.py start judge`，GPU 3）和基线模型（`start baseline`，GPU 4）：
+
+```bash
+.envs/harness/bin/python scripts/benchmark.py correctness correctness-zh correctness-multi response \
+  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-xr
+.envs/harness/bin/python scripts/benchmark.py dialogue --persona gamer --limit 40 \
+  --systems raw-baseline,raw-omniedu,harness-omniedu
+.envs/harness/bin/python scripts/eval_knowledge.py                 # 知识点打标（需 references/k12-kgraph/ 下的图谱和 K12-Bench 文件）
+```
+
+模拟学生类型：`cooperative`（配合）、`persistent`（坚持错误）、`gamer`（索要答案）、`disengaged`（敷衍）。报告写入 `reports/benchmark/`。中文和五科判定集由 `bench/build_data.py` 生成，已存于 `bench/data/`。
+
+## 已知限制
+
+- 没有真实教师盲评或课堂试验。
+- 存储是 SQLite，请求同步等待模型；40 名学生同时提交已验证可用，更大规模未验证。
+- 知识点库只有人教版数理化生，没有语文、英语和其他版本；打标“至少命中一个”约 80%。
+- PDF 只支持文字版，扫描件要按图片上传；检索是 BM25，没有向量检索。
+- 复习间隔是 1/3/7/14/30 天的固定规则，掌握情况没有概率估计（未用 BKT、IRT、FSRS）。
+- 没有批量批改拍照作业、学情讲评、组卷等教师功能，没有带登录的网页。
+- 编程类任务没有运行学生代码的沙箱。
+
+## 环境与模型
+
+- 模型：`lhpku20010120/Omni-Edu-9B`，revision `7fda599d16f5c7aff770e2869450684c8e4d72f0`，BF16，存于 `models/Omni-Edu-9B`。下载：`HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py`。
+- 环境：应用 `.envs/harness`（Python 3.11，`requirements-harness.lock`），推理 `.envs/vllm`（Python 3.12，`requirements-vllm.lock`），用 `scripts/bootstrap_vllm.sh` 重建。vLLM 通过 `/usr/local/cuda-13.0/compat` 在 550 驱动上运行，不改系统驱动。
+- 后备：`.envs/inference` 中的 Transformers 服务，`scripts/service.py start inference --backend transformers`（使用 GPU 1、2）。
+- 旧库中的内联图片可用 `scripts/migrate_images.py --apply` 迁移为文件（先自动备份）。
+
+## 许可
+
+- OmniEdu 模型：Apache-2.0，可商用。
+- K12-KGraph（知识点库数据）：CC BY-NC-SA 4.0，**只能用于研究和非商业教学**；数据和导入后的库文件不进仓库。
+- 评测使用的公开数据集（MRBench、StepVerify、MathTutorBench 等）按各自许可使用。
+
+## 相关文档
+
+- [HARNESS_REVIEW.md](HARNESS_REVIEW.md)：评估报告、逐项处理状态和全部评测结果。
+- [CHANGELOG.md](CHANGELOG.md)：各版本的更新说明。
+- [REFERENCES.txt](REFERENCES.txt)：设计参考来源。
