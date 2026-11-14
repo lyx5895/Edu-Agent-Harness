@@ -1,0 +1,49 @@
+[project]
+name = "omniedu-harness"
+version = "0.10.0"
+description = "Teaching harness around OmniEdu-9B: evidence-bound grading, reviewed feedback, teacher workspace."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn",
+    "pydantic>=2.7",
+    "python-multipart",
+    "pillow",
+    "pypdf",
+    "sympy",
+    "httpx",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx", "ruff", "playwright"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+# A model call after a write would hold the SQLite write lock while the model runs.
+filterwarnings = ["error::harness.persistence.storage.WriteBeforeModelCall"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [".envs", "models", "data", "references", "reports"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "BLE", "SIM", "UP", "RUF", "PLC0414", "S110"]
+ignore = [
+    "E501",    # long strings (prompts, Chinese messages) are wrapped by the formatter where possible
+    "SIM108",  # ternaries are not always clearer
+    "B905",    # zip() over equal-length sequences is the common case here
+    "RUF001", "RUF002", "RUF003",  # full-width Chinese punctuation is intentional
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "S110", "BLE001"]
+"bench/*" = ["BLE001"]
+"scripts/*" = ["BLE001", "E402"]  # scripts put the repo on sys.path before importing harness
+
+[tool.ruff.lint.isort]
+known-first-party = ["harness", "bench"]

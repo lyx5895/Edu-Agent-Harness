@@ -6,13 +6,13 @@ import time
 import httpx
 import pytest
 from PIL import Image
-
-from harness.resources.images import file_to_data_url, normalize_image
-from harness.llm.model import InputTooLong, ModelClient
-from harness.core.open_engine import OpenEngine
-from harness.core.tasks import Assessment, choose
 from test_open_tasks import FakeOpenModel, act
 from test_teaching_v04 import assigned
+
+from harness.core.open_engine import OpenEngine
+from harness.core.tasks import Assessment, choose
+from harness.llm.model import InputTooLong, ModelClient
+from harness.resources.images import file_to_data_url, normalize_image
 
 
 def data_url(im, fmt='PNG', **save):
@@ -57,8 +57,15 @@ def test_structured_call_sends_json_schema(monkeypatch, tmp_path):
 
     def handler(request):
         seen.append(json.loads(request.content))
-        content = json.dumps({'status': 'incorrect', 'confidence': 'high', 'evidence_quote': '2x+3',
-                              'observation': '漏乘', 'hypothesis': '分配律'})
+        content = json.dumps(
+            {
+                'status': 'incorrect',
+                'confidence': 'high',
+                'evidence_quote': '2x+3',
+                'observation': '漏乘',
+                'hypothesis': '分配律',
+            }
+        )
         return httpx.Response(200, json={'choices': [{'message': {'content': content}}], 'usage': {}})
 
     fake_transport(monkeypatch, handler)
@@ -72,8 +79,12 @@ def test_structured_call_sends_json_schema(monkeypatch, tmp_path):
 
 
 def test_context_overflow_has_specific_error(monkeypatch):
-    fake_transport(monkeypatch, lambda request: httpx.Response(400, json={'error': {
-        'message': "Input length (11860) exceeds model's maximum context length (4096)."}}))
+    fake_transport(
+        monkeypatch,
+        lambda request: httpx.Response(
+            400, json={'error': {'message': "Input length (11860) exceeds model's maximum context length (4096)."}}
+        ),
+    )
     with pytest.raises(InputTooLong, match='过长'):
         ModelClient(base_url='http://model/v1').chat([{'role': 'user', 'content': 'x'}])
 
@@ -110,19 +121,23 @@ def test_criteria_and_whole_task_are_graded_concurrently(tmp_path):
 
 def test_review_interval_expands_with_independent_streak(tmp_path):
     from harness.core.memory import summarize
+
     e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
     for _ in range(2):
         s = assigned(e)
-        act(e, s, 'attempt', '参考结论'); act(e, s, 'check'); act(e, s, 'attempt', '参考结论')
+        act(e, s, 'attempt', '参考结论')
+        act(e, s, 'check')
+        act(e, s, 'attempt', '参考结论')
     with e.connect() as c:
         memory = summarize(c, '学生A')[0]
         assert memory['independent_streak'] == 2 and memory['review_interval_days'] == 3
-        assert not summarize(c, '学生A', now=time.time() + 2*86400)[0]['review_due']
-        assert summarize(c, '学生A', now=time.time() + 3*86400 + 60)[0]['review_due']
+        assert not summarize(c, '学生A', now=time.time() + 2 * 86400)[0]['review_due']
+        assert summarize(c, '学生A', now=time.time() + 3 * 86400 + 60)[0]['review_due']
 
 
 def test_verbatim_quote_salvages_garbled_tail_but_rejects_paraphrase():
-    from harness.core.open_engine import verbatim_quote
+    from harness.core.evidence import verbatim_quote
+
     text = 'She also spent 25 tickets on the koala, so she had 50 tickets in total.'
     assert verbatim_quote('spent 25 tickets', text) == 'spent 25 tickets'
     garbled = 'She also spent 25 tickets on the koala, so she had 50 ticketz'
@@ -147,7 +162,8 @@ def test_images_are_files_and_traces_store_diffs(tmp_path):
 
 
 def test_paraphrase_is_bound_to_chosen_sentence():
-    from harness.core.open_engine import ground
+    from harness.core.evidence import ground
+
     text = 'Berry read 262 pages. Therefore, Berry has to read 88 pages on Saturday.'
     paraphrase = {'evidence_quote': 'He has to read 88 pages on Saturday', 'evidence_sentence': 2}
     assert ground(paraphrase, text) == 'Therefore, Berry has to read 88 pages on Saturday.'
@@ -210,7 +226,8 @@ def test_policy_v4_locates_grounded_error_and_replays(tmp_path):
     assert e.replay(s['session_id'])['passed']
     model.bad_review = True
     again = act(e, e.create('u2', 'Explain why tides happen.'), 'attempt', 'tides 2+3=6')
-    assert again['feedback'] == 'Take another look at this part: "tides 2+3=6". What is this step based on, and does it hold?'
+    assert 'tides 2+3=6' in again['feedback'] and 'compare' in again['feedback']
+    assert again['feedback'].count('?') == 1
     trace = [t for t in e.traces(again['session']['session_id']) if 'output_validation' in t][-1]
     assert trace['output_validation']['delivered_action'] == 'locate_template'
     v3 = OpenEngine(tmp_path / 'v3.sqlite', FakeOpenModel(), policy='open-task-policy-v3')
@@ -229,6 +246,7 @@ def test_review_queue_flags_risky_model_judgments(tmp_path):
 
 def test_policy_v5_escalates_hints_when_probing_stalls(tmp_path):
     from harness.core.tasks import choose_v5
+
     base = {'phase': 'teach', 'kind': 'reply', 'status': 'unknown', 'failures': 1, 'hints': 0}
     assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 1})['action'] == 'change_explanation'
     assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 2})['action'] == 'scaffold_concept'
@@ -241,18 +259,36 @@ def test_policy_v5_escalates_hints_when_probing_stalls(tmp_path):
     model.outcome = 'not_helped'
     e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v5')
     s = e.create('u', '解释四季成因')
-    actions = [act(e, s, 'attempt', '错误解释')['action']] + [act(e, s, 'reply', '我觉得没错')['action'] for _ in range(5)]
-    assert actions == ['locate', 'scaffold_concept', 'change_explanation', 'scaffold_step', 'change_explanation', 'scaffold_example']
+    actions = [act(e, s, 'attempt', '错误解释')['action']] + [
+        act(e, s, 'reply', '我觉得没错')['action'] for _ in range(5)
+    ]
+    assert actions == [
+        'locate',
+        'scaffold_concept',
+        'change_explanation',
+        'scaffold_step',
+        'change_explanation',
+        'scaffold_example',
+    ]
     assert e.replay(s['session_id'])['passed']
 
 
 class FakeReviewer:
     model_name = 'reviewer-27b'
+
     def __init__(self, status='incorrect', acceptable=True):
         self.status, self.acceptable, self.calls = status, acceptable, []
+
     def assess(self, task, text, context, verification):
         self.calls.append('assess')
-        return {'status': self.status, 'confidence': 'high', 'evidence_quote': text, 'observation': '复核意见', 'hypothesis': ''}
+        return {
+            'status': self.status,
+            'confidence': 'high',
+            'evidence_quote': text,
+            'observation': '复核意见',
+            'hypothesis': '',
+        }
+
     def review(self, task, candidate, action, student=None):
         self.calls.append('review')
         return {'acceptable': self.acceptable, 'reason': '复核'}
@@ -285,6 +321,43 @@ def test_cross_review_can_veto_feedback_without_replay_collision(tmp_path):
     assert reviewer.calls.count('assess') == 1
 
 
+@pytest.mark.parametrize('acceptable', [True, False])
+def test_reviewer_rewrites_rejected_locate_but_cannot_bypass_checks(tmp_path, acceptable):
+    class RepairReviewer(FakeReviewer):
+        def respond(self, task, action, text, context, assessment, revision=None):
+            self.calls.append('rewrite')
+            assert revision['reasons'] == ['locate_must_end_with_one_question']
+            return 'Compare the claimed result with the given condition: can both be true?'
+
+    model = FakeOpenModel()
+    model.candidate = 'Recheck the formula.'
+    reviewer = RepairReviewer(acceptable=acceptable)
+    e = OpenEngine(tmp_path / 'db.sqlite', model, reviewer=reviewer)
+    s = e.create('u', 'Explain why tides happen.')
+    out = act(e, s, 'attempt', 'tides 2+3=6')
+    audit = [t for t in e.traces(s['session_id']) if 'output_validation' in t][-1]['output_validation']
+    assert reviewer.calls.count('rewrite') == 1
+    assert audit['rewrite_model'] == reviewer.model_name
+    assert audit['fallback'] is not acceptable
+    if acceptable:
+        assert out['feedback'].startswith('Compare the claimed result')
+    else:
+        assert 'tides 2+3=6' in out['feedback']
+        assert 'cross_review' in audit['reasons']
+    assert e.replay(s['session_id'])['passed']
+
+
+def test_locate_asks_one_small_question_instead_of_multiple_questions(tmp_path):
+    model = FakeOpenModel()
+    model.candidate = 'What is the rule? What is the result?'
+    e = OpenEngine(tmp_path / 'db.sqlite', model)
+    s = e.create('u', 'Explain tides.')
+    out = act(e, s, 'attempt', 'tides 2+3=6')
+    audit = [t for t in e.traces(s['session_id']) if 'output_validation' in t][-1]['output_validation']
+    assert not audit['fallback']
+    assert out['feedback'] == 'What is the rule?'
+
+
 def test_locate_trailing_instruction_is_trimmed_and_template_is_not_generic_fallback(tmp_path):
     model = FakeOpenModel()
     model.candidate = 'The step "2+2=5" looks off; what does 2+2 give? Please recheck it.'
@@ -301,13 +374,18 @@ def test_locate_trailing_instruction_is_trimmed_and_template_is_not_generic_fall
 def test_rejected_feedback_is_rewritten_once_with_reasons(tmp_path):
     class Model(FakeOpenModel):
         def __init__(self):
-            super().__init__(); self.reviews = 0; self.revisions = []
+            super().__init__()
+            self.reviews = 0
+            self.revisions = []
+
         def respond(self, task, action, text, context, assessment, revision=None):
             self.revisions.append(revision)
             return '这一步的依据是什么？' if revision else '正确做法是先乘再加。'
+
         def review(self, *a):
             self.reviews += 1
             return {'acceptable': self.reviews > 1, 'reason': '给出了改正做法'}
+
     model = Model()
     e = OpenEngine(tmp_path / 'db.sqlite', model, policy='open-task-policy-v3')
     s = e.create('u', '解释四季成因')
@@ -330,7 +408,8 @@ def test_no_rewrite_when_turn_budget_is_low(tmp_path):
 
 
 def test_loose_quote_match_maps_back_to_original_text():
-    from harness.core.open_engine import verbatim_quote
+    from harness.core.evidence import verbatim_quote
+
     text = 'Earbuds cost 10 tickets，which is “half” of the total.'
     assert verbatim_quote('cost 10 tickets, which is "half"', text) == 'cost 10 tickets，which is “half'
     assert verbatim_quote('cost 12 tickets', text) is None
@@ -338,7 +417,13 @@ def test_loose_quote_match_maps_back_to_original_text():
 
 class UnsureModel(FakeOpenModel):
     def assess(self, task, text, context, verification):
-        return {'status': 'unknown', 'confidence': 'low', 'evidence_quote': text, 'observation': '不确定', 'hypothesis': ''}
+        return {
+            'status': 'unknown',
+            'confidence': 'low',
+            'evidence_quote': text,
+            'observation': '不确定',
+            'hypothesis': '',
+        }
 
 
 def test_reviewer_resolves_unsure_primary_only_with_grounded_negative(tmp_path):
@@ -352,9 +437,12 @@ def test_reviewer_resolves_unsure_primary_only_with_grounded_negative(tmp_path):
 
 
 def test_inline_images_migrate_to_files(tmp_path):
-    import shutil, sys
+    import shutil
+    import sys
+
     sys.path.insert(0, 'scripts')
     from migrate_images import migrate
+
     e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
     url = data_url(Image.new('RGB', (32, 32), 'white'))
     s = e.create('u', image_url=url)
@@ -373,12 +461,20 @@ def test_inline_images_migrate_to_files(tmp_path):
 
 def test_omniedu_prompt_style_uses_training_system_prompt(monkeypatch, tmp_path):
     from harness.llm.omniedu_prompts import REGISTRY, messages
+
     seen = []
 
     def handler(request):
         seen.append(json.loads(request.content))
-        content = json.dumps({'status': 'incorrect', 'confidence': 'high', 'evidence_quote': '2x+3',
-                              'observation': '漏乘', 'hypothesis': '分配律'})
+        content = json.dumps(
+            {
+                'status': 'incorrect',
+                'confidence': 'high',
+                'evidence_quote': '2x+3',
+                'observation': '漏乘',
+                'hypothesis': '分配律',
+            }
+        )
         return httpx.Response(200, json={'choices': [{'message': {'content': content}}], 'usage': {}})
 
     fake_transport(monkeypatch, handler)

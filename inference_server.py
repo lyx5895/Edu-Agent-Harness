@@ -1,4 +1,5 @@
 """Small serialized, OpenAI-compatible Transformers BF16 server."""
+
 import base64
 import io
 import threading
@@ -26,8 +27,12 @@ async def lifespan(app):
     assert torch.cuda.device_count() == 2, 'Expose exactly two GPUs with CUDA_VISIBLE_DEVICES'
     state['processor'] = AutoProcessor.from_pretrained(path, local_files_only=True)
     state['model'] = Qwen3_5ForConditionalGeneration.from_pretrained(
-        path, dtype=torch.bfloat16, device_map='balanced',
-        max_memory={0: '18GiB', 1: '18GiB'}, attn_implementation='sdpa', local_files_only=True,
+        path,
+        dtype=torch.bfloat16,
+        device_map='balanced',
+        max_memory={0: '18GiB', 1: '18GiB'},
+        attn_implementation='sdpa',
+        local_files_only=True,
     ).eval()
     state['model'].config.use_cache = True
     state['ready'] = True
@@ -117,8 +122,14 @@ def chat(req: Request):
     try:
         processor, model = state['processor'], state['model']
         messages = prepare_messages(req.messages)
-        inputs = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True,
-            return_dict=True, return_tensors='pt', enable_thinking=False).to(model.device)
+        inputs = processor.apply_chat_template(
+            messages,
+            add_generation_prompt=True,
+            tokenize=True,
+            return_dict=True,
+            return_tensors='pt',
+            enable_thinking=False,
+        ).to(model.device)
         n = inputs['input_ids'].shape[-1]
         if n + req.max_tokens > 4096:
             raise HTTPException(413, 'Input plus output exceeds 4096 tokens')
@@ -126,21 +137,40 @@ def chat(req: Request):
             torch.cuda.reset_peak_memory_stats(i)
         with torch.inference_mode():
             kwargs = {'temperature': req.temperature} if req.temperature > 0 else {}
-            output = model.generate(**inputs, max_new_tokens=req.max_tokens, do_sample=req.temperature > 0,
-                use_cache=True, stopping_criteria=StoppingCriteriaList([FirstToken()]), **kwargs)
+            output = model.generate(
+                **inputs,
+                max_new_tokens=req.max_tokens,
+                do_sample=req.temperature > 0,
+                use_cache=True,
+                stopping_criteria=StoppingCriteriaList([FirstToken()]),
+                **kwargs,
+            )
         text = processor.batch_decode(output[:, n:], skip_special_tokens=True)[0]
-        return {'id': 'chatcmpl-' + uuid.uuid4().hex, 'object': 'chat.completion', 'created': int(time.time()),
-            'model': MODEL, 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': text},
-                'finish_reason': 'length' if output.shape[-1] - n >= req.max_tokens else 'stop'}],
+        return {
+            'id': 'chatcmpl-' + uuid.uuid4().hex,
+            'object': 'chat.completion',
+            'created': int(time.time()),
+            'model': MODEL,
+            'choices': [
+                {
+                    'index': 0,
+                    'message': {'role': 'assistant', 'content': text},
+                    'finish_reason': 'length' if output.shape[-1] - n >= req.max_tokens else 'stop',
+                }
+            ],
             'usage': {'prompt_tokens': n, 'completion_tokens': output.shape[-1] - n, 'total_tokens': output.shape[-1]},
-            'metrics': {'ttft_seconds': first[0] if first else None, 'seconds': time.monotonic() - start,
-                'peak_allocated_gib': [round(torch.cuda.max_memory_allocated(i) / 2**30, 3) for i in range(2)]}}
+            'metrics': {
+                'ttft_seconds': first[0] if first else None,
+                'seconds': time.monotonic() - start,
+                'peak_allocated_gib': [round(torch.cuda.max_memory_allocated(i) / 2**30, 3) for i in range(2)],
+            },
+        }
     except HTTPException:
         raise
     except torch.cuda.OutOfMemoryError:
         torch.cuda.empty_cache()
-        raise HTTPException(503, 'GPU memory exhausted; retry with a shorter input')
+        raise HTTPException(503, 'GPU memory exhausted; retry with a shorter input') from None
     except (ValueError, KeyError, TypeError) as e:
-        raise HTTPException(400, str(e))
+        raise HTTPException(400, str(e)) from e
     finally:
         lock.release()

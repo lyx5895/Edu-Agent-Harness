@@ -1,5 +1,6 @@
 """Tutor systems under comparison. Raw systems see the same problem, gold solution
 and dialogue as the harness; only the scaffolding around the model differs."""
+
 import json
 import re
 import tempfile
@@ -9,13 +10,21 @@ from pathlib import Path
 from .common import ENDPOINTS, ROOT, chat
 from .data import mathtutorbench_prompt
 
-TUTOR_SYSTEM = ('You are a math tutor helping a student who made a mistake. Help the student find and fix the '
-                'mistake themselves. Do not reveal the final answer. Reply in the language the student uses, '
-                'in at most three sentences.')
+TUTOR_SYSTEM = (
+    'You are a math tutor helping a student who made a mistake. Help the student find and fix the '
+    'mistake themselves. Do not reveal the final answer. Reply in the language the student uses, '
+    'in at most three sentences.'
+)
 
 
-TASK_TYPES = {'数学': 'problem_solving', '物理': 'problem_solving', '化学': 'problem_solving',
-              '生物': 'concept', '语文': 'reading', '英语': 'concept'}
+TASK_TYPES = {
+    '数学': 'problem_solving',
+    '物理': 'problem_solving',
+    '化学': 'problem_solving',
+    '生物': 'concept',
+    '语文': 'reading',
+    '英语': 'concept',
+}
 
 
 class RawTutor:
@@ -39,13 +48,25 @@ class RawTutor:
         return {'flagged_error': flagged, 'status': 'incorrect' if flagged else 'correct', 'raw': reply}
 
     def locate(self, item):
-        reply = chat(self.endpoint, [{'role': 'user', 'content': mathtutorbench_prompt('mistake_location.yaml', **item)}], max_tokens=8)
+        reply = chat(
+            self.endpoint,
+            [{'role': 'user', 'content': mathtutorbench_prompt('mistake_location.yaml', **item)}],
+            max_tokens=8,
+        )
         digits = re.findall(r'\d+', reply)
         return {'step': int(digits[0]) if digits else None, 'raw': reply}
 
     def respond(self, conversation):
-        prompt = (TUTOR_SYSTEM + '\n\nProblem: ' + conversation['question'] + '\nGold solution (never reveal it): '
-                  + conversation['Ground_Truth_Solution'] + '\n\nConversation:\n' + conversation['conversation_history'] + '\nTutor:')
+        prompt = (
+            TUTOR_SYSTEM
+            + '\n\nProblem: '
+            + conversation['question']
+            + '\nGold solution (never reveal it): '
+            + conversation['Ground_Truth_Solution']
+            + '\n\nConversation:\n'
+            + conversation['conversation_history']
+            + '\nTutor:'
+        )
         return {'response': chat(self.endpoint, [{'role': 'user', 'content': prompt}], max_tokens=200).strip()}
 
     def session(self, problem):
@@ -55,8 +76,16 @@ class RawTutor:
 class RawSession:
     def __init__(self, endpoint, problem):
         self.endpoint = endpoint
-        self.messages = [{'role': 'system', 'content': TUTOR_SYSTEM + '\n\nProblem: ' + problem['question']
-                          + '\nGold solution (never reveal it): ' + problem['reference_solution']}]
+        self.messages = [
+            {
+                'role': 'system',
+                'content': TUTOR_SYSTEM
+                + '\n\nProblem: '
+                + problem['question']
+                + '\nGold solution (never reveal it): '
+                + problem['reference_solution'],
+            }
+        ]
         self.events = []
 
     def turn(self, student_message, submits_answer):
@@ -70,10 +99,15 @@ class HarnessTutor:
     def __init__(self, policy=None, cross_review=False, prompt_style=None):
         from harness.core.open_engine import OpenEngine
         from harness.llm.open_model import OpenModel
+
         self.OpenEngine, self.OpenModel = OpenEngine, OpenModel
         self.policy, self.cross_review, self.prompt_style = policy, cross_review, prompt_style
-        self.name = ('harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '') + ('-xr' if cross_review else '')
-                     + {'omniedu': '-op', 'mixed': '-mp', 'harness': '-hp'}.get(prompt_style, ''))
+        self.name = (
+            'harness-omniedu'
+            + ('-' + policy.rsplit('-', 1)[-1] if policy else '')
+            + ('-xr' if cross_review else '')
+            + {'omniedu': '-op', 'mixed': '-mp', 'harness': '-hp'}.get(prompt_style, '')
+        )
         self.tmp = tempfile.TemporaryDirectory(prefix='edu-bench-')
 
     def engine(self):
@@ -85,34 +119,59 @@ class HarnessTutor:
         if self.cross_review:
             reviewer = self.OpenModel(*ENDPOINTS['judge'])
             reviewer.logs = model.logs
-        return self.OpenEngine(Path(self.tmp.name) / f'{uuid.uuid4().hex}.sqlite', model, policy=self.policy, reviewer=reviewer)
+        return self.OpenEngine(
+            Path(self.tmp.name) / f'{uuid.uuid4().hex}.sqlite', model, policy=self.policy, reviewer=reviewer
+        )
 
     def start(self, engine, question, reference, item=None):
         item = item or {}
         if item.get('language') == 'zh':
             subject = item.get('subject', '数学')
-            fields = {'domain': subject, 'objective': '正确回答题目并说明依据' if item.get('subject') else '正确求解应用题并给出推理',
-                      'rubric': item.get('rubric') or '最终答案须与参考解答一致，且每一步推理和计算正确。',
-                      'task_type': TASK_TYPES.get(subject, 'problem_solving')}
+            fields = {
+                'domain': subject,
+                'objective': '正确回答题目并说明依据' if item.get('subject') else '正确求解应用题并给出推理',
+                'rubric': item.get('rubric') or '最终答案须与参考解答一致，且每一步推理和计算正确。',
+                'task_type': TASK_TYPES.get(subject, 'problem_solving'),
+            }
         else:
-            fields = {'domain': 'Math', 'objective': 'Solve the word problem correctly with sound reasoning',
-                      'rubric': 'The final answer must match the reference solution and every reasoning and calculation step must be correct.',
-                      'task_type': 'problem_solving'}
-        assignment = engine.publish_assignment({
-            'class_id': 'benchmark', 'course_id': fields['domain'], 'concept_id': 'benchmark-item', 'question': question,
-            'reference': reference, 'reference_origin': 'teacher_authored', **fields})
+            fields = {
+                'domain': 'Math',
+                'objective': 'Solve the word problem correctly with sound reasoning',
+                'rubric': 'The final answer must match the reference solution and every reasoning and calculation step must be correct.',
+                'task_type': 'problem_solving',
+            }
+        assignment = engine.publish_assignment(
+            {
+                'class_id': 'benchmark',
+                'course_id': fields['domain'],
+                'concept_id': 'benchmark-item',
+                'question': question,
+                'reference': reference,
+                'reference_origin': 'teacher_authored',
+                **fields,
+            }
+        )
         return engine.create('bench-' + uuid.uuid4().hex[:8], assignment_id=assignment['assignment_id'])
 
     def judge_correctness(self, item):
         engine = self.engine()
         session = self.start(engine, item['question'], item['reference_solution'], item)
-        result = engine.operation(session['session_id'], 'attempt', 'attempt', {'text': item['student_chat_solution'][:1600]})
+        result = engine.operation(
+            session['session_id'], 'attempt', 'attempt', {'text': item['student_chat_solution'][:1600]}
+        )
         status = result['status']
-        out = {'status': status, 'flagged_error': status != 'correct', 'abstained': status == 'unknown',
-               'feedback': result['feedback'], 'action': result.get('action')}
+        out = {
+            'status': status,
+            'flagged_error': status != 'correct',
+            'abstained': status == 'unknown',
+            'feedback': result['feedback'],
+            'action': result.get('action'),
+        }
         if self.cross_review:
             with engine.connect() as c:
-                payload = json.loads(c.execute('SELECT payload FROM learning_events WHERE id=?', (result['event_id'],)).fetchone()[0])
+                payload = json.loads(
+                    c.execute('SELECT payload FROM learning_events WHERE id=?', (result['event_id'],)).fetchone()[0]
+                )
             out['cross_review'] = payload.get('cross_review')
         return out
 
@@ -143,5 +202,11 @@ class HarnessSession:
         self.session = result['session']
         trace = next((t for t in self.engine.traces(sid) if t['event_id'] == result.get('trace_id')), {})
         validation = trace.get('output_validation', {})
-        return {'tutor': result['feedback'], 'action': result.get('action'), 'status': result.get('status'), 'operation': kind,
-                'delivered_action': validation.get('delivered_action'), 'fallback_reasons': validation.get('reasons', [])}
+        return {
+            'tutor': result['feedback'],
+            'action': result.get('action'),
+            'status': result.get('status'),
+            'operation': kind,
+            'delivered_action': validation.get('delivered_action'),
+            'fallback_reasons': validation.get('reasons', []),
+        }

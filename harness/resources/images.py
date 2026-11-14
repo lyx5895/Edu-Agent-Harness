@@ -1,10 +1,11 @@
 """Validate uploaded images and bound their size before they reach the model."""
+
 import base64
 import hashlib
 import io
 import os
-from pathlib import Path
 import re
+from pathlib import Path
 
 from PIL import Image, ImageOps
 
@@ -22,7 +23,8 @@ def normalize_image(url, max_side=MAX_SIDE):
         if im.width * im.height > 20_000_000:
             raise ValueError('图片过大')
         im.load()
-    except Exception as e:
+    except (OSError, ValueError, SyntaxError, Image.DecompressionBombError) as e:
+        # UnidentifiedImageError is an OSError; binascii.Error is a ValueError.
         raise ValueError('图片无法读取') from e
     if max(im.size) <= max_side and im.getexif().get(0x0112, 1) == 1:
         return url

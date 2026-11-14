@@ -1,6 +1,8 @@
 """Bounded context, teaching execution, output checks and auditable traces."""
+
 import re
 from copy import deepcopy
+
 from harness.legacy.course import SKILLS
 from harness.legacy.policy import VERSION, decide
 
@@ -23,10 +25,19 @@ def context(events, item):
     recent = []
     for e in events[-6:]:
         p = e['payload']
-        recent.append({'event_id': e['id'], 'kind': e['type'],
-                       **{k: str(p[k])[:160] for k in ('text', 'feedback', 'hint', 'status') if k in p}})
-    return {'skill': item['skill'], 'source': item['source'], 'recent_evidence': recent,
-            'budget': {'max_events': 6, 'max_chars_per_field': 160}}
+        recent.append(
+            {
+                'event_id': e['id'],
+                'kind': e['type'],
+                **{k: str(p[k])[:160] for k in ('text', 'feedback', 'hint', 'status') if k in p},
+            }
+        )
+    return {
+        'skill': item['skill'],
+        'source': item['source'],
+        'recent_evidence': recent,
+        'budget': {'max_events': 6, 'max_chars_per_field': 160},
+    }
 
 
 def fallback(action, item):
@@ -59,19 +70,27 @@ def guard(candidate, action, item):
         reasons.append('multiple_questions')
     if action in ('probe', 'clarify') and not ('？' in candidate or '?' in candidate):
         reasons.append('missing_question')
-    return {'accepted': not reasons, 'reasons': reasons,
-            'scope': 'conservative_lexical_guard', 'replacement': bool(reasons)}
+    return {
+        'accepted': not reasons,
+        'reasons': reasons,
+        'scope': 'conservative_lexical_guard',
+        'replacement': bool(reasons),
+    }
 
 
 def execute(model, item, observation, learner_state, ctx, diagnosis=None):
     decision = decide(observation)
     action = decision['action']
-    packet = {'question': item['prompt'], 'student_context': ctx,
-              'learner_state': deepcopy(learner_state),
-              'action': action, 'reason': decision['reason'],
-              'rule': SKILLS[item['skill']]['rule'],
-              'diagnostic_hypothesis': (diagnosis or {}).get('hypothesis', '')[:160],
-              'first_error': (diagnosis or {}).get('first_error')}
+    packet = {
+        'question': item['prompt'],
+        'student_context': ctx,
+        'learner_state': deepcopy(learner_state),
+        'action': action,
+        'reason': decision['reason'],
+        'rule': SKILLS[item['skill']]['rule'],
+        'diagnostic_hypothesis': (diagnosis or {}).get('hypothesis', '')[:160],
+        'first_error': (diagnosis or {}).get('first_error'),
+    }
     if action in ('step_hint', 'worked_example'):
         candidate = fallback(action, item)
         validation = {'accepted': True, 'reasons': [], 'scope': 'authored_course', 'replacement': False}
@@ -85,10 +104,18 @@ def execute(model, item, observation, learner_state, ctx, diagnosis=None):
     step = verified_step or step
     if action == 'probe' and type(step) is int and 1 <= step <= 20:
         output = f'先检查第{step}步。' + output
-    return output, {'policy_version': VERSION, 'input': observation, 'decision': decision,
-                    'context': packet, 'candidate': candidate, 'validation': validation,
-                    'output': output, 'wait_for_student': True,
-                    'tools': ['course.retrieve'], 'generation_calls_max': 2}
+    return output, {
+        'policy_version': VERSION,
+        'input': observation,
+        'decision': decision,
+        'context': packet,
+        'candidate': candidate,
+        'validation': validation,
+        'output': output,
+        'wait_for_student': True,
+        'tools': ['course.retrieve'],
+        'generation_calls_max': 2,
+    }
 
 
 def replay(traces):
@@ -96,9 +123,20 @@ def replay(traces):
     for trace in traces:
         supported = trace['policy_version'] == VERSION
         actual = decide(trace['input']) if supported else None
-        checks.append({'event_id': trace['event_id'], 'supported': supported,
-                       'matches': supported and actual == trace['decision'], 'computed': actual})
-    return {'policy_version': VERSION, 'trace_count': len(checks),
-            'scope': 'policy decisions only; model generations are recorded, not regenerated',
-            'kind': 'deterministic_policy_replay', 'model_called': False,
-            'passed': all(c['matches'] for c in checks), 'turns': checks}
+        checks.append(
+            {
+                'event_id': trace['event_id'],
+                'supported': supported,
+                'matches': supported and actual == trace['decision'],
+                'computed': actual,
+            }
+        )
+    return {
+        'policy_version': VERSION,
+        'trace_count': len(checks),
+        'scope': 'policy decisions only; model generations are recorded, not regenerated',
+        'kind': 'deterministic_policy_replay',
+        'model_called': False,
+        'passed': all(c['matches'] for c in checks),
+        'turns': checks,
+    }

@@ -22,8 +22,13 @@ ENDPOINTS = {
 
 def chat(endpoint, messages, max_tokens=512, temperature=0, response_format=None, retries=2):
     base, model = ENDPOINTS[endpoint]
-    body = {'model': model, 'messages': messages, 'max_tokens': max_tokens, 'temperature': temperature,
-            'chat_template_kwargs': {'enable_thinking': False}}
+    body = {
+        'model': model,
+        'messages': messages,
+        'max_tokens': max_tokens,
+        'temperature': temperature,
+        'chat_template_kwargs': {'enable_thinking': False},
+    }
     if response_format:
         body['response_format'] = response_format
     for attempt in range(retries + 1):
@@ -45,8 +50,13 @@ def schema_format(name, schema):
 def chat_json(endpoint, messages, name, schema, max_tokens, temperature=0, attempts=5):
     # Constrained decoding can still run away in whitespace until max_tokens; resample instead of failing the item.
     for attempt in range(attempts):
-        raw = chat(endpoint, messages, max_tokens=max_tokens, temperature=temperature if attempt == 0 else max(temperature, 0.6),
-                   response_format=schema_format(name, schema))
+        raw = chat(
+            endpoint,
+            messages,
+            max_tokens=max_tokens,
+            temperature=temperature if attempt == 0 else max(temperature, 0.6),
+            response_format=schema_format(name, schema),
+        )
         try:
             return json.loads(raw)
         except json.JSONDecodeError:
@@ -60,6 +70,7 @@ def parallel(fn, items, workers=16):
             return fn(item)
         except Exception as e:  # keep the run going; failures are reported per item
             return {'id': item.get('id') if isinstance(item, dict) else None, 'error': f'{type(e).__name__}: {e}'}
+
     with ThreadPoolExecutor(workers) as pool:
         return list(pool.map(safe, items))
 
@@ -75,7 +86,9 @@ def provenance():
     repos = {}
     for repo in ('UnifyingAITutorEvaluation', 'mathtutorbench'):
         try:
-            repos[repo] = subprocess.check_output(['git', '-C', str(SOURCES / repo), 'rev-parse', 'HEAD'], text=True).strip()
+            repos[repo] = subprocess.check_output(
+                ['git', '-C', str(SOURCES / repo), 'rev-parse', 'HEAD'], text=True
+            ).strip()
         except (OSError, subprocess.CalledProcessError):
             repos[repo] = None
     step = SOURCES / 'stepverify/stepverify.json'

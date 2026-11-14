@@ -2,12 +2,14 @@
 
 Usage: migrate_images.py [DB] [--apply]. Without --apply only reports what would change.
 With --apply the database is copied to DB.bak-<time> first. Safe to run repeatedly."""
-from pathlib import Path
+
 import json
 import shutil
 import sqlite3
 import sys
 import time
+from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from harness.resources.images import store_image
 
@@ -24,8 +26,10 @@ def migrate(db, apply=False):
         with c:
             for i, payload in rows:
                 fields = store_image(payload.pop('image_url'), root)
-                c.execute('UPDATE learning_events SET payload=? WHERE id=?',
-                          (json.dumps({**payload, **fields}, ensure_ascii=False, sort_keys=True), i))
+                c.execute(
+                    'UPDATE learning_events SET payload=? WHERE id=?',
+                    (json.dumps({**payload, **fields}, ensure_ascii=False, sort_keys=True), i),
+                )
         print(f'backup: {backup}')
     c.close()
     return len(rows)

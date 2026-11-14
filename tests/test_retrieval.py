@@ -1,8 +1,9 @@
 import pytest
-from harness.resources.materials import read_material
-from harness.core.open_engine import OpenEngine
-from harness.resources.toolbox import PAGE_BREAK, chunks, retrieve
 from test_open_tasks import FakeOpenModel
+
+from harness.core.open_engine import OpenEngine
+from harness.resources.materials import read_material
+from harness.resources.toolbox import PAGE_BREAK, chunks, retrieve
 
 
 def pdf(pages):
@@ -12,8 +13,10 @@ def pdf(pages):
     for text in pages:
         stream = f'BT /F1 12 Tf 72 720 Td ({text}) Tj ET'
         objects.append(f'<< /Length {len(stream)} >>\nstream\n{stream}\nendstream')
-        objects.append(f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents {len(objects)} 0 R '
-                       '/Resources << /Font << /F1 3 0 R >> >> >>')
+        objects.append(
+            f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents {len(objects)} 0 R '
+            '/Resources << /Font << /F1 3 0 R >> >> >>'
+        )
         kids.append(f'{len(objects)} 0 R')
     objects[1] = f'<< /Type /Pages /Kids [{" ".join(kids)}] /Count {len(kids)} >>'
     out, offsets = '%PDF-1.4\n', []
@@ -21,19 +24,21 @@ def pdf(pages):
         offsets.append(len(out))
         out += f'{i} 0 obj\n{body}\nendobj\n'
     xref = len(out)
-    out += f'xref\n0 {len(objects)+1}\n0000000000 65535 f \n' + ''.join(f'{o:010d} 00000 n \n' for o in offsets)
-    out += f'trailer\n<< /Size {len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n'
+    out += f'xref\n0 {len(objects) + 1}\n0000000000 65535 f \n' + ''.join(f'{o:010d} 00000 n \n' for o in offsets)
+    out += f'trailer\n<< /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n'
     return out.encode('latin-1')
 
 
 def test_pdf_pages_become_paged_chunks(tmp_path):
     path = tmp_path / 'notes.pdf'
-    path.write_bytes(pdf(['Photosynthesis makes glucose in chloroplasts.', 'Newton second law relates force and acceleration.']))
+    path.write_bytes(
+        pdf(['Photosynthesis makes glucose in chloroplasts.', 'Newton second law relates force and acceleration.'])
+    )
     material = read_material(path)
     assert material.count(PAGE_BREAK) == 1
     sources = chunks(material)
     assert [x['page'] for x in sources] == [1, 2]
-    assert all(material[x['start']:x['end']] == x['text'] for x in sources)
+    assert all(material[x['start'] : x['end']] == x['text'] for x in sources)
     assert retrieve(sources, 'What does Newton second law say about force?')[0]['page'] == 2
 
 

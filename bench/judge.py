@@ -1,5 +1,6 @@
 """MRBench-style judge (Qwen3.5-27B). Labels and definitions follow the MRBench
 human annotation guideline; agreement with human labels is measured before use."""
+
 from collections import Counter
 
 from .common import chat_json
@@ -37,10 +38,17 @@ def judge_schema():
 
 
 def judge(conversation_history, gold_solution, response):
-    content = (f'Conversation history:\n{conversation_history}\n\nGold solution (for reference only):\n{gold_solution}'
-               f'\n\nTutor response to evaluate:\n{response}')
-    return chat_json('judge', [{'role': 'system', 'content': GUIDE}, {'role': 'user', 'content': content}],
-                     'mrbench_judgment', judge_schema(), max_tokens=1200)
+    content = (
+        f'Conversation history:\n{conversation_history}\n\nGold solution (for reference only):\n{gold_solution}'
+        f'\n\nTutor response to evaluate:\n{response}'
+    )
+    return chat_json(
+        'judge',
+        [{'role': 'system', 'content': GUIDE}, {'role': 'user', 'content': content}],
+        'mrbench_judgment',
+        judge_schema(),
+        max_tokens=1200,
+    )
 
 
 def lenient(dimension, label):
@@ -75,8 +83,14 @@ def agreement(records):
         summary[dim] = {
             'n': len(valid),
             'exact_accuracy': round(sum(a == b for a, b in valid) / len(valid), 3) if valid else None,
-            'lenient_accuracy': round(sum(a == b for a, b in loose if a is not None) / len(valid), 3) if valid else None,
+            'lenient_accuracy': round(sum(a == b for a, b in loose if a is not None) / len(valid), 3)
+            if valid
+            else None,
             'lenient_kappa': round(kappa(loose), 3) if kappa(loose) is not None else None,
-            'human_positive_rate': round(sum(a == ('Yes' if dim != 'Tutor_Tone' else 'OK') for a, _ in loose if a) / len(valid), 3) if valid else None,
+            'human_positive_rate': round(
+                sum(a == ('Yes' if dim != 'Tutor_Tone' else 'OK') for a, _ in loose if a) / len(valid), 3
+            )
+            if valid
+            else None,
         }
     return summary

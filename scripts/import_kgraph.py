@@ -1,4 +1,5 @@
 """Build data/knowledge.sqlite from K12-KGraph (CC BY-NC-SA 4.0; research and non-commercial teaching only)."""
+
 import argparse
 import sys
 import urllib.request

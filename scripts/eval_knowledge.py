@@ -1,5 +1,6 @@
 """Evaluate knowledge-point tagging against K12-KGraph exercise edges (tests_concept / tests_skill)
 and K12-Bench ground_subtask1 multiple choice."""
+
 import argparse
 import json
 import random
@@ -11,8 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from harness.resources.knowledge import Knowledge, tag
 from harness.llm.open_model import OpenModel
+from harness.resources.knowledge import Knowledge, tag
 
 KG = ROOT / 'references/k12-kgraph'
 
@@ -33,8 +34,12 @@ def score(rows, key):
     predicted = sum(len(r[key]) for r in rows)
     gold = sum(len(r['gold']) for r in rows)
     p, r = tp / max(predicted, 1), tp / max(gold, 1)
-    return {'precision': round(p, 3), 'recall': round(r, 3), 'f1': round(2 * p * r / max(p + r, 1e-9), 3),
-            'any_hit': round(sum(bool(set(x[key]) & x['gold']) for x in rows) / len(rows), 3)}
+    return {
+        'precision': round(p, 3),
+        'recall': round(r, 3),
+        'f1': round(2 * p * r / max(p + r, 1e-9), 3),
+        'any_hit': round(sum(bool(set(x[key]) & x['gold']) for x in rows) / len(rows), 3),
+    }
 
 
 def run_tagging(model, kb, items, workers, use_stage):
@@ -45,32 +50,53 @@ def run_tagging(model, kb, items, workers, use_stage):
             result = tag(model, kb, item['question'], item['subject'], stages)
         except Exception as exc:  # keep the row so failures count against the score
             result = {'ids': [], 'candidates': [], 'guesses': [], 'source': f'error:{type(exc).__name__}'}
-        return {**item, 'bm25': bm25, 'tagged': result['ids'], 'pool': result['candidates'],
-                'guesses': result['guesses'], 'source': result['source']}
+        return {
+            **item,
+            'bm25': bm25,
+            'tagged': result['ids'],
+            'pool': result['candidates'],
+            'guesses': result['guesses'],
+            'source': result['source'],
+        }
+
     with ThreadPoolExecutor(workers) as pool:
         rows = list(pool.map(one, items))
-    summary = {'n': len(rows), 'bm25_top3': score(rows, 'bm25'), 'tagged': score(rows, 'tagged'),
-               'pool_recall': score(rows, 'pool')['recall'],
-               'mean_pool': round(sum(len(r['pool']) for r in rows) / len(rows), 1),
-               'sources': {s: sum(r['source'] == s for r in rows) for s in {r['source'] for r in rows}}}
+    summary = {
+        'n': len(rows),
+        'bm25_top3': score(rows, 'bm25'),
+        'tagged': score(rows, 'tagged'),
+        'pool_recall': score(rows, 'pool')['recall'],
+        'mean_pool': round(sum(len(r['pool']) for r in rows) / len(rows), 1),
+        'sources': {s: sum(r['source'] == s for r in rows) for s in {r['source'] for r in rows}},
+    }
     return summary, rows
 
 
 def run_choice(model, limit, seed, workers):
-    items = [json.loads(re.sub(r'\\(.)', lambda m: m[0] if m[1] in '"\\/bfnrtu' else '\\\\' + m[1], line))
-             for line in (KG / 'K12-Bench/ground_subtask1.jsonl').open()]
+    items = [
+        json.loads(re.sub(r'\\(.)', lambda m: m[0] if m[1] in '"\\/bfnrtu' else '\\\\' + m[1], line))
+        for line in (KG / 'K12-Bench/ground_subtask1.jsonl').open()
+    ]
     random.Random(seed).shuffle(items)
 
     def one(item):
         options = '\n'.join(f'{k}. {v}' for k, v in item['options'].items())
         try:
-            text = model.chat([{'role': 'system', 'content': model_system(model)},
-                               {'role': 'user', 'content': f"{item['question']}\n{options}\n可能有多个正确选项。只输出正确选项字母，用逗号分隔。"}],
-                              max_tokens=20)
+            text = model.chat(
+                [
+                    {'role': 'system', 'content': model_system(model)},
+                    {
+                        'role': 'user',
+                        'content': f'{item["question"]}\n{options}\n可能有多个正确选项。只输出正确选项字母，用逗号分隔。',
+                    },
+                ],
+                max_tokens=20,
+            )
         except Exception:
             text = ''
         picked = sorted({c for c in text.upper() if c in item['options']})
         return {'id': item['id'], 'answer': sorted(item['answer']), 'picked': picked}
+
     with ThreadPoolExecutor(workers) as pool:
         rows = list(pool.map(one, items[:limit]))
     return {'n': len(rows), 'exact': round(sum(r['picked'] == r['answer'] for r in rows) / len(rows), 3)}, rows
@@ -78,6 +104,7 @@ def run_choice(model, limit, seed, workers):
 
 def model_system(model):
     from harness.llm.omniedu_prompts import REGISTRY
+
     return REGISTRY['knowledge_point'] if model.prompt_style == 'omniedu' else '你是K12课程知识点专家。'
 
 
@@ -98,8 +125,10 @@ def main():
         for use_stage in (False, True):
             name = f'{style}{"-stage" if use_stage else ""}'
             summary, rows = run_tagging(model, kb, items, args.workers, use_stage)
-            report['runs'][name] = {'summary': summary, 'rows': [{**{k: v for k, v in r.items() if k != 'question'}, 'gold': sorted(r['gold'])}
-                                                               for r in rows]}
+            report['runs'][name] = {
+                'summary': summary,
+                'rows': [{**{k: v for k, v in r.items() if k != 'question'}, 'gold': sorted(r['gold'])} for r in rows],
+            }
             print(name, json.dumps(summary, ensure_ascii=False), flush=True)
         summary, rows = run_choice(model, args.limit, args.seed, args.workers)
         report['runs'][f'{style}-ground_subtask1'] = {'summary': summary, 'rows': rows}

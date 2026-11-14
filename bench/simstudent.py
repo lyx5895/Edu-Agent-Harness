@@ -1,6 +1,7 @@
 """Simulated student seeded with a real erroneous solution and its annotated error.
 Prompted simulators are known to be imperfect (see sim-student-eval); results
 compare tutors under the same simulator and are not learning-outcome evidence."""
+
 from .common import chat_json, final_number, mentions_number
 
 PERSONA = """You are role-playing a middle-school student in a tutoring chat. Stay in character.
@@ -31,16 +32,25 @@ STYLES = {
 - After answering two such small questions you may redo the whole problem.""",
 }
 
-SCHEMA = {'type': 'object', 'properties': {
-    'message': {'type': 'string', 'maxLength': 500},
-    'submits_answer': {'type': 'boolean'},
-    'final_answer': {'type': 'string', 'maxLength': 40}},
-    'required': ['message', 'submits_answer', 'final_answer'], 'additionalProperties': False}
+SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'message': {'type': 'string', 'maxLength': 500},
+        'submits_answer': {'type': 'boolean'},
+        'final_answer': {'type': 'string', 'maxLength': 40},
+    },
+    'required': ['message', 'submits_answer', 'final_answer'],
+    'additionalProperties': False,
+}
 
 
 def student_reply(problem, transcript, persona='cooperative'):
-    system = PERSONA.format(question=problem['question'], solution=problem['student_chat_solution'],
-                            error=problem['error_description'], style=STYLES[persona])
+    system = PERSONA.format(
+        question=problem['question'],
+        solution=problem['student_chat_solution'],
+        error=problem['error_description'],
+        style=STYLES[persona],
+    )
     messages = [{'role': 'system', 'content': system}]
     for turn in transcript:
         messages.append({'role': 'user' if turn['speaker'] == 'tutor' else 'assistant', 'content': turn['text']})
@@ -49,14 +59,23 @@ def student_reply(problem, transcript, persona='cooperative'):
 
 def submitted_gold(turn, gold):
     # The simulator sometimes fills final_answer with words or junk; fall back to the last number it wrote.
-    return bool(turn.get('submits_answer')) and gold in (final_number(turn.get('final_answer')), final_number(turn.get('text')))
+    return bool(turn.get('submits_answer')) and gold in (
+        final_number(turn.get('final_answer')),
+        final_number(turn.get('text')),
+    )
 
 
 def run_dialogue(tutor, problem, max_turns=6, persona='cooperative'):
     gold = problem['gold_answer']
     session = tutor.session(problem)
-    transcript = [{'speaker': 'student', 'text': problem['student_chat_solution'], 'submits_answer': True,
-                   'final_answer': final_number(problem['student_chat_solution'])}]
+    transcript = [
+        {
+            'speaker': 'student',
+            'text': problem['student_chat_solution'],
+            'submits_answer': True,
+            'final_answer': final_number(problem['student_chat_solution']),
+        }
+    ]
     outcome = {'solved': False, 'turns': 0, 'leaked_turn': None, 'student_stated_gold': False}
     for turn in range(1, max_turns + 1):
         last = transcript[-1]
@@ -67,20 +86,37 @@ def run_dialogue(tutor, problem, max_turns=6, persona='cooperative'):
         transcript.append({'speaker': 'tutor', 'text': text, **{k: v for k, v in tutor_out.items() if k != 'tutor'}})
         outcome['turns'] = turn
         stated = any(t['speaker'] == 'student' and mentions_number(t['text'], gold) for t in transcript)
-        if outcome['leaked_turn'] is None and not stated and mentions_number(text, gold) and not mentions_number(problem['question'], gold):
+        if (
+            outcome['leaked_turn'] is None
+            and not stated
+            and mentions_number(text, gold)
+            and not mentions_number(problem['question'], gold)
+        ):
             outcome['leaked_turn'] = turn
         if tutor_out.get('action') == 'teacher_review':
             outcome['escalated'] = True
             break
         reply = student_reply(problem, transcript, persona)
-        transcript.append({'speaker': 'student', 'text': reply['message'], 'submits_answer': reply['submits_answer'],
-                           'final_answer': reply['final_answer']})
+        transcript.append(
+            {
+                'speaker': 'student',
+                'text': reply['message'],
+                'submits_answer': reply['submits_answer'],
+                'final_answer': reply['final_answer'],
+            }
+        )
         if submitted_gold(transcript[-1], gold):
             outcome['solved'] = True
             outcome['solved_after_leak'] = outcome['leaked_turn'] is not None
             # Let the tutor acknowledge; harness records evidence on this attempt.
             closing = session.turn(reply['message'], True)
-            transcript.append({'speaker': 'tutor', 'text': closing.get('tutor', ''), **{k: v for k, v in closing.items() if k != 'tutor'}})
+            transcript.append(
+                {
+                    'speaker': 'tutor',
+                    'text': closing.get('tutor', ''),
+                    **{k: v for k, v in closing.items() if k != 'tutor'},
+                }
+            )
             break
     outcome['transcript'] = transcript
     return outcome

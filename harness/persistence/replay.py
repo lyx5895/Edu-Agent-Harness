@@ -4,13 +4,14 @@ A snapshot that loses the commit race is recomputed against fresh data. Model
 calls whose inputs are unchanged return the recorded result; calls whose inputs
 changed (because the conflicting write was relevant) go to the model again.
 """
+
+import json
+import time
 from contextvars import ContextVar
 from copy import deepcopy
 from functools import wraps
-import json
-import time
 
-from harness.persistence.storage import StaleSnapshot
+from harness.persistence.storage import StaleSnapshot, check_model_call
 
 # The first run is optimistic; reruns hold the write lock, so a second rerun is a safety margin only.
 ATTEMPTS = 3
@@ -51,12 +52,14 @@ def retry_stale(method):
                         raise
         finally:
             _active.reset(token)
+
     return run
 
 
 class ReplayableModel:
     """Transparent proxy; attribute writes go to the wrapped model."""
-    UNCACHED = {'budget', 'budget_left'}
+
+    UNCACHED = frozenset({'budget', 'budget_left'})
 
     def __init__(self, model, namespace=''):
         object.__setattr__(self, '_model', model)
@@ -70,13 +73,16 @@ class ReplayableModel:
         def call(*args, **kwargs):
             replay = _active.get()
             if replay is None:
+                check_model_call()
                 return attr(*args, **kwargs)
             key = json.dumps([self._namespace, name, args, kwargs], sort_keys=True, ensure_ascii=False, default=repr)
             if key in replay.results:
                 return deepcopy(replay.results[key])
+            check_model_call()
             result = attr(*args, **kwargs)
             replay.results[key] = deepcopy(result)
             return result
+
         return call
 
     def __setattr__(self, name, value):

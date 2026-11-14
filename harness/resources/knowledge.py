@@ -2,6 +2,7 @@
 
 Concept and Skill nodes of the 人教版 math/physics/chemistry/biology textbooks become concept ids;
 prerequisites_for edges (source is a prerequisite for target) give prerequisites."""
+
 import json
 import math
 import os
@@ -10,9 +11,8 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from harness.resources.toolbox import terms
-
 from harness.paths import ROOT
+from harness.resources.toolbox import terms
 
 DEFAULT_DB = ROOT / 'data/knowledge.sqlite'
 SUBJECTS = {'math': '数学', 'physics': '物理', 'chemistry': '化学', 'biology': '生物'}
@@ -41,23 +41,43 @@ def import_kgraph(nodes_path, edges_path, db=DEFAULT_DB):
     parent = {e['source']: e['target'] for e in edges if e['type'] == 'is_part_of'}
     section = {}
     for e in edges:
-        if e['type'] == 'appears_in': section.setdefault(e['source'], e['target'])
+        if e['type'] == 'appears_in':
+            section.setdefault(e['source'], e['target'])
     rows = []
     for i, n in nodes.items():
         sec = n['id'] if n['label'] == 'Section' else section.get(i)
         chapter = parent.get(sec) if sec else (i if n['label'] == 'Chapter' else None)
         book = '_'.join(i.split('_')[:3])
-        rows.append((i, n['label'], n['name'], i.split('_')[0], stage(book), book, nodes.get(book, {}).get('name'),
-                     nodes.get(chapter, {}).get('name'), nodes.get(sec, {}).get('name') if n['label'] != 'Section' else None))
+        rows.append(
+            (
+                i,
+                n['label'],
+                n['name'],
+                i.split('_')[0],
+                stage(book),
+                book,
+                nodes.get(book, {}).get('name'),
+                nodes.get(chapter, {}).get('name'),
+                nodes.get(sec, {}).get('name') if n['label'] != 'Section' else None,
+            )
+        )
     Path(db).parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(db) as c:
         c.executescript(SCHEMA + 'delete from kp_nodes;delete from kp_edges;')
         c.executemany('insert into kp_nodes values(?,?,?,?,?,?,?,?,?)', rows)
-        c.executemany('insert into kp_edges values(?,?,?)', [(e['source'], e['target'], e['type']) for e in edges
-                                                               if e['source'] in nodes and e['target'] in nodes])
-        c.executemany('insert or replace into kp_meta values(?,?)', [
-            ('source', 'K12-KGraph (huggingface.co/datasets/lhpku20010120/K12-KGraph)'),
-            ('license', 'CC BY-NC-SA 4.0'), ('nodes', str(len(rows))), ('edges', str(len(edges)))])
+        c.executemany(
+            'insert into kp_edges values(?,?,?)',
+            [(e['source'], e['target'], e['type']) for e in edges if e['source'] in nodes and e['target'] in nodes],
+        )
+        c.executemany(
+            'insert or replace into kp_meta values(?,?)',
+            [
+                ('source', 'K12-KGraph (huggingface.co/datasets/lhpku20010120/K12-KGraph)'),
+                ('license', 'CC BY-NC-SA 4.0'),
+                ('nodes', str(len(rows))),
+                ('edges', str(len(edges))),
+            ],
+        )
     return {'nodes': len(rows), 'edges': len(edges)}
 
 
@@ -80,8 +100,10 @@ class Knowledge:
 
     def related(self, node_id, kind, reverse=False):
         a, b = ('source', 'target') if reverse else ('target', 'source')
-        return self._rows(f'select n.* from kp_edges e join kp_nodes n on n.id=e.{b} where e.{a}=? and e.type=? order by n.id',
-                          (node_id, kind))
+        return self._rows(
+            f'select n.* from kp_edges e join kp_nodes n on n.id=e.{b} where e.{a}=? and e.type=? order by n.id',
+            (node_id, kind),
+        )
 
     def prerequisites(self, node_id):
         return self.related(node_id, 'prerequisites_for')
@@ -91,7 +113,9 @@ class Knowledge:
 
     def index(self):
         if self._index is None:
-            docs = self._rows(f"select * from kp_nodes where label in ({','.join('?' * len(TAGGABLE))}) order by id", TAGGABLE)
+            docs = self._rows(
+                f'select * from kp_nodes where label in ({",".join("?" * len(TAGGABLE))}) order by id', TAGGABLE
+            )
             bags = [Counter(terms(d['name']) + terms(d['section_name'] or '')) for d in docs]
             df, postings = Counter(), defaultdict(list)
             for i, bag in enumerate(bags):
@@ -112,9 +136,13 @@ class Knowledge:
                 tf = bags[i][t]
                 scores[i] += idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * lengths[i] / avg))
         ranked = sorted(scores, key=lambda i: (-scores[i], docs[i]['id']))
-        keep = [docs[i] | {'score': round(scores[i], 3)} for i in ranked
-                if (not subject or docs[i]['subject'] == subject) and (not stages or docs[i]['stage'] in stages)
-                and docs[i]['id'] not in exclude]
+        keep = [
+            docs[i] | {'score': round(scores[i], 3)}
+            for i in ranked
+            if (not subject or docs[i]['subject'] == subject)
+            and (not stages or docs[i]['stage'] in stages)
+            and docs[i]['id'] not in exclude
+        ]
         return keep[:limit]
 
 
@@ -125,6 +153,7 @@ def _norm(text):
 def tag(model, kb, question, subject, stages=None, shortlist=30, per_guess=5):
     """Suggest up to three knowledge points; the model only chooses among library ids."""
     from harness.llm.model import ModelUnavailable
+
     subject_name = SUBJECTS.get(SUBJECT_IDS.get(subject, subject), subject)
     try:
         guesses = model.guess_knowledge(question, subject_name)
@@ -149,10 +178,15 @@ def tag(model, kb, question, subject, stages=None, shortlist=30, per_guess=5):
     if not ids:
         ranked = kb.search(question, subject, stages, 3)
         ids, source = [n['id'] for n in ranked], 'bm25'
-    return {'ids': ids, 'nodes': [pool.get(i) or kb.get(i) for i in ids], 'guesses': guesses,
-            'candidates': [c['id'] for c in candidates], 'source': source}
+    return {
+        'ids': ids,
+        'nodes': [pool.get(i) or kb.get(i) for i in ids],
+        'guesses': guesses,
+        'candidates': [c['id'] for c in candidates],
+        'source': source,
+    }
 
 
 def describe(node):
     where = ' / '.join(x for x in (node.get('book_name'), node.get('chapter_name'), node.get('section_name')) if x)
-    return f"{node['name']}（{SUBJECTS.get(node['subject'], node['subject'])}·{where}）"
+    return f'{node["name"]}（{SUBJECTS.get(node["subject"], node["subject"])}·{where}）'

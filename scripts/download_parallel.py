@@ -1,15 +1,18 @@
 """Range downloader with resumable verified-length parts and final SHA256."""
+
 import concurrent.futures
 import os
 import time
+
 import httpx
-from download_model import ROOT, REPO, REV, verify
+from download_model import REPO, REV, ROOT, verify
 
 SIZE = 18819722392
 CHUNK = 64 * 1024**2
 dest = ROOT / 'models/Omni-Edu-9B'
 parts = dest / '.parts'
 parts.mkdir(exist_ok=True)
+
 
 def download(i):
     start, end = i * CHUNK, min(SIZE, (i + 1) * CHUNK) - 1
@@ -21,10 +24,15 @@ def download(i):
         try:
             with httpx.Client(follow_redirects=True, timeout=120) as client:
                 # Unique query avoids intermediary caches incorrectly reusing a different range.
-                with client.stream('GET', f'{endpoint}/{REPO}/resolve/{REV}/model.safetensors?part={i}',
-                        headers={'Range': f'bytes={start}-{end}'}) as r:
+                with client.stream(
+                    'GET',
+                    f'{endpoint}/{REPO}/resolve/{REV}/model.safetensors?part={i}',
+                    headers={'Range': f'bytes={start}-{end}'},
+                ) as r:
                     r.raise_for_status()
-                    assert r.status_code == 206 and r.headers.get('content-range', '').startswith(f'bytes {start}-{end}/')
+                    assert r.status_code == 206 and r.headers.get('content-range', '').startswith(
+                        f'bytes {start}-{end}/'
+                    )
                     with out.with_suffix('.tmp').open('wb') as f:
                         for b in r.iter_bytes(1024**2):
                             f.write(b)
@@ -35,6 +43,7 @@ def download(i):
             print(f'part {i} retry {trial}: {type(e).__name__}', flush=True)
             time.sleep(min(2**trial, 20))
     raise RuntimeError(f'Failed part {i}')
+
 
 if __name__ == '__main__':
     count = (SIZE + CHUNK - 1) // CHUNK

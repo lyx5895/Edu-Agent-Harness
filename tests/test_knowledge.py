@@ -1,12 +1,12 @@
 import json
 
 import pytest
-
-from harness.resources.knowledge import Knowledge, import_kgraph, tag
-from harness.llm.model import ModelUnavailable
-from harness.core.open_engine import OpenEngine
 from test_open_tasks import FakeOpenModel
 from test_teaching_v04 import assignment as base
+
+from harness.core.open_engine import OpenEngine
+from harness.llm.model import ModelUnavailable
+from harness.resources.knowledge import Knowledge, import_kgraph, tag
 
 NODES = [
     {'id': 'math_7a_rjb', 'label': 'Book', 'name': '七年级上册'},
@@ -28,7 +28,10 @@ EDGES = [
     {'source': 'math_7a_rjb_ch3_s2', 'target': 'math_7a_rjb_ch3', 'type': 'is_part_of'},
     {'source': 'math_bx1_rjb_ch1', 'target': 'math_bx1_rjb', 'type': 'is_part_of'},
     {'source': 'math_bx1_rjb_ch1_s1', 'target': 'math_bx1_rjb_ch1', 'type': 'is_part_of'},
-    *[{'source': f'math_7a_rjb_{n}', 'target': 'math_7a_rjb_ch3_s2', 'type': 'appears_in'} for n in ('cpt1', 'cpt2', 'skl1', 'exe1')],
+    *[
+        {'source': f'math_7a_rjb_{n}', 'target': 'math_7a_rjb_ch3_s2', 'type': 'appears_in'}
+        for n in ('cpt1', 'cpt2', 'skl1', 'exe1')
+    ],
     {'source': 'math_bx1_rjb_cpt1', 'target': 'math_bx1_rjb_ch1_s1', 'type': 'appears_in'},
     {'source': 'math_7a_rjb_cpt1', 'target': 'math_7a_rjb_skl1', 'type': 'prerequisites_for'},
     {'source': 'math_7a_rjb_cpt2', 'target': 'math_7a_rjb_skl1', 'type': 'prerequisites_for'},
@@ -53,19 +56,26 @@ class Tagger:
         self.guesses, self.chosen, self.fail, self.seen = list(guesses), list(chosen), fail, []
 
     def guess_knowledge(self, question, subject):
-        if self.fail: raise ModelUnavailable('down')
+        if self.fail:
+            raise ModelUnavailable('down')
         return self.guesses
 
     def choose_knowledge(self, question, subject, candidates):
         self.seen = [c['id'] for c in candidates]
-        if self.fail: raise ModelUnavailable('down')
+        if self.fail:
+            raise ModelUnavailable('down')
         return self.chosen
 
 
 def test_import_derives_location_stage_and_prerequisites(kb):
     node = kb.get('math_7a_rjb_skl1')
-    assert (node['subject'], node['stage'], node['book_name'], node['chapter_name'], node['section_name']) == \
-        ('math', '初中', '七年级上册', '第三章 一元一次方程', '3.2 解一元一次方程')
+    assert (node['subject'], node['stage'], node['book_name'], node['chapter_name'], node['section_name']) == (
+        'math',
+        '初中',
+        '七年级上册',
+        '第三章 一元一次方程',
+        '3.2 解一元一次方程',
+    )
     assert kb.get('math_bx1_rjb_cpt1')['stage'] == '高中'
     assert [p['name'] for p in kb.prerequisites('math_7a_rjb_skl1')] == ['等式的性质', '一元一次方程']
     assert kb.meta()['license'] == 'CC BY-NC-SA 4.0'

@@ -1,15 +1,18 @@
 """Subject-neutral contracts. No course ids or subject allowlist."""
+
 import re
 from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator
-from harness.grading.criteria import Criterion
+
 from harness.core.pedagogy import TeachingContract, validate_requirements
+from harness.grading.criteria import Criterion
 
 
 class TaskDraft(TeachingContract):
     criteria: list[Criterion] = Field(default_factory=list, max_length=4)
 
-    _requirements = field_validator("check_requirements")(validate_requirements)
+    _requirements = field_validator('check_requirements')(validate_requirements)
 
     domain: str = Field(min_length=1, max_length=80)
     objective: str = Field(min_length=1, max_length=240)
@@ -47,7 +50,8 @@ class KnowledgeChoice(BaseModel):
 
 class Review(BaseModel):
     # Reason first so constrained decoding commits to a verdict after the analysis.
-    reason: str = Field(max_length=250)
+    # Generous cap: an over-long justification must not invalidate an otherwise valid verdict.
+    reason: str = Field(max_length=800)
     acceptable: bool
 
 
@@ -70,8 +74,12 @@ def choose_v1(o):
         return {'action': 'scaffold', 'reason': '根据当前困难和已用帮助给出下一步提示。'}
     if o['kind'] == 'reply':
         outcome = o.get('outcome', 'unknown')
-        action = {'slip':'self_correct', 'helped':'self_correct',
-                  'not_helped':'change_explanation', 'misconception':'prerequisite'}.get(outcome, 'clarify')
+        action = {
+            'slip': 'self_correct',
+            'helped': 'self_correct',
+            'not_helped': 'change_explanation',
+            'misconception': 'prerequisite',
+        }.get(outcome, 'clarify')
         return {'action': action, 'reason': '根据学生原文支持的暂时解释调整帮助，不将自述记为能力证据。'}
     if o['status'] == 'correct':
         return {'action': 'offer_check', 'reason': '当前任务完成，邀请进行新的无提示检查。'}
@@ -99,17 +107,30 @@ def sentences(text):
 
 
 def public_task(task):
-    return {**{k: task[k] for k in ('id', 'domain', 'objective', 'question', 'phase', 'source_ids')},
-            'task_type': task.get('task_type', 'open'), 'source_pages': task.get('source_pages', []),
-            'check_requirements': task.get('check_requirements', []),
-            'criteria':[{'id':x['id'],'description':x['description']} for x in task.get('criteria',[])]}
+    return {
+        **{k: task[k] for k in ('id', 'domain', 'objective', 'question', 'phase', 'source_ids')},
+        'task_type': task.get('task_type', 'open'),
+        'source_pages': task.get('source_pages', []),
+        'check_requirements': task.get('check_requirements', []),
+        'criteria': [{'id': x['id'], 'description': x['description']} for x in task.get('criteria', [])],
+    }
 
 
 def choose_v2(o):
-    if o['phase']=='teach' and o.get('fallbacks',0)>=2 and o['kind'] not in ('check','explain') and o.get('status')!='correct':
-        return {'action':'teacher_review','reason':'连续反馈未通过审核，需要教师介入而非重复无效提示。'}
-    if o['phase']=='teach' and o['kind']=='attempt' and o.get('status') in ('incorrect','incomplete') and o.get('prior_support_needed'):
-        return {'action':'prerequisite','reason':'同一课程目标已有困难证据，接续先修诊断，避免重新重复首次追问。'}
+    if (
+        o['phase'] == 'teach'
+        and o.get('fallbacks', 0) >= 2
+        and o['kind'] not in ('check', 'explain')
+        and o.get('status') != 'correct'
+    ):
+        return {'action': 'teacher_review', 'reason': '连续反馈未通过审核，需要教师介入而非重复无效提示。'}
+    if (
+        o['phase'] == 'teach'
+        and o['kind'] == 'attempt'
+        and o.get('status') in ('incorrect', 'incomplete')
+        and o.get('prior_support_needed')
+    ):
+        return {'action': 'prerequisite', 'reason': '同一课程目标已有困难证据，接续先修诊断，避免重新重复首次追问。'}
     return choose_v1(o)
 
 
@@ -118,7 +139,7 @@ def choose_v3(o):
     if decision['action'] != 'scaffold':
         return decision
     # Escalate support only as hints accumulate on the same task.
-    action, reason = HINT_LEVELS[min(o.get('hints', 0), len(HINT_LEVELS)-1)]
+    action, reason = HINT_LEVELS[min(o.get('hints', 0), len(HINT_LEVELS) - 1)]
     return {'action': action, 'reason': reason}
 
 
@@ -137,7 +158,11 @@ def choose_v5(o):
     if o['phase'] != 'teach' or decision['action'] not in STALL_ACTIONS:
         return decision
     stalls = o.get('stalls', 0)
-    unhelped = o.get('outcome') in ('not_helped', 'unknown') if o['kind'] == 'reply' else o.get('status') in ('incorrect', 'incomplete')
+    unhelped = (
+        o.get('outcome') in ('not_helped', 'unknown')
+        if o['kind'] == 'reply'
+        else o.get('status') in ('incorrect', 'incomplete')
+    )
     if stalls < 3 and not (stalls >= 2 and unhelped):
         return decision
     if o.get('hints', 0) >= len(HINT_LEVELS):
@@ -146,6 +171,11 @@ def choose_v5(o):
     return {'action': action, 'reason': f'连续{stalls}轮追问没有带来进展，按提示阶梯升级支持。' + reason}
 
 
-POLICIES = {'open-task-policy-v5': choose_v5, 'open-task-policy-v4': choose_v4, 'open-task-policy-v3': choose_v3,
-            'open-task-policy-v2': choose_v2, 'open-task-policy-v1': choose_v1}
+POLICIES = {
+    'open-task-policy-v5': choose_v5,
+    'open-task-policy-v4': choose_v4,
+    'open-task-policy-v3': choose_v3,
+    'open-task-policy-v2': choose_v2,
+    'open-task-policy-v1': choose_v1,
+}
 choose = choose_v4

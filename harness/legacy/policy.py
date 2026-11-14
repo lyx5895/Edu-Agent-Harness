@@ -1,6 +1,7 @@
 """Pure, versioned teaching decisions. Design sources: REFERENCES.txt.
 No model, database or network access; recorded inputs are replayable.
 """
+
 VERSION = 'evidence-policy-v1'
 
 
@@ -15,8 +16,10 @@ def decide(observation):
         return {'action': 'independent_check', 'reason': '练习完成后用未见检查题收集独立证据。'}
     if kind == 'hint':
         level = observation['level']
-        return {'action': ('concept_hint', 'step_hint', 'worked_example')[level - 1],
-                'reason': '学生主动请求更明确的帮助；帮助后的答对仅算辅助完成。'}
+        return {
+            'action': ('concept_hint', 'step_hint', 'worked_example')[level - 1],
+            'reason': '学生主动请求更明确的帮助；帮助后的答对仅算辅助完成。',
+        }
     if kind == 'reply':
         if outcome == 'slip':
             return {'action': 'self_correct', 'reason': '学生明确描述遗漏或笔误，先让其独立修正数学步骤。'}
