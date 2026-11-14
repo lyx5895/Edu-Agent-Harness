@@ -1,13 +1,13 @@
 import json
 import os
 import time
-from pathlib import Path
 from typing import Literal
 
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
-from .omniedu_prompts import messages as prompt_messages
+from harness.paths import ROOT
+from harness.llm.omniedu_prompts import messages as prompt_messages
 
 
 class ModelUnavailable(Exception):
@@ -44,7 +44,7 @@ class ModelClient:
         self.base_url = base_url or os.getenv('OMNIEDU_BASE_URL', 'http://127.0.0.1:8000/v1')
         self.model_name = model or os.getenv('OMNIEDU_MODEL', 'omniedu-9b')
         self.prompt_style = os.getenv('OMNIEDU_PROMPT_STYLE', 'mixed')
-        self.logs = Path(__file__).resolve().parents[1] / 'logs/model-calls.jsonl'
+        self.logs = ROOT / 'logs/model-calls.jsonl'
         self.calls = []
         self.json_schema_output = os.getenv('OMNIEDU_JSON_SCHEMA', '1') != '0'
 

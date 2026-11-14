@@ -9,7 +9,7 @@ import tempfile
 import time
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from harness.open_engine import OpenEngine
+from harness.core.open_engine import OpenEngine
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
             row={'name':case['name'],'expected':case['expected']}
             try:
                 if args.compare:
-                    from harness.tasks import Assessment
+                    from harness.core.tasks import Assessment
                     baseline=engine.model.structured(Assessment,
                         '评估学生作答是否符合题目和评分要求，返回status、confidence、evidence_quote、observation、hypothesis。evidence_quote逐字来自学生作答。',
                         json.dumps({k:case[k] for k in ('question','rubric','reference','answer')},ensure_ascii=False)).model_dump()

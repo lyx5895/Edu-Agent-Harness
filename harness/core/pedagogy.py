@@ -52,7 +52,7 @@ def check_contract(task):
 
 def bind_check_contract(candidate, original):
     """Require dimension coverage; retain new expected values, never copy old ones."""
-    from .criteria import Criterion, bind_algebra
+    from harness.grading.criteria import Criterion, bind_algebra
     expected = original.get('criteria', [])
     rows = [Criterion.model_validate(c).model_dump() for c in candidate.get('criteria', [])]
     if len({c['id'] for c in rows}) != len(rows):

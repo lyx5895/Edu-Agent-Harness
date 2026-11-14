@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from harness.knowledge import Knowledge, import_kgraph, tag
-from harness.model import ModelUnavailable
-from harness.open_engine import OpenEngine
+from harness.resources.knowledge import Knowledge, import_kgraph, tag
+from harness.llm.model import ModelUnavailable
+from harness.core.open_engine import OpenEngine
 from test_open_tasks import FakeOpenModel
 from test_teaching_v04 import assignment as base
 

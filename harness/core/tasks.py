@@ -2,8 +2,8 @@
 import re
 from typing import Literal
 from pydantic import BaseModel, Field, field_validator
-from .criteria import Criterion
-from .pedagogy import TeachingContract, validate_requirements
+from harness.grading.criteria import Criterion
+from harness.core.pedagogy import TeachingContract, validate_requirements
 
 
 class TaskDraft(TeachingContract):

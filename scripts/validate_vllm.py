@@ -10,7 +10,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from harness.model import ModelClient
+from harness.llm.model import ModelClient
 
 
 def main():

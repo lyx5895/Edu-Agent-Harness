@@ -1,8 +1,8 @@
 import json
 import pytest
 from fastapi.testclient import TestClient
-from harness.engine import Engine
-from harness.model import ModelUnavailable
+from harness.legacy.engine import Engine
+from harness.llm.model import ModelUnavailable
 from test_harness import FakeModel
 
 
@@ -62,3 +62,32 @@ def test_reply_trace_and_replay_api(client):
     replay=c.get(f"/api/teacher/sessions/{s['session_id']}/replay").json()
     assert replay['passed'] and not replay['model_called']
     assert c.get('/api/teacher/sessions/missing/trace').status_code==400
+
+
+def test_app_factory_isolates_gateways_and_supports_api_only(tmp_path, monkeypatch):
+    from harness.app import create_app
+    from harness.core.gateway import Gateway
+    from test_open_tasks import FakeOpenModel
+
+    monkeypatch.delenv('HARNESS_ACCOUNTS_FILE', raising=False)
+    first = Gateway(tmp_path/'first.sqlite', FakeOpenModel())
+    second = Gateway(tmp_path/'second.sqlite', FakeOpenModel())
+    first_app = create_app(lambda: first, with_ui=False)
+    second_app = create_app(lambda: second, with_ui=False)
+    with TestClient(first_app) as a, TestClient(second_app) as b:
+        assert a.get('/').status_code == b.get('/').status_code == 404
+        assert a.get('/health').json()['ready']
+        response = a.post('/api/sessions', json={
+            'learner': 'A', 'task': '解释月相变化的原因', 'request_id': 'create',
+        })
+        assert response.status_code == 200
+        sid = response.json()['session_id']
+        assert a.get(f'/api/sessions/{sid}').status_code == 200
+        assert b.get(f'/api/sessions/{sid}').status_code == 400
+        assert second.open.report() == []
+        # Reusing the request key in another app creates its own independent session.
+        other = b.post('/api/sessions', json={
+            'learner': 'A', 'task': '解释月相变化的原因', 'request_id': 'create',
+        })
+        assert other.status_code == 200
+        assert other.json()['session_id'] != sid

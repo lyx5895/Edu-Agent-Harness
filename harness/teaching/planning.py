@@ -6,9 +6,9 @@ import time
 import uuid
 from typing import Literal
 from pydantic import BaseModel, Field, model_validator
-from . import teacher
-from .errors import Conflict
-from .memory import summarize
+from harness.teaching import teacher
+from harness.errors import Conflict
+from harness.core.memory import summarize
 
 
 class PathNode(BaseModel):

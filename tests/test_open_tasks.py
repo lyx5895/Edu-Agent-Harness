@@ -1,11 +1,11 @@
 import json
 import uuid
 import pytest
-from harness.open_engine import OpenEngine
-from harness.gateway import Gateway
-from harness.model import ModelUnavailable
+from harness.core.open_engine import OpenEngine
+from harness.core.gateway import Gateway
+from harness.llm.model import ModelUnavailable
 from harness.errors import Conflict
-from harness.toolbox import Toolbox
+from harness.resources.toolbox import Toolbox
 
 
 class FakeOpenModel:
@@ -158,9 +158,9 @@ def test_open_api_default_requires_task_and_supports_nonmath(tmp_path,monkeypatc
 def test_core_has_no_course_imports():
     import ast
     from pathlib import Path
-    for name in ('tasks','toolbox','open_engine','open_model'):
+    for name in ('core/tasks','resources/toolbox','core/open_engine','llm/open_model'):
         tree=ast.parse(Path('harness',name+'.py').read_text())
-        assert not any(isinstance(n,ast.ImportFrom) and n.module in ('course','engine','runtime') for n in ast.walk(tree))
+        assert not any(isinstance(n,ast.ImportFrom) and (n.module or '').startswith('harness.legacy') for n in ast.walk(tree))
 
 
 def test_material_only_creates_learning_task(setup):
@@ -185,7 +185,7 @@ def test_matching_history_cross_session_and_correction_exclusion(setup):
 
 
 def test_reply_evidence_is_bound_by_server_not_model():
-    from harness.open_model import OpenModel
+    from harness.llm.open_model import OpenModel
     m=OpenModel()
     m.chat=lambda *a,**k:'{"outcome":"misconception","hypothesis":"可能误解了规则"}'
     r=m.interpret_reply({'question':'你是如何判断的？','student_reply':'我是按自己的猜测判断的。','history':{'other':'不相干的历史'}})

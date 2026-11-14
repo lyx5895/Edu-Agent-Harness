@@ -1,12 +1,12 @@
 import json
 import pytest
 from fastapi.testclient import TestClient
-from harness.open_engine import OpenEngine
-from harness.gateway import Gateway
-from harness.model import ModelUnavailable
-from harness.tasks import TaskDraft
-from harness.criteria import tool_grade, register_grader, GRADERS
-from harness.pedagogy import bind_check_contract, register_profile, profile, PROFILES
+from harness.core.open_engine import OpenEngine
+from harness.core.gateway import Gateway
+from harness.llm.model import ModelUnavailable
+from harness.core.tasks import TaskDraft
+from harness.grading.criteria import tool_grade, register_grader, GRADERS
+from harness.core.pedagogy import bind_check_contract, register_profile, profile, PROFILES
 from harness.errors import Conflict
 from test_open_tasks import FakeOpenModel, act
 
@@ -176,7 +176,7 @@ def test_pack_api_class_and_student_isolation(tmp_path,monkeypatch):
 
 
 def test_structured_arrays_and_criterion_images():
-    from harness.open_model import OpenModel
+    from harness.llm.open_model import OpenModel
     model=OpenModel();seen=[]
     draft=dict(domain='语文',objective='理解文本',question='说明理由',rubric='说明',reference='理由')
     model.chat=lambda messages,**kw:(seen.append(messages) or json.dumps(draft))

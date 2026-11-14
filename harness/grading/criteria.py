@@ -1,7 +1,7 @@
 """Explicit rubric dimensions. Deterministic tools grade only their own dimension."""
 import re
 from pydantic import BaseModel, Field
-from .algebra import expression, equation_solution, verify
+from harness.grading.algebra import expression, equation_solution, verify
 
 
 class Criterion(BaseModel):

@@ -1,6 +1,6 @@
 """Compatibility boundary: new sessions use open tasks; courses are explicit examples."""
-from .engine import Engine as ExampleEngine
-from .open_engine import OpenEngine
+from harness.legacy.engine import Engine as ExampleEngine
+from harness.core.open_engine import OpenEngine
 
 
 class Gateway:

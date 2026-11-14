@@ -10,7 +10,7 @@ from functools import wraps
 import json
 import time
 
-from .storage import StaleSnapshot
+from harness.persistence.storage import StaleSnapshot
 
 # The first run is optimistic; reruns hold the write lock, so a second rerun is a safety margin only.
 ATTEMPTS = 3

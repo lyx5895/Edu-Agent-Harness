@@ -8,9 +8,9 @@ from typing import Literal
 from pydantic import BaseModel,Field
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from harness.algebra import verify
-from harness.course import retrieve
-from harness.model import ModelClient,ModelUnavailable
+from harness.grading.algebra import verify
+from harness.legacy.course import retrieve
+from harness.llm.model import ModelClient, ModelUnavailable
 
 ROOT=Path(__file__).resolve().parents[1]
 

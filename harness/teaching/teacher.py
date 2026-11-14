@@ -2,9 +2,9 @@
 import json
 import uuid
 from pydantic import Field, model_validator, field_validator
-from .pedagogy import TeachingContract, validate_requirements
+from harness.core.pedagogy import TeachingContract, validate_requirements
 from typing import Literal
-from .criteria import Criterion, bind_algebra, tool_grade
+from harness.grading.criteria import Criterion, bind_algebra, tool_grade
 
 
 class Assignment(TeachingContract):
@@ -50,7 +50,7 @@ def publish(c, data):
         reference_check=tool_grade({'id':'reference','kind':'algebra','description':'参考答案核对'},body,body['reference'])
         if reference_check['status']=='incorrect':raise ValueError('教师参考答案与题目原式不一致')
     for criterion in body['criteria']:
-        from .criteria import GRADERS
+        from harness.grading.criteria import GRADERS
         if criterion['kind'] not in GRADERS and criterion['kind'] != 'model':
             raise ValueError('未安装评分插件：'+criterion['kind'])
         if criterion['kind']=='source_quote' and criterion['expected'] not in body['material']:

@@ -11,8 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from harness.knowledge import Knowledge, tag  # noqa: E402
-from harness.open_model import OpenModel  # noqa: E402
+from harness.resources.knowledge import Knowledge, tag
+from harness.llm.open_model import OpenModel
 
 KG = ROOT / 'references/k12-kgraph'
 
@@ -77,7 +77,7 @@ def run_choice(model, limit, seed, workers):
 
 
 def model_system(model):
-    from harness.omniedu_prompts import REGISTRY
+    from harness.llm.omniedu_prompts import REGISTRY
     return REGISTRY['knowledge_point'] if model.prompt_style == 'omniedu' else '你是K12课程知识点专家。'
 
 

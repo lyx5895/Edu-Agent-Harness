@@ -3,7 +3,7 @@ Conservative database-wide optimistic conflicts protect cross-session evidence r
 callers re-run the computation (with replayed model results) instead of failing.
 """
 import sqlite3
-from .errors import Conflict
+from harness.errors import Conflict
 
 
 class StaleSnapshot(Conflict):

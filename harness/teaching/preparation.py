@@ -3,9 +3,10 @@ import json
 import time
 import uuid
 from pydantic import BaseModel, Field, model_validator
-from .teacher import Assignment
-from .errors import Conflict
-from . import teacher, planning
+from harness.teaching.teacher import Assignment
+from harness.errors import Conflict
+from harness.teaching import teacher
+from harness.teaching import planning
 
 
 class Pack(BaseModel):

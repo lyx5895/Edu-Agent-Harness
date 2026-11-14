@@ -45,10 +45,10 @@ async def authorize(request, call_next, gateway):
         elif path=='/api/sessions' and request.method=='POST':
             body=await request.json()
             with gateway.open.connect() as c:
-                from .teacher import load
+                from harness.teaching.teacher import load
                 aid=body.get('assignment_id','')
                 if body.get('followup_id'):
-                    from .planning import load_followup
+                    from harness.teaching.planning import load_followup
                     followup=load_followup(c,body['followup_id'])
                     if followup['learner']!=body.get('learner'):raise ValueError('任务不属于该学生')
                     aid=followup['body']['assignment_id']
@@ -59,13 +59,13 @@ async def authorize(request, call_next, gateway):
             body=await request.json()
             allowed=role=='teacher' and body.get('class_id')==cls
         elif path=='/api/learning/next' and request.method=='GET':
-            from .planning import load_path
+            from harness.teaching.planning import load_path
             with gateway.open.connect() as c:path_body=load_path(c,request.query_params.get('path_id',''))
             allowed=path_body['class_id']==cls and (role=='teacher' or request.query_params.get('learner')==learner)
         elif path=='/api/learning/followups' and request.method=='GET':
             allowed=request.query_params.get('class_id')==cls and (role=='teacher' or request.query_params.get('learner')==learner)
         elif path.startswith('/api/teacher/followups/') and request.method=='PATCH':
-            from .planning import load_followup
+            from harness.teaching.planning import load_followup
             with gateway.open.connect() as c:f=load_followup(c,path.rsplit('/',1)[-1])
             allowed=role=='teacher' and f['class_id']==cls
         elif path=='/api/teacher/dashboard' or path.startswith('/api/teacher/memory/'):

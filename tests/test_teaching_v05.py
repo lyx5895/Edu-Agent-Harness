@@ -2,9 +2,9 @@ import json
 import time
 import pytest
 from fastapi.testclient import TestClient
-from harness.open_engine import OpenEngine
-from harness.gateway import Gateway
-from harness.criteria import bind_algebra,tool_grade
+from harness.core.open_engine import OpenEngine
+from harness.core.gateway import Gateway
+from harness.grading.criteria import bind_algebra, tool_grade
 from harness.errors import Conflict
 from test_open_tasks import FakeOpenModel,act
 

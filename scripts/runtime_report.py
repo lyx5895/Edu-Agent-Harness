@@ -26,7 +26,7 @@ def main():
             'Full math in conceptual-generation context induced unrequested computation and answer disclosure; guarded and filtered',
             'Model repeatedly ignored JSON wrapper for verbalization; changed only verbalization to guarded plain text'],
         'source_hashes':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
-                         for p in (ROOT/'harness').glob('*.py')}}
+                         for p in (ROOT/'harness').rglob('*.py')}}
     (ROOT/'reports/runtime-acceptance.json').write_text(json.dumps(record,ensure_ascii=False,indent=2))
     print(json.dumps({k:record[k] for k in ('passed','generated_interventions','guard_fallbacks','recovery_passed')},ensure_ascii=False))
 

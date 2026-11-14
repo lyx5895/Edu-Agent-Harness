@@ -5,10 +5,10 @@ import uuid
 import pytest
 from PIL import Image
 
-from harness.algebra import verify,expression
-from harness.course import ITEMS
-from harness.engine import Engine,Conflict
-from harness.model import ModelClient,ModelUnavailable,Diagnosis
+from harness.grading.algebra import verify, expression
+from harness.legacy.course import ITEMS
+from harness.legacy.engine import Engine, Conflict
+from harness.llm.model import ModelClient, ModelUnavailable, Diagnosis
 
 
 class FakeModel:

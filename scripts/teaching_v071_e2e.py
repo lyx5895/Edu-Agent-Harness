@@ -9,7 +9,7 @@ import tempfile
 import time
 import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from harness.open_engine import OpenEngine
+from harness.core.open_engine import OpenEngine
 
 CJK = re.compile(r'[\u4e00-\u9fff]')
 EN_PROBLEM = dict(class_id='Live', course_id='math', concept_id='fractions', domain='Math', task_type='problem_solving',

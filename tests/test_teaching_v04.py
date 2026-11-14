@@ -4,11 +4,11 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
-from harness.open_engine import OpenEngine
+from harness.core.open_engine import OpenEngine
 from harness.errors import Conflict
-from harness.gateway import Gateway
-from harness.assessment import adjudicate
-from harness.toolbox import Toolbox, chunks, retrieve
+from harness.core.gateway import Gateway
+from harness.grading.assessment import adjudicate
+from harness.resources.toolbox import Toolbox, chunks, retrieve
 from test_open_tasks import FakeOpenModel, act
 
 
@@ -93,7 +93,7 @@ def test_check_has_no_memory_or_teacher_hint_and_review_due(engine):
     ctx=engine.traces(s['session_id'])[-1]['context']
     assert ctx['learning_memory']==[] and ctx['teacher_guidance']==''
     assert engine.learning_memory('学生A')[0]['independent_count']==1
-    from harness.memory import summarize
+    from harness.core.memory import summarize
     with engine.connect() as c:
         assert summarize(c,'学生A',now=time.time()+90000)[0]['review_due']
 
@@ -233,7 +233,7 @@ def test_old_aggregate_evidence_still_invalidates_consumers(engine):
 
 
 def test_image_adapter_preserves_image_and_strips_dependency_metadata():
-    from harness.open_model import OpenModel
+    from harness.llm.open_model import OpenModel
     m=OpenModel();received=[]
     def structured(schema,instruction,content,role=None):
         received.append(content)
@@ -245,8 +245,8 @@ def test_image_adapter_preserves_image_and_strips_dependency_metadata():
 
 
 def test_request_budget_bounds_transport_and_is_restored(monkeypatch):
-    from harness.open_model import OpenModel
-    from harness.model import ModelClient,ModelUnavailable
+    from harness.llm.open_model import OpenModel
+    from harness.llm.model import ModelClient, ModelUnavailable
     m=OpenModel();timeouts=[]
     monkeypatch.setattr(ModelClient,'chat',lambda self,*a,**kw:timeouts.append(kw.get('timeout')) or 'ok')
     with m.budget():
@@ -267,5 +267,5 @@ def test_independent_recheck_recovers_without_reviving_invalid_evidence(engine):
 
 
 def test_feedback_escalation_takes_priority_over_memory():
-    from harness.tasks import choose
+    from harness.core.tasks import choose
     assert choose({'phase':'teach','kind':'attempt','status':'incorrect','prior_support_needed':True,'fallbacks':2})['action']=='teacher_review'

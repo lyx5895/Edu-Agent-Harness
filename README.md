@@ -135,21 +135,46 @@ OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1 .envs/harness/bin/python script
         → 一个事务内写入证据、状态差异和轨迹
 ```
 
+代码按职责分目录，主流程从 `app.py` → `interfaces/api.py` → `core/open_engine.py` 阅读：
+
+```text
+harness/
+├── app.py            # 应用组装与启动入口
+├── errors.py         # 共享异常
+├── paths.py          # 项目根目录与资源路径
+├── interfaces/       # HTTP 接口、权限、Gradio 页面与样式
+├── core/             # 会话调度、任务协议、教学策略、证据与记忆
+├── grading/          # 作答评分、分项评分、代数验证
+├── teaching/         # 教师任务、复核、路径跟进、批量备课
+├── resources/        # 知识点库、图片、材料与检索
+├── llm/              # 模型客户端、教学适配器、提示词
+├── persistence/      # SQLite 事务快照与调用重放
+└── legacy/           # 旧版固定代数课程兼容实现
+```
+
 | 模块 | 职责 |
 |---|---|
-| `harness/open_engine.py` | 会话状态、各操作的处理函数、证据、复核队列、改判传播 |
-| `harness/tasks.py` | 任务协议、评分结构、教学策略 v1–v5 |
-| `harness/open_model.py`、`model.py`、`omniedu_prompts.py` | 模型调用：评分、回复、审核、翻译；结构化输出；系统指令 |
-| `harness/assessment.py`、`criteria.py`、`toolbox.py`、`algebra.py` | 判定聚合、分项评分器、代数验证、材料切块与 BM25 检索 |
-| `harness/teacher.py`、`planning.py`、`preparation.py` | 教师任务、课程路径与跟进、批量备课 |
-| `harness/memory.py` | 从事件重建跨会话学习记录和复习间隔 |
-| `harness/knowledge.py` | 知识点库与自动打标 |
-| `harness/storage.py`、`replay.py` | SQLite 快照事务；并发冲突时持写锁重算，复用已完成的模型调用 |
-| `harness/images.py`、`materials.py` | 图片规范化与按哈希存文件；PDF 按页提取 |
-| `harness/app.py`、`ui.py` | FastAPI 接口和 Gradio 页面；主题、样式与卡片渲染 |
+| `harness/core/open_engine.py` | 会话生命周期、操作调度、共享事务与幂等；组合各功能 mixin，保留 `OpenEngine` 入口 |
+| `harness/grading/engine_grading.py`、`core/engine_feedback.py` | 作答与分项评分、证据绑定、交叉复核；回复生成、审核、重写与兜底 |
+| `harness/teaching/engine_teacher.py` | 发布任务、学情总览、轨迹回放、教师复核和改判传播 |
+| `harness/resources/engine_knowledge.py`、`teaching/engine_planning.py`、`teaching/engine_preparation.py` | 知识点推荐与校验；课程路径、跟进和任务箱；备课包生成、编辑与发布 |
+| `harness/core/evidence.py` | 原文引用核对、学生可见字段投影、复核风险与固定反馈模板 |
+| `harness/core/tasks.py` | 任务协议、评分结构、教学策略 v1–v5 |
+| `harness/llm/open_model.py`、`llm/model.py`、`llm/omniedu_prompts.py` | 模型调用：评分、回复、审核、翻译；结构化输出；系统指令 |
+| `harness/grading/assessment.py`、`grading/criteria.py`、`resources/toolbox.py`、`grading/algebra.py` | 判定聚合、分项评分器、代数验证、材料切块与 BM25 检索 |
+| `harness/teaching/teacher.py`、`teaching/planning.py`、`teaching/preparation.py` | 教师任务、课程路径与跟进、批量备课 |
+| `harness/core/memory.py` | 从事件重建跨会话学习记录和复习间隔 |
+| `harness/resources/knowledge.py` | 知识点库与自动打标 |
+| `harness/persistence/storage.py`、`persistence/replay.py` | SQLite 快照事务；并发冲突时持写锁重算，复用已完成的模型调用 |
+| `harness/resources/images.py`、`resources/materials.py` | 图片规范化与按哈希存文件；PDF 按页提取 |
+| `harness/app.py` | 应用组装、权限中间件与兼容入口；`create_app(get_engine, with_ui=False)` 可只组装 API |
+| `harness/interfaces/api.py` | HTTP 请求协议、路由与异常到状态码的映射 |
+| `harness/interfaces/web.py`、`interfaces/ui.py` | Gradio 页面构建与回调；主题、样式与卡片渲染 |
 | `inference_server.py`、`scripts/service.py` | Transformers 后备推理服务；服务启停 |
 
-`engine.py`、`gateway.py`、`course.py`、`policy.py`、`runtime.py` 是早期固定代数课程的实现，只为兼容旧会话保留。
+功能 mixin 使用 `OpenEngine` 提供的事务、模型和会话方法，不独立创建运行时；跨功能写入继续共享同一个事务。API 和页面通过传入的 `get_engine` 获取运行时，不反向导入应用入口。启动入口仍为 `harness.app:app`。
+
+`legacy/engine.py`、`legacy/course.py`、`legacy/policy.py`、`legacy/runtime.py` 是早期固定代数课程的实现，只为兼容旧会话保留；`core/gateway.py` 根据会话类型路由到旧课程或开放任务引擎。
 
 ## 测试与评测
 

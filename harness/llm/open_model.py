@@ -4,10 +4,10 @@ import threading
 import time
 from contextvars import ContextVar
 from contextlib import contextmanager
-from .model import ModelClient, ModelUnavailable
-from .tasks import TaskDraft, Assessment, Review, ReplyMeaning, KnowledgeGuess, KnowledgeChoice, language, sentences
-from .pedagogy import profile
-from .omniedu_prompts import RESPOND, assessment_role, messages as prompt_messages
+from harness.llm.model import ModelClient, ModelUnavailable
+from harness.core.tasks import TaskDraft, Assessment, Review, ReplyMeaning, KnowledgeGuess, KnowledgeChoice, language, sentences
+from harness.core.pedagogy import profile
+from harness.llm.omniedu_prompts import RESPOND, assessment_role, messages as prompt_messages
 
 
 QUOTE_RULE=('evidence_sentence填student_sentences中最能支持判定的那一句的编号n（无法定位填0）；'

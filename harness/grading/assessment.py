@@ -19,7 +19,7 @@ def adjudicate(task, text, verification, assessment):
     if re.search(r'因式分解|factor', question) and '(' not in text:
         equivalent = tool_status == 'correct'
         if not equivalent and task.get('reference'):
-            from .algebra import expression
+            from harness.grading.algebra import expression
             try:
                 equivalent = expression(text) == expression(task['reference'])
             except (ValueError, TypeError, SyntaxError):

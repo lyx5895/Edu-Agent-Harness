@@ -1,6 +1,6 @@
 """Turn uploaded teaching materials into plain text; PDF pages are kept as form-feed separated pages."""
 from pathlib import Path
-from .toolbox import PAGE_BREAK
+from harness.resources.toolbox import PAGE_BREAK
 
 MAX_BYTES = 20 * 1024**2
 

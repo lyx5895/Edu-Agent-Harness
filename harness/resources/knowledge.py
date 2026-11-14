@@ -10,9 +10,10 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from .toolbox import terms
+from harness.resources.toolbox import terms
 
-ROOT = Path(__file__).resolve().parents[1]
+from harness.paths import ROOT
+
 DEFAULT_DB = ROOT / 'data/knowledge.sqlite'
 SUBJECTS = {'math': '数学', 'physics': '物理', 'chemistry': '化学', 'biology': '生物'}
 SUBJECT_IDS = {v: k for k, v in SUBJECTS.items()} | {k: k for k in SUBJECTS}
@@ -123,7 +124,7 @@ def _norm(text):
 
 def tag(model, kb, question, subject, stages=None, shortlist=30, per_guess=5):
     """Suggest up to three knowledge points; the model only chooses among library ids."""
-    from .model import ModelUnavailable
+    from harness.llm.model import ModelUnavailable
     subject_name = SUBJECTS.get(SUBJECT_IDS.get(subject, subject), subject)
     try:
         guesses = model.guess_knowledge(question, subject_name)

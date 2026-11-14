@@ -9,7 +9,7 @@ import sqlite3
 import sys
 import time
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from harness.images import store_image
+from harness.resources.images import store_image
 
 
 def migrate(db, apply=False):

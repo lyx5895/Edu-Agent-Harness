@@ -68,8 +68,8 @@ class RawSession:
 
 class HarnessTutor:
     def __init__(self, policy=None, cross_review=False, prompt_style=None):
-        from harness.open_engine import OpenEngine
-        from harness.open_model import OpenModel
+        from harness.core.open_engine import OpenEngine
+        from harness.llm.open_model import OpenModel
         self.OpenEngine, self.OpenModel = OpenEngine, OpenModel
         self.policy, self.cross_review, self.prompt_style = policy, cross_review, prompt_style
         self.name = ('harness-omniedu' + ('-' + policy.rsplit('-', 1)[-1] if policy else '') + ('-xr' if cross_review else '')

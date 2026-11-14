@@ -1,7 +1,7 @@
 import pytest
-from harness.materials import read_material
-from harness.open_engine import OpenEngine
-from harness.toolbox import PAGE_BREAK, chunks, retrieve
+from harness.resources.materials import read_material
+from harness.core.open_engine import OpenEngine
+from harness.resources.toolbox import PAGE_BREAK, chunks, retrieve
 from test_open_tasks import FakeOpenModel
 
 

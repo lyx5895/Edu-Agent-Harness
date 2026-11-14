@@ -1,11 +1,11 @@
 import json
 import uuid
 import pytest
-from harness.engine import Engine, Conflict
-from harness.model import ModelUnavailable
-from harness.course import ITEMS
-from harness.policy import decide
-from harness.runtime import guard
+from harness.legacy.engine import Engine, Conflict
+from harness.llm.model import ModelUnavailable
+from harness.legacy.course import ITEMS
+from harness.legacy.policy import decide
+from harness.legacy.runtime import guard
 from test_harness import FakeModel, op
 
 
@@ -114,7 +114,7 @@ def test_context_cross_session_scoped_and_teacher_revision_invalidates(setup):
 
 def test_replay_detects_changed_decision(setup):
     e,m,s=setup;op(e,s,'attempt','2x+3')
-    from harness.runtime import replay
+    from harness.legacy.runtime import replay
     traces=e.traces(s['session_id']);traces[0]['decision']['action']='worked_example'
     assert not replay(traces)['passed']
 
@@ -127,7 +127,7 @@ def test_policy_uses_outcome_and_guard_question_limit():
 
 
 def test_verbalization_context_does_not_receive_raw_math():
-    from harness.model import ModelClient
+    from harness.llm.model import ModelClient
     m=ModelClient();captured=[]
     m.chat=lambda messages,**kwargs: captured.append(messages) or '请按规则自行改写这一步。'
     packet={'action':'self_correct','rule':'括号外的数要乘每一项。',

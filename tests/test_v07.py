@@ -7,10 +7,10 @@ import httpx
 import pytest
 from PIL import Image
 
-from harness.images import file_to_data_url, normalize_image
-from harness.model import InputTooLong, ModelClient
-from harness.open_engine import OpenEngine
-from harness.tasks import Assessment, choose
+from harness.resources.images import file_to_data_url, normalize_image
+from harness.llm.model import InputTooLong, ModelClient
+from harness.core.open_engine import OpenEngine
+from harness.core.tasks import Assessment, choose
 from test_open_tasks import FakeOpenModel, act
 from test_teaching_v04 import assigned
 
@@ -109,7 +109,7 @@ def test_criteria_and_whole_task_are_graded_concurrently(tmp_path):
 
 
 def test_review_interval_expands_with_independent_streak(tmp_path):
-    from harness.memory import summarize
+    from harness.core.memory import summarize
     e = OpenEngine(tmp_path / 'db.sqlite', FakeOpenModel())
     for _ in range(2):
         s = assigned(e)
@@ -122,7 +122,7 @@ def test_review_interval_expands_with_independent_streak(tmp_path):
 
 
 def test_verbatim_quote_salvages_garbled_tail_but_rejects_paraphrase():
-    from harness.open_engine import verbatim_quote
+    from harness.core.open_engine import verbatim_quote
     text = 'She also spent 25 tickets on the koala, so she had 50 tickets in total.'
     assert verbatim_quote('spent 25 tickets', text) == 'spent 25 tickets'
     garbled = 'She also spent 25 tickets on the koala, so she had 50 ticketz'
@@ -147,7 +147,7 @@ def test_images_are_files_and_traces_store_diffs(tmp_path):
 
 
 def test_paraphrase_is_bound_to_chosen_sentence():
-    from harness.open_engine import ground
+    from harness.core.open_engine import ground
     text = 'Berry read 262 pages. Therefore, Berry has to read 88 pages on Saturday.'
     paraphrase = {'evidence_quote': 'He has to read 88 pages on Saturday', 'evidence_sentence': 2}
     assert ground(paraphrase, text) == 'Therefore, Berry has to read 88 pages on Saturday.'
@@ -228,7 +228,7 @@ def test_review_queue_flags_risky_model_judgments(tmp_path):
 
 
 def test_policy_v5_escalates_hints_when_probing_stalls(tmp_path):
-    from harness.tasks import choose_v5
+    from harness.core.tasks import choose_v5
     base = {'phase': 'teach', 'kind': 'reply', 'status': 'unknown', 'failures': 1, 'hints': 0}
     assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 1})['action'] == 'change_explanation'
     assert choose_v5({**base, 'outcome': 'not_helped', 'stalls': 2})['action'] == 'scaffold_concept'
@@ -330,7 +330,7 @@ def test_no_rewrite_when_turn_budget_is_low(tmp_path):
 
 
 def test_loose_quote_match_maps_back_to_original_text():
-    from harness.open_engine import verbatim_quote
+    from harness.core.open_engine import verbatim_quote
     text = 'Earbuds cost 10 tickets，which is “half” of the total.'
     assert verbatim_quote('cost 10 tickets, which is "half"', text) == 'cost 10 tickets，which is “half'
     assert verbatim_quote('cost 12 tickets', text) is None
@@ -372,7 +372,7 @@ def test_inline_images_migrate_to_files(tmp_path):
 
 
 def test_omniedu_prompt_style_uses_training_system_prompt(monkeypatch, tmp_path):
-    from harness.omniedu_prompts import REGISTRY, messages
+    from harness.llm.omniedu_prompts import REGISTRY, messages
     seen = []
 
     def handler(request):

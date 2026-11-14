@@ -2,7 +2,7 @@
 import sys,tempfile,json,uuid
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from harness.open_engine import OpenEngine
+from harness.core.open_engine import OpenEngine
 with tempfile.TemporaryDirectory(prefix='edu-memory-') as tmp:
  e=OpenEngine(Path(tmp)/'db.sqlite')
  a={'class_id':'验收班','course_id':'英语','concept_id':'一般现在时第三人称单数','domain':'英语','objective':'使用第三人称单数动词',

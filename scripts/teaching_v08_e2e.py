@@ -10,10 +10,10 @@ import time
 import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tests'))
-from harness.materials import read_material
-from harness.open_engine import OpenEngine
-from harness.open_model import OpenModel
-from harness.tasks import language
+from harness.resources.materials import read_material
+from harness.core.open_engine import OpenEngine
+from harness.llm.open_model import OpenModel
+from harness.core.tasks import language
 from test_retrieval import pdf
 from teaching_v071_e2e import EN_PROBLEM, EN_WRONG, ZH_PROBLEM
 

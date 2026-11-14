@@ -1,7 +1,7 @@
 """Server-owned tools. A verifier can abstain; the core remains subject-neutral."""
 import math
 import re
-from .algebra import verify, expression, equation_solution
+from harness.grading.algebra import verify, expression, equation_solution
 
 
 PAGE_BREAK = '\f'

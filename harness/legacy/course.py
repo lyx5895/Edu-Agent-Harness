@@ -1,9 +1,9 @@
 """Authored algebra templates. Answers/rubrics are never included in public items."""
 import json
-from pathlib import Path
 from fractions import Fraction
 
-ROOT = Path(__file__).resolve().parents[1]
+from harness.paths import ROOT
+
 NAMES = ['正数分配律', '负数分配律', '合并同类项', '分数系数合并', '等式两边同加减',
          '等式两边同乘除', '两步一元方程', '含括号方程', '两边含未知数', '含分母方程']
 RULES = ['括号外的数要乘括号内每一项。', '负号也要分配到每一项，注意符号变化。',

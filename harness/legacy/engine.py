@@ -7,20 +7,21 @@ import threading
 import time
 import uuid
 
-from .algebra import verify
-from .course import ITEMS, SKILLS, public_item, retrieve
-from .images import normalize_image
-from .model import ModelClient
-from . import runtime
-from .policy import VERSION, decide
+from harness.paths import ROOT
+from harness.grading.algebra import verify
+from harness.legacy.course import ITEMS, SKILLS, public_item, retrieve
+from harness.resources.images import normalize_image
+from harness.llm.model import ModelClient
+from harness.legacy import runtime
+from harness.legacy.policy import VERSION, decide
 
 
-from .errors import Conflict
+from harness.errors import Conflict
 
 
 class Engine:
     def __init__(self, db=None, model=None):
-        self.db = str(db or Path(__file__).resolve().parents[1] / 'data/learning.sqlite')
+        self.db = str(db or ROOT / 'data/learning.sqlite')
         Path(self.db).parent.mkdir(parents=True, exist_ok=True)
         self.model = model or ModelClient()
         self.lock = threading.RLock()

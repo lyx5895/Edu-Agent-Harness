@@ -1,8 +1,8 @@
 """Bounded context, teaching execution, output checks and auditable traces."""
 import re
 from copy import deepcopy
-from .course import SKILLS
-from .policy import VERSION, decide
+from harness.legacy.course import SKILLS
+from harness.legacy.policy import VERSION, decide
 
 PROBES = [
     '括号外的数应该乘括号里的哪些项？请说说你的理由。',
