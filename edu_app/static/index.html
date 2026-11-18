@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edu-Agent 教师工作台</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Edu-Agent <span>教师工作台</span></div>
+    <div class="topbar-right">
+      <select id="project-select" aria-label="选择课程项目"></select>
+      <button id="new-project-btn" class="secondary">新建项目</button>
+      <span id="model-status" class="pill"></span>
+    </div>
+  </header>
+
+  <main>
+    <section id="welcome" class="card hidden">
+      <h2>新建课程项目</h2>
+      <p class="muted">以“课程项目”为单位保存工作，例如“高一数学｜对数函数｜第2课时”。五类任务共享同一份背景资料。</p>
+      <form id="project-form" class="grid-form">
+        <label>项目名称<input name="title" required placeholder="高一数学｜对数函数｜第2课时"></label>
+        <label>学科<select name="subject" id="subject-select"></select></label>
+        <label>年级<input name="grade" placeholder="高一"></label>
+        <label class="wide">老师说明（可选）<textarea name="notes" rows="2" placeholder="学生基础、本课重点等"></textarea></label>
+        <div class="wide"><button type="submit">创建</button> <button type="button" id="cancel-project" class="secondary">取消</button></div>
+      </form>
+    </section>
+
+    <section id="workspace" class="hidden">
+      <div class="card overview">
+        <div>
+          <h2 id="project-title"></h2>
+          <div id="project-meta" class="muted"></div>
+        </div>
+        <div id="overview-stats" class="stats"></div>
+        <div id="next-step" class="next"></div>
+      </div>
+      <div id="stale-banner" class="banner warn hidden"></div>
+      <div id="context-note" class="banner info hidden"></div>
+
+      <nav class="tabs" id="tabs">
+        <button data-tab="objectives" class="active">① 资料与目标</button>
+        <button data-tab="questions">② 出题改题</button>
+        <button data-tab="grading">③ 作答与批改</button>
+        <button data-tab="analysis">④ 学情分析</button>
+        <button data-tab="practice">⑤ 巩固与对比</button>
+        <button data-tab="records">⑥ 过期与导出</button>
+      </nav>
+
+      <div id="tab-objectives" class="tab">
+        <div class="card">
+          <h3>课程材料</h3>
+          <div id="materials"></div>
+          <details>
+            <summary>添加材料</summary>
+            <textarea id="material-text" rows="5" placeholder="粘贴教材、讲义、教案等文字"></textarea>
+            <div class="row"><input id="material-name" placeholder="材料名称（可选）"><button id="add-material">添加文字</button>
+              <label class="file">上传 .txt/.md/.pdf<input type="file" id="material-file" accept=".txt,.md,.pdf"></label></div>
+          </details>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>教学目标</h3>
+            <div><button id="draft-objectives">按材料起草目标</button> <button id="add-objective" class="secondary">手工添加</button></div></div>
+          <p class="muted">只有确认过的目标才会传给出题步骤。</p>
+          <div id="objectives"></div>
+        </div>
+      </div>
+
+      <div id="tab-questions" class="tab hidden">
+        <div class="card">
+          <h3>按本课目标出题</h3>
+          <div class="grid-form">
+            <div class="wide"><span class="label">题型</span><div id="type-boxes" class="checks"></div></div>
+            <label>每个目标出题数<input type="number" id="q-count" min="1" max="5" value="2"></label>
+            <label>难度<select id="q-difficulty"><option>基础</option><option selected>中等</option><option>较难</option></select></label>
+            <label class="wide">出题说明（可选）<input id="q-notes" placeholder="例如：结合生活情境"></label>
+            <label class="inline"><input type="checkbox" id="q-ab"> 这次出 A/B 两版供选择</label>
+            <div class="wide"><button id="generate-questions">生成题目</button></div>
+          </div>
+          <details>
+            <summary>导入现成试卷</summary>
+            <p class="muted">粘贴试卷文字（可附答案）。系统拆成题目，起草评分要点并反推教学目标，需要你核对确认。</p>
+            <textarea id="paper-text" rows="6"></textarea>
+            <button id="import-paper">导入试卷</button>
+          </details>
+        </div>
+        <div id="ab-panel"></div>
+        <div class="card">
+          <div class="card-head"><h3>题目与评分标准</h3>
+            <label>轮次 <select id="q-round"></select></label></div>
+          <div id="questions"></div>
+        </div>
+      </div>
+
+      <div id="tab-grading" class="tab hidden">
+        <div class="card">
+          <div class="card-head"><h3>学生名单与作答</h3><label>轮次 <select id="g-round"></select></label></div>
+          <div class="two">
+            <div>
+              <span class="label">学生名单（每行一个代号，不要写真实姓名）</span>
+              <textarea id="roster" rows="4" placeholder="S01&#10;S02"></textarea>
+              <button id="add-roster" class="secondary">加入名单</button>
+              <div id="roster-list" class="muted"></div>
+            </div>
+            <div>
+              <span class="label">导入作答（CSV：学生代号,题号,作答）</span>
+              <textarea id="sub-csv" rows="4" placeholder="学生,题号,作答&#10;S01,1,定义域 x>1，所以 1<x<9"></textarea>
+              <label class="inline"><input type="checkbox" id="sub-add-missing"> 名单外的学生自动加入</label>
+              <button id="import-subs">导入作答</button>
+              <div id="import-result" class="muted"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>批改</h3>
+            <div><button id="grade-round">批改本轮作答</button> <button id="confirm-auto" class="secondary">批量确认（复核队列以外）</button></div></div>
+          <p class="muted">选择、判断和能比对上答案的填空题由服务器直接判；其余按评分要点由模型判定并引用学生原文。模型判扣分时由另一家厂商的模型盲审复核，有分歧或没把握的进入复核队列。</p>
+          <h4>复核队列 <span id="queue-count" class="pill"></span></h4>
+          <div id="queue"></div>
+          <h4>本轮全部批改</h4>
+          <div id="gradings"></div>
+        </div>
+      </div>
+
+      <div id="tab-analysis" class="tab hidden">
+        <div class="card">
+          <div class="card-head"><h3>学情分析</h3>
+            <div><label>轮次 <select id="a-round"></select></label> <button id="analyze">汇总学情</button></div></div>
+          <p class="muted">统计由服务器计算；模型只给问题命名和归并，每个问题模式必须引用能核对的学生原文。没有作答时只输出“可能的易错点”。</p>
+          <div id="analysis"></div>
+        </div>
+        <div class="card">
+          <h3>问题模式</h3>
+          <p class="muted">确认后获得固定编号，巩固练习和下一轮对比都按它追踪。</p>
+          <div id="patterns"></div>
+        </div>
+      </div>
+
+      <div id="tab-practice" class="tab hidden">
+        <div class="card">
+          <h3>巩固练习</h3>
+          <p class="muted">针对已确认的问题模式出题，进入新的一轮。生成后到“② 出题改题”中选择对应轮次确认，再到“③ 作答与批改”导入第二轮作答。</p>
+          <div id="practice-patterns" class="checks"></div>
+          <div class="row"><label>每个问题模式出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
+            <button id="practice">生成巩固练习</button></div>
+        </div>
+        <div class="card">
+          <h3>两轮对比</h3>
+          <div class="row"><label>前一轮 <input type="number" id="cmp-a" value="1" min="1"></label>
+            <label>后一轮 <input type="number" id="cmp-b" value="2" min="1"></label><button id="compare">对比</button></div>
+          <div id="comparison"></div>
+        </div>
+      </div>
+
+      <div id="tab-records" class="tab hidden">
+        <div class="card">
+          <h3>依据已变化的产物</h3>
+          <p class="muted">上游（题目、评分标准、批改）有实质修改后，引用旧版本的下游产物会列在这里。可以保留原结果，或重新生成后标记处理。</p>
+          <div id="stale-list"></div>
+        </div>
+        <div class="card">
+          <h3>研究记录导出</h3>
+          <p class="muted">包含材料来源、每个产物的全部版本与上游引用、每次模型调用的输入输出与上下文清单、A/B 选择和老师修改。</p>
+          <a id="export-link" class="button" href="#">导出 JSON</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

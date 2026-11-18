@@ -1,0 +1,47 @@
+"""Runtime settings, read from the environment. The API key is never stored in code or files."""
+
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# Development defaults (design doc 8.2). Every role can be overridden with EDU_MODEL_<ROLE>.
+DEFAULT_MODELS = {
+    'generator': 'DeepSeek-V4.1-Flash',
+    'grader': 'DeepSeek-V4.1-Flash',
+    'analyst': 'DeepSeek-V4.1-Flash',
+    'reviewer': 'qwen3.8-flash',
+}
+
+
+@dataclass(frozen=True)
+class Settings:
+    base_url: str = 'https://lightingtheword.com/v1'
+    api_key: str = ''
+    models: dict = field(default_factory=lambda: dict(DEFAULT_MODELS))
+    db: str = str(ROOT / 'data/edu.sqlite')
+    # Share of fully-earned gradings re-checked by the reviewer to monitor false passes.
+    audit_rate: float = 0.05
+    # Share of question generations that show two candidates for A/B choice.
+    ab_rate: float = 0.2
+    # Reasoning models spend output tokens on thinking; a low cap returns empty content.
+    max_tokens: int = 6000
+    timeout: float = 180.0
+    concurrency: int = 8
+
+
+def load_settings(**overrides) -> Settings:
+    models = {role: os.getenv(f'EDU_MODEL_{role.upper()}', model) for role, model in DEFAULT_MODELS.items()}
+    values = {
+        'base_url': os.getenv('EDU_LLM_BASE_URL', Settings.base_url),
+        'api_key': os.getenv('EDU_LLM_API_KEY', ''),
+        'models': models,
+        'db': os.getenv('EDU_DB', Settings.db),
+        'audit_rate': float(os.getenv('EDU_AUDIT_RATE', Settings.audit_rate)),
+        'ab_rate': float(os.getenv('EDU_AB_RATE', Settings.ab_rate)),
+        'max_tokens': int(os.getenv('EDU_MAX_TOKENS', Settings.max_tokens)),
+        'concurrency': int(os.getenv('EDU_CONCURRENCY', Settings.concurrency)),
+    }
+    values.update(overrides)
+    return Settings(**values)

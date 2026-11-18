@@ -46,4 +46,4 @@ ignore = [
 "scripts/*" = ["BLE001", "E402"]  # scripts put the repo on sys.path before importing harness
 
 [tool.ruff.lint.isort]
-known-first-party = ["harness", "bench"]
+known-first-party = ["harness", "bench", "edu_core", "edu_app"]

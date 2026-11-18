@@ -1,0 +1,7913 @@
+{
+ "summary": {
+  "data": "bench/data/stepverify-zh.jsonl",
+  "models": {
+   "generator": "DeepSeek-V4.1-Flash",
+   "grader": "DeepSeek-V4.1-Flash",
+   "analyst": "DeepSeek-V4.1-Flash",
+   "reviewer": "qwen3.8-flash"
+  },
+  "items": 392,
+  "failed_calls": 0,
+  "error_items_passed": 0.0306,
+  "correct_items_failed": 0.0051,
+  "routed_to_teacher": 0.051,
+  "review_calls_share": 0.4949,
+  "mean_tokens_per_item": 2118,
+  "wall_seconds": 380
+ },
+ "rows": [
+  {
+   "id": "331-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将总利润 44 美元误当作总收入的一部分，并且只根据柠檬水摊收入 47 美元建立方程，未考虑照看孩子收入 31 美元，最终得出 3 美元，与正确答案 34 美元不符。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.7,
+   "tokens": 3468
+  },
+  {
+   "id": "331-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.2,
+   "tokens": 902
+  },
+  {
+   "id": "154-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为45，正确应为50；其将耳机花费10误认为一半，未认识到耳机和发光手环合计25才是另一半，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 31.9,
+   "tokens": 4430
+  },
+  {
+   "id": "154-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.4,
+   "tokens": 1222
+  },
+  {
+   "id": "404-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为 16，与参考答案 13 不符，且过程存在计算/推理错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 30.5,
+   "tokens": 4023
+  },
+  {
+   "id": "404-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.6,
+   "tokens": 1026
+  },
+  {
+   "id": "666-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽算出弟弟目前 20 岁，但错误假设当前年份为 2021，并列出错误方程，最终答案错误，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.6,
+   "tokens": 2758
+  },
+  {
+   "id": "666-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.2,
+   "tokens": 1093
+  },
+  {
+   "id": "49-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽正确求出 Katrina 和 Amanda 的弹珠数量，但误用题目已知条件，将 Mabel 的弹珠数量算成 68，最终答案 46 错误，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.3,
+   "tokens": 3188
+  },
+  {
+   "id": "49-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.1,
+   "tokens": 915
+  },
+  {
+   "id": "74-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生正确求出抬头看的学生人数为150，但将没有抬头看的50名学生眼睛也计入看到飞机的眼睛，导致最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.9,
+   "tokens": 2880
+  },
+  {
+   "id": "74-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.8,
+   "tokens": 753
+  },
+  {
+   "id": "840-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确求出小拼图价格，也未给出最终总价，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 12.3,
+   "tokens": 1911
+  },
+  {
+   "id": "840-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1087
+  },
+  {
+   "id": "548-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“每只鸡每天喂3杯”误解为“每只鸡每餐喂3杯”，并且最终计算得到140杯，与正确过程及最终答案20杯不一致，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.3,
+   "tokens": 3374
+  },
+  {
+   "id": "548-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 866
+  },
+  {
+   "id": "96-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，正确詹姆斯哥哥年龄应为16岁，且作答未体现正确推导过程。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.6,
+   "tokens": 2136
+  },
+  {
+   "id": "96-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1092
+  },
+  {
+   "id": "374-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将比例2:9的总份数误设为10x，正确应为11x，导致阿玛莉硬币数、花费数和剩余数均错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.0,
+   "tokens": 4083
+  },
+  {
+   "id": "374-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1197
+  },
+  {
+   "id": "596-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "解答过程与最终答案均错误。正确应计算重量差 60 - 40 = 20 磅，再除以每块石头 4 磅，得到 5 块；学生错误地将两人重量相加并求出 10 块。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.7,
+   "tokens": 2971
+  },
+  {
+   "id": "596-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.0,
+   "tokens": 1075
+  },
+  {
+   "id": "59-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且推理过程错误：土地价值翻三倍后总售价为 60,000 美元，应建立 3x = 60,000，而不是 x + 30,000 = 60,000。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.5,
+   "tokens": 3238
+  },
+  {
+   "id": "59-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 910
+  },
+  {
+   "id": "931-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "partial",
+    "score": 0.5,
+    "confidence": "medium",
+    "reason": "最终答案正确，但未根据比尔、瑞安、弗兰克的数量关系推导出弗兰克总数120，直接用120计算并反向验证，过程不严密。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.7,
+   "tokens": 3028
+  },
+  {
+   "id": "931-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1134
+  },
+  {
+   "id": "519-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "题目中“每只鸡每天喂食三杯”被学生误解为“每餐每只鸡三杯”，进而错误计算全天总量和最后一餐用量，最终答案 140 杯错误；该要点要求过程与答案完全正确，因此得 0 分。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.2,
+   "tokens": 3486
+  },
+  {
+   "id": "519-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1148
+  },
+  {
+   "id": "219-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然算出还需要再赢 8 场，但随后错误地将 8 场按 80% 重新计算并四舍五入为 7 场，导致最终答案和推理过程均不正确，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 30.6,
+   "tokens": 3890
+  },
+  {
+   "id": "219-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1138
+  },
+  {
+   "id": "38-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生分别计算了今天和明天的燃油消耗，但没有将两天消耗相加得到总消耗量，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.0,
+   "tokens": 3553
+  },
+  {
+   "id": "38-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1227
+  },
+  {
+   "id": "88-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将题目中的购买数量误解为每位顾客购买的数量，导致已卖汉堡总数和最终答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.5,
+   "tokens": 4156
+  },
+  {
+   "id": "88-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.7,
+   "tokens": 1367
+  },
+  {
+   "id": "444-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“加满一箱油能行驶多少英里”误解为当前剩余8加仑可行驶里程，最终得到200英里；正确应使用油箱容量12加仑计算，即25×12=300英里，因此解答过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.9,
+   "tokens": 3144
+  },
+  {
+   "id": "444-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.3,
+   "tokens": 1152
+  },
+  {
+   "id": "428-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1002
+  },
+  {
+   "id": "428-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.2,
+   "tokens": 1453
+  },
+  {
+   "id": "71-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确理解“坦雅红色橡皮数量的一半”，直接用红色橡皮数量 10 减去 3，导致瑞秋数量错误，最终汉娜数量也错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.6,
+   "tokens": 2949
+  },
+  {
+   "id": "71-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1108
+  },
+  {
+   "id": "246-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未将题目中原本存在的5只猫计入剩余动物总数，最终答案错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.2,
+   "tokens": 2789
+  },
+  {
+   "id": "246-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1022
+  },
+  {
+   "id": "92-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生先算出周一到周五共5小时，又额外加上周四40分钟和周五70分钟，重复计算了周四和周五的跑步时间，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash",
+    "qwen3.8-flash"
+   ],
+   "seconds": 41.0,
+   "tokens": 5361
+  },
+  {
+   "id": "92-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.9,
+   "tokens": 1018
+  },
+  {
+   "id": "564-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将题目中“舀走 3 桶水”误写为“舀走 11 桶水”，并据此错误计算每次洗澡用水量和每周用水量，最终答案 2520 盎司不正确，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.9,
+   "tokens": 3058
+  },
+  {
+   "id": "564-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.6,
+   "tokens": 1174
+  },
+  {
+   "id": "434-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 10% 利率乘以 5 个月计算总利息，按参考答案总利息应为 3650 × 0.1 = 365 美元，最终每月支付金额也应为 803 美元，因此解答过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 32.0,
+   "tokens": 3721
+  },
+  {
+   "id": "434-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1075
+  },
+  {
+   "id": "60-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生在计算剩余工作时间时没有扣除打扫和做饭的 6 小时，导致剩余时间错误，最终答案 8 小时不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.1,
+   "tokens": 3265
+  },
+  {
+   "id": "60-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 864
+  },
+  {
+   "id": "846-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "partial",
+    "score": 0.5,
+    "confidence": "medium",
+    "reason": "学生正确计算了医生就诊自付部分为75美元，但未计算猫就诊自付部分，也未给出最终总费用135美元。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.2,
+   "tokens": 2676
+  },
+  {
+   "id": "846-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.4,
+   "tokens": 1254
+  },
+  {
+   "id": "579-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽算出已婚女性为45人，但错误地将丈夫人数45直接当作男性总数，又错误地用45×3/4计算单身男性人数；未根据“男性中有3/4是单身”推出男性总数应为45÷(1/4)=180，最终答案139错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 27.4,
+   "tokens": 3991
+  },
+  {
+   "id": "579-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1174
+  },
+  {
+   "id": "126-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误，正确应为 22 个；作答只算出氦气可充 36 个气球，未计算未触到天花板的气球数量，也未求两者差值。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.7,
+   "tokens": 2662
+  },
+  {
+   "id": "126-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1186
+  },
+  {
+   "id": "1000-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 8.7,
+   "tokens": 1589
+  },
+  {
+   "id": "1000-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1070
+  },
+  {
+   "id": "228-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "过程与最终答案不正确：未计入正常掉落22份，且错误地把未掉落的5次加到总数中。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.0,
+   "tokens": 3153
+  },
+  {
+   "id": "228-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1108
+  },
+  {
+   "id": "642-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将接下来三次往返行程的人数错误计算为 3*100=300，未考虑每次往返返程的 60 人，导致最终答案 460 错误，正确应为 640。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.1,
+   "tokens": 2696
+  },
+  {
+   "id": "642-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1177
+  },
+  {
+   "id": "990-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.7,
+   "tokens": 1117
+  },
+  {
+   "id": "990-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.2,
+   "tokens": 993
+  },
+  {
+   "id": "63-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确计算12月访客数量，错误地把10月和11月总数再加15，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.4,
+   "tokens": 2784
+  },
+  {
+   "id": "63-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1055
+  },
+  {
+   "id": "590-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为 7，与参考答案 2 不符；其将“付钱后剩下 12 美元”误解为卖出后剩余 12 美元，导致推理和结果错误，不满足完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.7,
+   "tokens": 3984
+  },
+  {
+   "id": "590-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.4,
+   "tokens": 940
+  },
+  {
+   "id": "599-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确求出钢笔长度为10厘米，但随后将钢笔长度x误算为12厘米，导致橡皮和总长度均错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.1,
+   "tokens": 2979
+  },
+  {
+   "id": "599-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.7,
+   "tokens": 777
+  },
+  {
+   "id": "406-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将10条牛仔裤的数量误用为20，导致牛仔裤总收入计算错误，最终答案600美元也不正确，不符合“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.3,
+   "tokens": 2678
+  },
+  {
+   "id": "406-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.2,
+   "tokens": 998
+  },
+  {
+   "id": "50-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，将已求得的每人每月储蓄金额再次平分，导致结果不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.2,
+   "tokens": 3302
+  },
+  {
+   "id": "50-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 964
+  },
+  {
+   "id": "226-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将汤米能骑行的面积计算为10个平方街区，与参考答案中的20个平方街区不符，并由此得到错误倍数8，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.0,
+   "tokens": 2827
+  },
+  {
+   "id": "226-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1187
+  },
+  {
+   "id": "47-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将每周允许观看4天的条件错误处理为在45×4后再乘以7，导致周总量和两周总量计算错误，最终答案也不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.7,
+   "tokens": 2981
+  },
+  {
+   "id": "47-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1087
+  },
+  {
+   "id": "570-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生列方程时将詹姆斯6年后的年龄误写为 x + 6 - 3，导致求出詹姆斯现在15岁，哥哥19岁，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.2,
+   "tokens": 2726
+  },
+  {
+   "id": "570-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.7,
+   "tokens": 832
+  },
+  {
+   "id": "879-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且把材料成本加到收入上；同时未正确计算20支蜡烛所需材料成本（应为20美元而非10美元）。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 9.9,
+   "tokens": 2623
+  },
+  {
+   "id": "879-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1295
+  },
+  {
+   "id": "136-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误，且过程中未正确求出单黄蛋数量，将整箱12个鸡蛋误当作12个单黄蛋。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.3,
+   "tokens": 2653
+  },
+  {
+   "id": "136-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 834
+  },
+  {
+   "id": "296-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将售价错误地理解为成本减去利润，导致最终答案错误，不符合“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.5,
+   "tokens": 3120
+  },
+  {
+   "id": "296-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.8,
+   "tokens": 1152
+  },
+  {
+   "id": "429-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生把“食物上的花费比门票少 4.50 美元”误解为从每张门票价格中减去 4.50 美元，导致食物花费计算错误，最终答案也错误，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.8,
+   "tokens": 2878
+  },
+  {
+   "id": "429-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 960
+  },
+  {
+   "id": "147-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将包含莉莉贝斯在内的四人总数 1200 与莉莉贝斯自己的 300 再次相加，导致重复计算，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 25.6,
+   "tokens": 3068
+  },
+  {
+   "id": "147-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1208
+  },
+  {
+   "id": "553-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将周末卖出的20箱既错误计入“周二到周四”的和，又再次加上，导致总销量重复计算，最终答案35箱与正确答案55箱不符。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.4,
+   "tokens": 3065
+  },
+  {
+   "id": "553-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1097
+  },
+  {
+   "id": "120-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最后一步将“刚才向后走步数”的两倍误用为当前向前净步数的两倍，导致最终答案错误，不满足过程与答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.6,
+   "tokens": 3066
+  },
+  {
+   "id": "120-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.2,
+   "tokens": 948
+  },
+  {
+   "id": "584-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，正确差额应为 210 美元，不符合“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.1,
+   "tokens": 2958
+  },
+  {
+   "id": "584-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 5.6,
+   "tokens": 1003
+  },
+  {
+   "id": "315-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且解题过程中多减了一次史密斯给的 200 美元，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.1,
+   "tokens": 2690
+  },
+  {
+   "id": "315-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade",
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 13.6,
+   "tokens": 2207
+  },
+  {
+   "id": "573-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确算出 18 个月共有 36 期，但错误地将每期减免 0.25 美元理解为每月减免 0.25 美元，进而计算成每期折扣 0.5 美元，导致最终答案错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.0,
+   "tokens": 3136
+  },
+  {
+   "id": "573-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1024
+  },
+  {
+   "id": "835-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为12，与参考答案24不符，且解题过程中对“安静”次数与两只狗吠叫次数之间关系的理解错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 32.5,
+   "tokens": 3472
+  },
+  {
+   "id": "835-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 15.9,
+   "tokens": 1967
+  },
+  {
+   "id": "698-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 8.1,
+   "tokens": 1946
+  },
+  {
+   "id": "698-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 10.3,
+   "tokens": 1164
+  },
+  {
+   "id": "185-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "第一晚后应为 2 + 10 = 12 只吸血鬼，学生算成 22；第二晚新增数量也应按当时吸血鬼总数计算，学生仍只加 20，最终答案 42 与正确答案 72 不一致，过程与结果均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.9,
+   "tokens": 2999
+  },
+  {
+   "id": "185-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 8.5,
+   "tokens": 1187
+  },
+  {
+   "id": "105-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为3，而正确结果应为15；虽然方法思路涉及先求文具区占比再乘以总销售数，但计算结果错误，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.2,
+   "tokens": 2676
+  },
+  {
+   "id": "105-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 5.1,
+   "tokens": 908
+  },
+  {
+   "id": "595-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为6小时，但达到3000毫升需要6组500毫升，每组2小时，应为12小时；其推理也自相矛盾。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.9,
+   "tokens": 3099
+  },
+  {
+   "id": "595-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 908
+  },
+  {
+   "id": "952-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 5.8,
+   "tokens": 1558
+  },
+  {
+   "id": "952-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1064
+  },
+  {
+   "id": "654-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，遗漏了每周只做 5 天早餐这一条件，未计算 13 × 5 × 52 = 3380。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.3,
+   "tokens": 3059
+  },
+  {
+   "id": "654-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.5,
+   "tokens": 1243
+  },
+  {
+   "id": "192-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且推理过程存在重复扣减：含芒果菜肴共10道，其中2道可以挑出芒果，因此不会吃的含芒果菜肴应为8道，剩余应为36-8=28道。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 9.1,
+   "tokens": 2473
+  },
+  {
+   "id": "192-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.0,
+   "tokens": 1316
+  },
+  {
+   "id": "381-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“椰子香味是大杏仁香味的1.5倍”误解为每支蜡烛中椰子香味量为大杏仁香味量的1.5倍，并据此错误得出椰子蜡烛仍为10支，导致最终薰衣草蜡烛数量错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 27.6,
+   "tokens": 3761
+  },
+  {
+   "id": "381-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1127
+  },
+  {
+   "id": "99-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生只给出最终答案 10 分钟，未给出正确计算过程，且最终答案与参考答案 55 分钟不一致，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.4,
+   "tokens": 2577
+  },
+  {
+   "id": "99-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1282
+  },
+  {
+   "id": "560-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将方程中的 h 解释为月工作小时，但根据其所设的“每月赚取 40h”可知 h 实际是每周工作小时；一个月总小时应为 4×12=48，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.1,
+   "tokens": 3297
+  },
+  {
+   "id": "560-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 924
+  },
+  {
+   "id": "729-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将售价理解为减去佣金后的金额，并得出 92000 美元，与参考答案 100000 美元不符，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.6,
+   "tokens": 2757
+  },
+  {
+   "id": "729-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1110
+  },
+  {
+   "id": "64-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将一周七天的总目标误算为六天内总共300页，导致最终答案38页错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.9,
+   "tokens": 2901
+  },
+  {
+   "id": "64-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1075
+  },
+  {
+   "id": "577-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确算出缺勤人数为5、教室内人数为16，但最终总数只加了洗手间学生2人，漏加缺勤学生5人，导致最终答案错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.8,
+   "tokens": 3102
+  },
+  {
+   "id": "577-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1307
+  },
+  {
+   "id": "61-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将每天增加的产量21000卷直接乘以31天作为总产量，未加上原日产量7000卷，导致过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 27.5,
+   "tokens": 4551
+  },
+  {
+   "id": "61-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 8.8,
+   "tokens": 896
+  },
+  {
+   "id": "633-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将题中“米切尔有 30 支铅笔”误作“两人一共有 30 支铅笔”来列方程，导致推理过程和最终答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 29.6,
+   "tokens": 3025
+  },
+  {
+   "id": "633-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 9.1,
+   "tokens": 887
+  },
+  {
+   "id": "210-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生前段计算 M&M 豆数量、巧克力碎片总数和每块饼干平均数量均正确，但最终额外将 3 减 1 得到 2，导致最终答案错误，不符合“解答过程与最终答案完全正确，没有任何计算或推理错误”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.0,
+   "tokens": 3436
+  },
+  {
+   "id": "210-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1150
+  },
+  {
+   "id": "508-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且推理不严密。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.9,
+   "tokens": 2937
+  },
+  {
+   "id": "508-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 5.4,
+   "tokens": 933
+  },
+  {
+   "id": "696-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生只计算了克里斯拿走的弹珠数量，未继续计算瑞安拿走、两人共拿走以及堆中剩余数量，最终答案缺失，不满足过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.0,
+   "tokens": 2475
+  },
+  {
+   "id": "696-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.8,
+   "tokens": 1041
+  },
+  {
+   "id": "544-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生列出的乘法计算和最终求和均错误，未达到“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.5,
+   "tokens": 2850
+  },
+  {
+   "id": "544-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1198
+  },
+  {
+   "id": "437-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将利率乘以月数计算利息，导致总利息、总金额和每月支付均与参考答案不一致，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.4,
+   "tokens": 3084
+  },
+  {
+   "id": "437-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 789
+  },
+  {
+   "id": "795-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生没有计算儿童总人数，最终答案与题目要求不符，且给出的成年女性人数也不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.1,
+   "tokens": 2402
+  },
+  {
+   "id": "795-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 869
+  },
+  {
+   "id": "321-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未给出最终答案，且所述将第三只蜗牛的速度乘以第一只蜗牛到达终点所用的时间并不能得出第三只蜗牛到达终点所需的总时间。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.3,
+   "tokens": 3061
+  },
+  {
+   "id": "321-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 911
+  },
+  {
+   "id": "476-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将题目条件误解为“2x + 20 = 36”，最终答案应为92，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.0,
+   "tokens": 2726
+  },
+  {
+   "id": "476-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1134
+  },
+  {
+   "id": "965-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将奥尔加、里克、霍滕丝三人每只鞋的条纹数之和 11 又乘以人数 3，造成重复计数；正确总数应为 2*(3+2+6)=22，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.0,
+   "tokens": 3134
+  },
+  {
+   "id": "965-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.3,
+   "tokens": 1138
+  },
+  {
+   "id": "464-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将利率额外乘以期限 5 个月，导致总利息计算错误，最终答案 1095 美元也与正确结果 803 美元不符，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.8,
+   "tokens": 3009
+  },
+  {
+   "id": "464-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1055
+  },
+  {
+   "id": "370-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 160 夸脱换算成瓶数时错误地除以 4，实际每瓶为 1 夸脱，应为 160 瓶，导致后续计算和最终答案错误，不满足“完全正确”的评分要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.3,
+   "tokens": 3503
+  },
+  {
+   "id": "370-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1260
+  },
+  {
+   "id": "306-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误且推理错误：每净前进1步实际要走3+2=5步，66步距离应总共走330步，而不是66步。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.8,
+   "tokens": 2409
+  },
+  {
+   "id": "306-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 888
+  },
+  {
+   "id": "254-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“家庭之后还有十位顾客”误解为总共十位顾客并错误减去1，导致其余顾客人数错误，最终总收入计算为62美元，与参考答案66美元不符。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.0,
+   "tokens": 3084
+  },
+  {
+   "id": "254-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1125
+  },
+  {
+   "id": "813-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.8,
+   "tokens": 1852
+  },
+  {
+   "id": "813-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1102
+  },
+  {
+   "id": "184-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 6.9,
+   "tokens": 1855
+  },
+  {
+   "id": "184-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "low_confidence",
+    "undetermined_point"
+   ],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 15.0,
+   "tokens": 3195
+  },
+  {
+   "id": "715-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅计算了第一天采摘的蘑菇数量，未计算第二天、第三天数量，也未求出三天总共采摘的蘑菇数，解答过程与最终答案不完整。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.6,
+   "tokens": 2110
+  },
+  {
+   "id": "715-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1090
+  },
+  {
+   "id": "798-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未根据“两双白袜售价 45 美分”求出棕袜单价，错误地把 25 美分当作每双棕袜的成本并计算 15×25=375 美分，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.0,
+   "tokens": 2653
+  },
+  {
+   "id": "798-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 868
+  },
+  {
+   "id": "249-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“比50位客人多60%”误理解为额外增加80位客人，实际50×1.6=80是妻子想要的总客人数；因此后续客人总数、客人费用和总费用均错误，最终答案不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.6,
+   "tokens": 3300
+  },
+  {
+   "id": "249-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1163
+  },
+  {
+   "id": "83-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误，应为 4 盎司油；且未展示正确建立比例或计算过程。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.9,
+   "tokens": 2251
+  },
+  {
+   "id": "83-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1076
+  },
+  {
+   "id": "588-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "凯西顶班一周应多工作20小时，两个月原计划为160小时，正确总时数为180小时；学生将顶班一周误算为40小时，导致最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.7,
+   "tokens": 2456
+  },
+  {
+   "id": "588-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1124
+  },
+  {
+   "id": "307-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "列式思路正确，但乘法计算结果错误，10×4×250×2应为20000，而非80000，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.1,
+   "tokens": 2542
+  },
+  {
+   "id": "307-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 871
+  },
+  {
+   "id": "537-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽正确计算出重启前下载 80 GB 用时 40 分钟以及重启等待 20 分钟，但忽略了“必须从头开始重新下载”这一条件，错误地只计算剩余 120 GB 的下载时间，导致最终答案 120 分钟错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.2,
+   "tokens": 2994
+  },
+  {
+   "id": "537-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1208
+  },
+  {
+   "id": "506-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误，且推理过程误将本次消费金额43美元理解为使用奖励后的金额，导致实际支付计算错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.5,
+   "tokens": 3140
+  },
+  {
+   "id": "506-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1040
+  },
+  {
+   "id": "896-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生没有给出任何计算过程或最终答案，未涉及该评分要点所要求的正确解答。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 12.8,
+   "tokens": 2094
+  },
+  {
+   "id": "896-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1025
+  },
+  {
+   "id": "351-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终得到44颗，正确应为56颗；其过程误将贝蒂保留的36颗而非给出的24颗从80中减去，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.8,
+   "tokens": 3525
+  },
+  {
+   "id": "351-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1152
+  },
+  {
+   "id": "746-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "partial",
+    "score": 0.5,
+    "confidence": "high",
+    "reason": "学生正确得出原价可筹得 120 美元以及降价后收入为 111 美元，但未计算并给出最终还需要筹集的钱数 120 - 111 = 9 美元。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.2,
+   "tokens": 2885
+  },
+  {
+   "id": "746-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.9,
+   "tokens": 1247
+  },
+  {
+   "id": "459-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终得出获胜出价 350 美元，答案错误；正确应计入另外 3 人各出价一次以及卡门每次跟价各出价一次，共增加 6 次 50 美元，最终为 200 + 6×50 = 500 美元。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.0,
+   "tokens": 3624
+  },
+  {
+   "id": "459-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1188
+  },
+  {
+   "id": "294-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“最初拥有的钱”错误理解为送出后剩余的金额 45-x，导致方程建立错误；同时按其方程简化得到 x=35 也与正确计算结果不符，最终答案错误，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.3,
+   "tokens": 2786
+  },
+  {
+   "id": "294-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.4,
+   "tokens": 941
+  },
+  {
+   "id": "623-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将总蜡烛数 24 误当作凯瑞的年龄，未根据三个蛋糕各插相同数量蜡烛将 24 除以 3，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 12.4,
+   "tokens": 2715
+  },
+  {
+   "id": "623-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 979
+  },
+  {
+   "id": "995-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1094
+  },
+  {
+   "id": "995-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 950
+  },
+  {
+   "id": "953-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未给出正确的解答过程，最终答案也不是 54 立方英尺，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.0,
+   "tokens": 2316
+  },
+  {
+   "id": "953-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1288
+  },
+  {
+   "id": "524-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“获得养老金价值的50%”误解为在全额养老金基础上额外增加50%，导致最终答案为75000，与正确答案25000不符，解答过程和结论均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.9,
+   "tokens": 2918
+  },
+  {
+   "id": "524-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 895
+  },
+  {
+   "id": "982-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.6,
+   "tokens": 1786
+  },
+  {
+   "id": "982-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 806
+  },
+  {
+   "id": "168-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将往返总距离 3 英里误当作单程 1.5 英里计算消耗，且净卡路里赤字计算错误，最终答案 25 与正确答案 250 不符，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.1,
+   "tokens": 2998
+  },
+  {
+   "id": "168-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1118
+  },
+  {
+   "id": "775-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "partial",
+    "score": 0.5,
+    "confidence": "medium",
+    "reason": "学生给出了正确的极差计算式并得到最终答案14千克，但未完整写出由题意推出Jake体重为60千克、John体重为46千克的解答过程，因此不能判定为过程与答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.3,
+   "tokens": 2822
+  },
+  {
+   "id": "775-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1098
+  },
+  {
+   "id": "350-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终结论错误，将中途退出的总人数答为 80 人，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 101.9,
+   "tokens": 2881
+  },
+  {
+   "id": "350-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 880
+  },
+  {
+   "id": "155-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确计算出草坪面积为 792 平方英尺，但错误认为四袋草籽会被全部用完，没有计算剩余草籽可覆盖的额外面积，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.6,
+   "tokens": 2672
+  },
+  {
+   "id": "155-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.4,
+   "tokens": 932
+  },
+  {
+   "id": "500-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然一度正确算出 7 张新唱片对应 14 张旧唱片，但随后错误地将每人平均旧唱片数向下取整，并据此把总旧唱片数改为 10，最终答案错误，过程存在明显推理错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.8,
+   "tokens": 3529
+  },
+  {
+   "id": "500-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.8,
+   "tokens": 1165
+  },
+  {
+   "id": "431-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽算出奖励为 4 美元、优惠券为 8 美元，但错误地将本次消费 43 美元加上 4 美元得到原价 47 美元，并且最终只减去优惠券，未正确从 43 美元中减去奖励，导致最终答案 39 美元错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 28.4,
+   "tokens": 3457
+  },
+  {
+   "id": "431-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1072
+  },
+  {
+   "id": "40-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“培根条的数量是鸡蛋的两倍”错误理解为“鸡蛋数量加上两倍鸡蛋数量”，导致每盘培根数与总培根数均计算错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.5,
+   "tokens": 3144
+  },
+  {
+   "id": "40-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 974
+  },
+  {
+   "id": "684-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将购物车总价 54.00 美元误理解为不包含瑕疵商品的其他商品价格，并错误地把原价 20.00 美元再次加入，导致后续计算和最终答案错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 19.7,
+   "tokens": 3769
+  },
+  {
+   "id": "684-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1310
+  },
+  {
+   "id": "79-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "纸杯蛋糕部分计算错误，且最终答案与正确答案不一致。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 46.3,
+   "tokens": 5423
+  },
+  {
+   "id": "79-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.0,
+   "tokens": 1416
+  },
+  {
+   "id": "782-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅写出部分行驶条件，没有计算每天总里程，也没有计算周一到周六的总里程，且未给出最终答案，因此不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.5,
+   "tokens": 2144
+  },
+  {
+   "id": "782-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 4.4,
+   "tokens": 1356
+  },
+  {
+   "id": "571-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，散养数量应为 28×2−4=52，而不是 108，因此不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.1,
+   "tokens": 2620
+  },
+  {
+   "id": "571-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 913
+  },
+  {
+   "id": "586-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "一辆普通轿车耗时 24 分钟，大型 SUV 应为 24 × 2 = 48 分钟；学生将 SUV 耗时算成 96 分钟，导致总时间错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.3,
+   "tokens": 2696
+  },
+  {
+   "id": "586-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1094
+  },
+  {
+   "id": "808-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅计算了黑色气球数量，未计算气球总数，也未除以10得出每所学校收到的气球数，解答过程与最终答案不完整。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.6,
+   "tokens": 2135
+  },
+  {
+   "id": "808-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1075
+  },
+  {
+   "id": "837-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将12个披萨误认为12个站点，未正确计算站点数，也未计算平均每个站点所需分钟数，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.8,
+   "tokens": 2638
+  },
+  {
+   "id": "837-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.9,
+   "tokens": 1275
+  },
+  {
+   "id": "927-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.2,
+   "tokens": 1953
+  },
+  {
+   "id": "927-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1029
+  },
+  {
+   "id": "348-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 6.3,
+   "tokens": 1596
+  },
+  {
+   "id": "348-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1121
+  },
+  {
+   "id": "711-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅写出周一花费为 60 美元，未计算明天和周三的花费，也未求出三天总花费，缺少最终答案。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.9,
+   "tokens": 2356
+  },
+  {
+   "id": "711-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 829
+  },
+  {
+   "id": "358-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未根据“每周总共阅读 600 页”求出原阅读时间为 15 小时，而是错误假设原阅读时间为 7 小时，并将原页数与新页数相加，导致过程和最终答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.9,
+   "tokens": 2770
+  },
+  {
+   "id": "358-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.3,
+   "tokens": 1211
+  },
+  {
+   "id": "608-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生前半过程正确，但最终计算错误，160-130 应为 30，而不是 80，最终答案错误，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.5,
+   "tokens": 2573
+  },
+  {
+   "id": "608-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 985
+  },
+  {
+   "id": "932-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 7.6,
+   "tokens": 1631
+  },
+  {
+   "id": "932-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.3,
+   "tokens": 878
+  },
+  {
+   "id": "593-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 10 美元的 20% 错误计算为 4 美元，导致最终答案 9 美元错误；正确门票折扣应为 2 美元，总节省应为 7 美元。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 12.0,
+   "tokens": 2867
+  },
+  {
+   "id": "593-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 998
+  },
+  {
+   "id": "816-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 12.3,
+   "tokens": 2197
+  },
+  {
+   "id": "816-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1165
+  },
+  {
+   "id": "467-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为197，正确应为163；其数量关系建立错误，把初始、使用和剩余错误组合成“总共用了277张”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.4,
+   "tokens": 2743
+  },
+  {
+   "id": "467-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.7,
+   "tokens": 842
+  },
+  {
+   "id": "70-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未先根据“每个5美元的躲避球可以买15个”求出原预算75美元，而是错误地将躲避球数量15直接乘以1.2得到垒球数量18；最终答案也不是正确的10个，且后续计算总成本与问题无关。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.5,
+   "tokens": 3038
+  },
+  {
+   "id": "70-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1189
+  },
+  {
+   "id": "860-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.5,
+   "tokens": 2246
+  },
+  {
+   "id": "860-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1114
+  },
+  {
+   "id": "276-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确算出已飞行总时间和剩余时间，但将 6 个月按 24 周计算并用 1320/24 得到 55，且称其为每月飞行小时数；题目要求的是每月小时数，正确应为 1320/6=220，因此解答过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.3,
+   "tokens": 3785
+  },
+  {
+   "id": "276-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.4,
+   "tokens": 955
+  },
+  {
+   "id": "485-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确算出 Joey 每周减重 2 磅，但错误理解题意，将 Sandy 的条件误认为“每 4 周减 8 磅”，并得出 8 周这一错误最终答案，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.1,
+   "tokens": 3054
+  },
+  {
+   "id": "485-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 886
+  },
+  {
+   "id": "713-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "未涉及"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.0,
+   "tokens": 2012
+  },
+  {
+   "id": "713-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 932
+  },
+  {
+   "id": "680-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将剩余代币错误地除以 5，而不是除以 4 个兄弟姐妹，导致每个兄弟姐妹的代币数与最终答案均错误，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.9,
+   "tokens": 2709
+  },
+  {
+   "id": "680-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.8,
+   "tokens": 1440
+  },
+  {
+   "id": "66-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅计算砖块成本，且将“每 1000 块 100 美元”错误理解为“每 100 块 100 美元”，导致砖块成本计算错误；同时未计算土地成本、屋顶瓦片成本和总建筑成本，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 24.9,
+   "tokens": 3351
+  },
+  {
+   "id": "66-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.0,
+   "tokens": 1131
+  },
+  {
+   "id": "62-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，推导中把总小时数除以每周完成件数，单位不匹配，导致结果错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.0,
+   "tokens": 2999
+  },
+  {
+   "id": "62-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.1,
+   "tokens": 990
+  },
+  {
+   "id": "748-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅提到多算8名幼儿，未给出完整计算过程，也未得出实际幼儿人数21名。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.0,
+   "tokens": 2257
+  },
+  {
+   "id": "748-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 851
+  },
+  {
+   "id": "718-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确计算总可用糖量、每打纸杯蛋糕所需糖量，也未得出正确打数；其表述中的计算与题意不符，过程和最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.4,
+   "tokens": 3267
+  },
+  {
+   "id": "718-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1016
+  },
+  {
+   "id": "317-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误，正确应为杰克比奥斯汀晚 30 秒；学生将杰克所需时间误当作晚到时间，未减去奥斯汀的 60 秒。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 23.4,
+   "tokens": 3338
+  },
+  {
+   "id": "317-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1179
+  },
+  {
+   "id": "662-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "评分要点要求解答过程与最终答案完全正确。学生将“乡村音乐 CD 比摇滚音乐 CD 多 3 张”错误理解为“摇滚音乐 CD 比古典音乐 CD 多 3 张”，导致列式错误，最终答案也不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.6,
+   "tokens": 2938
+  },
+  {
+   "id": "662-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.7,
+   "tokens": 755
+  },
+  {
+   "id": "591-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未将杰克已有的 3000 日元加入总额，最终答案错误，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.0,
+   "tokens": 2796
+  },
+  {
+   "id": "591-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.5,
+   "tokens": 1189
+  },
+  {
+   "id": "697-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未给出最终剩余金额，也没有完整解答过程，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.6,
+   "tokens": 2389
+  },
+  {
+   "id": "697-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1028
+  },
+  {
+   "id": "841-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案错误。剩余 2 升水倒入 6 升桶后，6 升桶还能再加 6-2=4 升水；学生误答为 2 升，且推理不符合题意。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.2,
+   "tokens": 2693
+  },
+  {
+   "id": "841-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.4,
+   "tokens": 961
+  },
+  {
+   "id": "456-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将因盗窃被赶出的人数错误计算为10人，导致后续因肢体冲突被赶出人数和最终答案均错误；正确答案应为盗窃7人、冲突21人、其他19人。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.3,
+   "tokens": 3546
+  },
+  {
+   "id": "456-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "low_confidence",
+    "undetermined_point"
+   ],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 6.5,
+   "tokens": 1775
+  },
+  {
+   "id": "291-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且在求和时重复加入了拿铁费用，既加了两杯拿铁总价8美元，又加了一杯含香草糖浆拿铁4.5美元，导致总价多算。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 25.8,
+   "tokens": 4683
+  },
+  {
+   "id": "291-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1314
+  },
+  {
+   "id": "733-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅写出每周使用 15 磅猫砂，未继续计算 210 天所需猫砂总量、桶数和总花费，也没有给出最终答案，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 11.3,
+   "tokens": 2246
+  },
+  {
+   "id": "733-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.0,
+   "tokens": 1211
+  },
+  {
+   "id": "395-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽一度正确算出钢笔长度为10厘米，但随后将钢笔长度误取为12厘米，并据此错误计算橡皮长度和总长度，最终答案错误，过程存在计算与推理错误，不满足“完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.0,
+   "tokens": 3158
+  },
+  {
+   "id": "395-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 815
+  },
+  {
+   "id": "893-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生认为重启后只需下载剩余 120 GB，但题目明确必须从头开始重新下载整个 200 GB，因此计算过程和最终答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.6,
+   "tokens": 3009
+  },
+  {
+   "id": "893-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.0,
+   "tokens": 947
+  },
+  {
+   "id": "355-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案不是 100，且推理中将“剩下的弹珠中又掉一半”误当作原始弹珠的 50%，导致过程与答案均不正确，不满足“完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.2,
+   "tokens": 2925
+  },
+  {
+   "id": "355-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.9,
+   "tokens": 931
+  },
+  {
+   "id": "23-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生给出的最终答案为 12.40 美元，与正确答案 10 美元不符，且未展示正确计算过程。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.7,
+   "tokens": 2966
+  },
+  {
+   "id": "23-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1028
+  },
+  {
+   "id": "472-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案与正确结果不符，且解答过程中存在关键计算错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.9,
+   "tokens": 3929
+  },
+  {
+   "id": "472-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1113
+  },
+  {
+   "id": "363-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 (0.8)^3x = 64 错误解为 x = 100，且四层书数分配与求和均错误，最终答案 308 不符合参考答案 369，未达到“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 35.1,
+   "tokens": 3869
+  },
+  {
+   "id": "363-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 884
+  },
+  {
+   "id": "172-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案 440 分钟与参考答案 220 分钟不一致，且推理中将面积除以耕宽得到的 6600 误作“条带”数量，并把每条带按 1 英尺计时，导致总时间翻倍，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 31.8,
+   "tokens": 4275
+  },
+  {
+   "id": "172-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1091
+  },
+  {
+   "id": "625-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确建立并求解方程，导致最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.1,
+   "tokens": 3097
+  },
+  {
+   "id": "625-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "medium",
+    "reason": "最终答案正确，但推理过程存在错误：不能由“蛇比猫多六条”直接推出有4只猫；应先由四条腿宠物总数和狗数推出猫数。不满足“没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.1,
+   "tokens": 4316
+  },
+  {
+   "id": "119-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "桥下巨魔数量应为 4×6−6=18，学生误算为 24+6=30，导致平原数量和总数均错误，最终答案 51 不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.8,
+   "tokens": 2971
+  },
+  {
+   "id": "119-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1303
+  },
+  {
+   "id": "505-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽算出学校往返和散步共6000步，但忽略“慢跑后只剩2000步”的条件，错误地将10000-6000=4000当作慢跑步数，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 32.2,
+   "tokens": 4117
+  },
+  {
+   "id": "505-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1346
+  },
+  {
+   "id": "976-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未给出完整计算过程与最终答案，且将感染蚊子比例误认为被叮咬后感染概率。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.3,
+   "tokens": 2912
+  },
+  {
+   "id": "976-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.3,
+   "tokens": 1190
+  },
+  {
+   "id": "223-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案为 140 分钟，与参考答案 120 分钟不符；学生将倒带/重看时间重复计入总时间，推理错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 38.8,
+   "tokens": 6160
+  },
+  {
+   "id": "223-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "low_confidence",
+    "undetermined_point"
+   ],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 7.9,
+   "tokens": 2089
+  },
+  {
+   "id": "786-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“每半打 30 美元”的售价误按“每打 30 美元”计算，导致每打利润计算错误，且没有求出卖出 50 打后的总利润，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.6,
+   "tokens": 2580
+  },
+  {
+   "id": "786-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.3,
+   "tokens": 958
+  },
+  {
+   "id": "906-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“食物上的花费比门票少4.50美元”误解为比人均门票费用少4.50美元，得到错误的食物总成本；且未计算游乐设施费用和每人平摊费用，过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.9,
+   "tokens": 3321
+  },
+  {
+   "id": "906-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "评分要点要求解答过程与最终答案完全正确；学生误解了食物花费的比较对象，且把总费用 88 除以 3 错写成 34，过程存在计算和推理错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 29.8,
+   "tokens": 4558
+  },
+  {
+   "id": "132-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生用泳池 80% 的剩余水量 1,600,000 毫升除以每次溅出水量，错误地将剩余水量当作可损失水量；正确应使用可损失水量 2,000,000 - 1,600,000 = 400,000 毫升，得到 1000 次。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.2,
+   "tokens": 3295
+  },
+  {
+   "id": "132-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1036
+  },
+  {
+   "id": "756-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为165分钟，未正确计算第二个舞步时间15分钟以及三个舞步总时间90分钟，解答过程与最终答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.8,
+   "tokens": 2620
+  },
+  {
+   "id": "756-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1197
+  },
+  {
+   "id": "253-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终将 30% 再次除以 2 得到 15%，与参考答案 30% 不符，过程存在错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.8,
+   "tokens": 2518
+  },
+  {
+   "id": "253-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 972
+  },
+  {
+   "id": "407-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 168 乘以 1/2 的结果算错，应为 84，最终答案也错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.3,
+   "tokens": 2493
+  },
+  {
+   "id": "407-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1075
+  },
+  {
+   "id": "400-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 7.3,
+   "tokens": 1997
+  },
+  {
+   "id": "400-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "medium",
+    "reason": "题目规定第三周和第四周总共只拍了80张新照片，正确总数应为100+50+100+80=330；学生使用130并得到380，不符合题目条件。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 47.9,
+   "tokens": 5093
+  },
+  {
+   "id": "881-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未扣除周一已读的15页，并将剩余4天误作总5天进行计算，导致最终答案错误，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 27.8,
+   "tokens": 11229
+  },
+  {
+   "id": "881-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.3,
+   "tokens": 1322
+  },
+  {
+   "id": "82-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未从总送出量中扣除自己吃掉的 1 个苹果，导致老师数量计算错误，最终答案也不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 22.3,
+   "tokens": 2968
+  },
+  {
+   "id": "82-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 895
+  },
+  {
+   "id": "170-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽正确算出 4 袋面粉共 20 磅，但后续用 12 块饼干乘以 20 磅面粉得到 240 块饼干，比例关系和单位使用错误，最终答案也不正确，不满足“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.9,
+   "tokens": 3581
+  },
+  {
+   "id": "170-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.9,
+   "tokens": 1020
+  },
+  {
+   "id": "907-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生给出的最终答案为36，与正确最初数量18不符，且未提供正确解答过程。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.1,
+   "tokens": 2196
+  },
+  {
+   "id": "907-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1237
+  },
+  {
+   "id": "411-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未得出题目所问的出生前父母在美国生活的年数 3，最终答案为 36，过程与答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.3,
+   "tokens": 3083
+  },
+  {
+   "id": "411-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1002
+  },
+  {
+   "id": "562-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将经纪人佣金错误地从售价中扣除，最终得出 92000 美元，与参考答案 100000 美元不符，解答过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.5,
+   "tokens": 3160
+  },
+  {
+   "id": "562-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1061
+  },
+  {
+   "id": "284-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案错误，且计算每名工人日薪时出现错误：9450 ÷ (15 × 6) 应为 105，而不是 42，导致后续结果错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.8,
+   "tokens": 2671
+  },
+  {
+   "id": "284-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.7,
+   "tokens": 1252
+  },
+  {
+   "id": "140-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "坐飞机总时间计算错误，导致最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.0,
+   "tokens": 2937
+  },
+  {
+   "id": "140-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1044
+  },
+  {
+   "id": "440-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“剔除最低分后的平均分”误解为六次测验的平均分，使用 93×6 计算总分，导致最终答案错误；正确做法应是剔除最低分后对剩余五次测验求平均，所需分数为 98。"
+   },
+   "calls": [
+    "grade",
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 24.7,
+   "tokens": 4954
+  },
+  {
+   "id": "440-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.5,
+   "tokens": 1278
+  },
+  {
+   "id": "563-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "原始订单中两杯可可应为 2 × $2 = $4，学生只计入 $2，导致总费用算成 $12、找零算成 $3，最终答案错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 24.7,
+   "tokens": 3606
+  },
+  {
+   "id": "563-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1214
+  },
+  {
+   "id": "285-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终求和漏加1磅西红柿，导致总重计算为6磅，而正确应为7磅，不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.3,
+   "tokens": 3167
+  },
+  {
+   "id": "285-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1238
+  },
+  {
+   "id": "723-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生过程与最终答案均错误：将“一个辣椒可切成8片”错误理解为每个三明治需乘以8片，导致每个三明治辣椒用量计算错误，最终得到384个辣椒，而正确应为48个辣椒。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.6,
+   "tokens": 3013
+  },
+  {
+   "id": "723-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1233
+  },
+  {
+   "id": "425-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“一半的表演者无法到场”误解为“合唱团一半的人无法到场”，未正确计算女性表演者中到场人数，最终答案错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.0,
+   "tokens": 2754
+  },
+  {
+   "id": "425-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.1,
+   "tokens": 1115
+  },
+  {
+   "id": "367-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生错误假设母亲和父亲每份礼物也是9美元，导致剩余预算和最终答案错误，不满足解答过程与最终答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.8,
+   "tokens": 3981
+  },
+  {
+   "id": "367-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.4,
+   "tokens": 1082
+  },
+  {
+   "id": "699-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未正确识别较便宜的那双鞋，也未给出最终支付金额；解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.3,
+   "tokens": 2512
+  },
+  {
+   "id": "699-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "partial",
+    "score": 0.5,
+    "confidence": "medium",
+    "reason": "最终答案和主要计算过程正确，但学生将半价后的较便宜鞋误写为“第二双最终花费 20 美元”，存在指代/推理表述错误，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 36.6,
+   "tokens": 4570
+  },
+  {
+   "id": "389-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "题目中“一半人有棕眼睛，四分之一人有黑眼睛”应分别指总人数100的一半和四分之一，即50人和25人；学生将其理解为剩余人数的一半和四分之一，并且最终绿眼睛人数算成2人，与正确答案6人不符。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.3,
+   "tokens": 3145
+  },
+  {
+   "id": "389-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1094
+  },
+  {
+   "id": "236-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "最终答案应为 250,000 美元，学生得出 350,000 美元；其推理错误地以当前房产税 8,000 美元为基线，而没有以铁路项目后的房产税 10,000 美元为基线计算剩余可承受税额。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 33.6,
+   "tokens": 4189
+  },
+  {
+   "id": "236-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.7,
+   "tokens": 1354
+  },
+  {
+   "id": "999-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生只计算了鞋盒总面积，没有减去正方形块所占面积，也没有得到最终未覆盖面积 8 平方英寸。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 9.6,
+   "tokens": 1988
+  },
+  {
+   "id": "999-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.3,
+   "tokens": 1048
+  },
+  {
+   "id": "84-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将 1/4 磅（即 2 个扇贝）的售价 6.00 美元误当成每个扇贝的售价，导致最终费用计算为 96.00 美元；正确费用应为 48.00 美元，过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 24.1,
+   "tokens": 3863
+  },
+  {
+   "id": "84-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1068
+  },
+  {
+   "id": "180-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案 84 与正确答案 73 不一致，且将“每 6 小时额外生产 1 把”误解为每小时额外 2 把，过程与结论均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.6,
+   "tokens": 3007
+  },
+  {
+   "id": "180-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.9,
+   "tokens": 819
+  },
+  {
+   "id": "822-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生仅给出错误的总体思路，没有进行具体计算，也没有得出最终答案，不满足解答过程与最终答案完全正确的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.0,
+   "tokens": 2562
+  },
+  {
+   "id": "822-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.8,
+   "tokens": 1171
+  },
+  {
+   "id": "237-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为40，与参考答案8不符；解方程时得到 x=16 错误，应为 x=-16，导致瑞秋年龄计算错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.8,
+   "tokens": 3298
+  },
+  {
+   "id": "237-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "low_confidence",
+    "undetermined_point"
+   ],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 9.0,
+   "tokens": 2115
+  },
+  {
+   "id": "238-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生前两步计算正确，但最后将“再等3周”错误地用21天减去18天，并得出总等待时间为21天；正确应为18天后再加21天，得到39天，因此不满足“解答过程与最终答案完全正确”。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.8,
+   "tokens": 2718
+  },
+  {
+   "id": "238-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1098
+  },
+  {
+   "id": "12-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生未考虑“一对哑铃”包含两只，最终答案应为32磅而不是16磅，解答过程与最终答案不完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 21.4,
+   "tokens": 2952
+  },
+  {
+   "id": "12-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.1,
+   "tokens": 1115
+  },
+  {
+   "id": "496-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生虽然正确计算出价值增加 120,000 美元，但后续将维修后房子的总价值误算为成本与增值之和，得到 250,000 美元，并据此得出利润 120,000 美元，最终答案错误，不符合“解答过程与最终答案完全正确”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 20.2,
+   "tokens": 3461
+  },
+  {
+   "id": "496-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.2,
+   "tokens": 1147
+  },
+  {
+   "id": "603-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "teacher",
+   "risks": [
+    "review_disagreement",
+    "undetermined_point"
+   ],
+   "review": {
+    "agreed": false,
+    "status": "earned",
+    "score": 1.0,
+    "confidence": "high",
+    "reason": "学生正确计算鲑鱼为 300 磅、金枪鱼为鳟鱼的两倍即 400 磅，并正确求和得到总重量 900 磅，过程与最终答案均正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.9,
+   "tokens": 2932
+  },
+  {
+   "id": "603-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "teacher",
+   "risks": [
+    "low_confidence",
+    "undetermined_point"
+   ],
+   "review": null,
+   "calls": [
+    "grade",
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 24.3,
+   "tokens": 5571
+  },
+  {
+   "id": "186-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为105磅，与参考答案210磅不一致；其计算最小重量为100×2=200磅、最大重量为200×2=400磅，推理与计算均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 26.1,
+   "tokens": 3458
+  },
+  {
+   "id": "186-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.7,
+   "tokens": 1220
+  },
+  {
+   "id": "269-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将交易掉的 12 美元误计入收到价值，并用总价值差而非交易净收益计算利润，最终答案错误，不满足过程与答案完全正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 17.5,
+   "tokens": 3676
+  },
+  {
+   "id": "269-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.1,
+   "tokens": 927
+  },
+  {
+   "id": "288-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终答案为 6.5 汤匙，与参考答案 8 汤匙不一致；且其将“Miles 和 Davis 平分 6 杯爆米花”的总需求误算为 13 杯，并用 13 除以 2 换算汤匙，存在审题和推理错误，不满足“解答过程与最终答案完全正确，没有任何计算或推理错误”的要求。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 27.2,
+   "tokens": 4236
+  },
+  {
+   "id": "288-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 3.0,
+   "tokens": 1184
+  },
+  {
+   "id": "4-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生没有扣除四月的 4 个星期日，将遛狗天数误算为 30 天，导致总收入和最终剩余金额均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 18.9,
+   "tokens": 2540
+  },
+  {
+   "id": "4-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 2.8,
+   "tokens": 818
+  },
+  {
+   "id": "149-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "白色汽车有 2 辆，每分钟每辆 2 美元，应计算为 2 × 2 × 180 = 720 美元；学生只计算了 2 × 180 = 360 美元，遗漏了白色汽车数量，导致最终答案 1980 美元错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.3,
+   "tokens": 2609
+  },
+  {
+   "id": "149-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 3.5,
+   "tokens": 1335
+  },
+  {
+   "id": "956-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生只给出了黑袜子的数量，未计算白袜子数量，也未给出总袜子数，解答过程和最终答案均不完整。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.0,
+   "tokens": 2421
+  },
+  {
+   "id": "956-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 5.0,
+   "tokens": 1570
+  },
+  {
+   "id": "547-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将每人 5 美元的街机代币误当作总预算中一次性扣除的 5 美元，导致每人费用计算为 25 美元而非 30 美元，最终朋友人数计算为 3 位而非 2 位，解答过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 14.8,
+   "tokens": 3294
+  },
+  {
+   "id": "547-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 4.6,
+   "tokens": 1463
+  },
+  {
+   "id": "378-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生正确求出塔莉亚和妈妈年龄，但把“三年后爸爸等于妈妈现在年龄39岁”误解为“爸爸三年后为39+3=42岁”，最终得到39岁，过程与答案均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 13.3,
+   "tokens": 2541
+  },
+  {
+   "id": "378-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.5,
+   "tokens": 1118
+  },
+  {
+   "id": "624-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生最终得到 1，未正确计算周三需要补上的总数；正确结果应为 59，过程与最终答案均不正确。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 15.1,
+   "tokens": 2704
+  },
+  {
+   "id": "624-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017"
+   ],
+   "seconds": 1.8,
+   "tokens": 918
+  },
+  {
+   "id": "974-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生将“卡门还需要 7 美元才能拥有杰索钱数的两倍”误解为在 2×20 上加 7，正确应为 2×20−7，且未给出三人钱数总和。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4.1-flash-1017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 16.2,
+   "tokens": 2932
+  },
+  {
+   "id": "974-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 2.6,
+   "tokens": 1130
+  },
+  {
+   "id": "326-error",
+   "subject": "数学",
+   "is_error": true,
+   "outcome": "failed",
+   "risks": [],
+   "review": {
+    "agreed": true,
+    "status": "missed",
+    "score": 0.0,
+    "confidence": "high",
+    "reason": "学生正确求出肯德拉2014年收入为22000美元，并求出20%对应6000美元，但错误地把6000美元加到肯德拉2014年收入上，而不是加到劳雷尔2014年收入30000美元上，导致2015年收入和两年总收入均错误。"
+   },
+   "calls": [
+    "grade",
+    "review"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017",
+    "qwen3.8-flash"
+   ],
+   "seconds": 10.8,
+   "tokens": 3260
+  },
+  {
+   "id": "326-correct",
+   "subject": "数学",
+   "is_error": false,
+   "outcome": "passed",
+   "risks": [],
+   "review": null,
+   "calls": [
+    "grade"
+   ],
+   "models": [
+    "deepseek-v4-1-flash-261017"
+   ],
+   "seconds": 4.5,
+   "tokens": 1790
+  }
+ ]
+}
