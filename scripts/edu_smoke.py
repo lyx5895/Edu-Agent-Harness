@@ -52,14 +52,20 @@ def main():
     t0 = time.time()
 
     p = ws.create_project(
-        '高一数学｜对数函数｜第2课时', 'math', grade='高一', notes='本课重点：解对数不等式时检查定义域'
+        '高一数学｜对数函数｜第2课时',
+        'math',
+        grade='高一',
+        notes='本课重点：解对数不等式时检查定义域',
+        knowledge_module='对数函数',
+        lesson='第 2 课时（45 分钟）',
+        learner_profile='刚学完对数函数的图象与性质',
     )
     pid = p['id']
+    ws.update_project(pid, lesson_scope='对数函数单调性的应用：解简单对数不等式')
     ws.add_material(pid, MATERIAL, filename='讲义')
-    objs = ws.draft_objectives(pid)
-    show('起草的目标 ' + objs['context_note'], [o['content'] for o in objs['objectives']])
-    for o in objs['objectives']:
-        ws.confirm(o['id'])
+    plan = ws.draft_lesson_plan(pid)
+    show('备课方案 ' + plan['context_note'], [o['text'] for o in plan['lesson_plan']['content']['objectives']])
+    ws.confirm(plan['lesson_plan']['id'])
 
     question = {
         'type': 'calculation',

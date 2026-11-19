@@ -1,330 +1,133 @@
-# OmniEdu 教学 Harness
+# Edu-Agent 教师工作台
 
-给 [OmniEdu-9B](https://huggingface.co/lhpku20010120/Omni-Edu-9B) 加的一层教学执行系统。学生在这里做老师布置的练习或自己提问；系统判断作答、决定下一步怎么教、生成回复并审核，把每一步的依据记录下来，交给老师复核。
+帮高中老师走完一节课的教学闭环：**01 备课设计 → 02 出题改题 → 03 作业批改 → 04 学情分析 → 05 讲题答疑**，讲评后可以再练一轮（05 → 02），也可以带着这节课的学情进入下一课时（05 → 01）。覆盖语数英物化生政史地和人工智能 10 个学科。
 
-核心原则：**模型负责理解学生的话和写回复；答没答对、学没学会，由服务器按可以核对的证据决定。**
+核心原则：**模型起草，老师确认；能核对的由服务器核对。** 每一步的产物都要老师确认后才传给下一步；备课方案要对应课程标准原文，批改要逐字引用学生原文，学情归纳要有作答证据；每次模型调用的输入、输出和参考了哪些内容都记录下来，可以导出研究。
 
-当前版本 v0.10.0。功能在真实模型和真实浏览器中验收过（[功能与测试记录](docs/FEATURES_AND_TESTS.md)）；**还没有真实师生参与的教学效果评估**。
+当前在 `teacher-agent` 分支开发，还没有真实教师参与的使用评估。原来的学生端教学 harness（`harness/`，v0.10）已冻结，见[学生端说明](docs/STUDENT_HARNESS.md)。
 
 ## 目录
 
-- [它解决什么问题](#它解决什么问题)
-- [效果](#效果)
+- [能做什么](#能做什么)
 - [快速开始](#快速开始)
-- [使用说明](#使用说明)
-- [部署模式与权限](#部署模式与权限)
-- [接口](#接口)
 - [配置](#配置)
-- [架构](#架构)
+- [代码结构](#代码结构)
 - [开发与测试](#开发与测试)
 - [已知限制](#已知限制)
-- [环境、许可与相关文档](#环境许可与相关文档)
+- [学生端 harness（已冻结）](#学生端-harness已冻结)
+- [相关文档](#相关文档)
 
-## 它解决什么问题
+## 能做什么
 
-直接让大模型辅导学生，主要有三个风险：把错的判成对的、直接说出答案、没有依据就说“你已经掌握了”。研究也表明，不加约束的 AI 辅导会让学生依赖它，撤掉以后考试成绩反而下降（见[调研文档](docs/EDU_HARNESS_RESEARCH.md)）。这个 harness 的做法：
-
-| 风险 | 做法 |
-|---|---|
-| 误判 | 判定必须逐字引用学生原文，服务器核对引用，引不出或没把握就转老师；能用确定性工具（代数、数值、单位等）核对的部分以工具为准；可选第二个模型（Qwen3.5-27B）复核负面判定 |
-| 泄露答案 | 每条回复先审核（泄露答案、事实错误、冒充系统、语言不符），不合格带理由重写一次，仍不合格就用服务器的固定兜底句 |
-| 虚假掌握 | 模型不能写学习结论；练习完成、借助帮助完成、模型评估的独立检查、工具验证的独立检查分开记录；学生说“懂了”不算数；独立检查必须用没见过的新题 |
-
-另外：下一步怎么教由一个有版本号的纯函数策略决定，不交给模型；每一轮的输入、决定、候选回复和审核结果都记入轨迹，可以不调用模型重放；老师改判后，依赖这条证据的后续会话和任务会连带失效。
-
-一次作答的处理顺序：
-
-```
-学生作答
- → 确定性工具验证（能用时）
- → 模型评分：必须引用学生原文；引不出或没把握 → 转老师
- → 可选：27B 复核负面判定
- → 纯函数策略决定教学动作（定位问题、追问、分级提示、讲解、转老师……）
- → 模型按这个动作写回复 → 审核（不合格重写一次 / 兜底）
- → 在一个事务里写入证据、状态变化、证据依赖和轨迹
-```
-
-## 效果
-
-对照对象是不加 harness 的同一模型（OmniEdu-9B）和基座 Qwen3.5-9B，裁判和模拟学生为 Qwen3.5-27B。详见 [HARNESS_REVIEW.md](HARNESS_REVIEW.md) 第七至十节。
-
-| 评测 | 裸模型 | harness |
+| 阶段 | 老师做什么 | 系统做什么 |
 |---|---|---|
-| 错误解答被判为正确（英文数学 StepVerify，400 份） | 35–46%；给参考答案后 13% | **1.5%**，转老师 2.5% |
-| 错误解答被判为正确（中文数学，392 份） | 50–77%；给参考答案后 13–23% | **2.0%**，转老师 1.8% |
-| 单轮辅导回复（MRBench，145 段） | 找出错误 0.97，泄露 0–1.4% | 找出错误 0.93–0.98，泄露 0–2% |
-| 多轮对话，模拟学生解出率（40–60 题） | 0.85–1.00 | 0.88–0.96 |
+| 01 备课设计 | 填课时信息（知识模块、课时、本课时内容、学生基础），可选附材料；核对对应的课标条目 | 按课标条目生成一份备课方案：教学目标（含达成标准）、重点、难点、课堂活动。每条目标标出依据的课标条目；要求高于课标用词、没有依据的目标会被标出。整体确认 |
+| 02 出题改题 | 选题型、数量、用途、难度；核对、修改、确认 | 按已确认的目标出题，参考课标条目、课堂活动和上一课时学情。每道题由另一个模型独立解题，并审核是否考到目标、是否超范围、难度是否符合；目标覆盖一目了然；可以单题“换一道”、采用独立解题的答案；可选 A/B 两版 |
+| 03 作业批改 | 导入学生名单和作答（CSV）；处理复核队列 | 逐个评分要点判定：能用工具核对的（选择、填空、数值与单位、代数式、化学方程式）以工具为准，其余由模型判定并必须逐字引用学生原文；高置信度的失分由另一家模型盲审复核；没把握的转老师。写作只给建议分 |
+| 04 学情分析 | 确认问题模式 | 服务器统计得分率和失分标签；模型归纳问题模式，每个模式必须引用学生原文，服务器核对；证据不足时给出补查问题 |
+| 05 讲题答疑 | 选择要讲的问题；确认讲评稿 | 生成讲评稿（讲解重点、关键步骤、典型错误辨析、课堂追问），典型错误必须是学生原文；生成针对问题模式的再练题（进入第 2 轮），两轮对比；“进入下一课时”把学情快照带进下一课时的备课 |
 
-如何理解这些数字：
+贯穿各阶段的机制：
 
-- harness 的主要价值在**判定可靠性**；回复质量和裸模型大致持平；面对“索要答案”型的模拟学生，解出率略低于裸模型，因为它坚持不给答案。
-- 所有结果都来自模型裁判和模拟学生，**没有真实师生参与，不能当作学习效果的证据**。
-- 开启交叉复核的配置（`harness-omniedu-xr`）里，复核模型和裁判都是 Qwen3.5-27B，这一组结果可能偏高；要得出可靠结论，需要换一个不同来源的裁判重跑。
+- **版本与确认**：所有产物（备课方案、题目、评分标准、批改、问题模式、讲评稿……）只增加版本、不覆盖；确认后才传给下一步。
+- **依据已变化**：上游做了实质修改，引用旧版本的产物会被标记，可以保留原结果或一键重新批改。
+- **已参考**：每次生成后显示模型实际读取了哪些内容（由上下文白名单记录，不是事后描述）。
+- **顶部“下一步”**：只在 01–05 之间跳转；本阶段没完成时置灰，并说明还差什么。
+- **课程标准**：10 个学科的课标条目从教育部官方 PDF 抽取，逐字核对，记录页码（见[开发参考第 6 节](docs/DEVELOPER_REFERENCE.md#6-课程标准)）。
 
 ## 快速开始
 
-### 只看界面（不需要 GPU）
-
-`scripts/ui_preview.py` 用一个脚本化的模型和一个示例班级启动服务，适合看界面、走流程。它的回复是写好的固定内容，不能用来判断教学质量。
-
 ```bash
 cd /default-filesys/workspace/ysb/Edu
-.envs/harness/bin/python scripts/ui_preview.py --port 7862
+export EDU_LLM_API_KEY=...            # 模型网关密钥，只放在环境变量里，不写进任何文件
+.envs/harness/bin/python -m uvicorn edu_app.api:app --host 127.0.0.1 --port 7870
 ```
 
-在自己电脑上转发端口后打开 http://127.0.0.1:7862 。学生端可以填名字“陈一鸣”或“周宁”、班级“七年一班”；教师端打开后会自动选中这个班级。
+在自己电脑上转发端口后打开 http://127.0.0.1:7870 ，接口文档在 `/docs`：
 
 ```bash
-ssh -N -L 7862:127.0.0.1:7862 bysz1
+ssh -N -L 7870:127.0.0.1:7870 <服务器>
 ```
 
-### 完整部署（真实模型）
-
-以下命令以 bysz1 为例。启动脚本只使用空闲 GPU（其他进程占用超过 1GB 时拒绝启动），不会结束别人的进程。
-
-```bash
-cd /default-filesys/workspace/ysb/Edu
-.envs/harness/bin/python scripts/service.py start inference   # OmniEdu-9B，vLLM，GPU 1，端口 8000
-.envs/harness/bin/python scripts/service.py start harness     # 应用，端口 7860
-.envs/harness/bin/python scripts/service.py status harness
-```
-
-转发 7860 端口后打开 http://127.0.0.1:7860 ，接口文档在 http://127.0.0.1:7860/docs 。
-
-可选功能：
-
-```bash
-# 交叉复核：启动 Qwen3.5-27B（GPU 3，端口 8002），再带环境变量重启应用
-.envs/harness/bin/python scripts/service.py start judge
-.envs/harness/bin/python scripts/service.py stop harness
-OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1 .envs/harness/bin/python scripts/service.py start harness
-
-# 知识点库：下载 K12-KGraph 并导入 data/knowledge.sqlite（仅限研究和非商业教学，见“许可”）
-.envs/harness/bin/python scripts/import_kgraph.py
-```
-
-停止服务：`scripts/service.py stop harness|inference|judge|baseline`。服务不会随服务器重启自动启动。日志在 `logs/`，学习记录在 `data/learning.sqlite`，图片在 `data/learning-images/`。
-
-## 使用说明
-
-首页选择“我是学生”或“我是老师”，分别进入 `/student/` 和 `/teacher/`。两个工作台是独立的页面，学生端的代码里不会请求参考答案和评分细则。页面适配手机，跟随系统的深色模式。下面的截图来自预览服务，学生和作答都是示例数据。
-
-![选择工作台](docs/screenshots/workspaces.png)
-
-### 学生
-
-![学生学习：左侧任务，中间题目与对话，右侧进度](docs/screenshots/student.png)
-
-- **开始**：第一次进入时填写名字和班级（班级模式下由账号决定）。左侧列出老师布置的任务；也可以“自己提一个问题”，任何学科都行，可以附题目照片、文字材料或文字版 PDF。
-- **作答**：提交后，系统指出问题所在并追问，追问显示在高亮的问题框里。回答追问默认算对话，不算作答；勾选“完整解答”才按作答判定。
-- **求助**：可以请求提示，依次是概念（点明所求量的含义）、步骤（说明要用的规则或公式，但不代入本题数字）、例子（换了数据的同类题）；也可以请求完整讲解，请求前会先确认，因为看过讲解后做对会记为“借助帮助完成”。讲解给出完整步骤，并以“最终答案”结尾。
-- **拍照作答**：上传手写过程的照片，先核对、修改识别出的文字，确认后才判定。
-- **独立检查**：练习完成后，可以做一道没见过的新题来检查自己，检查中不提供提示和讲解。
-- **学习路径**：输入老师给的路径编号，查看系统按学习证据推荐的下一步。
-- 会话自动保存在本机，刷新后继续；换设备可以用会话编号恢复。
-
-### 老师
-
-![教师工作台：班级学情](docs/screenshots/teacher-dashboard.png)
-
-右上角选择班级。班级不需要事先创建：填一个新名字就是一个新班级，学生填同样的名字就能收到任务。左侧五个页面：
-
-1. **班级学情**：学生数、需要帮助、独立完成、待复核四项指标；每个学生在各个学习目标上的状态（需要帮助的排在前面）和建议的下一步；建议分组补救的学生；按风险排序的待复核作答，点击一行直接去复核。
-2. **创建练习**：课程、学科、教学类型、学习目标、题目、评分要求、参考答案、独立检查要求。展开后可以附材料（可从文件导入）、设置最多 4 项分项评分、绑定代数验证（可先“核对”），以及从本班已发布的练习中勾选检查题库。导入知识点库后可以“从知识点库推荐”。表单会自动保存草稿。发布后可以一键去“学习安排”布置给学生。
-3. **批量出题**：列出最多 6 个学习目标，由模型起草题目；逐题编辑后保存为新版本（编辑会取消“已核对”的勾选），填写分发名单和审核说明后一次发布。
-4. **学习安排**：从本班练习中选择，按名单布置补救、复习或诊断，可以延期或撤销；发布学习顺序（知识点、练习、先修），可以按知识点库补全先修。
-5. **作答复核**：左侧是待复核队列，右侧是题目、学生作答、原始照片、判定依据、分项结果、评分要求与参考答案、当时给学生的反馈，以及每一轮的教学决定与策略回放。填写复核说明后，确认原判定或改判。
-
-![教师工作台：作答复核](docs/screenshots/teacher-review.png)
-
-学生答错时的默认处理（策略 `open-task-policy-v4`）：如果判定能定位到学生原文中的具体问题，就指出那一步并追问，不给正确结果。真实模型验收中的一个例子：学生写了“45 × 3 = 135”，系统回复“平均速度表示每小时行多少千米，也就是把总路程按时间平均分。你算出的135比总路程45还大，这合理吗？”。
-
-## 部署模式与权限
-
-**本地演示模式**（默认）：学生的名字和班级由使用者自己填写，不是身份认证。服务只监听 127.0.0.1，适合单人或可信环境演示。
-
-**班级模式**：设置 `HARNESS_ACCOUNTS_FILE`，指向一个“访问码 → 账号”的 JSON 文件：
-
-```json
-{"7f3a…": {"role": "teacher", "class_id": "七年一班"},
- "c91e…": {"role": "student", "class_id": "七年一班", "learner": "林小雨"}}
-```
-
-- 网页先要求输入访问码（保存在浏览器会话中，可以选择“记住我”）；所有 `/api` 请求都带 `Authorization: Bearer <访问码>`。
-- 学生只能看到自己的会话和任务，身份不能修改；老师只能操作本班的数据；旧版示例课程和全局报表接口被禁用。
-- 账号文件修改后立即生效，不必重启；文件读取失败时接口返回 503，不会放行。
-- 每个接口的检查都写在路由里（`interfaces/access.py` 的 `Guard`），`tests/test_access.py` 会检查有没有遗漏的路由。
-
-## 接口
-
-完整字段见 `/docs`。写入接口都带 `request_id`（重复提交返回同一结果）和可选的 `version`（版本冲突返回 409）；模型不可用时返回 503，可以用相同的 `request_id` 重试。
-
-| 接口 | 用途 |
-|---|---|
-| `POST /api/sessions` | 开始会话（`learner` 加 `assignment_id` / `followup_id`，或自定义 `task`、`material`、`image_url`） |
-| `GET /api/sessions/{sid}`、`POST /api/sessions/{sid}/{action}` | 读取会话；会话操作，见下表 |
-| `GET /api/learning/inbox`、`/learning/followups`、`/learning/next` | 学生的任务箱（不含参考答案）、复习与补救任务、学习路径的下一步 |
-| `POST /api/teacher/assignments`、`GET /api/teacher/assignments?class_id=` | 发布练习；本班练习列表（不含参考答案） |
-| `POST /api/teacher/packs`、`.../packs/generate`、`PUT .../packs/{id}`、`POST .../packs/{id}/publish` | 批量出题：保存、模型起草、编辑为新版本、审核发布 |
-| `GET /api/teacher/dashboard?class_id=` | 班级学情、待复核队列、已布置的任务 |
-| `GET /api/teacher/tasks/{sid}/attempts/{event_id}` | 一份作答的复核详情 |
-| `POST .../attempts/{event_id}/reviews`、`.../corrections` | 确认原判定；改判（依赖它的证据连带失效） |
-| `GET /api/teacher/sessions/{sid}/trace`、`/replay` | 教学轨迹；不调用模型的策略回放 |
-| `POST /api/teacher/paths`、`POST /api/teacher/followups`、`PATCH /api/teacher/followups/{id}` | 学习顺序；布置复习与补救；延期或撤销 |
-| `GET /api/me`、`/api/meta`、`/api/teacher/classes` | 当前账号；教学类型、评分项类型、模型与知识点库状态；已有班级 |
-| `POST /api/materials/extract` | 上传 .txt / .md / 文字版 PDF，返回文字 |
-| `POST /api/teacher/algebra/preview`、`GET /api/teacher/knowledge/suggest`、`/knowledge/nodes/{id}` | 核对代数验证绑定；知识点推荐；知识点详情 |
-
-| action | 用途 |
-|---|---|
-| `attempt` | 提交作答 |
-| `reply` | 回答追问（不算作答证据） |
-| `hint` / `explain` | 请求下一级提示 / 完整讲解 |
-| `check` / `resume_practice` | 开始独立检查 / 回到原任务 |
-| `image` / `confirm` / `confirm_task` | 上传作答照片 / 确认识别文字 / 确认题目照片 |
-
-会话数据中，每一轮都有 `action`（策略决定的动作）和 `delivered_action`（学生实际收到的回复类型）。两者不同，说明候选回复没通过审核，被服务器的兜底句或模板替换了。
+- 不设密钥也能启动，可以查看已有数据；需要模型的按钮会提示“未配置模型”。
+- 数据在 `data/edu.sqlite`。目前是单人本地工具，没有账号，只应监听 127.0.0.1。
+- 页面怎么用见[使用说明](docs/TEACHER_AGENT_GUIDE.md)。
 
 ## 配置
 
 | 环境变量 | 默认 | 作用 |
 |---|---|---|
-| `OMNIEDU_BASE_URL` / `OMNIEDU_MODEL` | `http://127.0.0.1:8000/v1` / `omniedu-9b` | 主模型 |
-| `OMNIEDU_REVIEW_BASE_URL` / `OMNIEDU_REVIEW_MODEL` | 未设置 / `qwen3.5-27b` | 设置后开启交叉复核 |
-| `OMNIEDU_POLICY` | `open-task-policy-v4` | 教学策略，可选 v1–v5；旧轨迹按原版本回放 |
-| `OMNIEDU_PROMPT_STYLE` | `mixed` | `mixed`：评分和知识点调用用 OmniEdu 训练时的系统指令；`omniedu`：全部调用都用；`harness`：全部用自写提示词 |
-| `OMNIEDU_JSON_SCHEMA` | `1` | 结构化输出使用 `json_schema` 约束解码 |
-| `OMNIEDU_IMAGE_MAX_SIDE` | `1536` | 图片缩放后的最长边像素 |
-| `HARNESS_DB` / `OMNIEDU_KNOWLEDGE_DB` | `data/learning.sqlite` / `data/knowledge.sqlite` | 数据库路径 |
-| `HARNESS_ACCOUNTS_FILE` | 未设置 | 设置后进入班级模式 |
+| `EDU_LLM_API_KEY` | 无 | 网关密钥 |
+| `EDU_LLM_BASE_URL` | `https://lightingtheword.com/v1` | OpenAI 兼容网关 |
+| `EDU_MODEL_GENERATOR` / `_GRADER` / `_ANALYST` | `DeepSeek-V4.1-Flash` | 备课与出题、批改、学情分析 |
+| `EDU_MODEL_REVIEWER` | `qwen3.8-flash` | 失分判定盲审、出题独立解题与题目审核、满分抽检 |
+| `EDU_AUDIT_RATE` | `0.05` | 判满分的作答被抽检的比例 |
+| `EDU_AB_RATE` | `0.2` | 没勾选 A/B 时自动出两版的比例 |
+| `EDU_MAX_TOKENS` | `6000` | 单次输出上限（推理模型的思考也占输出 token，太小会返回空内容） |
+| `EDU_CONCURRENCY` | `8` | 批改、自检的并发数 |
+| `EDU_DB` | `data/edu.sqlite` | 数据库路径 |
 
-推理服务参数在 `service-config.json`：vLLM 0.23.0，GPU 1，BF16，上下文 32768，最多 32 路并发，显存 60%。
-
-## 架构
-
-建议的阅读顺序：`app.py` → `interfaces/api.py` → `core/open_engine.py`。
+## 代码结构
 
 ```text
-harness/
-├── app.py            # 应用组装：API 加上静态页面
-├── interfaces/       # HTTP 接口、逐路由权限、静态网页（static/）
-├── core/             # 会话调度、状态类型、任务协议与教学策略、证据、记忆、证据依赖
-├── grading/          # 作答评分、分项评分、代数验证
-├── teaching/         # 练习、复核与改判、学习路径与跟进、批量出题
-├── resources/        # 知识点库、图片、材料与检索
-├── llm/              # 模型客户端、提示词
-├── persistence/      # SQLite 事务与模型调用重放
-└── legacy/           # 早期固定代数课程（只为兼容旧会话保留）
+edu_core/              # 教师端核心，不依赖 Web 框架
+├── workflow.py        # Workspace：01–05 各阶段的业务流程、提示词、“下一步”
+├── artifacts.py       # 产物：版本、确认、上游引用、依据已变化
+├── context.py         # 每类任务的上下文白名单与“已参考”
+├── grading.py         # 逐要点批改、引用核对、复核、抽检
+├── tools.py           # 确定性核对：选项、判断、数值与单位、代数式、化学方程式
+├── subjects.py        # 10 个学科包：题型、判定方式、错误标签
+├── curriculum/        # 课程标准条目（10 个学科的 JSON）与匹配、等级检查
+├── llm.py             # 网关客户端：结构化输出、校验、一次修复
+├── storage.py         # SQLite（WAL）表结构与事务
+├── config.py、text.py
+edu_app/               # FastAPI 接口与单页前端（static/：index.html、app.js、app.css）
+scripts/edu_*.py       # 课标构建、真实模型冒烟测试、批改评测
+tests/test_edu_*.py    # 教师端测试（脚本化假模型）
+harness/               # 学生端 harness（v0.10，已冻结）
 ```
 
-| 模块 | 职责 |
-|---|---|
-| `core/open_engine.py` | 会话生命周期、操作调度、事务与幂等；组合各功能 mixin |
-| `core/state.py` | 会话状态的类型定义（`SessionState`、`Turn`），所有状态字段集中说明 |
-| `core/tasks.py` | 任务协议、教学策略 v1–v5（纯函数） |
-| `core/evidence.py` | 原文引用核对、学生可见字段、复核风险、固定反馈模板 |
-| `core/dependencies.py` | 证据依赖表：记录每一轮引用了哪些会话的证据，改判时沿依赖传播失效 |
-| `core/memory.py` | 从事件重建跨会话的学习记录和复习间隔 |
-| `core/engine_feedback.py`、`grading/engine_grading.py` | 回复生成、审核、重写与兜底；作答与分项评分、交叉复核 |
-| `grading/assessment.py`、`grading/criteria.py`、`grading/algebra.py` | 判定聚合、分项评分器、代数验证 |
-| `teaching/engine_teacher.py`、`teacher.py` | 练习、班级学情、轨迹回放、复核与改判 |
-| `teaching/engine_planning.py`、`planning.py` | 学习顺序、复习与补救任务、任务箱 |
-| `teaching/engine_preparation.py`、`preparation.py` | 练习包的生成、编辑与发布 |
-| `resources/` | 知识点库与打标、图片规范化与存储、PDF 提取、材料切块与 BM25 检索 |
-| `llm/open_model.py`、`llm/model.py`、`llm/omniedu_prompts.py` | 模型调用（评分、回复、审核、翻译）、结构化输出、系统指令 |
-| `persistence/storage.py`、`persistence/replay.py` | WAL 读快照事务；快照过期时重算，复用已完成的模型调用 |
-| `interfaces/access.py`、`interfaces/api.py` | 班级模式账号与逐路由权限；请求协议、路由、错误码 |
-| `interfaces/static/` | `common.js`（API、转义、图标、登录）、`student.js`、`teacher.js`、`app.css` |
-| `core/gateway.py` | 按会话类型路由到开放任务引擎或旧示例课程引擎 |
-
-几个关键设计：
-
-- **事务与并发**：每个操作在 SQLite WAL 的读快照里计算，调用模型时不持有任何锁，写入都放在最后。如果期间有其他操作提交，SQLite 拒绝在过期的快照上写入，系统就带着已有的模型结果重算一次，不会重复调用模型。规则是“事务中不能先写库、再调用模型”，违反会触发 `WriteBeforeModelCall` 警告，测试中视为错误。
-- **证据失效**：每一轮生成上下文时引用了哪些会话的证据，都记在 `evidence_dependencies` 表里；老师改判时沿这张表找到所有受影响的会话。
-- **权限**：每个 API 路由都显式调用 `Guard` 的检查，没有集中的路径匹配规则。
-- **提示与讲解的把关**：每一级提示的标准写成一份规则（`llm/open_model.py` 的 `HINT_RULES`），写作和复核共用。程序另外检查：提示不得出现最终数值，不得用题目里的数字替学生列式；数值题的讲解必须出现最终答案。配置了复核模型时，提示和讲解由复核模型把关，被否决后也由它重写；模型的提示都被否决时，发出对应级别的服务器模板，阶梯不会中断。
-- **功能 mixin**：各功能 mixin 使用 `OpenEngine` 的事务、模型和会话方法，不各自创建运行时；API 通过传入的 `get_engine` 获取运行时。启动入口是 `harness.app:app`。
+模块职责、数据模型、各阶段流程和接口列表见[开发参考](docs/DEVELOPER_REFERENCE.md)。
 
 ## 开发与测试
 
 ```bash
-.envs/harness/bin/python -m pytest -q tests          # 自动化测试：假模型、临时数据库，约 6 秒
-ruff check harness tests && ruff format --check .    # 代码风格（配置在 pyproject.toml）
+.envs/harness/bin/python -m pytest -q tests     # 全部测试（教师端 + 学生端），假模型、临时数据库，约 7 秒
+EDU_LLM_API_KEY=... .envs/harness/bin/python scripts/edu_smoke.py --db /tmp/edu-smoke.sqlite   # 真实模型走一遍闭环
+EDU_LLM_API_KEY=... .envs/harness/bin/python scripts/edu_eval_grading.py \
+  --data bench/data/stepverify-zh.jsonl --out reports/edu/grading-stepverify-zh.json            # 批改准确性评测
+.envs/harness/bin/python scripts/edu_build_curriculum.py <subject> <课标 PDF>                     # 重新生成课标条目
 ```
 
-浏览器检查（需要 Playwright 和 Chromium）：
-
-```bash
-# 不需要 GPU：脚本化模型，桌面和手机尺寸走一遍主要流程，有页面脚本错误或横向溢出就失败
-.envs/harness/bin/python scripts/ui_preview.py --port 7862 &
-python scripts/capture_ui.py --url http://127.0.0.1:7862 --out docs/screenshots
-
-# 真实模型验收：先用临时数据库在 7861 端口启动独立服务，再运行（不要用正式库）
-HARNESS_DB=/tmp/edu-audit/learning.sqlite OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1 \
-  .envs/harness/bin/python -m uvicorn harness.app:app --host 127.0.0.1 --port 7861
-python scripts/capture_functional_audit.py --url http://127.0.0.1:7861
-```
-
-真实模型脚本回归、提示阶梯与讲解的重复评测、存储性能测量：
-
-```bash
-PYTHONPATH=scripts .envs/harness/bin/python scripts/teaching_v071_e2e.py   # 只需主模型
-PYTHONPATH=scripts .envs/harness/bin/python scripts/teaching_v08_e2e.py    # 需要 27B 复核模型
-OMNIEDU_REVIEW_BASE_URL=http://127.0.0.1:8002/v1 .envs/harness/bin/python scripts/eval_hint_ladder.py --repeats 4
-.envs/harness/bin/python scripts/bench_storage.py --learners 1000 --db /tmp/bench/big.sqlite
-.envs/harness/bin/python scripts/bench_storage.py --db /tmp/bench/big.sqlite --concurrent 40
-```
-
-对照评测需要裁判（`service.py start judge`，GPU 3）和基线模型（`start baseline`，GPU 4）：
-
-```bash
-.envs/harness/bin/python scripts/benchmark.py correctness correctness-zh correctness-multi response \
-  --systems raw-baseline,raw-omniedu,raw-baseline-ref,raw-omniedu-ref,harness-omniedu,harness-omniedu-xr
-.envs/harness/bin/python scripts/benchmark.py dialogue --persona gamer --limit 40 \
-  --systems raw-baseline,raw-omniedu,harness-omniedu
-.envs/harness/bin/python scripts/eval_knowledge.py   # 知识点打标（需要 references/k12-kgraph/ 下的图谱和 K12-Bench 文件）
-```
-
-模拟学生类型：`cooperative`（配合）、`persistent`（坚持错误）、`gamer`（索要答案）、`disengaged`（敷衍）。报告写入 `reports/benchmark/`。中文和五科判定集由 `bench/build_data.py` 生成，已存于 `bench/data/`。
+批改评测（中文数学 392 份，DeepSeek 主判、qwen 复核）：错误解答判为正确 3.1%，正确解答判为错误 0.5%，转老师 5.1%。这个数据集是翻译的小学应用题，不能代表高中各科。
 
 ## 已知限制
 
-**教学行为**
-- 提示质量依赖复核模型：开启复核时，第二级提示约一半到三分之二是服务器模板（模型写的被否决）；只用 9B 时，解释类题目的提示可能直接给出结论，程序检查拦不住，**正式使用建议开启交叉复核**（见[功能与测试记录第 5 节](docs/FEATURES_AND_TESTS.md#5-提示阶梯与完整讲解的修复)）。
-- 讲解是否完整，只有数值题有程序检查；解释类题目靠复核判断。
-- 复习间隔是 1/3/7/14/30 天的固定规则，掌握情况没有概率估计（没有用 BKT、IRT、FSRS）。
+- **没有真实教师的使用评估**；各阶段的效果来自单元测试、真实模型抽查和浏览器走查。
+- **课标匹配靠关键词**：课标没有出现老师用的词时（如生物课标写“叶绿体捕获光能”，不写“光合作用”），自动匹配会弱，需要老师自己勾选或搜索；“要求高于课标”的检查只认识“了解/知道/理解/掌握”一类用词。课标只收必修和选择性必修。
+- **题目审核和独立解题依赖另一个模型**：画图、多问类题目容易被误标“答案存疑”。
+- **作答只能导入文字（CSV）**：不支持拍照作答和整张试卷照片切题。
+- **单人本地工具**：没有账号和班级权限；SQLite 只适合单机单进程。
+- 和 coursemaker 的对接还没有做（计划见[设计文档第 12 节](docs/TEACHER_AGENT_DESIGN.md)）。
 
-**验证**
-- 没有真实教师盲评或课堂试验；对话评测依赖模拟学生，而模拟学生的有效性本身有争议（见[调研文档](docs/EDU_HARNESS_RESEARCH.md)）。
+## 学生端 harness（已冻结）
 
-**内容与功能**
-- 知识点库只有人教版数理化生，没有语文、英语和其他版本；打标“至少命中一个”约 80%。
-- PDF 只支持文字版，扫描件要按图片上传；检索是 BM25，没有向量检索。
-- 没有批量批改拍照作业、学情讲评、组卷等教师功能；编程题没有运行学生代码的沙箱。
-- 班级模式用访问码登录，没有账号管理界面，访问码需要手工写入账号文件。
+`harness/` 是之前给 OmniEdu-9B 做的学生端教学 harness（v0.10，标签 `v0.10-student`）：学生作答由确定性工具和模型（必须引用原文）判定，教学动作由纯函数策略决定，回复经审核后发出，老师可以复核改判。主要结果：错误解答被判为正确从裸模型的 35–77% 降到 1.5–2.0%。完整说明、部署方式和评测见 [docs/STUDENT_HARNESS.md](docs/STUDENT_HARNESS.md)。
 
-**部署**
-- 存储是 SQLite（WAL 模式），只适合单机单进程部署：WAL 依赖共享内存文件，多台机器同时访问共享盘上的同一个库是不安全的，那种部署需要换 PostgreSQL。
-- 请求同步等待模型；任何一次提交都会让同时进行的其他操作重算一次（复用模型结果，只花毫秒级时间）。40 名学生同时提交已验证可用，更大规模未验证。
+## 相关文档
 
-## 环境、许可与相关文档
+**教师工作台**
+- [docs/DEVELOPER_REFERENCE.md](docs/DEVELOPER_REFERENCE.md)：开发参考（最新）：架构、数据模型、各阶段流程、提示词与校验、课程标准、接口、测试。
+- [docs/TEACHER_AGENT_GUIDE.md](docs/TEACHER_AGENT_GUIDE.md)：使用说明与验收记录。
+- [docs/TEACHER_AGENT_DESIGN.md](docs/TEACHER_AGENT_DESIGN.md)：设计文档（决策背景、模型选型、评测计划，以及各次迭代的设计记录）。
 
-**环境与模型**
-- 模型：`lhpku20010120/Omni-Edu-9B`，revision `7fda599d16f5c7aff770e2869450684c8e4d72f0`，BF16，存于 `models/Omni-Edu-9B`。下载：`HF_ENDPOINT=https://hf-mirror.com .envs/harness/bin/python scripts/download_model.py`。
-- 应用环境 `.envs/harness`（Python 3.11）。依赖列在 `pyproject.toml`；`requirements-harness.lock` 是 v0.9 时生成的，其中还有已经不再使用的 Gradio，尚未重新生成。
-- 推理环境 `.envs/vllm`（Python 3.12，`requirements-vllm.lock`），用 `scripts/bootstrap_vllm.sh` 重建。vLLM 通过 `/usr/local/cuda-13.0/compat` 在 550 驱动上运行，不改系统驱动。
-- 后备推理：`.envs/inference` 中的 Transformers 服务，`scripts/service.py start inference --backend transformers`（使用 GPU 1、2）。
-- 旧库中的内联图片可以用 `scripts/migrate_images.py --apply` 迁移为文件（会先自动备份）。
-
-**许可**
-- OmniEdu 模型：Apache-2.0，可商用。
-- K12-KGraph（知识点库数据）：CC BY-NC-SA 4.0，**只能用于研究和非商业教学**；数据和导入后的库文件不进仓库。
-- 评测使用的公开数据集（MRBench、StepVerify、MathTutorBench 等）按各自的许可使用。
-
-**相关文档**
-- [docs/FEATURES_AND_TESTS.md](docs/FEATURES_AND_TESTS.md)：当前版本的功能说明，以及真实模型与浏览器验收记录。
+**学生端 harness 与调研**
+- [docs/STUDENT_HARNESS.md](docs/STUDENT_HARNESS.md)：学生端 harness 的完整说明（原 README）。
+- [docs/FEATURES_AND_TESTS.md](docs/FEATURES_AND_TESTS.md)：学生端的功能说明，以及真实模型与浏览器验收记录。
+- [docs/DESIGN_OVERVIEW.md](docs/DESIGN_OVERVIEW.md)：设计思路（讲解用）：为什么需要 harness、如何设计、教学系统如何设计、如何辅助教学。
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：系统架构（技术参考），分 harness 和交互系统（后端、前端）两部分说明实现。
+- [docs/HARNESS_AND_TEACHING_SYSTEM.md](docs/HARNESS_AND_TEACHING_SYSTEM.md)：harness 与教学辅助系统的区别和联系，以及本项目的定位。
 - [docs/EDU_HARNESS_RESEARCH.md](docs/EDU_HARNESS_RESEARCH.md)：教育模型 harness 的作用、相关研究与开源实现、本项目的改进方向。
-- [HARNESS_REVIEW.md](HARNESS_REVIEW.md)：评估报告、逐项处理状态和全部评测结果。
+- [HARNESS_REVIEW.md](HARNESS_REVIEW.md)：学生端评估报告、逐项处理状态和全部评测结果。
 - [CHANGELOG.md](CHANGELOG.md)：各版本的更新说明。
 - [REFERENCES.txt](REFERENCES.txt)：设计参考的开源项目来源。
-- [docs/archive/FEATURES_AND_TESTS-v0.9.md](docs/archive/FEATURES_AND_TESTS-v0.9.md)：v0.9（Gradio 界面）时期的验收记录。

@@ -558,3 +558,25 @@ def test_adopt_solver_answer_and_regenerate_one_question(ws):
     ws.confirm(new['id'], change_kind='substantive')  # question and rubric confirmed together
     after = {x['lineage_id']: x for x in ws.questions(p['id'], round_=1)}[q['lineage_id']]
     assert after['status'] == 'confirmed' and after['rubric']['status'] == 'confirmed'
+
+
+def test_generation_sees_activities_standards_and_carried_over_status(ws):
+    p, q = setup_round_one(ws)
+    sent = [c for c in ws.llm.calls if c['task'] == 'generate_questions'][-1]
+    user = sent['user']
+    assert user['课堂活动'][0] == {'活动': '复习定义域', '用时': '5 分钟', '做法': '口答', '对应目标序号': [0]}
+    assert user['课标条目'] and all(x['原文'] for x in user['课标条目'])
+    assert '备课备注' in user and '上一课时学情' not in user
+    assert '课堂活动' in sent['system'] and '上一课时学情' in sent['system']
+
+    pid = p['id']
+    ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    ws.confirm(ws.analyze(pid)['patterns'][0]['id'])
+    nxt = ws.next_lesson(pid)
+    ws.confirm(ws.draft_lesson_plan(nxt['id'])['lesson_plan']['id'])
+    gen = ws.generate_questions(nxt['id'], types=['calculation'], count=1, ab=False)
+    user = [c for c in ws.llm.calls if c['task'] == 'generate_questions'][-1]['user']
+    assert user['上一课时学情']['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域'
+    assert '上一课时学情' in gen['context_note']

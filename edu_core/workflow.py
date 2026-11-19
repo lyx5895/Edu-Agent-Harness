@@ -162,12 +162,15 @@ GENERATE_SYSTEM = """你是高中{subject}命题老师，根据已确认的教�
    - 填空题：answer_key 填标准答案，accepted 填其他可接受的写法。
    - 其他题型：answer_key 填空字符串，accepted 填空列表。
 4. 最终结果是数值的要点可以设 check_kind=numeric，check_expected 写带单位的最终结果（如 “15 km/h”）；代数式结果设 algebra；化学方程式设 chem_equation；其他填 none 且 check_expected 填空字符串。
-5. 题目要原创，不要照抄材料中的原题。options 只在选择题中填写，每个选项不要带字母前缀；其他题型填空列表。{variant}
+5. 题目要原创，不要照抄材料中的原题。options 只在选择题中填写，每个选项不要带字母前缀；其他题型填空列表。
+6. 题目考查的内容以“本课时内容”和“课标条目”为准，对学生的要求不高于课标用词，不出课标没有要求的难题、技巧题、偏题怪题；学生之前学过的知识和方法可以作为工具使用。
+7. 练习用途是课堂练习时，结合“课堂活动”的安排出题，让题目能在对应的活动中使用；“备课备注”中的提醒也要遵守。
+8. 如果输入里有“上一课时学情”，其中“再练情况”显示仍有人出错或还没有再练结果的问题，应安排 1 道巩固题，挂在最相关的本课目标下，并在题目中自然地用到这个易错点；巩固题不要占多数。{variant}
 只输出 JSON。"""
 
 VARIANTS = {
     'a': '',
-    'b': '\n6. 本次请优先设计贴近真实情境的题目，并尽量从不同角度考查同一目标。',
+    'b': '\n9. 本次请优先设计贴近真实情境的题目，并尽量从不同角度考查同一目标。',
 }
 
 PRACTICE_SYSTEM = """你是高中{subject}老师，针对已确认的学生问题模式出巩固练习题。
@@ -188,7 +191,7 @@ IMPORT_SYSTEM = """你是高中{subject}教研员。老师提供了一份现成�
 只输出 JSON。"""
 
 QUALITY_SYSTEM = """你是高中{subject}教研员，审核一道练习题。只根据输入判断，不改写题目。
-1. tests_objective：这道题是否真正考查了给出的教学目标、能用来判断它的达成标准；不是时在 objective_note 说明它实际考的是什么，是则填空字符串。
+1. tests_objective：这道题考查的是不是给出的教学目标。一道题只需检验目标的一部分，不要求单独满足达成标准里的题量或组数；只有考的是别的内容时才填 false，并在 objective_note 说明它实际考的是什么，否则填空字符串。
 2. in_scope：本课考查的新内容是否在“本课时内容”和“课标条目”的范围内，对学生的要求没有高于课标用词。学生之前已经学过的知识和方法（初中内容、本课之前的高中内容，如解一元二次不等式）可以作为工具使用，不算超出；只有用到本课之后才学的内容、课标没有要求的内容或技巧，才算超出。超出时在 scope_note 写明超出的地方，否则填空字符串。没有给出本课时内容和课标条目时，按教学目标判断。
 3. difficulty：结合学生基础估计难度。基础＝直接用概念或公式一两步可得；中等＝需要几步推理或简单综合；较难＝多步综合、需要转化，或有容易忽略的陷阱。
 4. issues：题目本身的问题，例如条件不足或矛盾、有多个正确答案、选项设计有误、表述有歧义、参考答案或评分要点与题目不符；没有就填空列表。每条一句话。
@@ -943,10 +946,13 @@ class Workspace:
             ctx.add_other('project', pid)
             ctx.add_artifact(plan)
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
-            hints = []
+            hints, standards = [], []
             if cited:
-                hints = [it['text'] for it in CUR.context(p['subject'], cited, self._curriculum_query(p))['hints']]
+                std = CUR.context(p['subject'], cited, self._curriculum_query(p))
+                hints = [it['text'] for it in std['hints']]
+                standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
                 ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
+            carry = self._carryover_for_prompt(ctx, p)
             goal_list = [
                 {'index': i, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
                 for i, o in enumerate(objs)
@@ -963,7 +969,11 @@ class Workspace:
                 '本课重点': plan['content'].get('key_points', []),
                 '本课难点': plan['content'].get('difficulties', []),
                 '本课时内容': p.get('lesson_scope', ''),
+                '课标条目': standards,
                 '课标教学提示': hints,
+                '课堂活动': self._activities_for_prompt(plan, objs),
+                '备课备注': plan['content'].get('notes', ''),
+                **({'上一课时学情': carry} if carry else {}),
                 '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
@@ -999,7 +1009,7 @@ class Workspace:
                     pid,
                     meta,
                     ctx.manifest,
-                    'generate-v1',
+                    'generate-v3',
                     group=group,
                     position=position if group else None,
                     variant=variant,
@@ -1141,7 +1151,7 @@ class Workspace:
             checks = dict(checks)
             metas = checks.pop('_metas', [])
             manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
-            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v1') for m in metas]
+            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v2') for m in metas]
             obj = objs[d.objective_index] if 0 <= d.objective_index < len(objs) else None
             pattern = patterns[d.target_pattern_index] if 0 <= d.target_pattern_index < len(patterns) else None
             content = _question_content(
@@ -1274,6 +1284,35 @@ class Workspace:
             'context_note': describe(ctx.manifest),
         }
 
+    @staticmethod
+    def _activities_for_prompt(plan, objs):
+        """课堂活动 of the plan, with the objective numbers as the generator sees them (index into its goal list)."""
+        index = {o['lineage_id']: i for i, o in enumerate(objs)}
+        return [
+            {
+                '活动': a['name'],
+                '用时': f'{a.get("minutes", 0)} 分钟',
+                '做法': a.get('description', ''),
+                '对应目标序号': [index[x] for x in a.get('objective_ids', []) if x in index],
+            }
+            for a in plan['content'].get('activities', [])
+        ]
+
+    @staticmethod
+    def _carryover_for_prompt(ctx, p):
+        """上一课时学情 for a lesson created by 进入下一课时: problem patterns with their re-practice result."""
+        if not p.get('carryover'):
+            return None
+        carry = json.loads(p['carryover'])
+        ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
+        return {
+            '学情概述': carry['summary'],
+            '问题模式': [
+                {'名称': x['name'], '描述': x['description'], '涉及人数': x['affected'], '再练情况': x['after_practice']}
+                for x in carry['patterns']
+            ],
+        }
+
     def coverage(self, pid, round_=1):
         """目标覆盖: how many questions each confirmed objective has in a round, and how many need a look."""
         with self.store.read() as c:
@@ -1341,6 +1380,12 @@ class Workspace:
             ctx.add_other('project', pid)
             if plan:
                 ctx.add_artifact(plan)
+            cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
+            standards = []
+            if cited:
+                data = CUR.load(p['subject'])
+                standards = [{'位置': data['by_id'][i]['label'], '原文': data['by_id'][i]['text']} for i in cited if i in data['by_id']]
+                ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
         difficulty = difficulty or q['content'].get('difficulty_requested') or '中等'
         qtype = q['content']['type']
         system = GENERATE_SYSTEM.format(
@@ -1356,6 +1401,7 @@ class Workspace:
                 ],
                 '针对的问题': pattern or '',
                 '本课时内容': p.get('lesson_scope', ''),
+                '课标条目': standards,
                 '学生基础': p.get('learner_profile', ''),
                 '每个目标出题数': 1,
                 '难度': difficulty,
@@ -1373,7 +1419,7 @@ class Workspace:
             gid = record_generation(c, pid, meta, ctx.manifest, 'regenerate-v1')
             metas = checks.pop('_metas', [])
             manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
-            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v1') for m in metas]
+            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v2') for m in metas]
             content = _question_content(
                 d, q['content']['no'], q['round'], q['content'].get('objective_ids', []), q['content'].get('target_patterns', [])
             )

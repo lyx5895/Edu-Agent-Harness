@@ -8,7 +8,7 @@ generation and is also what the UI shows as "已参考", so the note always matc
 from edu_core.artifacts import TYPES
 
 WHITELIST = {
-    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum'},
+    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum', 'carryover'},
     'import_paper': {'project', 'material'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},
