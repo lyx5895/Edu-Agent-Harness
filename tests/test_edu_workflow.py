@@ -61,6 +61,45 @@ HANDLERS = {
     'grade': judge_points(RULES),
     'review': judge_points(RULES),
     'analyze': analyze,
+    'draft_lesson_plan': lambda r, p: {
+        'key_points': ['真数大于零'],
+        'difficulties': ['取交集'],
+        'activities': [
+            {'name': '复习定义域', 'minutes': 5, 'description': '口答', 'objective_index': 0},
+            {'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 9},
+        ],
+        'notes': '',
+    },
+    'draft_review': lambda r, p: {
+        'focus': ['先写定义域'],
+        'sections': [
+            {
+                'pattern_index': 0,
+                'title': '别忘了真数大于零',
+                'key_steps': ['写出 x-1>0', '利用单调性', '取交集'],
+                'typical_quote': p['问题模式'][0]['学生原文'][0][:8],
+                'error_analysis': '直接去掉对数，漏了定义域。',
+                'follow_up': ['为什么要先写 x-1>0？'],
+            },
+            {
+                'pattern_index': 0,
+                'title': '编造的引用',
+                'key_steps': [],
+                'typical_quote': '学生根本没写过这句',
+                'error_analysis': '…',
+                'follow_up': [],
+            },
+            {
+                'pattern_index': 7,
+                'title': '不存在的模式',
+                'key_steps': [],
+                'typical_quote': '',
+                'error_analysis': '',
+                'follow_up': [],
+            },
+        ],
+        'closing': '下节课再练。',
+    },
 }
 
 
@@ -237,7 +276,7 @@ def test_next_step_guides_through_the_workflow(ws):
     [step] = ws.overview(pid)['next']
     assert step == {
         'label': '添加课程材料',
-        'tab': 'objectives',
+        'tab': 'prep',
         'target': '#material-text',
         'hint': step['hint'],
     }  # no material yet: not "draft objectives"
@@ -246,7 +285,8 @@ def test_next_step_guides_through_the_workflow(ws):
     obj = ws.draft_objectives(pid)['objectives'][0]
     assert ws.overview(pid)['next'][0]['label'] == '确认教学目标'
     ws.confirm(obj['id'])
-    assert ws.overview(pid)['next'][0]['target'] == '#generate-questions'
+    steps = ws.overview(pid)['next']
+    assert [x['target'] for x in steps] == ['#generate-questions', '#draft-lesson-plan']  # lesson plan is optional
 
     # The subject was picked wrong; it can still change because there is no question yet.
     assert ws.update_project(pid, subject='数学')['subject'] == 'math'
@@ -265,3 +305,56 @@ def test_next_step_guides_through_the_workflow(ws):
     assert ws.overview(pid)['next'][0]['target'] == '#confirm-auto'  # graded but not confirmed yet
     ws.confirm_gradings(pid)
     assert ws.overview(pid)['next'][0]['target'] == '#analyze'
+
+
+def test_lesson_plan_review_and_second_round(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    plan = ws.draft_lesson_plan(pid)
+    acts = plan['lesson_plan']['content']['activities']
+    assert acts[0]['objective_lineage'] and acts[1]['objective_lineage'] is None  # out-of-range index dropped
+    assert '教学目标' in plan['context_note']
+
+    ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    out = ws.analyze(pid)
+    assert ws.overview(pid)['next'][0]['label'] == '确认问题模式'
+    with pytest.raises(Conflict):
+        ws.draft_review(pid)  # patterns must be confirmed first
+    pattern = out['patterns'][0]
+    ws.confirm(pattern['id'])
+    assert ws.overview(pid)['next'][0] == {
+        'label': '定位讲解重点，准备讲评',
+        'tab': 'review',
+        'target': '#draft-review',
+        'hint': '',
+    }
+
+    review = ws.draft_review(pid)['review_plan']
+    sections = review['content']['sections']
+    assert [x['title'] for x in sections] == ['别忘了真数大于零', '编造的引用']  # unknown pattern dropped
+    assert sections[0]['typical_quote'] and sections[0]['typical_source']['question_no'] == 1  # verified quote
+    assert sections[1]['typical_quote'] == '' and sections[1]['quote_rejected']  # fabricated quote removed
+    assert review['content']['dropped'] == ['不存在的模式']
+    assert ws.overview(pid)['next'][0]['label'] == '确认讲评稿'
+    ws.confirm(review['id'])
+    assert ws.overview(pid)['next'][0]['target'] == '#practice'
+
+    # 讲评后再练 → back to 出题改题 as round 2, with the confirmed review focus in context
+    prac = ws.practice(pid)
+    assert prac['round'] == 2 and '讲评稿第 1 版（已确认）' in prac['context_note']
+    assert any(c['task'] == 'practice' and c['user']['讲评重点'] == ['先写定义域'] for c in ws.llm.calls)
+    step = ws.overview(pid)['next'][0]
+    assert step['label'] == '确认题目（第 2 轮）' and step['tab'] == 'questions'
+    ws.confirm(prac['questions'][0]['id'])
+    assert ws.overview(pid)['next'][0]['label'] == '导入学生作答（第 2 轮）'
+    ws.import_submissions(pid, '甲,1,定义域 x>2，所以 2<x<11\n乙,1,x>2 所以 2<x<11', round_=2)
+    ws.grade_round(pid, round_=2)
+    ws.confirm_gradings(pid, round_=2)
+    assert ws.overview(pid)['next'][0]['label'] == '汇总批改结果（第 2 轮）'
+    ws.analyze(pid, round_=2)  # round 2 reuses or adds patterns
+    labels = [x['label'] for x in ws.overview(pid)['next']]
+    assert labels[0] == '对比第 1、2 轮'
+    cmp = ws.compare(pid, 1, 2)  # still finds round-1 pattern versions after round 2 analysis
+    assert cmp['content']['patterns'][0]['name'] == '解对数不等式时遗漏定义域'

@@ -90,3 +90,10 @@ th { color: var(--muted); font-weight: 500; }
 #edit-project { margin-top: 6px; }
 @keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 30%, 70% { box-shadow: 0 0 0 4px var(--warn); } }
 .flash { animation: flash 1.6s ease-in-out 1; border-radius: 8px; }
+
+.tabs .num { font-weight: 700; margin-right: 6px; opacity: .75; }
+.tabs .aside { margin-left: auto; border-style: dashed; }
+.stage { margin: 0 0 10px; font-size: 14px; color: var(--accent); font-weight: 600; }
+.stage .flow { font-weight: 400; color: var(--muted); margin-left: 8px; font-size: 13px; }
+.lines { margin: 4px 0 8px 18px; padding: 0; font-size: 14px; }
+.lines li { margin: 2px 0; }

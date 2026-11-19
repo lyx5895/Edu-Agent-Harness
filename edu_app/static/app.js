@@ -1,10 +1,10 @@
 'use strict';
 
-const S = { meta: null, pid: null, overview: null, tab: 'objectives', subject: null };
+const S = { meta: null, pid: null, overview: null, tab: 'prep', subject: null };
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const TYPE_LABEL = { objective: '教学目标', question: '题目', rubric: '评分标准', submission: '学生作答', grading: '批改', analysis: '学情分析', problem_pattern: '问题模式', comparison: '两轮对比' };
+const TYPE_LABEL = { objective: '教学目标', question: '题目', rubric: '评分标准', submission: '学生作答', grading: '批改', analysis: '学情分析', problem_pattern: '问题模式', comparison: '两轮对比', lesson_plan: '教学安排', review_plan: '讲评稿' };
 const RISK_LABEL = {
   undetermined_point: '有未判定要点', review_disagreement: '复核模型意见不同', audit_disagreement: '抽检发现分歧',
   writing_needs_confirmation: '写作建议分待确认', ungrounded_quote: '引用无法核对', low_confidence: '模型没把握',
@@ -138,8 +138,8 @@ function renderOverview() {
   if (!$('#project-edit').classList.contains('hidden')) renderProjectEdit();
   const banner = $('#stale-banner');
   const parts = [];
-  if (o.stale.length) parts.push(`有 ${o.stale.length} 个产物的依据已变化（上游有实质修改），请到“⑥ 过期与导出”处理。`);
-  if (o.pending_ab.length) parts.push(`有 ${o.pending_ab.length} 组 A/B 候选题等待选择（在“② 出题改题”）。`);
+  if (o.stale.length) parts.push(`有 ${o.stale.length} 个产物的依据已变化（上游有实质修改），请到“记录与导出”处理。`);
+  if (o.pending_ab.length) parts.push(`有 ${o.pending_ab.length} 组 A/B 候选题等待选择（在“02 出题改题”）。`);
   banner.innerHTML = parts.map(esc).join('<br>');
   banner.classList.toggle('hidden', !parts.length);
 }
@@ -147,7 +147,7 @@ function renderOverview() {
 async function renderTab() {
   $$('#tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === S.tab));
   $$('.tab').forEach((t) => t.classList.toggle('hidden', t.id !== `tab-${S.tab}`));
-  const fn = { objectives: renderObjectives, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, practice: renderPractice, records: renderRecords }[S.tab];
+  const fn = { prep: renderPrep, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, review: renderReview, records: renderRecords }[S.tab];
   try { await fn(); } catch (e) { toast(e.message, true); }
 }
 
@@ -179,9 +179,9 @@ function renderProjectEdit() {
     <div class="wide"><button data-act="save-project">保存</button> <button class="secondary" data-act="close-project-edit">取消</button></div></div>`;
 }
 
-// ---------- ① materials & objectives ----------
+// ---------- 01 备课设计 ----------
 
-async function renderObjectives() {
+async function renderPrep() {
   const [mats, objs] = await Promise.all([
     api('GET', `/api/projects/${S.pid}/materials`),
     api('GET', `/api/projects/${S.pid}/artifacts?type=objective`),
@@ -190,7 +190,9 @@ async function renderObjectives() {
     ? mats.map((m) => `<div class="item"><div class="item-head"><b>${esc(m.filename)}</b><span class="pill">${m.chars} 字 · 材料家族 ${esc(m.family_id.slice(-6))}</span></div><div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div></div>`).join('')
     : '<div class="empty">还没有材料。添加教材、讲义或教案后，可以按材料起草教学目标。</div>';
   $('#objectives').innerHTML = objs.length ? objs.map(objectiveItem).join('') : '<div class="empty">还没有教学目标。</div>';
-  if (!mats.length) $('#tab-objectives details').open = true;  // a new project starts by adding material
+  if (!mats.length) $('#tab-prep details').open = true;  // a new project starts by adding material
+  const plans = await api('GET', `/api/projects/${S.pid}/lesson-plans`);
+  $('#lesson-plan').innerHTML = plans.length ? plans.map(lessonPlanItem).join('') : '<div class="empty">还没有安排。确认教学目标后可以按目标安排重点、难点和课堂活动。</div>';
 }
 
 function objectiveItem(a) {
@@ -213,7 +215,7 @@ function objectiveForm(c = {}) {
     <div class="item-actions"><button class="small" data-act="save-objective">保存为新版本</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
 }
 
-// ---------- ② questions ----------
+// ---------- 02 出题改题 ----------
 
 async function renderQuestions() {
   fillRoundSelect('#q-round');
@@ -312,7 +314,7 @@ function readQuestionForm(area) {
   return { question, rubric: { points } };
 }
 
-// ---------- ③ grading ----------
+// ---------- 03 作业批改 ----------
 
 async function renderGrading() {
   fillRoundSelect('#g-round');
@@ -371,7 +373,7 @@ function queueItem(g) {
   </div>`;
 }
 
-// ---------- ④ analysis ----------
+// ---------- 04 学情分析 ----------
 
 async function renderAnalysis() {
   fillRoundSelect('#a-round');
@@ -385,6 +387,11 @@ async function renderAnalysis() {
     $('#analysis').innerHTML = analysisView(latest, detail.context_note);
   }
   $('#patterns').innerHTML = patterns.length ? patterns.map(patternItem).join('') : '<div class="empty">还没有问题模式。</div>';
+  const comps = await api('GET', `/api/projects/${S.pid}/comparisons`);
+  const latestCmp = comps[comps.length - 1];
+  $('#comparison').innerHTML = latestCmp ? comparisonView(latestCmp) : '<div class="empty">还没有对比结果。需要先有“讲评后再练”的一轮批改。</div>';
+  const r = S.overview.latest_round || 1;
+  if (r > 1) { $('#cmp-a').value = r - 1; $('#cmp-b').value = r; }
 }
 
 function analysisView(a, note) {
@@ -418,16 +425,78 @@ function patternItem(p) {
     <div class="edit-area"></div></div>`;
 }
 
-// ---------- ⑤ practice & comparison ----------
+// ---------- 01 lesson plan ----------
 
-async function renderPractice() {
-  const [patterns, comps] = await Promise.all([api('GET', `/api/projects/${S.pid}/patterns`), api('GET', `/api/projects/${S.pid}/comparisons`)]);
-  const confirmed = patterns.filter((p) => p.confirmed_version);
-  $('#practice-patterns').innerHTML = confirmed.length
-    ? confirmed.map((p) => `<label><input type="checkbox" value="${p.lineage_id}" checked> ${esc(p.content.name)}（${p.content.affected_learners.length} 人）</label>`).join('')
-    : '<div class="empty">还没有已确认的问题模式（在“④ 学情分析”中确认）。</div>';
-  const latest = comps[comps.length - 1];
-  $('#comparison').innerHTML = latest ? comparisonView(latest) : '<div class="empty">还没有对比结果。</div>';
+const lines = (xs) => (xs && xs.length ? `<ul class="lines">${xs.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '<div class="kv">（无）</div>');
+
+function lessonPlanItem(a) {
+  const c = a.content;
+  const total = (c.activities || []).reduce((n, x) => n + (Number(x.minutes) || 0), 0);
+  return `<div class="item" data-id="${a.id}">
+    <div class="item-head"><div><b>教学安排</b></div><div>${statusPill(a)}</div></div>
+    <h4>重点</h4>${lines(c.key_points)}<h4>难点</h4>${lines(c.difficulties)}
+    <h4>课堂活动（共 ${total} 分钟）</h4>
+    <table><tr><th>活动</th><th>用时</th><th>做法</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td></tr>`).join('')}</table>
+    ${c.notes ? `<div class="kv">提醒：${esc(c.notes)}</div>` : ''}
+    <div class="item-actions"><button class="small secondary" data-act="edit-lesson-plan">编辑</button>
+      ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认</button>` : ''}</div>
+    <div class="edit-area"></div></div>`;
+}
+
+function lessonPlanForm(c) {
+  const acts = (c.activities || []).map((x) => `${x.name}｜${x.minutes}｜${x.description}`).join('\n');
+  return `<div class="edit-grid">
+    <label>重点（每行一条）<textarea class="f-key" rows="3">${esc((c.key_points || []).join('\n'))}</textarea></label>
+    <label>难点（每行一条）<textarea class="f-diff" rows="2">${esc((c.difficulties || []).join('\n'))}</textarea></label>
+    <label>课堂活动（每行：名称｜分钟｜做法）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
+    <label>提醒<input class="f-notes" value="${esc(c.notes || '')}"></label>
+    <div class="item-actions"><button class="small" data-act="save-lesson-plan">保存为新版本</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
+}
+
+// ---------- 05 讲题答疑 ----------
+
+async function renderReview() {
+  fillRoundSelect('#r-round');
+  const round = Number($('#r-round').value || S.overview.latest_round || 1);
+  const [patterns, plans] = await Promise.all([
+    api('GET', `/api/projects/${S.pid}/patterns`),
+    api('GET', `/api/projects/${S.pid}/review-plans?round=${round}`),
+  ]);
+  const confirmed = patterns.filter((p) => p.confirmed_version && (p.content.round || 1) === round);
+  $('#review-patterns').innerHTML = confirmed.length
+    ? '<span class="label">针对这些问题模式：</span>' + confirmed.map((p) => `<label><input type="checkbox" value="${p.lineage_id}" checked> ${esc(p.content.name)}（${p.content.affected_learners.length}/${p.content.total_learners} 人）</label>`).join('')
+    : '<div class="empty">这一轮还没有已确认的问题模式（在“04 学情分析”中确认）。</div>';
+  $('#review-plans').innerHTML = plans.length ? plans.map(reviewItem).join('') : '<div class="empty">这一轮还没有讲评稿。</div>';
+}
+
+function reviewItem(a) {
+  const c = a.content;
+  return `<div class="item" data-id="${a.id}">
+    <div class="item-head"><div><b>第 ${c.round} 轮讲评稿</b></div><div>${statusPill(a)}</div></div>
+    <h4>讲解重点</h4>${lines(c.focus)}
+    ${c.sections.map((x, i) => `<div class="item">
+      <b>${i + 1}. ${esc(x.title)}</b> <span class="pill">${esc(x.pattern_name)}</span>
+      <h4>关键步骤</h4>${lines(x.key_steps)}
+      <h4>典型错误辨析</h4>
+      ${x.typical_quote ? `<div class="quote">${esc(x.typical_quote)}</div><div class="kv">学生原文（第 ${x.typical_source.question_no} 题），已核对</div>` : (x.quote_rejected ? '<div class="kv">模型给的“典型错误”不是学生原文，已去掉</div>' : '')}
+      <div class="kv">${esc(x.error_analysis)}</div>
+      <h4>课堂追问</h4>${lines(x.follow_up)}</div>`).join('')}
+    ${c.closing ? `<div class="kv">${esc(c.closing)}</div>` : ''}
+    <div class="item-actions"><button class="small secondary" data-act="edit-review">编辑</button>
+      ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认</button>` : ''}</div>
+    <div class="edit-area"></div></div>`;
+}
+
+function reviewForm(c) {
+  return `<div class="edit-grid">
+    <label>讲解重点（每行一条）<textarea class="f-focus" rows="3">${esc((c.focus || []).join('\n'))}</textarea></label>
+    ${c.sections.map((x, i) => `<div class="item f-section" data-i="${i}"><b>${i + 1}. ${esc(x.pattern_name)}</b>
+      <label>标题<input class="f-title" value="${esc(x.title)}"></label>
+      <label>关键步骤（每行一条）<textarea class="f-steps" rows="3">${esc(x.key_steps.join('\n'))}</textarea></label>
+      <label>典型错误辨析<textarea class="f-analysis" rows="3">${esc(x.error_analysis)}</textarea></label>
+      <label>课堂追问（每行一条）<textarea class="f-follow" rows="2">${esc(x.follow_up.join('\n'))}</textarea></label></div>`).join('')}
+    <label>总结<textarea class="f-closing" rows="2">${esc(c.closing || '')}</textarea></label>
+    <div class="item-actions"><button class="small" data-act="save-review">保存为新版本</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
 }
 
 function comparisonView(a) {
@@ -439,7 +508,7 @@ function comparisonView(a) {
       <td>${list(r.improved)}</td><td>${list(r.persisting)}</td><td>${list(r.new)}</td><td>${list(r.not_retested)}</td></tr>`).join('')}</table>`;
 }
 
-// ---------- ⑥ stale & export ----------
+// ---------- 记录与导出 ----------
 
 async function renderRecords() {
   const stale = await api('GET', `/api/projects/${S.pid}/stale`);
@@ -552,12 +621,22 @@ function bindEvents() {
     showNote(r.context_note); toast(r.patterns.length ? `归纳出 ${r.patterns.length} 个问题模式，请核对确认` : '分析完成'); await refresh();
   }));
   $('#practice').addEventListener('click', (e) => busy(e.target, '出题与自检中…', async () => {
-    const ids = $$('#practice-patterns input:checked').map((i) => i.value);
-    const r = await api('POST', `/api/projects/${S.pid}/practice`, { pattern_ids: ids, count: Number($('#p-count').value) });
+    const ids = $$('#review-patterns input:checked').map((i) => i.value);
+    const r = await api('POST', `/api/projects/${S.pid}/practice`, { pattern_ids: ids, count: Number($('#p-count').value), round: Number($('#r-round').value || 1) });
     showNote(r.context_note);
-    toast(`第 ${r.round} 轮巩固练习：${r.questions.length} 道题，请到“② 出题改题”确认` + ((r.dropped || []).length ? `；丢弃 ${r.dropped.length} 道：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0);
+    toast(`第 ${r.round} 轮再练题：${r.questions.length} 道，请在“02 出题改题”中确认` + ((r.dropped || []).length ? `；丢弃 ${r.dropped.length} 道：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0);
     S.showRound = r.round; S.tab = 'questions'; await refresh();
   }));
+  $('#draft-lesson-plan').addEventListener('click', (e) => busy(e.target, '安排中…', async () => {
+    const r = await api('POST', `/api/projects/${S.pid}/lesson-plan/draft`);
+    showNote(r.context_note); toast('已按目标安排重点与课堂活动，请核对后确认'); await refresh();
+  }));
+  $('#draft-review').addEventListener('click', (e) => busy(e.target, '生成中…', async () => {
+    const ids = $$('#review-patterns input:checked').map((i) => i.value);
+    const r = await api('POST', `/api/projects/${S.pid}/review/draft`, { round: Number($('#r-round').value || 1), pattern_ids: ids });
+    showNote(r.context_note); toast('讲评稿已生成，请核对后确认'); await refresh();
+  }));
+  $('#r-round').addEventListener('change', renderTab);
   $('#compare').addEventListener('click', (e) => busy(e.target, '对比中…', async () => {
     await api('POST', `/api/projects/${S.pid}/compare`, { round_a: Number($('#cmp-a').value), round_b: Number($('#cmp-b').value) });
     await refresh();
@@ -681,6 +760,37 @@ async function onAction(e) {
         toast('已保存为草稿'); await refresh();
       });
       break;
+    case 'edit-lesson-plan':
+    case 'edit-review': {
+      const a = await api('GET', `/api/artifacts/${item.dataset.id}`);
+      $('.edit-area', item).innerHTML = act === 'edit-review' ? reviewForm(a.content) : lessonPlanForm(a.content);
+      break;
+    }
+    case 'save-lesson-plan': {
+      const split = (v) => v.split('\n').map((x) => x.trim()).filter(Boolean);
+      const activities = split($('.f-acts', item).value).map((line) => {
+        const [name, minutes, ...rest] = line.split(/[｜|]/);
+        return { name: (name || '').trim(), minutes: Number(minutes) || 0, description: rest.join('｜').trim() };
+      });
+      await busy(btn, '保存中…', async () => {
+        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { key_points: split($('.f-key', item).value), difficulties: split($('.f-diff', item).value), activities, notes: $('.f-notes', item).value } });
+        toast('已保存为草稿，确认后生效'); await refresh();
+      });
+      break;
+    }
+    case 'save-review': {
+      const split = (v) => v.split('\n').map((x) => x.trim()).filter(Boolean);
+      await busy(btn, '保存中…', async () => {
+        const a = await api('GET', `/api/artifacts/${item.dataset.id}`);
+        const sections = a.content.sections.map((x, i) => {
+          const box = $(`.f-section[data-i="${i}"]`, item);
+          return { ...x, title: $('.f-title', box).value, key_steps: split($('.f-steps', box).value), error_analysis: $('.f-analysis', box).value, follow_up: split($('.f-follow', box).value) };
+        });
+        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { focus: split($('.f-focus', item).value), sections, closing: $('.f-closing', item).value } });
+        toast('已保存为草稿，确认后生效'); await refresh();
+      });
+      break;
+    }
     case 'save-project':
       await busy(btn, '保存中…', async () => {
         const box = $('#project-edit');

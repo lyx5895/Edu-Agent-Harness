@@ -104,6 +104,35 @@ class Pitfall(BaseModel):
     question_nos: list[int]
 
 
+class Activity(BaseModel):
+    name: str = Field(max_length=60)
+    minutes: int = Field(ge=0, le=90)
+    description: str = Field(max_length=400)
+    objective_index: int
+
+
+class LessonPlanOutput(BaseModel):
+    key_points: list[str]
+    difficulties: list[str]
+    activities: list[Activity]
+    notes: str = Field(max_length=600)
+
+
+class ReviewSection(BaseModel):
+    pattern_index: int
+    title: str = Field(max_length=80)
+    key_steps: list[str]
+    typical_quote: str = Field(max_length=300)
+    error_analysis: str = Field(max_length=800)
+    follow_up: list[str]
+
+
+class ReviewOutput(BaseModel):
+    focus: list[str]
+    sections: list[ReviewSection]
+    closing: str = Field(max_length=600)
+
+
 class PitfallOutput(BaseModel):
     pitfalls: list[Pitfall]
 
@@ -160,6 +189,20 @@ ANALYZE_SYSTEM = """你是高中{subject}教研员，根据已确认的批改结
    面向老师的文字（summary、description、why）不要出现 E1 这样的证据编号，用学生代号或题号指代。
 5. summary 用两三句话概括本轮学情，不写泛泛的教学建议。
 只输出 JSON。"""
+
+LESSON_PLAN_SYSTEM = """你是经验丰富的高中{subject}教师，根据已确认的教学目标安排这节课的重点难点和课堂活动。
+要求：
+1. key_points 写本课重点（2 到 4 条），difficulties 写学生容易卡住的难点（1 到 3 条），都要具体到本课内容。
+2. activities 按课堂顺序安排 3 到 6 个活动，写明名称、用时（分钟）、做法；objective_index 指向对应目标的序号（从 0 开始），没有对应目标填 -1。总用时不超过一节课（约 40 到 45 分钟）。
+3. notes 写需要提醒老师的事项，没有就填空字符串。
+不要超出教学目标和材料的范围。只输出 JSON。"""
+
+REVIEW_SYSTEM = """你是高中{subject}教师，根据已确认的学情分析为下一节课准备针对性的讲评。
+要求：
+1. focus 按讲解先后列出本次讲评的重点（2 到 4 条）。
+2. sections 每个问题模式一节：pattern_index 是输入中问题模式的序号（从 0 开始）；key_steps 写这类题的关键步骤和每一步的依据；typical_quote 从该问题模式的“学生原文”中逐字复制一段作为典型错误（没有合适的就填空字符串）；error_analysis 说明这段作答错在哪里、为什么会这样错、怎样避免；follow_up 写 2 到 3 个课堂追问，用来检查学生是否真正理解。
+3. closing 写一段简短的总结或过渡。
+4. 面向学生讲解，不点名批评，不出现学生代号。只输出 JSON。"""
 
 PITFALL_SYSTEM = """你是高中{subject}教研员。目前还没有学生作答，请根据题目和评分要点列出学生“可能出现的易错点”。
 这些只是预判，不是本班学情结论。question_nos 填相关题号。只输出 JSON。"""
@@ -229,54 +272,70 @@ def _step(label, tab, target, hint=''):
     return {'label': label, 'tab': tab, 'target': target, 'hint': hint}
 
 
-def next_steps(counts, materials, learners, queue, pending_ab, stale):
-    """What the teacher should do next, in workflow order. Pending choices and stale results come first."""
+def next_steps(st):
+    """What the teacher should do next, following the loop 备课设计 → 出题改题 → 作业批改 → 学情分析 → 讲题答疑 → 讲评后再练.
+
+    ``st`` carries project-level counts and the counts of the latest round ``r``; later rounds restart at 出题改题.
+    Pending A/B choices and stale results come first.
+    """
     steps = []
-    if pending_ab:
+    if st['pending_ab']:
         steps.append(_step('选择 A/B 候选题', 'questions', '#ab-panel', '先在两版候选题中选一版'))
-    if stale:
-        steps.append(_step('处理依据已变化的产物', 'records', '#stale-list', f'{len(stale)} 个产物的上游有实质修改'))
-    c = counts
+    if st['stale']:
+        steps.append(
+            _step('处理依据已变化的产物', 'records', '#stale-list', f'{len(st["stale"])} 个产物的上游有实质修改')
+        )
+    c, rc, r = st['counts'], st['round'], st['r']
+    label_r = f'（第 {r} 轮）' if r > 1 else ''
     if not c['objective']['confirmed']:
         if c['objective']['total']:
-            steps.append(_step('确认教学目标', 'objectives', '#objectives', '编辑后点“确认”，确认过的目标才会用于出题'))
-        elif not materials:
+            steps.append(_step('确认教学目标', 'prep', '#objectives', '编辑后点“确认”，确认过的目标才会用于出题'))
+        elif not st['materials']:
             steps.append(
                 _step(
                     '添加课程材料',
-                    'objectives',
+                    'prep',
                     '#material-text',
                     '粘贴或上传教材、讲义、教案，再按材料起草目标；也可以手工添加目标',
                 )
             )
         else:
-            steps.append(_step('起草教学目标', 'objectives', '#draft-objectives', '按已添加的材料起草，之后可以编辑'))
-    elif not c['question']['confirmed']:
-        if c['question']['total']:
-            steps.append(_step('确认题目', 'questions', '#questions', '核对题目、答案和评分要点后确认'))
+            steps.append(_step('起草教学目标', 'prep', '#draft-objectives', '按已添加的材料起草，之后可以编辑'))
+        return steps
+    if not rc['question']['confirmed']:
+        if rc['question']['total']:
+            steps.append(_step('确认题目' + label_r, 'questions', '#questions', '核对题目、答案和评分要点后确认'))
         else:
-            steps.append(
-                _step('按本课目标出题', 'questions', '#generate-questions', '也可以导入现成试卷或手工添加题目')
-            )
-    elif not c['submission']['total']:
-        if not learners:
+            steps.append(_step('按目标出题', 'questions', '#generate-questions', '也可以导入现成试卷或手工添加题目'))
+            if r == 1 and not c['lesson_plan']['total']:
+                steps.append(_step('安排重点与课堂活动（可跳过）', 'prep', '#draft-lesson-plan'))
+        return steps
+    if not rc['submission']['total']:
+        if not st['learners']:
             steps.append(_step('添加学生名单', 'grading', '#roster', '每行一个学生代号，不要写真实姓名'))
         else:
-            steps.append(_step('导入学生作答', 'grading', '#sub-csv', '每行：学生代号,题号,作答'))
-    elif c['grading']['total'] < c['submission']['total']:
-        steps.append(_step('批改作答', 'grading', '#grade-round'))
-    elif queue:
-        steps.append(_step('处理复核队列', 'grading', '#queue', f'{queue} 份批改需要老师判定'))
-    elif c['grading']['confirmed'] < c['grading']['total']:
+            steps.append(_step('导入学生作答' + label_r, 'grading', '#sub-csv', '每行：学生代号,题号,作答'))
+    elif rc['grading']['total'] < rc['submission']['total']:
+        steps.append(_step('依据标准批改' + label_r, 'grading', '#grade-round'))
+    elif st['queue']:
+        steps.append(_step('处理复核队列', 'grading', '#queue', f'{st["queue"]} 份批改需要老师判定'))
+    elif rc['grading']['confirmed'] < rc['grading']['total']:
         steps.append(_step('确认批改', 'grading', '#confirm-auto', '复核队列以外的批改可以批量确认'))
-    elif not c['analysis']['total']:
-        steps.append(_step('汇总学情', 'analysis', '#analyze'))
-    elif not c['problem_pattern']['confirmed'] and c['problem_pattern']['total']:
-        steps.append(_step('确认问题模式', 'analysis', '#patterns', '确认后才能针对它出巩固练习'))
-    elif c['problem_pattern']['confirmed']:
-        steps.append(_step('生成巩固练习', 'practice', '#practice'))
+    elif not rc['analysis']['total']:
+        steps.append(_step('汇总批改结果' + label_r, 'analysis', '#analyze'))
     else:
-        steps.append(_step('查看学情分析', 'analysis', '#analysis'))
+        if r > 1 and not rc['comparison']['total']:
+            steps.append(_step(f'对比第 {r - 1}、{r} 轮', 'analysis', '#compare', '看讲评和再练之后问题是否还在'))
+        if rc['problem_pattern']['total'] and not rc['problem_pattern']['confirmed']:
+            steps.append(_step('确认问题模式', 'analysis', '#patterns', '确认后才能据此准备讲评'))
+        elif not rc['problem_pattern']['confirmed']:
+            steps.append(_step('查看学情分析', 'analysis', '#analysis', '这一轮没有归纳出需要讲评的问题'))
+        elif not rc['review_plan']['total']:
+            steps.append(_step('定位讲解重点，准备讲评', 'review', '#draft-review'))
+        elif not rc['review_plan']['confirmed']:
+            steps.append(_step('确认讲评稿', 'review', '#review-plans', '编辑后确认'))
+        else:
+            steps.append(_step('讲评后再练', 'review', '#practice', '针对这些问题出一轮再练题，回到出题改题'))
     return steps
 
 
@@ -1348,33 +1407,214 @@ class Workspace:
         with self.store.read() as c:
             return A.current(c, pid, 'problem_pattern')
 
-    # ----- practice and comparison -----
+    # ----- 01 lesson plan (重点难点与课堂活动) -----
+
+    def draft_lesson_plan(self, pid):
+        llm = self._model()
+        with self.store.read() as c:
+            p = self._project(c, pid)
+            objs = self._confirmed_objectives(c, pid)
+            if not objs:
+                raise Conflict('请先确认教学目标，再安排重点与课堂活动')
+            ctx = Context('draft_lesson_plan')
+            ctx.add_other('project', pid)
+            goals = [{'index': i, '目标': ctx.add_artifact(o)['text']} for i, o in enumerate(objs)]
+            materials = self._material_context(c, ctx, pid, limit=6000)
+            prior = next(iter(A.current(c, pid, 'lesson_plan')), None)
+        user = _json(
+            {
+                '学科': p['pack']['name'],
+                '年级': p['grade'],
+                '老师说明': p['notes'],
+                '教学目标': goals,
+                '材料': materials,
+            }
+        )
+        out, meta = llm.complete(
+            'generator',
+            'draft_lesson_plan',
+            LESSON_PLAN_SYSTEM.format(subject=p['pack']['name']),
+            user,
+            LessonPlanOutput,
+        )
+        content = {
+            'key_points': [x for x in out.key_points if x.strip()],
+            'difficulties': [x for x in out.difficulties if x.strip()],
+            'activities': [
+                {
+                    **a.model_dump(exclude={'objective_index'}),
+                    'objective_lineage': objs[a.objective_index]['lineage_id']
+                    if 0 <= a.objective_index < len(objs)
+                    else None,
+                }
+                for a in out.activities
+            ],
+            'notes': out.notes,
+        }
+        with self.store.tx() as c:
+            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v1')
+            plan = A.create(
+                c,
+                pid,
+                'lesson_plan',
+                content,
+                origin='generated',
+                refs=ctx.refs(),
+                generation_id=gid,
+                lineage_id=prior['lineage_id'] if prior else None,
+            )
+        return {'lesson_plan': plan, 'context_note': describe(ctx.manifest)}
+
+    def lesson_plans(self, pid):
+        with self.store.read() as c:
+            return A.current(c, pid, 'lesson_plan')
+
+    # ----- 05 讲题答疑 -----
+
+    def _round_patterns(self, c, pid, round_):
+        """Confirmed problem patterns as they were in ``round_`` (a later round may add a newer version)."""
+        best = {}
+        for a in A.listing(c, pid, 'problem_pattern', statuses=('confirmed', 'superseded'), round_=round_):
+            if a['status'] == 'superseded' and not a['change_kind']:
+                continue  # a superseded draft was never adopted
+            if a['lineage_id'] not in best or a['version'] > best[a['lineage_id']]['version']:
+                best[a['lineage_id']] = a
+        return sorted(best.values(), key=lambda a: a['created_at'])
+
+    def draft_review(self, pid, round_=None, pattern_ids=None):
+        """讲评稿: focus, key steps, typical errors quoted from students, and follow-up questions per pattern."""
+        llm = self._model()
+        with self.store.read() as c:
+            p = self._project(c, pid)
+            round_ = round_ or self.max_round(pid)
+            pats = self._round_patterns(c, pid, round_)
+            if pattern_ids:
+                pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
+            if not pats:
+                raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
+            ctx = Context('draft_review')
+            ctx.add_other('project', pid)
+            goals = [ctx.add_artifact(o)['text'] for o in self._confirmed_objectives(c, pid)]
+            analyses = [a for a in A.current(c, pid, 'analysis', round_=round_)]
+            summary = ''
+            if analyses:
+                ctx.add_artifact(analyses[-1], require_confirmed=False)
+                summary = analyses[-1]['content'].get('summary', '')
+            nos = sorted({e['question_no'] for x in pats for e in x['content']['evidence']})
+            originals = []
+            for q in A.current(c, pid, 'question', round_=round_):
+                conf = A.confirmed_in_lineage(c, q['lineage_id'])
+                if conf and conf['content']['no'] in nos:
+                    rubric = self._rubric_for(c, q['lineage_id'])
+                    originals.append(
+                        {
+                            '题号': conf['content']['no'],
+                            '题目': ctx.add_artifact(conf)['stem'][:600],
+                            '参考答案': conf['content']['reference'][:600],
+                            '评分要点': [x['description'] for x in ctx.add_artifact(rubric)['points']]
+                            if rubric
+                            else [],
+                        }
+                    )
+            pat_list = [
+                {
+                    'index': i,
+                    '名称': ctx.add_artifact(x, require_confirmed=x['status'] == 'confirmed')['name'],
+                    '描述': x['content']['description'],
+                    '涉及人数': f'{len(x["content"]["affected_learners"])}/{x["content"]["total_learners"]}',
+                    '学生原文': [e['quote'] for e in x['content']['evidence'][:4]],
+                }
+                for i, x in enumerate(pats)
+            ]
+            prior = next(iter(A.current(c, pid, 'review_plan', round_=round_)), None)
+        user = _json(
+            {'学科': p['pack']['name'], '教学目标': goals, '学情概括': summary, '原题': originals, '问题模式': pat_list}
+        )
+        out, meta = llm.complete(
+            'generator', 'draft_review', REVIEW_SYSTEM.format(subject=p['pack']['name']), user, ReviewOutput
+        )
+        sections, dropped = [], []
+        for sec in out.sections:
+            if not 0 <= sec.pattern_index < len(pats):
+                dropped.append(sec.title)
+                continue
+            pat = pats[sec.pattern_index]
+            quote, source = '', None
+            if sec.typical_quote.strip():
+                for e in pat['content']['evidence']:
+                    found = verbatim_quote(sec.typical_quote, e['quote'])
+                    if found:
+                        quote, source = found, {'question_no': e['question_no'], 'point_id': e['point_id']}
+                        break
+            sections.append(
+                {
+                    'pattern_lineage': pat['lineage_id'],
+                    'pattern_name': pat['content']['name'],
+                    'title': sec.title,
+                    'key_steps': [x for x in sec.key_steps if x.strip()],
+                    'typical_quote': quote,
+                    'typical_source': source,
+                    'quote_rejected': bool(sec.typical_quote.strip()) and not quote,
+                    'error_analysis': sec.error_analysis,
+                    'follow_up': [x for x in sec.follow_up if x.strip()],
+                }
+            )
+        content = {
+            'round': round_,
+            'focus': out.focus,
+            'sections': sections,
+            'closing': out.closing,
+            'dropped': dropped,
+        }
+        with self.store.tx() as c:
+            gid = record_generation(c, pid, meta, ctx.manifest, 'review-plan-v1')
+            plan = A.create(
+                c,
+                pid,
+                'review_plan',
+                content,
+                origin='generated',
+                refs=ctx.refs(),
+                generation_id=gid,
+                round_=round_,
+                lineage_id=prior['lineage_id'] if prior else None,
+            )
+        return {'review_plan': plan, 'context_note': describe(ctx.manifest)}
+
+    def review_plans(self, pid, round_=None):
+        with self.store.read() as c:
+            return A.current(c, pid, 'review_plan', round_=round_)
+
+    # ----- 讲评后再练 and comparison -----
 
     def max_round(self, pid):
         with self.store.read() as c:
             return c.execute('SELECT COALESCE(MAX(round),1) FROM artifacts WHERE project_id=?', (pid,)).fetchone()[0]
 
-    def practice(self, pid, pattern_ids=None, count=1, types=None):
+    def practice(self, pid, pattern_ids=None, count=1, types=None, round_=None):
+        """讲评后再练: questions targeting the confirmed problem patterns of ``round_`` (default: latest), as a new round."""
         llm = self._model()
         with self.store.read() as c:
             p = self._project(c, pid)
-            pats = [
-                A.confirmed_in_lineage(c, x['lineage_id'])
-                for x in A.current(c, pid, 'problem_pattern')
-                if x['confirmed_version']
-            ]
+            round_ = round_ or self.max_round(pid)
+            pats = self._round_patterns(c, pid, round_)
             if pattern_ids:
                 pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
             if not pats:
-                raise Conflict('请先确认至少一个问题模式，再生成巩固练习')
+                raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
             ctx = Context('practice')
             ctx.add_other('project', pid)
+            review = next((r for r in A.current(c, pid, 'review_plan', round_=round_) if r['confirmed_version']), None)
+            review_focus = []
+            if review:
+                review = A.confirmed_in_lineage(c, review['lineage_id'])
+                review_focus = ctx.add_artifact(review)['focus']
             objs = self._confirmed_objectives(c, pid)
             goal_list = [{'index': i, '目标': ctx.add_artifact(o)['text']} for i, o in enumerate(objs)]
             pat_list = [
                 {
                     'index': i,
-                    '名称': ctx.add_artifact(x)['name'],
+                    '名称': ctx.add_artifact(x, require_confirmed=x['status'] == 'confirmed')['name'],
                     '描述': x['content']['description'],
                     '学生原文示例': [e['quote'] for e in x['content']['evidence'][:3]],
                 }
@@ -1382,7 +1622,7 @@ class Workspace:
             ]
             nos = sorted({e['question_no'] for x in pats for e in x['content']['evidence']})
             originals = []
-            for q in A.current(c, pid, 'question', round_=1):
+            for q in A.current(c, pid, 'question', round_=round_):
                 if q['confirmed_version'] and q['content']['no'] in nos:
                     conf = A.confirmed_in_lineage(c, q['lineage_id'])
                     originals.append({'题号': conf['content']['no'], '题目': ctx.add_artifact(conf)['stem'][:500]})
@@ -1399,6 +1639,7 @@ class Workspace:
                 '教学目标': goal_list,
                 '问题模式': pat_list,
                 '原题': originals,
+                '讲评重点': review_focus,
                 '每个问题模式出题数': max(1, min(int(count), 3)),
             }
         )
@@ -1414,12 +1655,7 @@ class Workspace:
 
     def compare(self, pid, round_a=1, round_b=2):
         with self.store.read() as c:
-            pats = [
-                A.confirmed_in_lineage(c, x['lineage_id'])
-                for x in A.current(c, pid, 'problem_pattern')
-                if x['confirmed_version']
-            ]
-            pats = [x for x in pats if x['content'].get('round', 1) == round_a]
+            pats = self._round_patterns(c, pid, round_a)
             gradings_b = [
                 A.confirmed_in_lineage(c, g['lineage_id'])
                 for g in A.current(c, pid, 'grading', round_=round_b)
@@ -1497,9 +1733,25 @@ class Workspace:
                     (pid,),
                 )
             ]
+            latest = max(rounds)
+            round_counts = {}
+            for t in A.TYPES:
+                items = A.current(c, pid, t, round_=latest)
+                round_counts[t] = {'total': len(items), 'confirmed': sum(1 for a in items if a['confirmed_version'])}
         stale = self.stale(pid)
         queue = sum(len(self.review_queue(pid, r)) for r in rounds)
-        nxt = next_steps(counts, mats, learners, queue, pending_ab, stale)
+        nxt = next_steps(
+            {
+                'counts': counts,
+                'round': round_counts,
+                'r': latest,
+                'materials': mats,
+                'learners': learners,
+                'queue': len(self.review_queue(pid, latest)),
+                'pending_ab': pending_ab,
+                'stale': stale,
+            }
+        )
         return {
             'project': p,
             'counts': counts,
@@ -1510,6 +1762,7 @@ class Workspace:
             'review_queue': queue,
             'pending_ab': pending_ab,
             'next': nxt,
+            'latest_round': latest,
         }
 
     def export(self, pid):

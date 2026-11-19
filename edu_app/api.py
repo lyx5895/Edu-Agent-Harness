@@ -104,6 +104,12 @@ class ConfirmGradings(BaseModel):
 class PracticeBody(BaseModel):
     pattern_ids: list[str] | None = None
     count: int = Field(default=1, ge=1, le=3)
+    round: int | None = None
+
+
+class ReviewBody(BaseModel):
+    round: int | None = None
+    pattern_ids: list[str] | None = None
 
 
 class CompareBody(BaseModel):
@@ -325,7 +331,23 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.post('/api/projects/{pid}/practice')
     def practice(pid: str, body: PracticeBody):
-        return ws().practice(pid, body.pattern_ids, body.count)
+        return ws().practice(pid, body.pattern_ids, body.count, round_=body.round)
+
+    @app.post('/api/projects/{pid}/lesson-plan/draft')
+    def draft_lesson_plan(pid: str):
+        return ws().draft_lesson_plan(pid)
+
+    @app.get('/api/projects/{pid}/lesson-plans')
+    def lesson_plans(pid: str):
+        return ws().lesson_plans(pid)
+
+    @app.post('/api/projects/{pid}/review/draft')
+    def draft_review(pid: str, body: ReviewBody):
+        return ws().draft_review(pid, body.round, body.pattern_ids)
+
+    @app.get('/api/projects/{pid}/review-plans')
+    def review_plans(pid: str, round: int | None = None):
+        return ws().review_plans(pid, round)
 
     @app.post('/api/projects/{pid}/compare')
     def compare(pid: str, body: CompareBody):

@@ -16,7 +16,9 @@ WHITELIST = {
     'review': {'question', 'rubric', 'submission'},
     'analyze': {'project', 'objective', 'question', 'rubric', 'grading', 'submission', 'problem_pattern'},
     'pitfalls': {'project', 'objective', 'question', 'rubric'},
-    'practice': {'project', 'objective', 'question', 'rubric', 'problem_pattern'},
+    'practice': {'project', 'objective', 'question', 'rubric', 'problem_pattern', 'review_plan'},
+    'draft_lesson_plan': {'project', 'material', 'objective'},
+    'draft_review': {'project', 'objective', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
 LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干'}

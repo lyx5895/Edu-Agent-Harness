@@ -17,6 +17,7 @@ from edu_core.text import dump, sha
 
 TYPES = {
     'objective': '教学目标',
+    'lesson_plan': '教学安排',
     'question': '题目',
     'rubric': '评分标准',
     'submission': '学生作答',
@@ -24,13 +25,14 @@ TYPES = {
     'analysis': '学情分析',
     'problem_pattern': '问题模式',
     'comparison': '两轮对比',
+    'review_plan': '讲评稿',
 }
 STATUSES = ('candidate', 'draft', 'confirmed', 'superseded')
 # Student work never becomes stale: it does not depend on how we graded it.
 NEVER_STALE = {'submission'}
 # Teacher-confirmed content can be flagged ("its basis changed") but the flag stops there; only derived
 # results (gradings, analyses, patterns, comparisons) carry it further downstream.
-STOP_PROPAGATION = {'objective', 'question', 'rubric'}
+STOP_PROPAGATION = {'objective', 'lesson_plan', 'question', 'rubric', 'review_plan'}
 
 
 class Conflict(ValueError):

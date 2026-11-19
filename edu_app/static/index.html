@@ -44,15 +44,16 @@
       <div id="context-note" class="banner info hidden"></div>
 
       <nav class="tabs" id="tabs">
-        <button data-tab="objectives" class="active">① 资料与目标</button>
-        <button data-tab="questions">② 出题改题</button>
-        <button data-tab="grading">③ 作答与批改</button>
-        <button data-tab="analysis">④ 学情分析</button>
-        <button data-tab="practice">⑤ 巩固与对比</button>
-        <button data-tab="records">⑥ 过期与导出</button>
+        <button data-tab="prep" class="active"><span class="num">01</span>备课设计</button>
+        <button data-tab="questions"><span class="num">02</span>出题改题</button>
+        <button data-tab="grading"><span class="num">03</span>作业批改</button>
+        <button data-tab="analysis"><span class="num">04</span>学情分析</button>
+        <button data-tab="review"><span class="num">05</span>讲题答疑</button>
+        <button data-tab="records" class="aside">记录与导出</button>
       </nav>
 
-      <div id="tab-objectives" class="tab">
+      <div id="tab-prep" class="tab">
+        <p class="stage">01 备课设计 · 明确教学目标，安排重点与课堂活动 <span class="flow">→ 确认后“按目标出题”</span></p>
         <div class="card">
           <h3>课程材料</h3>
           <div id="materials"></div>
@@ -66,14 +67,21 @@
         <div class="card">
           <div class="card-head"><h3>教学目标</h3>
             <div><button id="draft-objectives">按材料起草目标</button> <button id="add-objective" class="secondary">手工添加</button></div></div>
-          <p class="muted">只有确认过的目标才会传给出题步骤。</p>
+          <p class="muted">只有确认过的目标才会传给出题。</p>
           <div id="objectives"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>重点难点与课堂活动</h3>
+            <button id="draft-lesson-plan" class="secondary">按目标安排</button></div>
+          <p class="muted">可选。按已确认的目标安排本课重点、难点和课堂活动，可编辑后确认。</p>
+          <div id="lesson-plan"></div>
         </div>
       </div>
 
       <div id="tab-questions" class="tab hidden">
+        <p class="stage">02 出题改题 · 依据本课目标生成练习，同步答案与评分要点 <span class="flow">← 按目标出题 / 讲评后再练（新一轮）　→ 确认后“依据标准批改”</span></p>
         <div class="card">
-          <h3>按本课目标出题</h3>
+          <h3>按目标出题</h3>
           <div class="grid-form">
             <div class="wide"><span class="label">题型</span><div id="type-boxes" class="checks"></div></div>
             <label>每个目标出题数<input type="number" id="q-count" min="1" max="5" value="2"></label>
@@ -98,6 +106,7 @@
       </div>
 
       <div id="tab-grading" class="tab hidden">
+        <p class="stage">03 作业批改 · 对照标准批改实际作答，保留错误位置与教师修订 <span class="flow">→ 批改确认后“汇总批改结果”</span></p>
         <div class="card">
           <div class="card-head"><h3>学生名单与作答</h3><label>轮次 <select id="g-round"></select></label></div>
           <div class="two">
@@ -117,7 +126,7 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><h3>批改</h3>
+          <div class="card-head"><h3>依据标准批改</h3>
             <div><button id="grade-round">批改本轮作答</button> <button id="confirm-auto" class="secondary">批量确认（复核队列以外）</button></div></div>
           <p class="muted">选择、判断和能比对上答案的填空题由服务器直接判；其余按评分要点由模型判定并引用学生原文。模型判扣分时由另一家厂商的模型盲审复核，有分歧或没把握的进入复核队列。</p>
           <h4>复核队列 <span id="queue-count" class="pill"></span></h4>
@@ -128,39 +137,48 @@
       </div>
 
       <div id="tab-analysis" class="tab hidden">
+        <p class="stage">04 学情分析 · 汇总薄弱点与共性问题，确定需要重点讲解的内容 <span class="flow">→ 确认问题模式后“定位讲解重点”</span></p>
         <div class="card">
-          <div class="card-head"><h3>学情分析</h3>
+          <div class="card-head"><h3>汇总批改结果</h3>
             <div><label>轮次 <select id="a-round"></select></label> <button id="analyze">汇总学情</button></div></div>
           <p class="muted">统计由服务器计算；模型只给问题命名和归并，每个问题模式必须引用能核对的学生原文。没有作答时只输出“可能的易错点”。</p>
           <div id="analysis"></div>
         </div>
         <div class="card">
           <h3>问题模式</h3>
-          <p class="muted">确认后获得固定编号，巩固练习和下一轮对比都按它追踪。</p>
+          <p class="muted">确认后获得固定编号，讲评、再练和下一轮对比都按它追踪。</p>
           <div id="patterns"></div>
-        </div>
-      </div>
-
-      <div id="tab-practice" class="tab hidden">
-        <div class="card">
-          <h3>巩固练习</h3>
-          <p class="muted">针对已确认的问题模式出题，进入新的一轮。生成后到“② 出题改题”中选择对应轮次确认，再到“③ 作答与批改”导入第二轮作答。</p>
-          <div id="practice-patterns" class="checks"></div>
-          <div class="row"><label>每个问题模式出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
-            <button id="practice">生成巩固练习</button></div>
         </div>
         <div class="card">
           <h3>两轮对比</h3>
+          <p class="muted">讲评后再练的一轮批改确认后，对比同一批问题模式是否仍然出现。</p>
           <div class="row"><label>前一轮 <input type="number" id="cmp-a" value="1" min="1"></label>
             <label>后一轮 <input type="number" id="cmp-b" value="2" min="1"></label><button id="compare">对比</button></div>
           <div id="comparison"></div>
         </div>
       </div>
 
+      <div id="tab-review" class="tab hidden">
+        <p class="stage">05 讲题答疑 · 准备针对性的讲解与答疑，安排追问，检查学生理解 <span class="flow">← 定位讲解重点　→ 讲评后再练（回到 02，新一轮）</span></p>
+        <div class="card">
+          <div class="card-head"><h3>讲评稿</h3>
+            <div><label>依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>
+          <p class="muted">依据已确认的问题模式，生成讲解重点、关键步骤、典型错误辨析（引用学生原文，服务器核对）和课堂追问。可编辑后确认。</p>
+          <div id="review-patterns" class="checks"></div>
+          <div id="review-plans"></div>
+        </div>
+        <div class="card">
+          <h3>讲评后再练</h3>
+          <p class="muted">针对勾选的问题模式出一轮再练题（会参考已确认讲评稿的重点），生成后回到“02 出题改题”确认，再到“03 作业批改”导入新一轮作答。</p>
+          <div class="row"><label>每个问题模式出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
+            <button id="practice">生成再练题</button></div>
+        </div>
+      </div>
+
       <div id="tab-records" class="tab hidden">
         <div class="card">
           <h3>依据已变化的产物</h3>
-          <p class="muted">上游（题目、评分标准、批改）有实质修改后，引用旧版本的下游产物会列在这里。可以保留原结果，或重新生成后标记处理。</p>
+          <p class="muted">上游（目标、题目、评分标准、批改）有实质修改后，引用旧版本的下游产物会列在这里。可以保留原结果，或重新生成后标记处理。</p>
           <div id="stale-list"></div>
         </div>
         <div class="card">
