@@ -656,3 +656,40 @@ def test_photo_import_transcribes_then_imports_checked_text(ws):
     [sub] = ws.submissions(pid)
     assert sub['content']['source'] == 'photo' and sub['content']['photos'] == [name]
     assert ws.grade_round(pid)['graded'] == 1
+
+
+def test_analysis_counts_learners_by_evidence_and_reports_objectives(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    q2 = ws.create_question(
+        pid,
+        {'type': 'calculation', 'stem': '解不等式 log2(x-1) < 3（变式）', 'reference': '1<x<9', 'objective_ids': ['O1']},
+        {'points': [{'id': 'P1', 'description': '写出定义域 x>1', 'score': 2}, {'id': 'P2', 'description': '结论 1<x<9', 'score': 2}]},
+    )
+    ws.confirm(q2['id'])
+
+    def analyze_q1(role, payload):
+        group = next(g for g in payload['错误汇总'] if g['错误标签'].startswith('条件遗漏'))
+        ev = next(e for e in group['证据'] if e['题号'] == 1)
+        assert payload['目标达成'][0]['题号'] == [1, 2]
+        return {
+            'summary': '有人遗漏定义域。',
+            'patterns': [{'name': '第 1 题漏定义域', 'description': 'x', 'tags': [group['错误标签']],
+                          'evidence': [{'eid': ev['eid'], 'quote': ev['学生原文'][:6]}], 'existing_pattern': ''}],
+            'insufficient': [],
+        }
+
+    ws.llm.handlers['analyze'] = analyze_q1
+    ws.import_submissions(
+        pid,
+        '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9\n甲,2,x>1 所以 1<x<9\n乙,2,x<9\n丙,2,1<x<9',
+    )
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    out = ws.analyze(pid)
+    [pattern] = out['patterns']
+    # 丙 lost the same tag on question 2 only: no longer counted for a question-1 pattern
+    assert pattern['content']['affected_learners'] == ['乙']
+    [obj] = out['analysis']['content']['objective_stats']
+    assert obj['id'] == 'O1' and obj['题号'] == [1, 2]
+    assert obj['人数'] == 3 and obj['得分率'] == 0.5 and obj['全部得分人数'] == 1

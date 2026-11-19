@@ -567,7 +567,11 @@ function analysisView(a, note) {
   const stats = Object.entries(c.stats || {}).map(([no, s]) => `<tr><td>第 ${no} 题</td><td>${s['人数']}</td><td>${s['得分率'] == null ? '-' : Math.round(s['得分率'] * 100) + '%'}</td>
     <td>${Object.entries(s['要点得分率']).map(([k, v]) => `${k}：${v == null ? '-' : Math.round(v * 100) + '%'}`).join('；')}</td></tr>`).join('');
   const tags = Object.entries(c.tag_counts || {}).sort((a, b) => b[1] - a[1]).map(([t, n]) => `<span class="pill">${esc(t)} · ${n} 人</span>`).join(' ');
+  const pct = (v) => (v == null ? '-' : Math.round(v * 100) + '%');
+  const objs = (c.objective_stats || []).map((o) => `<tr><td>${esc(o.id)} ${esc(o['目标'])}</td><td>${o['题号'].length ? '第 ' + o['题号'].join('、') + ' 题' : '<span class="muted">没有题目</span>'}</td>
+    <td>${pct(o['得分率'])}</td><td>${o['人数'] ? `${o['全部得分人数']}/${o['人数']}` : '-'}</td></tr>`).join('');
   return `${head}<p>${esc(c.summary)}</p>
+    ${objs ? `<h4>目标达成</h4><table><tr><th>教学目标</th><th>对应题目</th><th>得分率</th><th>全部得分</th></tr>${objs}</table><h4>各题得分</h4>` : ''}
     <table><tr><th>题目</th><th>人数</th><th>得分率</th><th>各要点得分率</th></tr>${stats}</table>
     ${tags ? `<h4>失分标签（按涉及学生数）</h4>${tags}` : ''}
     ${(c.insufficient || []).length ? `<h4>证据不足，建议补查</h4>${c.insufficient.map((x) => `<div class="item"><b>${esc(x.question)}</b><div class="kv">${esc(x.why)}</div></div>`).join('')}` : ''}

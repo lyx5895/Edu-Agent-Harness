@@ -45,7 +45,8 @@ class AnalysisMixin:
             plan = self._plan(c, pid)
             if plan:
                 ctx.add_artifact(plan)
-            objectives = [g['content']['text'] for g in self._goals(plan)]
+            goals = self._goals(plan)
+            objectives = [g['content']['text'] for g in goals]
             q_view = []
             for q in questions:
                 ctx.add_artifact(q)
@@ -157,11 +158,13 @@ class AnalysisMixin:
             }
             for no, s in sorted(stats.items())
         }
+        objective_stats = _objective_stats(goals, questions, confirmed)
         if not evidence:
             content = {
                 'mode': 'evidence',
                 'round': round_,
                 'stats': stats_view,
+                'objective_stats': objective_stats,
                 'summary': '本轮所有已确认的批改都没有失分，没有可归纳的问题。',
                 'patterns': [],
                 'insufficient': [],
@@ -178,6 +181,9 @@ class AnalysisMixin:
                 '教学目标': objectives,
                 '题目': q_view,
                 '得分统计': stats_view,
+                '目标达成': [
+                    {k: o[k] for k in ('目标', '题号', '人数', '得分率', '全部得分人数')} for o in objective_stats
+                ],
                 '错误汇总': tag_summary,
                 '已有问题模式': existing,
             }
@@ -200,7 +206,13 @@ class AnalysisMixin:
                 dropped.append(pat.name)
                 continue
             tags = [t for t in pat.tags if t in by_tag]
-            affected = {v['learner'] for v in valid} | {evidence[e]['learner'] for t in tags for e in by_tag[t]}
+            # Learners the pattern cites, plus learners who lost the same rubric point of the same question with
+            # the same error tag (the model sees at most 10 quotes per tag). A tag alone is broader than a
+            # pattern (“条件遗漏” spans questions), so it no longer counts on its own.
+            same_point = {(v['question_no'], v['point_id'], v['tag']) for v in valid}
+            affected = {v['learner'] for v in valid} | {
+                e['learner'] for e in evidence.values() if (e['question_no'], e['point_id'], e['tag']) in same_point
+            }
             patterns.append(
                 {
                     'name': pat.name,
@@ -228,11 +240,12 @@ class AnalysisMixin:
                 }
             )
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'analyze-v1')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'analyze-v2')
             content = {
                 'mode': 'evidence',
                 'round': round_,
                 'stats': stats_view,
+                'objective_stats': objective_stats,
                 'summary': out.summary,
                 'insufficient': [x.model_dump() for x in out.insufficient],
                 'dropped_patterns': dropped,
@@ -270,3 +283,33 @@ class AnalysisMixin:
     def patterns(self, pid):
         with self.store.read() as c:
             return A.current(c, pid, 'problem_pattern')
+
+
+def _objective_stats(goals, questions, gradings):
+    """Per objective of the lesson plan: score rate over its questions, and how many learners earned full marks
+    on all of them. Questions without an objective are not counted here (they stay in the per-question table)."""
+    obj_of = {q['lineage_id']: set(q['content'].get('objective_ids') or []) for q in questions}
+    rows = []
+    for g in goals:
+        oid = g['lineage_id']
+        nos, per_learner = set(), {}
+        for gr in gradings:
+            ct = gr['content']
+            if oid not in obj_of.get(ct['question_lineage'], ()):
+                continue
+            nos.add(ct['question_no'])
+            s = per_learner.setdefault(ct['learner_alias'], [0.0, 0.0])
+            s[0] += ct['total']
+            s[1] += ct['max_total']
+        score, top = sum(s[0] for s in per_learner.values()), sum(s[1] for s in per_learner.values())
+        rows.append(
+            {
+                'id': oid,
+                '目标': g['content']['text'],
+                '题号': sorted(nos),
+                '人数': len(per_learner),
+                '得分率': round(score / top, 3) if top else None,
+                '全部得分人数': sum(1 for s in per_learner.values() if s[1] and s[0] >= s[1] - 1e-9),
+            }
+        )
+    return rows
