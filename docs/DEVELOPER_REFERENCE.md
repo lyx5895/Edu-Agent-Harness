@@ -35,7 +35,15 @@
 | 文件 | 行数（约） | 职责 |
 |---|---|---|
 | `edu_core/workflow/` | 2750 | `Workspace`：由各阶段模块组合而成。`base`（存储、模型、产物操作、`_plan`）、`projects`（项目、材料、课标、进入下一课时）、`lesson_plan`（01）、`questions`（02）、`submissions`（03）、`analysis`（04）、`review`（05）、`records`（依据已变化、概览、导出）；`schemas`（模型输出结构）、`prompts`（系统提示词）、`common`（`normalize_plan`、`usable_drafts` 等）、`steps`（`next_steps`、`stage_status`） |
-| `edu_core/artifacts.py` | 250 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询 |
+| `edu_core/workflow/courses.py` | 650 | 课程工作台：课程、班级与成员、授课关系、任务、课时安排、本班学情、首页、旧项目整理进课程 |
+| `edu_core/workflow/assignments.py` | 330 | 布置记录：布置给班级（固定版本、名单快照）、状态、更正本次评分依据、改用新版本 |
+| `edu_core/workflow/objectives.py` | 270 | 课程目标：备课方案目标与课程目标的对应、描述版本、按目标查看 |
+| `edu_core/workflow/delivery.py` | 300 | 教师文件（教案、学生练习、答案与评分标准、讲评提纲）；coursemaker 交换包与回传课件 |
+| `edu_core/workflow/research.py` | 560 | 来源分组、研究案例与独立审定、切分、研究计数、训练授权与数据集导出 |
+| `edu_core/workflow/accounts.py` | 230 | 账号、课程成员、逐条记录的权限判断 |
+| `edu_core/workflow/runs.py` | 70 | `@operation`：把一次老师发起的模型操作记为一次运行 |
+| `edu_core/docx.py`、`edu_core/access.py` | 150、30 | 无依赖的 .docx 与打印版 HTML；当前用户上下文 |
+| `edu_core/artifacts.py` | 290 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询；按布置记录过滤学生作答类产物 |
 | `edu_core/context.py` | 95 | 上下文白名单 `WHITELIST`、`Context`、`describe()`（“已参考”文字） |
 | `edu_core/grading.py` | 340 | 无会话批改 `grade()` |
 | `edu_core/tools.py` | 310 | 确定性核对：`match_choice`、`match_true_false`、`check_numeric`、`algebra_equal`、`chem_balanced` |
@@ -64,6 +72,52 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `generations` | 每次模型调用的完整记录 |
 | `choices` | A/B 选择结果 |
 | `events` | 业务事件流水（创建、确认、改判、导入……） |
+| `courses` | 课程空间：名称、学科（可以是没有学科包的自定义学科）、年级、学期、教材、归档 |
+| `class_groups`、`class_members` | 班级与成员（稳定的成员 id，`left_at` 表示离开；布置记录保留当时的名单快照） |
+| `offerings` | 授课关系：某班学习某门课程，`progress` 为本班已上到哪里 |
+| `tasks` | 教师任务（备课、出练习、批改、讲解；旧项目整理后为 `legacy`），每个任务有一个 project 作为工作区 |
+| `lesson_sessions` | 课时安排：所属授课关系、计划日期、状态（计划中 / 已授课 / 已取消）、固定的教案版本 |
+| `assignments` | 布置记录：项目、授课关系、轮次、`parent_id`（讲评后再练的上一次布置）、`roster`（名单快照）、`pinned`（每道题固定的题目和评分标准版本） |
+| `idempotency` | 幂等键：同一键的重试返回第一次的结果 |
+| `units` | 主题：所属课程、名称（课程内唯一）、顺序。`projects.unit_id` 记录任务属于哪个主题 |
+
+第 4–8 版迁移依次新增：运行（`runs`、`generations.run_id`）；课程目标（`objectives`、`objective_versions`、`objective_links`）；阶段 C（`comparisons`，`choices` 加 `work_choice`、`preference`、`acceptable`、`reason_tags`、`revoked_at`，`projects.material_prefs`，`packages`）；研究记录（`research_cases`、`case_reviews`、`consents`、`dataset_exports`）；账号（`users`、`course_members`、`projects.owner_id`、`class_groups.owner_id`）。第 3 版迁移新增 `units` 和 `projects.unit_id`、`projects.status_prefs`（任务对本班学情的取舍）。第 2 版迁移新增以上其余 6 张表，并给 `projects`（`course_id`、`offering_id`）、`artifacts`（`course_id`、`task_id`、`assignment_id`）、`materials`（`course_id`）加列。空字符串表示“未关联”。设计依据见 [COURSE_WORKSPACE_DESIGN.md](COURSE_WORKSPACE_DESIGN.md)。
+
+**课程工作台的数据边界**：
+
+- **教学内容归课程，学生作答归布置记录。** 在课程任务里生成的产物自动带上 `course_id` 和 `task_id`。`submission`、`grading`、`analysis`、`problem_pattern`、`comparison`、`review_plan`（讲评稿引用学生原文）属于某次布置（`artifacts.ASSIGNMENT_TYPES`），`assignment_id` 为空表示项目自己的、不属于任何班级的作答。各阶段方法都接受 `assignment_id`；不传时与以前一样处理项目自己的作答。
+- **布置固定版本。** `assign()` 把本轮已确认的题目和评分标准版本写入 `pinned`，导入、批改、分析、讲评都读固定的版本。课程层的新版本不会给已布置的批改打“依据已变化”（`mark_downstream` 跳过固定了该谱系的布置），只在布置上显示“新版可用”。老师可以 `repin()` 让这次布置改用新版本，或者 `correct_rubric()` 更正本次评分依据：新建一个评分标准版本，只有这次布置改用它，本次布置的相关批改和分析被标记待重做，同时列出仍在用旧版本的其他布置，由老师逐个决定。
+- **项目自己的作答仍跟随最新版本**（过渡行为）：不属于班级的作答沿用原来的规则，上游实质修改后标记、重新批改。
+- **讲评后再练**：再练题是项目内容的新一轮；确认后布置给同一个班，`parent_id` 指向上一次布置。两轮对比按这条链取前后两次布置。
+- **主题**：`start_task` 不指定 `unit_id` 时，按知识模块归入同名主题（没有就新建）；旧项目整理时同样处理。`unit_view()` 汇总一个主题下的教学目标（取自已确认的备课方案）、各班的课时、布置、已确认证据分析的目标达成和问题模式。
+- **本班调整版**（`derive_for_class()`）：复制已确认的备课方案和第 1 轮已确认的题目与评分标准到同一课程另一个班的新任务，副本为 `origin='derived'` 的草稿，`edit_of` 指向原版本，内容带 `derived_from`；材料按同一 `family_id` 复制。
+- **直接讲解**（`explain()`，产物类型 `explanation`，上下文 `explain`）：只读老师粘贴的题目、可选的一份学生作答和项目材料，不读任何学情；`mode` 为 `general` 或 `answer`，作答引用逐字核对，核对不过的去掉并计数。
+- **本班学情的取舍**（`task_class_status()`、`set_status_prefs()`）：`status_prefs` 记录 `exclude`（问题模式谱系）和 `exclude_summary`；生成时按取舍组装，上下文清单只含实际发送的条目。
+- **旧项目整理**（`migration_preview()`、`map_projects()`）：只按“进入下一课时”的前后关系分组提出候选，不按标题或学生代号合并。老师确认后，项目进入课程成为 `legacy` 任务；如果同时指定班级，项目名单加入班级，每一轮的作答变成该班的一条布置记录。整理前用 SQLite 在线备份复制数据库（`<db>.bak-map-<时间>`），提交前核对产物数、引用数和已确认批改总分不变，否则整笔回滚。产物 id、版本和引用都不变。
+
+**运行**（`@operation`，`runs` 表）：老师发起的每次模型操作（备课、出题、换题、导入试卷、批改一次布置、分析、讲评、再练、讲解、局部修改、单元讲评、拍照识别）是一次运行，记录状态和错误；其中所有模型调用的 `generations.run_id` 指向它，并行的自检、盲审通过复制上下文拿到同一个运行编号。
+
+**课程目标**（`objectives.py`）：备课方案确认时 `_link_plan_objectives` 把每条目标对应到课程目标：同一方案谱系的旧版本沿用原对应，否则复用本课程表述相同的目标（同主题优先），再否则新建（编号 G1、G2…）。表述变化时新增描述版本并置 `needs_review`。`relink_objective` 由老师改对应；`objective_view` 汇总教过的方案、考查的题目、各班各次布置的已确认证据（导入作答的帮助条件为“未知”）。
+
+**A/B 留痕**：`generate_questions` 为每次比较写 `comparisons`（共同输入哈希、A/B 到生成记录和候选的映射、触发方式、抽样比例、规则与界面版本、状态 shown / duplicate / one_side_failed）。`choose` 的结论为 A、B、both_ok、neither、skip（旧的 same 视为 both_ok 并用 A 继续），`work_choice`、`preference`（better / work_only / none）、`acceptable`、`reason_tags` 分开存；`revoke_choice` 撤回后可重选；`merge_candidates` 用两侧候选生成新草稿（引用角色 `merged_from`）。系统抽样受 `EDU_AB_DAILY_CAP` 限制。
+
+**局部修改**（`revise_plan_part`，上下文 `revise_plan`）：目标 `objective:O1`、`activity:<序号>`、`key_points`、`difficulties`、`notes`；模型只返回这一部分，服务器合并、重新做课标检查、比较出改动的字段，存为 `origin='revised'` 的新草稿，内容带 `revision`。
+
+**资料选择**（`set_material_prefs`）：`exclude` 不发送；`focus` 按章节标题或关键词选段，上下文清单记录 `excluded`、`focus`、`segments`（字符位置）、`selected`、`sent`。
+
+**教师文件与 coursemaker**（`delivery.py`）：`deliverable(pid, kind, fmt)` 只用已确认版本（布置记录则用固定版本），学生练习只含题干和选项；`courseware_package` 存入 `packages` 并返回带哈希的交换包（契约 `edu-harness/coursemaker-package@1`，含 `coursemaker_chapter`）；`import_courseware` 建 `courseware` 产物引用包内来源，来源已有新版本时打“依据已变化”。
+
+**研究记录**（`research.py`）：`_source_groups` 以引用、`edit_of`、谱系、生成时读取的材料家族做并查集；`build_research_cases` 每个任务阶段一个案例（备课、出题按轮、批改 / 学情 / 讲评按布置或轮次、讲解），产物变化后已审案例回到 `changed`；`review_case` 拒绝产出者审定，审定人意见不一致时为 `disputed`，`adjudicator` 复议定案；`freeze_split` 按来源组哈希分配，`use_for_tuning` 拒绝测试集案例；`export_dataset` 需要课程的 training 授权，输出示范、明确偏好、带指令修改三类记录，含学生原文的任务（批改、复核、抽检、分析、拍照、讲评、再练、单元讲评、附作答的讲解）一律排除并计数；`revoke_consent` 在已导出数据集的清单里记录撤回。
+
+**账号与权限**（`accounts.py`，`EDU_AUTH=1`）：访问码只存 SHA-256；`identify` 中间件按 `Authorization: Bearer` 或 `edu_token` Cookie 设置当前用户；全局依赖 `authorize` 对路径参数（`PATH_KINDS`）、查询参数和 JSON 请求体中的记录 id（`FIELD_KINDS`、`LIST_KINDS`）逐一调用 `can_access`，未声明的路径参数直接报错（`test_every_route_parameter_has_an_access_rule` 检查）。课程成员可访问课程内一切；不在课程里的项目、班级归创建人；旧数据（无所有者）只有管理员可见；`/api/migration`、`/api/users`、`/api/datasets`、切分与调整登记只给管理员。
+
+**统一的确认规则**（`Workspace.confirm`、`confirm_gradings`）：有未处理“依据已变化”标记的结果不能确认，要先在“记录与导出”里选择保留或重做；有未判定要点或待复核疑点的批改只能逐项改判，不能走通用确认；批量确认跳过这两类并返回 `held` 数量。
+
+**写回前复验**（`_guard_basis`）：模型调用在事务外进行。写回时检查调用期间读过的产物是否出现了更新的已确认版本（对布置记录，检查固定的版本是否被换掉）；如果有，结果照样保存，但立即打上“依据已变化”，不会成为有效结果。批改、学情分析、问题模式、讲评稿、出题、换题都经过这一步。
+
+**批改逐份保存**：`grade_round` 每批完一份就在独立事务里写入，中途失败或进程退出时，下次只批没批过的和依据已变化的。
+
+**幂等**：带 `Idempotency-Key` 请求头的生成、导入、批改、分析、布置、开始任务、更正评分依据、整理旧项目等 POST 接口，同一键重试返回第一次的结果；同一键正在执行时返回 409；失败会释放这个键。前端每次 POST 都带一个新键。超过 15 分钟仍是“执行中”的键视为进程中断，可以重新执行。
 
 **产物**（`artifacts.TYPES`）：`lesson_plan` 备课方案、`question` 题目、`rubric` 评分标准、`submission` 学生作答、`grading` 批改、`analysis` 学情分析、`problem_pattern` 问题模式、`comparison` 两轮对比、`review_plan` 讲评稿（`objective` 为旧类型，现由备课方案内的目标取代）。
 
@@ -170,7 +224,11 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 ### 5.6 进入下一课时
 
-`next_lesson(pid, knowledge_module=, lesson=, title=)`：前提是有已确认的问题模式或学情概述。新建项目，沿用学科、年级、说明、学生基础和名单；课时“第 N 课时”自动加一；本课时内容和课标选择留空。`carryover` 冻结保存：上一课时的已确认问题模式（含最近一次两轮对比得出的再练情况）、学情概述、讲评重点、目标。之后上一课时的修改不影响它。备课和出题都会读它（上下文 `carryover`）。
+**本班学情**（课程任务，取代 `carryover`）：属于某个班的任务，生成备课方案和出题时读取 `_class_status(offering_id)`：只读这个授课关系下的布置记录；取已确认的问题模式（最近一次两轮对比显示已改善的除外）和最近一次已确认的证据分析概述，部分分析会注明覆盖范围。调用时把用到的分析和问题模式 id 写进上下文清单（类型 `class_status`，“已参考：本班学情”），之后的修改不影响这次结果。
+
+**学情分析的覆盖范围**：`analyze()` 先统计名单人数、收到作答人数、有效批改（最新版本已确认且依据没变）、未批改、待复核或待确认、依据已变化的份数（`content.coverage`）。不完整时默认拒绝；老师勾选“只分析已确认的部分”（`partial=True`）时生成部分分析，标 `partial`，界面显示“部分分析，不是全班结论”。**概述**：只有所有问题模式都通过证据核对时才保留模型写的概述；否则换成服务器根据通过核对的证据写的事实陈述（`summary_source='server'`，模型原文存在 `unverified_summary`，不传给下游）。
+
+`next_lesson(pid, knowledge_module=, lesson=, title=)`：前提是有已确认的问题模式或已确认的学情分析（概述只取已确认的分析）。新建项目，沿用学科、年级、说明、学生基础和名单；课时“第 N 课时”自动加一；本课时内容和课标选择留空。`carryover` 冻结保存：上一课时的已确认问题模式（含最近一次两轮对比得出的再练情况）、学情概述、讲评重点、目标。之后上一课时的修改不影响它。备课和出题都会读它（上下文 `carryover`）。
 
 ### 5.7 导出
 
@@ -209,7 +267,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 `grading.grade(llm, subject=, question=, rubric=, answer=, review=True, audit_rate=0.0, rng=None)` 返回 `(result, metas)`。每个要点得到 `score`、`status`（`earned` / `partial` / `missed` / `undetermined`）、`source`（`key` / `tool` / `model` / `review` / `teacher`）、`quote`、`reason`、`error_tag`、`confidence`。
 
 1. 选择、判断题和能匹配的填空答案由服务器判定（作答写的是选项内容时按内容对回字母）。
-2. 带 `check` 的要点由工具判定（数值含单位换算、代数等价、化学方程式配平）；工具判不了的交给模型。
+2. 带 `check` 的要点由工具判定，只在工具能下结论时生效（设计文档 7.5）：数值要求最后一句的最后一个数值等于期望值（中间出现期望值时交给模型）；代数等价；化学方程式未配平判错，配平且物质与参考方程式一致才判对，配平但物质不同或没有参考方程式时交给模型，反应条件不判。工具判不了的交给模型。
 3. 其余要点一次模型调用。判定必须逐字引用作答（“没有作答”类失分除外）；引文不是原文时带反馈重试一次，仍不行则该要点待定。置信度不是 high 也算待定。错误标签必须来自学科包。
 4. 高置信度且有引文的**失分**交给 reviewer 盲审（看不到主判结果）；两者都扣分才算扣分，有分歧转老师。
 5. 写作类只给建议分，必须老师确认。判满分的作答按 `audit_rate` 随机抽检。
@@ -242,12 +300,37 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `POST /api/projects/{pid}/analyze`、`GET .../analyses`、`GET .../patterns` | 学情分析、问题模式 |
 | `POST /api/projects/{pid}/review/draft`、`GET .../review-plans`、`POST .../practice`、`POST .../compare`、`GET .../comparisons` | 讲评稿、再练、两轮对比 |
 | `GET /api/projects/{pid}/stale`、`POST /api/stale/{mark_id}/resolve` | 依据已变化的产物及处理 |
-| `GET /api/projects/{pid}/export` | 研究导出（JSON） |
+| `GET /api/projects/{pid}/export` | 研究导出（JSON，含布置记录、任务和课时安排） |
+| `GET /api/home?course_id=` | 首页：课程、本课程的班级与课时、进行中的任务（含待处理事项）、需要处理的事项、待整理的旧项目数 |
+| `GET/POST /api/courses`、`GET/PATCH /api/courses/{cid}`、`POST .../materials` | 课程；课程资料（各班共用） |
+| `POST /api/courses/{cid}/classes`、`GET/POST /api/classes`、`GET /api/classes/{id}`、`POST/DELETE .../members` | 关联班级；班级与成员 |
+| `POST /api/courses/{cid}/tasks`、`GET /api/tasks`、`PATCH /api/tasks/{tid}` | 开始工作（返回任务、工作区项目和建议打开的标签）；任务列表；完成或归档 |
+| `GET /api/offerings/{oid}/sessions`、`.../next-lesson`、`.../status`、`.../assignments`、`PATCH /api/sessions/{sid}` | 课时安排；准备下一节课的建议；本班学情；本班布置记录；标记已授课、改期、取消 |
+| `POST /api/projects/{pid}/use-plan` | 把已确认的教案加入另一个班的课时安排 |
+| `GET/POST /api/projects/{pid}/assignments`、`GET /api/assignments/{aid}` | 布置给班级；布置记录详情（固定版本、名单、新版可用） |
+| `GET /api/assignments/{aid}/correction?question_lineage=`、`POST .../correct-rubric`、`POST .../repin` | 更正本次评分依据（预览影响、执行）；改用新版本 |
+| `GET /api/migration/preview`、`POST /api/migration/map` | 旧项目整理：候选分组；确认整理 |
+| `GET /api/me`、`POST /api/login`、`POST /api/logout`、`GET/POST /api/users`、`GET/POST /api/courses/{cid}/members` | 登录状态、登录（设置 Cookie）、退出；用户管理（管理员）；课程成员 |
+| `GET /api/courses/{cid}/objectives`、`GET /api/objectives/{id}`、`POST .../reviewed`、`POST /api/objective-links` | 课程目标、按目标查看、核对完成、改对应关系 |
+| `POST /api/offerings/{oid}/unit-review/preview`、`POST .../unit-review` | 单元讲评预览与生成 |
+| `POST /api/artifacts/{aid}/revise`、`PUT /api/projects/{pid}/material-prefs` | 局部修改；资料选择 |
+| `GET /api/projects/{pid}/deliverables/{kind}?fmt=html\|docx`、`POST .../coursemaker-package`、`POST .../courseware` | 教师文件；交换包；回传课件 |
+| `POST /api/choices/{id}/revoke`、`POST /api/projects/{pid}/choices/{group}/merge` | 撤回选择；结合两份修改 |
+| `GET /api/research/summary`、`POST /api/research/cases/build`、`GET /api/research/cases`、`POST .../cases/{id}/review`、`POST /api/research/split`、`POST /api/research/tuning`、`GET /api/research/source-groups` | 研究计数、研究案例与审定、切分、调整登记、来源组 |
+| `GET/POST /api/courses/{cid}/consents`、`POST /api/consents/{id}/revoke`、`POST /api/datasets/export` | 训练授权；数据集导出（管理员） |
+| `GET/POST /api/courses/{cid}/units`、`GET/PATCH /api/units/{id}`、`PUT /api/projects/{pid}/unit` | 主题列表、新建；按主题查看、改名；调整任务所属主题 |
+| `POST /api/projects/{pid}/explain`、`GET .../explanations` | 直接准备讲解 |
+| `POST /api/projects/{pid}/derive` | 本班调整版 |
+| `GET/PATCH /api/projects/{pid}/class-status` | 本班学情及取舍 |
+
+作答、批改、分析、讲评、再练、对比相关接口都接受 `assignment_id`（请求体或查询参数），不传时处理项目自己的作答。
 
 ## 10. 前端
 
 `edu_app/static/` 是无构建步骤的原生 JS 单页：
 
+- **我的教学**（`#home`）：当前课程和当前班级、需要处理的事项、继续工作、开始工作（准备下一节课 / 出一份练习 / 批改作业 / 准备讲解）、班级与课时安排、课程资料、待整理的旧项目。默认打开首页；“所有工作区”下拉仍可直接打开任意项目。
+- **布置记录**：作业批改、学情分析、讲题答疑页顶部的 `#scope-bar` 选择当前布置，所有请求带上 `assignment_id`，轮次跟随布置并锁定；出题页可把本轮已确认的题目布置给班级；批改页可以展开“本次评分依据”更正评分标准。
 - `index.html`：顶部项目行；五个阶段标签（01–05）加“记录与导出”；每个阶段一个 `#tab-*`，顶部是 `.stage-head`（标题 + `.continue` 下一步）。
 - `app.js`：全局状态 `S`（项目、概况、当前标签、课标勾选是否改动等）；`refresh()` 拉概况后渲染；每个阶段一个 `render*()`；按钮通过 `data-act` / `data-goto` / `data-continue` / `data-fill` 在少数委托监听器里处理；`busy()` 包装异步按钮；`api()` 统一请求和错误提示。
 - 静态资源按内容哈希加 `?v=`，并返回 `Cache-Control: no-cache`，避免浏览器运行旧脚本。
@@ -261,7 +344,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 ```
 
 - **假模型** `tests/edu_fake.py` 的 `FakeLLM(handlers)`：按任务名找处理函数，返回值经同样的 pydantic 校验；`calls` 记录每次调用的角色、任务、输入，测试可以检查模型实际收到了什么。新增模型任务时要在 `tests/test_edu_workflow.py` 的 `HANDLERS` 里加处理函数。务必用 `FakeLLM(dict(HANDLERS))`，测试会改处理函数。
-- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码。
+- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
 - **浏览器走查**：用假模型起一个服务（`create_app(Workspace(Store(db), FakeLLM(handlers), settings))`），再用 Playwright 走完 01–05、下一课时、记录与导出，检查页面没有脚本错误。脚本目前在开发者本地，没有入库。
 - **真实模型**：`scripts/edu_smoke.py` 用临时库走一遍闭环（约 5 分钟、8 万 token）；`scripts/edu_eval_grading.py` 评测批改准确性。只用临时数据库，不要指向 `data/edu.sqlite`。
 
@@ -279,6 +362,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 - 没有真实教师的使用评估。
 - 课标匹配靠关键词，等级检查只覆盖部分用词；课标只收必修和选择性必修。
 - 题目审核与独立解题依赖另一个模型，画图、多问类题目容易误报“答案存疑”。
-- 作答只能以文字 CSV 导入；没有拍照作答、试卷照片切题。
+- 作答以文字 CSV 或单名学生的拍照转写导入；没有整班试卷自动切题。
+- 课程工作台尚未实现的部分（单元与目标实体、按目标查看、不经学情直接讲解、跨布置的单元讲评等）见 [COURSE_WORKSPACE_DESIGN.md](COURSE_WORKSPACE_DESIGN.md) 第 13.3 节。
 - 单人本地使用，没有账号和权限；SQLite 只适合单机单进程。
 - 与 coursemaker 的对接未做：可以把课时信息与对方的逐课目录互相映射，把确认后的备课方案作为对方讲义和课件的依据，见设计文档第 12 节。
