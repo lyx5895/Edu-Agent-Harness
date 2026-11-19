@@ -232,6 +232,8 @@ def test_teacher_override_and_queue(ws):
 def test_ab_candidates_and_choice(ws):
     p = ws.create_project('物理｜匀速直线运动', 'physics', knowledge_module='匀速直线运动')
     ws.confirm(ws.draft_lesson_plan(p['id'])['lesson_plan']['id'])  # course info alone is enough
+    stems = iter(['一辆车 2 小时行驶 120 km，求平均速度。', '小明 10 分钟走了 1.2 km，求平均速度。'])
+    ws.llm.handlers['generate_questions'] = lambda r, payload: {'questions': [question(next(stems))]}
     gen = ws.generate_questions(p['id'], types=['calculation'], ab=True)
     assert gen['candidate_group'] and [c['position'] for c in gen['candidates']] == ['A', 'B']
     assert {c['variant'] for c in gen['candidates']} == {'a', 'b'}

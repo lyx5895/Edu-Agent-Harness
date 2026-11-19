@@ -211,3 +211,5 @@ label.inline { display: flex; align-items: center; gap: 4px; flex-direction: row
 .home-head label { white-space: nowrap; }
 .session-row input[type=date] { width: auto; flex: 0 0 auto; padding: 2px 6px; }
 .scope-bar label { white-space: nowrap; }
+.row .s-title { min-width: 12em; }
+.mat-focus { width: 100%; margin-top: 6px; font-size: 13px; }

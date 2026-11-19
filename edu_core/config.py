@@ -28,6 +28,8 @@ class Settings:
     audit_rate: float = 0.05
     # Share of question generations that show two candidates for A/B choice.
     ab_rate: float = 0.2
+    # At most this many sampled (not teacher-requested) A/B comparisons per day; 0 turns sampling off.
+    ab_daily_cap: int = 5
     # Reasoning models spend output tokens on thinking; a low cap returns empty content.
     max_tokens: int = 6000
     timeout: float = 180.0
@@ -45,6 +47,7 @@ def load_settings(**overrides) -> Settings:
         'db': os.getenv('EDU_DB', Settings.db),
         'audit_rate': float(os.getenv('EDU_AUDIT_RATE', Settings.audit_rate)),
         'ab_rate': float(os.getenv('EDU_AB_RATE', Settings.ab_rate)),
+        'ab_daily_cap': int(os.getenv('EDU_AB_DAILY_CAP', Settings.ab_daily_cap)),
         'max_tokens': int(os.getenv('EDU_MAX_TOKENS', Settings.max_tokens)),
         'concurrency': int(os.getenv('EDU_CONCURRENCY', Settings.concurrency)),
         'allow_remote': os.getenv('EDU_ALLOW_REMOTE', '') in ('1', 'true', 'yes'),

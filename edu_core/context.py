@@ -23,6 +23,8 @@ WHITELIST = {
     'explain': {'project', 'material', 'pasted'},
     # 单元讲评 (design doc 5.6): several assignments of one class; their patterns, pinned questions, confirmed analyses.
     'unit_review': {'project', 'assignments'},
+    # 局部修改 (design doc 4.3): the plan being revised and the teacher's instruction.
+    'revise_plan': {'project', 'lesson_plan'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
@@ -99,9 +101,15 @@ def describe(manifest: list[dict]) -> str:
         elif kind == 'curriculum':
             parts.append(f'{label} {sum(len(i.get("items", [])) for i in items)} 条')
         elif kind == 'material':
-            cut = sum(1 for i in items if 0 < i.get('sent', i.get('chars', 0)) < i.get('chars', 0))
-            unsent = sum(1 for i in items if 'sent' in i and i['sent'] == 0)
+            off = sum(1 for i in items if i.get('excluded'))
+            focused = sum(1 for i in items if 'focus' in i)
+            cut = sum(1 for i in items if 0 < i.get('sent', i.get('chars', 0)) < i.get('selected', i.get('chars', 0)))
+            unsent = sum(1 for i in items if 'sent' in i and i['sent'] == 0 and not i.get('excluded'))
             notes = []
+            if off:
+                notes.append(f'{off} 份已排除')
+            if focused:
+                notes.append(f'{focused} 份只发送指定章节')
             if cut:
                 notes.append(f'{cut} 份截断')
             if unsent:

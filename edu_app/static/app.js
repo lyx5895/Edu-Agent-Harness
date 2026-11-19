@@ -300,13 +300,28 @@ async function renderPrep() {
     api('GET', `/api/projects/${S.pid}/materials`),
     api('GET', `/api/projects/${S.pid}/lesson-plans`),
   ]);
+  const mp = p.material_prefs || {};
+  const off = new Set(mp.exclude || []);
   $('#materials').innerHTML = mats.length
-    ? mats.map((m) => `<div class="item"><div class="item-head"><b>${esc(m.filename)}</b><span class="pill">${m.chars} 字</span></div><div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div></div>`).join('')
+    ? mats.map((m) => `<div class="item" data-mat="${m.id}"><div class="item-head"><label class="inline"><input type="checkbox" class="mat-use" ${off.has(m.id) ? '' : 'checked'}> <b>${esc(m.filename)}</b></label>
+        <span><span class="pill">${m.chars} 字</span>${m.scope === 'course' ? ' <span class="pill info">课程资料</span>' : ''}</span></div>
+        <div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div>
+        <input class="mat-focus" placeholder="只用某章节或关键词（选填），例如：第二章 对数" value="${esc((mp.focus || {})[m.id] || '')}"></div>`).join('')
     : '<div class="empty">没有材料也可以生成备课方案；有教材或讲义时添加进来，内容范围会更准。</div>';
+  $('#material-prefs-row').classList.toggle('hidden', !mats.length);
   $('#lesson-plan').innerHTML = plans.length
     ? lessonPlanItem(plans[0])
     : '<div class="empty">填写课时信息后点“生成备课方案”：教学目标、重点难点和课堂活动会一起生成，你可以修改后整体确认。</div>';
   $('#draft-lesson-plan').textContent = plans.length ? '重新生成' : '生成备课方案';
+  $('#revise-row').classList.toggle('hidden', !plans.length);
+  if (plans.length) {
+    const pc = plans[0].content;
+    $('#revise-target').innerHTML = [
+      ...pc.objectives.map((o, i) => `<option value="objective:${o.id}">目标 ${i + 1}</option>`),
+      ...(pc.activities || []).map((x, i) => `<option value="activity:${i + 1}">活动 ${i + 1}：${esc(x.name)}</option>`),
+      '<option value="key_points">重点</option>', '<option value="difficulties">难点</option>', '<option value="notes">备注</option>',
+    ].join('');
+  }
   const others = S.overview.offerings.filter((o) => o.id !== p.offering_id);
   const adopted = plans.length && plans[0].confirmed_version;
   $('#use-plan-row').classList.toggle('hidden', !(p.course_id && others.length && adopted));
@@ -434,9 +449,14 @@ async function renderQuestions() {
     <h3>A/B 两版候选：请选择更合适的一版</h3>
     <p class="muted">两版只在出题提示上有一处不同；左右位置是随机的。选择后被采用的一版进入草稿，未采用的保留为研究记录。</p>
     <div class="ab">${['A', 'B'].map((pos) => `<div><h4>候选 ${pos}</h4>${sides[pos].map((q) => questionBody(q)).join('') || '<div class="empty">（无）</div>'}</div>`).join('')}</div>
-    <div class="row"><input class="ab-reason" placeholder="理由（选填）">
-      <button data-verdict="A">采用 A</button><button data-verdict="B">采用 B</button>
-      <button class="secondary" data-verdict="same">差不多</button><button class="secondary" data-verdict="neither">都不合适</button></div>
+    <div class="row"><button data-verdict="A">采用 A</button><button data-verdict="B">采用 B</button>
+      <button class="secondary" data-verdict="both_ok" data-work="A">两份都可用，用 A 继续</button><button class="secondary" data-verdict="both_ok" data-work="B">两份都可用，用 B 继续</button>
+      <button class="secondary" data-verdict="neither">都不合适</button><button class="link" data-verdict="skip">暂不比较</button></div>
+    <details><summary>补充一句（选填）</summary>
+      <div class="row"><select class="ab-pref"><option value="none">不评价</option><option value="better">采用的这份更适合本次任务</option><option value="work_only">只是选它继续修改</option></select>
+        <input class="ab-reason" placeholder="理由（选填）"></div>
+      <div class="checks">${['更贴合目标', '难度更合适', '更清楚', '有事实错误', '依据不足', '其他'].map((t) => `<label><input type="checkbox" class="ab-tag" value="${t}"> ${t}</label>`).join('')}</div>
+    </details>
   </div>`).join('');
   const offerings = S.overview.offerings;
   const confirmedHere = qs.some((q) => q.confirmed_version);
@@ -726,6 +746,7 @@ function lessonPlanItem(a) {
     <table><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td>
       <td>${(x.objective_ids || []).map((id) => (goalNo[id] ? `目标 ${goalNo[id]}` : '')).join('、')}</td></tr>`).join('')}</table>
     ${c.notes ? `<div class="kv">提醒：${esc(c.notes)}</div>` : ''}
+    ${c.revision ? `<div class="kv flag">这一版只改了：${esc(c.revision.target)}（${esc(c.revision.instruction)}）</div>` : ''}
     <div class="item-actions"><button class="small secondary" data-act="edit-lesson-plan">修改</button>
       ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认备课方案</button>` : ''}</div>
     <div class="edit-area"></div></div>`;
@@ -836,6 +857,15 @@ async function renderRecords() {
     : '<div class="empty">没有依据已变化的产物。</div>')
     + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
   $('#export-link').href = `/api/projects/${S.pid}/export`;
+  const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
+  $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
+    .map(([k, label]) => `<div class="row"><span class="s-title">${label}</span>
+      <a class="button small secondary" target="_blank" href="/api/projects/${S.pid}/deliverables/${k}?fmt=html&${q}">打印版</a>
+      <a class="button small secondary" href="/api/projects/${S.pid}/deliverables/${k}?fmt=docx&${q}">Word</a></div>`).join('')
+    + (S.aid ? '<p class="muted">学生练习和答案按当前布置记录固定的版本导出。</p>' : '');
+  const cws = await api('GET', `/api/projects/${S.pid}/artifacts?type=courseware`);
+  $('#courseware-list').innerHTML = cws.map((x) => `<div class="kv">${esc(x.content.kind)} · 交换包 ${esc(x.content.package_id)} ${x.stale ? '<span class="pill bad">依据已变化</span>' : ''}
+    ${x.content.files.map((f) => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>`).join(' ')}</div>`).join('');
 }
 
 // ---------- events ----------
@@ -1093,8 +1123,15 @@ async function onAction(e) {
   if (btn.dataset.verdict) {
     const card = btn.closest('[data-group]');
     await busy(btn, '提交中…', async () => {
-      await api('POST', `/api/projects/${S.pid}/choices`, { group: card.dataset.group, verdict: btn.dataset.verdict, reason: $('.ab-reason', card).value });
-      toast('已记录选择'); await refresh();
+      const verdict = btn.dataset.verdict;
+      const pref = $('.ab-pref', card).value;
+      await api('POST', `/api/projects/${S.pid}/choices`, {
+        group: card.dataset.group, verdict, reason: $('.ab-reason', card).value,
+        work_choice: btn.dataset.work || null,
+        preference: ['A', 'B'].includes(verdict) ? pref : 'none',
+        reason_tags: [...card.querySelectorAll('.ab-tag:checked')].map((x) => x.value),
+      });
+      toast(verdict === 'skip' ? '已跳过，这一组没有比较标签' : '已记录'); await refresh();
     });
     return;
   }
@@ -1436,7 +1473,33 @@ async function renderUnitReview(oid, box) {
     <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
 }
 
+function downloadJson(data, name) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function bindExtras() {
+  $('#material-prefs-save').addEventListener('click', (e) => busy(e.target, '保存中…', async () => {
+    const rows = [...document.querySelectorAll('#materials [data-mat]')];
+    await api('PUT', `/api/projects/${S.pid}/material-prefs`, {
+      exclude: rows.filter((r) => !$('.mat-use', r).checked).map((r) => r.dataset.mat),
+      focus: Object.fromEntries(rows.map((r) => [r.dataset.mat, $('.mat-focus', r).value.trim()]).filter(([, v]) => v)),
+    });
+    toast('材料选择已保存，之后的生成按这里的选择'); await refresh();
+  }));
+  $('#revise-go').addEventListener('click', (e) => busy(e.target, '修改中…', async () => {
+    const plans = await api('GET', `/api/projects/${S.pid}/lesson-plans`);
+    const r = await api('POST', `/api/artifacts/${plans[0].id}/revise`, { target: $('#revise-target').value, instruction: $('#revise-instruction').value });
+    $('#revise-instruction').value = '';
+    showNote(r.context_note); toast(`只改了：${r.changed.join('、')}；存为新草稿，确认后生效`); await refresh();
+  }));
+  $('#package-btn').addEventListener('click', (e) => busy(e.target, '打包中…', async () => {
+    const pkg = await api('POST', `/api/projects/${S.pid}/coursemaker-package`);
+    downloadJson(pkg, `${pkg.package_id}.json`);
+    toast('交换包已生成并下载；课件做好后可回传，系统会记录它依据的版本');
+  }));
   $('#home').addEventListener('click', async (e) => {
     const ob = e.target.closest('[data-objective]');
     if (ob) { await busy(ob, '…', () => renderObjective(ob.dataset.objective)); return; }

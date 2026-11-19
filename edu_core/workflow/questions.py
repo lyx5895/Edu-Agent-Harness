@@ -37,6 +37,10 @@ from edu_core.workflow.schemas import (
     SolveOutput,
 )
 
+AB_RULE_VERSION = 'ab-v1'
+AB_UI_VERSION = 'ui-2026-11'
+REASON_TAGS = ('更贴合目标', '难度更合适', '更清楚', '有事实错误', '依据不足', '其他')
+
 
 class QuestionsMixin:
     """02 出题改题."""
@@ -118,10 +122,15 @@ class QuestionsMixin:
                 '老师说明': notes or p['notes'],
             }
         )
-        use_ab = ab if ab is not None else self.rng.random() < self.settings.ab_rate
+        trigger, sample_rate = 'requested', 1.0
+        if ab is None:
+            trigger, sample_rate = 'sampled', self.settings.ab_rate
+            use_ab = self.rng.random() < self.settings.ab_rate and self._ab_under_cap()
+        else:
+            use_ab = bool(ab)
         variants = ['a', 'b'] if use_ab else ['a']
         if use_ab:
-            self.rng.shuffle(variants)  # randomize which variant is shown as A
+            self.rng.shuffle(variants)  # randomize which variant is shown as A; fixed for this comparison
 
         def run(variant):
             system = GENERATE_SYSTEM.format(
@@ -134,19 +143,37 @@ class QuestionsMixin:
             checks = self._parallel(lambda d: self._self_check(p, d, self._review_ctx(p, objs, d, difficulty)), drafts)
             return variant, meta, list(zip(drafts, checks)), dropped
 
-        runs = [run(v) for v in variants]
+        runs, failures = [], []
+        for v in variants:
+            try:
+                runs.append(run(v))
+            except Exception as e:
+                if not use_ab:
+                    raise
+                failures.append(f'{type(e).__name__}: {e}'[:200])
+        if not runs:
+            raise ModelUnavailable('两份候选都没有生成成功：' + '；'.join(failures))
+        status = 'shown'
+        if use_ab and failures:
+            status = 'one_side_failed'
+        elif use_ab and {d.stem.strip() for d, _ in runs[0][2]} == {d.stem.strip() for d, _ in runs[1][2]}:
+            status = 'duplicate'  # no meaningful comparison: deliver A, record why nothing was shown
+        shown = use_ab and status == 'shown'
         group = new_id('ab') if use_ab else None
-        result = {'context_note': describe(ctx.manifest), 'candidate_group': group, 'candidates': []}
+        result = {'context_note': describe(ctx.manifest), 'candidate_group': group if shown else None, 'candidates': []}
+        if use_ab and not shown:
+            result['ab_note'] = '一份候选生成失败，先给出成功的一份' if failures else '两份候选几乎相同，没有展示比较'
         with self.store.tx() as c:
-            for position, (variant, meta, items, dropped) in zip('AB', runs):
+            display = {}
+            for position, (variant, meta, items, dropped) in zip('AB', runs if shown else runs[:1]):
                 gid = record_generation(
                     c,
                     pid,
                     meta,
                     ctx.manifest,
                     'generate-v3',
-                    group=group,
-                    position=position if group else None,
+                    group=group if shown else None,
+                    position=position if shown else None,
                     variant=variant,
                 )
                 made = self._save_questions(
@@ -155,10 +182,11 @@ class QuestionsMixin:
                     items,
                     objs,
                     gid,
-                    status='candidate' if group else 'draft',
+                    status='candidate' if shown else 'draft',
                     round_=1,
                     extra={'difficulty_requested': difficulty, 'purpose': purpose},
                 )
+                display[position] = {'generation': gid, 'variant': variant, 'candidates': [q['id'] for q in made]}
                 result['candidates'].append(
                     {
                         'position': position,
@@ -168,7 +196,38 @@ class QuestionsMixin:
                         'dropped': dropped,
                     }
                 )
+            if use_ab:
+                # The comparison record (AB spec 2, 7): shared input, what was shown where, and how it was triggered.
+                c.execute(
+                    'INSERT INTO comparisons(candidate_group,project_id,unit,input_sha,factor,display,trigger,sample_rate,'
+                    'rule_version,ui_version,status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                    (
+                        group,
+                        pid,
+                        'question_set',
+                        sha(user),
+                        'prompt_variant',
+                        dump(display),
+                        trigger,
+                        sample_rate,
+                        AB_RULE_VERSION,
+                        AB_UI_VERSION,
+                        status,
+                        time.time(),
+                    ),
+                )
         return result
+
+    def _ab_under_cap(self):
+        """Sampled comparisons stay under the daily cap; teacher-requested ones are not counted against it."""
+        if self.settings.ab_daily_cap <= 0:
+            return False
+        day_start = time.time() - (time.time() % 86400)
+        with self.store.read() as c:
+            n = c.execute(
+                "SELECT COUNT(*) FROM comparisons WHERE trigger='sampled' AND created_at>=?", (day_start,)
+            ).fetchone()[0]
+        return n < self.settings.ab_daily_cap
 
     def _review_ctx(self, p, objs, d, difficulty=None, pattern=None):
         """What the quality review compares a question with: its objective, the lesson scope and cited standards."""
@@ -324,10 +383,39 @@ class QuestionsMixin:
                 no += 1
         return made
 
-    def choose(self, pid, group, verdict, reason='', teacher='teacher'):
-        """A/B choice: A, B, same (adopt A) or neither. Unchosen candidates stay as research records."""
-        if verdict not in ('A', 'B', 'same', 'neither'):
-            raise ValueError('选择应为 A、B、same（差不多）或 neither（都不合适）')
+    def choose(
+        self,
+        pid,
+        group,
+        verdict,
+        reason='',
+        teacher='teacher',
+        *,
+        work_choice=None,
+        preference='none',
+        reason_tags=None,
+    ):
+        """A/B feedback (AB spec 3, 4), kept as separate facts instead of one win/loss label.
+
+        ``verdict``: ``A`` / ``B`` (adopt that one), ``both_ok`` (both acceptable), ``neither``, ``skip`` (no label);
+        ``same`` is the old “差不多” and means both acceptable with A taken to work on. ``work_choice`` is the one
+        taken to work on (for ``both_ok``). ``preference`` is ``better`` only when the teacher said the adopted one fits
+        this task better; ``work_only`` when it was just picked to edit; ``none`` otherwise. Only ``better`` becomes a
+        preference pair in a training export. Unchosen candidates stay as research records.
+        """
+        if verdict == 'same':
+            verdict, work_choice = 'both_ok', work_choice or 'A'
+        if verdict not in ('A', 'B', 'both_ok', 'neither', 'skip'):
+            raise ValueError('选择应为 A、B、both_ok（两份都可用）、neither（都不合适）或 skip（暂不比较）')
+        if preference not in ('better', 'work_only', 'none'):
+            raise ValueError('偏好应为 better、work_only 或 none')
+        if preference == 'better' and verdict not in ('A', 'B'):
+            raise ValueError('只有采用 A 或 B 时才能表示“更适合本次任务”')
+        chosen = verdict if verdict in ('A', 'B') else (work_choice if verdict == 'both_ok' else None)
+        if chosen not in (None, 'A', 'B'):
+            raise ValueError('继续修改的一份应为 A 或 B')
+        acceptable = {'A': 'A', 'B': 'B', 'both_ok': 'both', 'neither': 'none', 'skip': ''}[verdict]
+        tags = [t for t in (reason_tags or []) if t in REASON_TAGS]
         with self.store.tx() as c:
             gens = {
                 r['position']: r['id']
@@ -337,34 +425,108 @@ class QuestionsMixin:
             }
             if not gens:
                 raise KeyError('候选组不存在')
-            if c.execute('SELECT 1 FROM choices WHERE candidate_group=?', (group,)).fetchone():
-                raise Conflict('这一组已经选择过了')
-            chosen = {'A': 'A', 'B': 'B', 'same': 'A'}.get(verdict)
+            if c.execute('SELECT 1 FROM choices WHERE candidate_group=? AND revoked_at IS NULL', (group,)).fetchone():
+                raise Conflict('这一组已经选择过了；要改选请先撤回')
+            cid = new_id('cho')
             c.execute(
-                'INSERT INTO choices VALUES(?,?,?,?,?,?,?,?)',
-                (new_id('cho'), pid, group, verdict, chosen, reason, teacher, time.time()),
+                'INSERT INTO choices(id,project_id,candidate_group,verdict,chosen_position,reason,teacher,created_at,'
+                'work_choice,preference,acceptable,reason_tags) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                (
+                    cid,
+                    pid,
+                    group,
+                    verdict,
+                    chosen,
+                    reason,
+                    teacher,
+                    time.time(),
+                    chosen or '',
+                    preference,
+                    acceptable,
+                    dump(tags),
+                ),
             )
-            promoted = []
-            if chosen:
-                rows = c.execute(
-                    "SELECT id, type FROM artifacts WHERE generation_id=? AND status='candidate' ORDER BY created_at",
-                    (gens[chosen],),
-                ).fetchall()
-                no = self._next_no(c, pid, 1)
-                for r in rows:
-                    if r['type'] == 'question':
-                        a = A.get(c, r['id'])
-                        content = {**a['content'], 'no': no}
-                        no += 1
-                        c.execute(
-                            'UPDATE artifacts SET status=?, content=?, content_sha=? WHERE id=?',
-                            ('draft', dump(content), sha(content), r['id']),
-                        )
-                    else:
-                        c.execute("UPDATE artifacts SET status='draft' WHERE id=?", (r['id'],))
-                    promoted.append(r['id'])
-            event(c, pid, 'ab_choice', {'group': group, 'verdict': verdict, 'reason': reason})
-            return {'verdict': verdict, 'promoted': promoted}
+            promoted = self._promote(c, pid, gens[chosen]) if chosen else []
+            event(
+                c,
+                pid,
+                'ab_choice',
+                {'group': group, 'choice': cid, 'verdict': verdict, 'work_choice': chosen, 'preference': preference},
+            )
+            return {'choice_id': cid, 'verdict': verdict, 'promoted': promoted}
+
+    def _promote(self, c, pid, generation_id):
+        promoted = []
+        rows = c.execute(
+            "SELECT id, type FROM artifacts WHERE generation_id=? AND status='candidate' ORDER BY created_at",
+            (generation_id,),
+        ).fetchall()
+        no = self._next_no(c, pid, 1)
+        for r in rows:
+            if r['type'] == 'question':
+                a = A.get(c, r['id'])
+                content = {**a['content'], 'no': no}
+                no += 1
+                c.execute(
+                    'UPDATE artifacts SET status=?, content=?, content_sha=? WHERE id=?',
+                    ('draft', dump(content), sha(content), r['id']),
+                )
+            else:
+                c.execute("UPDATE artifacts SET status='draft' WHERE id=?", (r['id'],))
+            promoted.append(r['id'])
+        return promoted
+
+    def revoke_choice(self, choice_id, teacher='teacher'):
+        """Withdraw a choice (AB spec 4): a new event, the old row is kept and marked; drafts already taken stay."""
+        with self.store.tx() as c:
+            r = c.execute('SELECT * FROM choices WHERE id=?', (choice_id,)).fetchone()
+            if r is None:
+                raise KeyError('选择记录不存在')
+            if r['revoked_at']:
+                raise Conflict('这条选择已经撤回')
+            c.execute('UPDATE choices SET revoked_at=? WHERE id=?', (time.time(), choice_id))
+            event(c, r['project_id'], 'ab_choice_revoked', {'choice': choice_id, 'teacher': teacher})
+        return {'ok': True}
+
+    def merge_candidates(self, pid, group, question, rubric, sources, teacher='teacher'):
+        """结合两份修改 (AB spec 3, 4): a new draft question whose sources are candidates from both sides. The final
+        text has two sources and is never recorded as either original candidate."""
+        with self.store.tx() as c:
+            positions = {}
+            for sid in sources:
+                a = A.get(c, sid)
+                g = c.execute(
+                    'SELECT position FROM generations WHERE id=? AND candidate_group=?', (a['generation_id'], group)
+                ).fetchone()
+                if a['project_id'] != pid or g is None:
+                    raise Conflict('来源不是这一组的候选')
+                positions[sid] = g['position']
+            if set(positions.values()) != {'A', 'B'}:
+                raise ValueError('结合修改需要分别来自 A 和 B 的候选')
+            q = self._validate_content('question', {**question, 'no': self._next_no(c, pid, 1)}, {})
+            made = A.create(
+                c,
+                pid,
+                'question',
+                {**q, 'merged_from': sources},
+                origin='merged',
+                created_by=teacher,
+                refs=[(s, 'merged_from') for s in sources],
+            )
+            r = self._validate_content('rubric', {**rubric, 'question_lineage': made['lineage_id']}, {})
+            made['rubric'] = A.create(
+                c, pid, 'rubric', r, origin='merged', created_by=teacher, refs=[(made['id'], 'question')]
+            )
+            if not c.execute(
+                'SELECT 1 FROM choices WHERE candidate_group=? AND revoked_at IS NULL', (group,)
+            ).fetchone():
+                c.execute(
+                    'INSERT INTO choices(id,project_id,candidate_group,verdict,chosen_position,reason,teacher,created_at,'
+                    'work_choice,preference,acceptable,reason_tags) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                    (new_id('cho'), pid, group, 'merged', None, '', teacher, time.time(), '', 'none', '', '[]'),
+                )
+            event(c, pid, 'ab_merged', {'group': group, 'sources': sources, 'question': made['id']})
+            return made
 
     @operation('import_paper')
     def import_paper(self, pid, text, filename='导入试卷'):

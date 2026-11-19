@@ -11,6 +11,7 @@ import ipaddress
 import json
 import logging
 import tempfile
+import urllib.parse
 from pathlib import Path
 from typing import Any, Literal
 
@@ -92,12 +93,6 @@ class ManualQuestion(BaseModel):
 class RegenerateBody(BaseModel):
     instruction: str = Field(default='', max_length=300)
     difficulty: Literal['基础', '中等', '较难'] | None = None
-
-
-class ChoiceBody(BaseModel):
-    group: str
-    verdict: str
-    reason: str = Field(default='', max_length=500)
 
 
 class LearnersBody(BaseModel):
@@ -273,6 +268,39 @@ class UnitReviewBody(BaseModel):
     assignment_ids: list[str] = Field(min_length=1, max_length=20)
     pattern_ids: list[str] | None = None
     title: str = Field(default='', max_length=120)
+
+
+class ReviseBody(BaseModel):
+    target: str = Field(min_length=1, max_length=40)
+    instruction: str = Field(min_length=1, max_length=300)
+
+
+class MaterialPrefs(BaseModel):
+    exclude: list[str] | None = Field(default=None, max_length=100)
+    focus: dict[str, str] | None = None
+
+
+class CoursewareBody(BaseModel):
+    package_id: str
+    kind: Literal['handout', 'slides', 'video', 'other']
+    files: list[dict[str, str]] = Field(default_factory=list, max_length=50)
+    external_run_id: str = Field(default='', max_length=120)
+    note: str = Field(default='', max_length=500)
+
+
+class ChoiceBody2(BaseModel):
+    group: str
+    verdict: str
+    reason: str = Field(default='', max_length=500)
+    work_choice: Literal['A', 'B'] | None = None
+    preference: Literal['better', 'work_only', 'none'] = 'none'
+    reason_tags: list[str] = Field(default_factory=list, max_length=6)
+
+
+class MergeBody(BaseModel):
+    question: dict[str, Any]
+    rubric: dict[str, Any]
+    sources: list[str] = Field(min_length=2, max_length=10)
 
 
 class MapBody(BaseModel):
@@ -484,8 +512,24 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         )
 
     @app.post('/api/projects/{pid}/choices')
-    def choose(pid: str, body: ChoiceBody):
-        return ws().choose(pid, body.group, body.verdict, body.reason)
+    def choose(pid: str, body: ChoiceBody2):
+        return ws().choose(
+            pid,
+            body.group,
+            body.verdict,
+            body.reason,
+            work_choice=body.work_choice,
+            preference=body.preference,
+            reason_tags=body.reason_tags,
+        )
+
+    @app.post('/api/choices/{choice_id}/revoke')
+    def revoke_choice(choice_id: str):
+        return ws().revoke_choice(choice_id)
+
+    @app.post('/api/projects/{pid}/choices/{group}/merge')
+    def merge_candidates(pid: str, group: str, body: MergeBody):
+        return ws().merge_candidates(pid, group, body.question, body.rubric, body.sources)
 
     @app.post('/api/projects/{pid}/import-paper')
     def import_paper(pid: str, body: TextBody, request: Request):
@@ -820,6 +864,33 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             f'unit-review:{oid}',
             lambda: ws().draft_unit_review(oid, body.assignment_ids, body.pattern_ids, body.title),
         )
+
+    # ----- 局部修改, materials, deliverables, coursemaker -----
+
+    @app.post('/api/artifacts/{aid}/revise')
+    def revise_part(aid: str, body: ReviseBody, request: Request):
+        return once(request, f'revise:{aid}', lambda: ws().revise_plan_part(aid, body.target, body.instruction))
+
+    @app.put('/api/projects/{pid}/material-prefs')
+    def material_prefs(pid: str, body: MaterialPrefs):
+        return ws().set_material_prefs(pid, body.exclude, body.focus)
+
+    @app.get('/api/projects/{pid}/deliverables/{kind}')
+    def deliverable(pid: str, kind: str, fmt: str = 'html', round: int = 1, assignment_id: str | None = None):
+        name, media, data = ws().deliverable(pid, kind, fmt, round, assignment_id or None)
+        quoted = urllib.parse.quote(name)
+        disposition = 'attachment' if fmt == 'docx' else 'inline'
+        return Response(
+            data, media_type=media, headers={'Content-Disposition': f"{disposition}; filename*=UTF-8''{quoted}"}
+        )
+
+    @app.post('/api/projects/{pid}/coursemaker-package')
+    def coursemaker_package(pid: str):
+        return ws().courseware_package(pid)
+
+    @app.post('/api/projects/{pid}/courseware')
+    def import_courseware(pid: str, body: CoursewareBody):
+        return ws().import_courseware(pid, body.package_id, body.kind, body.files, body.external_run_id, body.note)
 
     @app.get('/api/migration/preview')
     def migration_preview():

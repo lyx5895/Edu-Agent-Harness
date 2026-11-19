@@ -31,13 +31,14 @@ TYPES = {
     'comparison': '两轮对比',
     'review_plan': '讲评稿',
     'explanation': '讲解草稿',
+    'courseware': '课件（coursemaker）',
 }
 STATUSES = ('candidate', 'draft', 'confirmed', 'superseded')
 # Student work never becomes stale: it does not depend on how we graded it.
 NEVER_STALE = {'submission'}
 # Teacher-confirmed content can be flagged ("its basis changed") but the flag stops there; only derived
 # results (gradings, analyses, patterns, comparisons) carry it further downstream.
-STOP_PROPAGATION = {'objective', 'lesson_plan', 'question', 'rubric', 'review_plan', 'explanation'}
+STOP_PROPAGATION = {'objective', 'lesson_plan', 'question', 'rubric', 'review_plan', 'explanation', 'courseware'}
 # Student work and what is derived from it: scoped to one assignment, never shared across classes. A 讲评稿
 # quotes student answers, so it is scoped too.
 ASSIGNMENT_TYPES = {'submission', 'grading', 'analysis', 'problem_pattern', 'comparison', 'review_plan'}

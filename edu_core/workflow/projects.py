@@ -361,22 +361,82 @@ class ProjectsMixin:
             return [{**r, 'chars': len(r['text']), 'text': r['text'][:400]} for r in self._material_rows(c, pid)]
 
     def _material_context(self, c, ctx, pid, limit=8000):
-        """Materials for a prompt. What was cut short or not sent at all is recorded in the manifest, so “已参考”
-        says so instead of implying the model read everything (design doc 4.3)."""
+        """Materials for a prompt. What was cut short, left out by the teacher or not sent at all is recorded in the
+        manifest, so “已参考” says so instead of implying the model read everything (design doc 4.3). With a focus
+        (章节或关键词) only the matching sections are sent, and their positions are recorded."""
+        p = c.execute('SELECT material_prefs FROM projects WHERE id=?', (pid,)).fetchone()
+        prefs = json.loads(p[0]) if p and p[0] else {}
+        excluded, focus = set(prefs.get('exclude') or []), prefs.get('focus') or {}
         out, used = [], 0
         for r in self._material_rows(c, pid):
-            piece = r['text'][: max(0, limit - used)]
+            extra = {
+                'family_id': r['family_id'],
+                'filename': r['filename'],
+                'scope': r['scope'],
+                'chars': len(r['text']),
+            }
+            if r['id'] in excluded:
+                ctx.add_other('material', r['id'], r['sha256'], **extra, sent=0, excluded=True)
+                continue
+            text, segments = r['text'], None
+            if focus.get(r['id']):
+                segments = focus_segments(r['text'], focus[r['id']])
+                text = '\n\n'.join(r['text'][a:b] for a, b in segments)
+            piece = text[: max(0, limit - used)]
             used += len(piece)
-            ctx.add_other(
-                'material',
-                r['id'],
-                r['sha256'],
-                family_id=r['family_id'],
-                filename=r['filename'],
-                scope=r['scope'],
-                chars=len(r['text']),
-                sent=len(piece),
-            )
+            info = {**extra, 'sent': len(piece)}
+            if segments is not None:
+                info.update(focus=focus[r['id']], segments=segments, selected=len(text))
+            ctx.add_other('material', r['id'], r['sha256'], **info)
             if piece:
                 out.append({'文件': r['filename'], '内容': piece})
         return out
+
+    def set_material_prefs(self, pid, exclude=None, focus=None):
+        """排除材料、指定章节 (design doc 4.3) for this task. ``focus`` maps a material id to 章节名或关键词."""
+        with self.store.tx() as c:
+            p = self._project(c, pid)
+            known = {r['id'] for r in self._material_rows(c, pid)}
+            prefs = json.loads(p['material_prefs']) if p.get('material_prefs') else {}
+            if exclude is not None:
+                prefs['exclude'] = sorted(set(exclude) & known)
+            if focus is not None:
+                prefs['focus'] = {k: str(v).strip()[:80] for k, v in focus.items() if k in known and str(v).strip()}
+            c.execute('UPDATE projects SET material_prefs=? WHERE id=?', (json.dumps(prefs, ensure_ascii=False), pid))
+            event(c, pid, 'material_prefs_updated', prefs)
+            return prefs
+
+
+HEADING = re.compile(r'^(#{1,6}\s|第[一二三四五六七八九十百\d]+[章节课]|[一二三四五六七八九十]+、|\d+(\.\d+)*\s)')
+
+
+def focus_segments(text, query):
+    """Character spans of the sections or paragraphs that match ``query`` (章节名或关键词, space separated).
+
+    A heading line that matches takes its whole section, up to the next heading; otherwise a paragraph matches when
+    it contains any term. Returns [] when nothing matches (the material is then not sent, and the manifest says so).
+    """
+    terms = [t for t in re.split(r'[\s,，、]+', query or '') if t]
+    if not terms:
+        return [(0, len(text))]
+    lines, pos = [], 0
+    for line in text.splitlines(keepends=True):
+        lines.append((pos, pos + len(line), line))
+        pos += len(line)
+    spans, i = [], 0
+    while i < len(lines):
+        start, _end, line = lines[i]
+        if HEADING.match(line.strip()) and any(t in line for t in terms):
+            j = i + 1
+            while j < len(lines) and not HEADING.match(lines[j][2].strip()):
+                j += 1
+            spans.append((start, lines[j - 1][1]))
+            i = j
+            continue
+        i += 1
+    if spans:
+        return spans
+    for m in re.finditer(r'[^\n]+(?:\n(?!\s*\n)[^\n]+)*', text):
+        if any(t in m.group(0) for t in terms):
+            spans.append((m.start(), m.end()))
+    return spans

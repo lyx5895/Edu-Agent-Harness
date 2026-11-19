@@ -65,7 +65,7 @@ class RecordsMixin:
                 r[0]
                 for r in c.execute(
                     'SELECT DISTINCT candidate_group FROM generations WHERE project_id=? AND candidate_group IS NOT NULL '
-                    'AND candidate_group NOT IN (SELECT candidate_group FROM choices)',
+                    'AND candidate_group NOT IN (SELECT candidate_group FROM choices WHERE revoked_at IS NULL)',
                     (pid,),
                 )
             ]
@@ -141,6 +141,7 @@ class RecordsMixin:
             tasks = [dict(r) for r in c.execute('SELECT * FROM tasks WHERE project_id=?', (pid,))]
             sessions = [dict(r) for r in c.execute('SELECT * FROM lesson_sessions WHERE project_id=?', (pid,))]
             runs = [dict(r) for r in c.execute('SELECT * FROM runs WHERE project_id=? ORDER BY started_at', (pid,))]
+            comparisons = [row(r) for r in c.execute('SELECT * FROM comparisons WHERE project_id=?', (pid,))]
         by_id = {a['id']: a for a in arts}
         edits = []
         for a in arts:
@@ -184,4 +185,5 @@ class RecordsMixin:
             'tasks': tasks,
             'lesson_sessions': sessions,
             'runs': runs,
+            'comparisons': comparisons,
         }

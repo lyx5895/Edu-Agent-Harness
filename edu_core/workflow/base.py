@@ -65,6 +65,7 @@ class WorkspaceBase:
         return {k: p.get(k, '') for k in keys} | {
             'carryover': json.loads(p['carryover']) if p.get('carryover') else None,
             'status_prefs': json.loads(p['status_prefs']) if p.get('status_prefs') else {},
+            'material_prefs': json.loads(p['material_prefs']) if p.get('material_prefs') else {},
             'curriculum': json.loads(p['curriculum']) if p.get('curriculum') else None,
             'has_curriculum': CUR.available(p['subject']),
             'subject_name': p['pack']['name'],

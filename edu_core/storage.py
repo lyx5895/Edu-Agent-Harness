@@ -137,6 +137,22 @@ CREATE TABLE IF NOT EXISTS objective_links(
   source TEXT NOT NULL, created_at REAL NOT NULL, PRIMARY KEY(artifact_id, plan_objective_id));
 CREATE INDEX IF NOT EXISTS objective_link_target ON objective_links(objective_id);
 """,
+    # Phase C: A/B comparison records, per-task material choices, coursemaker packages (design doc 4.3, 9; AB spec).
+    6: """
+CREATE TABLE IF NOT EXISTS comparisons(
+  candidate_group TEXT PRIMARY KEY, project_id TEXT NOT NULL, unit TEXT NOT NULL, input_sha TEXT NOT NULL,
+  factor TEXT NOT NULL, display TEXT NOT NULL, trigger TEXT NOT NULL, sample_rate REAL NOT NULL,
+  rule_version TEXT NOT NULL, ui_version TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'shown', created_at REAL NOT NULL);
+ALTER TABLE choices ADD COLUMN work_choice TEXT NOT NULL DEFAULT '';
+ALTER TABLE choices ADD COLUMN preference TEXT NOT NULL DEFAULT 'none';
+ALTER TABLE choices ADD COLUMN acceptable TEXT NOT NULL DEFAULT '';
+ALTER TABLE choices ADD COLUMN reason_tags TEXT NOT NULL DEFAULT '';
+ALTER TABLE choices ADD COLUMN revoked_at REAL;
+ALTER TABLE projects ADD COLUMN material_prefs TEXT NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS packages(
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL, contract TEXT NOT NULL, payload TEXT NOT NULL, sha TEXT NOT NULL,
+  created_at REAL NOT NULL);
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 

@@ -133,5 +133,14 @@ class ExplainOutput(BaseModel):
     follow_up: list[str]
 
 
+class RevisedPart(BaseModel):
+    text: str = Field(max_length=600)
+    success_criterion: str = Field(max_length=300)
+    name: str = Field(max_length=60)
+    minutes: int = Field(ge=0, le=90)
+    description: str = Field(max_length=400)
+    items: list[str]
+
+
 class PitfallOutput(BaseModel):
     pitfalls: list[Pitfall]

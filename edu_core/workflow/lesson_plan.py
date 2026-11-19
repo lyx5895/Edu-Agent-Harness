@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from edu_core import artifacts as A
 from edu_core import curriculum as CUR
 from edu_core.context import Context, describe
@@ -15,10 +17,12 @@ from edu_core.workflow.common import (
 )
 from edu_core.workflow.prompts import (
     LESSON_PLAN_SYSTEM,
+    REVISE_SYSTEM,
 )
 from edu_core.workflow.runs import operation
 from edu_core.workflow.schemas import (
     LessonPlanOutput,
+    RevisedPart,
 )
 
 
@@ -150,3 +154,91 @@ class LessonPlanMixin:
     def lesson_plans(self, pid):
         with self.store.read() as c:
             return A.current(c, pid, 'lesson_plan')
+
+    @operation('revise_plan', lambda self, args, kwargs: _plan_project(self, args[0] if args else kwargs['aid']))
+    def revise_plan_part(self, aid, target, instruction):
+        """局部修改 (design doc 4.3): “缩短导入活动”“改第 2 条目标”只改指定部分. The server keeps the rest of the plan
+        byte for byte, saves a full new draft version and records what changed and why.
+
+        ``target``: ``objective:O1``, ``activity:<序号从 1 开始>``, ``key_points``, ``difficulties`` or ``notes``.
+        """
+        instruction = (instruction or '').strip()
+        if not instruction:
+            raise ValueError('请写明要怎样修改')
+        llm = self._model()
+        with self.store.read() as c:
+            plan = A.get(c, aid)
+            if plan['type'] != 'lesson_plan':
+                raise ValueError('局部修改目前只用于备课方案')
+            if plan['status'] == 'superseded':
+                raise Conflict('该版本已被取代，请在最新版本上修改')
+            p = self._project(c, plan['project_id'])
+            content = json.loads(json.dumps(plan['content']))
+            kind, _, key = target.partition(':')
+            if kind == 'objective':
+                part = next((o for o in content['objectives'] if o['id'] == key), None)
+            elif kind == 'activity' and key.isdigit() and 1 <= int(key) <= len(content['activities']):
+                part = content['activities'][int(key) - 1]
+            elif kind in ('key_points', 'difficulties', 'notes'):
+                part = content.get(kind)
+            else:
+                part = None
+            if part is None:
+                raise ValueError(f'找不到要修改的部分：{target}')
+            ctx = Context('revise_plan')
+            ctx.add_other('project', p['id'])
+            ctx.add_artifact(plan, require_confirmed=False)
+        user = _json(
+            {
+                '学科': p['pack']['name'],
+                '整份方案': content,
+                '要修改的部分': {'位置': target, '当前内容': part},
+                '老师的要求': instruction,
+            }
+        )
+        out, meta = llm.complete(
+            'generator', 'revise_plan', REVISE_SYSTEM.format(subject=p['pack']['name']), user, RevisedPart
+        )
+        if kind == 'objective':
+            part.update(
+                text=out.text.strip() or part['text'],
+                success_criterion=out.success_criterion.strip() or part.get('success_criterion', ''),
+            )
+        elif kind == 'activity':
+            part.update(
+                name=out.name.strip() or part['name'],
+                minutes=out.minutes or part.get('minutes', 0),
+                description=out.description.strip() or part.get('description', ''),
+            )
+        elif kind == 'notes':
+            content['notes'] = out.text.strip()
+        else:
+            content[kind] = [x for x in out.items if x.strip()] or content[kind]
+        revised = normalize_plan(content)
+        # The stored plan carries the curriculum checks; recompute them before comparing so only real edits count.
+        CUR.plan_checks(p['subject'], revised['objectives'], used=bool(revised.get('curriculum')))
+        changed = sorted(k for k in set(revised) | set(plan['content']) if revised.get(k) != plan['content'].get(k))
+        if not changed:
+            raise ModelUnavailable('模型没有做出修改，请换个说法再试')
+        with self.store.tx() as c:
+            gid = record_generation(c, p['id'], meta, ctx.manifest, 'revise-plan-v1')
+            new = A.create(
+                c,
+                p['id'],
+                'lesson_plan',
+                {**revised, 'revision': {'target': target, 'instruction': instruction, 'changed': changed}},
+                origin='revised',
+                refs=[(r['ref_id'], r['role']) for r in plan['refs']],
+                generation_id=gid,
+                lineage_id=plan['lineage_id'],
+                edit_of=aid,
+                created_by='model',
+            )
+            self._guard_basis(c, p['id'], new['id'], ctx.manifest)
+        return {'lesson_plan': new, 'changed': changed, 'context_note': describe(ctx.manifest)}
+
+
+def _plan_project(self, aid):
+    with self.store.read() as c:
+        r = c.execute('SELECT project_id FROM artifacts WHERE id=?', (aid,)).fetchone()
+    return r[0] if r else ''

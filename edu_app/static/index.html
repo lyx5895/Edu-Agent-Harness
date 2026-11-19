@@ -154,6 +154,8 @@
         <div class="card">
           <h3>参考材料 <span class="muted">（可选）</span></h3>
           <div id="materials"></div>
+          <div class="row hidden" id="material-prefs-row"><button class="small secondary" id="material-prefs-save">保存材料选择</button>
+            <span class="muted">取消勾选的材料不发给模型；填写章节或关键词时只发送对应部分。</span></div>
           <details>
             <summary>添加材料</summary>
             <textarea id="material-text" rows="5" placeholder="粘贴教材、讲义、教案等文字"></textarea>
@@ -164,6 +166,8 @@
         <div class="card">
           <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
+          <div class="row hidden" id="revise-row"><span class="muted">只改一部分：</span><select id="revise-target"></select>
+            <input id="revise-instruction" placeholder="例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">修改这一部分</button></div>
           <div class="row hidden" id="use-plan-row"><span class="muted">用于其他班：</span><select id="use-plan-class"></select><button class="small secondary" id="use-plan">直接使用（加入该班课时安排）</button><button class="small secondary" id="derive-btn">做一份本班调整版</button></div>
         </div>
       </div>
@@ -314,6 +318,17 @@
           <h3>依据已变化的产物</h3>
           <p class="muted">上游有实质修改后，用到旧版本的结果会列在这里。</p>
           <div id="stale-list"></div>
+        </div>
+        <div class="card">
+          <h3>导出文件</h3>
+          <p class="muted">只导出已确认的版本；学生练习不含答案。打印版可在浏览器中“打印 / 另存为 PDF”。</p>
+          <div id="deliverables"></div>
+        </div>
+        <div class="card">
+          <h3>送去制作课件（coursemaker）</h3>
+          <p class="muted">把已确认的教案和题目打包（含版本和校验值，不含学生名单和作答），交给 coursemaker 生成讲义、课件和视频。</p>
+          <button class="secondary" id="package-btn">生成交换包</button>
+          <div id="courseware-list"></div>
         </div>
         <div class="card">
           <h3>研究记录导出</h3>
