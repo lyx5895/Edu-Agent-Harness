@@ -82,9 +82,9 @@ async function init() {
   S.meta = await api('GET', '/api/meta');
   $('#subject-select').innerHTML = '<option value="" disabled selected>请选择学科</option>'
     + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
-  const ms = $('#model-status');
-  ms.textContent = S.meta.model_ready ? `模型：${S.meta.models.grader} / 复核：${S.meta.models.reviewer}` : '未配置模型（只能查看）';
-  ms.className = 'pill ' + (S.meta.model_ready ? 'ok' : 'bad');
+  $('#model-status').textContent = S.meta.model_ready
+    ? `当前模型：出题与批改 ${S.meta.models.grader}，复核 ${S.meta.models.reviewer}`
+    : '未配置模型：只能查看已有内容（设置 EDU_LLM_API_KEY 后重启服务）';
   await loadProjects(localStorage.getItem('edu.pid'));
   bindEvents();
 }
@@ -122,26 +122,60 @@ async function refresh() {
   await renderTab();
 }
 
+const STAGES = ['prep', 'questions', 'grading', 'analysis', 'review'];
+const STAGE_NAME = { prep: '备课设计', questions: '出题改题', grading: '作业批改', analysis: '学情分析', review: '讲题答疑' };
+// "接着做" at the end of each stage (the arrows of the teaching loop).
+const CONTINUE = {
+  prep: { label: '按本课目标出题', tab: 'questions' },
+  questions: { label: '准备批改', tab: 'grading' },
+  grading: { label: '汇总学情', tab: 'analysis' },
+  analysis: { label: '准备针对性讲评', tab: 'review' },
+  review: { label: '讲评后再练', tab: 'review', target: '#practice' },
+};
+
+function currentStage() {
+  const step = S.overview.next.find((x) => STAGES.includes(x.tab) && !x.optional);
+  return step ? step.tab : null;
+}
+
 function renderOverview() {
   const o = S.overview;
   $('#project-title').textContent = o.project.title;
-  $('#project-meta').textContent = `${o.project.subject_name}${o.project.grade ? ' · ' + o.project.grade : ''} · 材料 ${o.materials} 份 · 学生 ${o.learners} 人`;
-  const c = o.counts;
-  const stat = (label, k) => `<span class="stat"><b>${c[k].confirmed}</b>/${c[k].total} ${label}</span>`;
-  $('#overview-stats').innerHTML = [
-    stat('目标已确认', 'objective'), stat('题目已确认', 'question'), `<span class="stat"><b>${c.submission.total}</b> 份作答</span>`,
-    stat('批改已确认', 'grading'), stat('问题模式已确认', 'problem_pattern'),
-    `<span class="stat"><b>${o.review_queue}</b> 待复核</span>`,
-  ].join('');
-  $('#next-step').innerHTML = o.next.map((step, i) => `<button class="next-btn" data-next="${i}" title="跳到要操作的位置">
-      <span>下一步：${esc(step.label)}</span><span>→</span></button>${step.hint ? `<div class="next-hint">${esc(step.hint)}</div>` : ''}`).join('');
+  $('#project-meta').textContent = `${o.project.subject_name}${o.project.grade ? ' · ' + o.project.grade : ''}${o.latest_round > 1 ? ` · 第 ${o.latest_round} 轮` : ''}`;
+  const cur = currentStage();
+  $$('#tabs button[data-tab]').forEach((b) => {
+    const tab = b.dataset.tab;
+    if (!STAGES.includes(tab)) return;
+    b.classList.toggle('done', !!o.stages[tab]);
+    b.classList.toggle('current', tab === cur);
+    $('.mark', b).textContent = o.stages[tab] ? '✓' : String(STAGES.indexOf(tab) + 1).padStart(2, '0');
+  });
+  const badge = $('#records-badge');
+  badge.textContent = o.stale.length;
+  badge.classList.toggle('hidden', !o.stale.length);
   if (!$('#project-edit').classList.contains('hidden')) renderProjectEdit();
-  const banner = $('#stale-banner');
-  const parts = [];
-  if (o.stale.length) parts.push(`有 ${o.stale.length} 个产物的依据已变化（上游有实质修改），请到“记录与导出”处理。`);
-  if (o.pending_ab.length) parts.push(`有 ${o.pending_ab.length} 组 A/B 候选题等待选择（在“02 出题改题”）。`);
-  banner.innerHTML = parts.map(esc).join('<br>');
-  banner.classList.toggle('hidden', !parts.length);
+}
+
+function renderContinue() {
+  const box = $(`#tab-${S.tab} .continue`);
+  if (!box) return;
+  const o = S.overview;
+  const go = CONTINUE[S.tab];
+  const here = o.next.find((x) => x.tab === S.tab && !x.optional);
+  const optional = o.next.find((x) => x.tab === S.tab && x.optional);
+  const side = optional ? `<span class="muted">可选：</span><button class="link" data-goto="${o.next.indexOf(optional)}">${esc(optional.label)}</button><span class="sep"></span>` : '';
+  if (o.stages[S.tab] && !here) {
+    box.innerHTML = `${side}<button class="continue-btn" data-continue="1">接着做：${esc(go.label)} →</button>`;
+    return;
+  }
+  if (here) {
+    box.innerHTML = `<span class="muted">这一步还差：</span><button class="link" data-goto="${o.next.indexOf(here)}">${esc(here.label)}</button>`;
+    return;
+  }
+  const blocking = o.next.find((x) => STAGES.includes(x.tab) && !x.optional);
+  box.innerHTML = blocking
+    ? `<span class="muted">需要先完成“${esc(STAGE_NAME[blocking.tab])}”：</span><button class="link" data-goto="${o.next.indexOf(blocking)}">${esc(blocking.label)}</button>`
+    : '';
 }
 
 async function renderTab() {
@@ -149,6 +183,7 @@ async function renderTab() {
   $$('.tab').forEach((t) => t.classList.toggle('hidden', t.id !== `tab-${S.tab}`));
   const fn = { prep: renderPrep, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, review: renderReview, records: renderRecords }[S.tab];
   try { await fn(); } catch (e) { toast(e.message, true); }
+  renderContinue();
 }
 
 async function goNext(step) {
@@ -187,10 +222,10 @@ async function renderPrep() {
     api('GET', `/api/projects/${S.pid}/artifacts?type=objective`),
   ]);
   $('#materials').innerHTML = mats.length
-    ? mats.map((m) => `<div class="item"><div class="item-head"><b>${esc(m.filename)}</b><span class="pill">${m.chars} 字 · 材料家族 ${esc(m.family_id.slice(-6))}</span></div><div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div></div>`).join('')
+    ? mats.map((m) => `<div class="item"><div class="item-head"><b>${esc(m.filename)}</b><span class="pill">${m.chars} 字</span></div><div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div></div>`).join('')
     : '<div class="empty">还没有材料。添加教材、讲义或教案后，可以按材料起草教学目标。</div>';
   $('#objectives').innerHTML = objs.length ? objs.map(objectiveItem).join('') : '<div class="empty">还没有教学目标。</div>';
-  if (!mats.length) $('#tab-prep details').open = true;  // a new project starts by adding material
+  $('#tab-prep details').open = !mats.length;  // open only while the project has no material yet
   const plans = await api('GET', `/api/projects/${S.pid}/lesson-plans`);
   $('#lesson-plan').innerHTML = plans.length ? plans.map(lessonPlanItem).join('') : '<div class="empty">还没有安排。确认教学目标后可以按目标安排重点、难点和课堂活动。</div>';
 }
@@ -536,9 +571,13 @@ function bindEvents() {
     const hit = S.meta.subjects.find((s) => e.target.value.includes(s.name) || (s.id === 'ai' && /AI|人工智能/i.test(e.target.value)));
     if (hit) subjectSel.value = hit.id;
   });
-  $('#next-step').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-next]');
-    if (btn) goNext(S.overview.next[Number(btn.dataset.next)]);
+  document.querySelector('#workspace').addEventListener('click', (e) => {
+    const go = e.target.closest('[data-goto]');
+    if (go) { goNext(S.overview.next[Number(go.dataset.goto)]); return; }
+    if (e.target.closest('[data-continue]')) {
+      const c = CONTINUE[S.tab];
+      goNext({ tab: c.tab, target: c.target || `#tab-${c.tab} .stage-head` });
+    }
   });
   $('#edit-project').addEventListener('click', () => {
     const box = $('#project-edit');
@@ -551,7 +590,10 @@ function bindEvents() {
     const p = await busy(e.submitter, '创建中…', () => api('POST', '/api/projects', Object.fromEntries(f.entries())));
     if (p) { e.target.reset(); delete subjectSel.dataset.manual; await loadProjects(p.id); toast('项目已创建，先添加课程材料'); }
   });
-  $('#tabs').addEventListener('click', (e) => { if (e.target.dataset.tab) { S.tab = e.target.dataset.tab; showNote(''); renderTab(); } });
+  $('#tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-tab]');
+    if (b) { S.tab = b.dataset.tab; showNote(''); renderTab(); window.scrollTo({ top: 0 }); }
+  });
   ['#q-round', '#g-round', '#a-round'].forEach((sel) => $(sel).addEventListener('change', renderTab));
 
   $('#add-material').addEventListener('click', (e) => busy(e.target, '添加中…', async () => {

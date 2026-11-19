@@ -267,9 +267,12 @@ def _question_content(d: QuestionDraft, no: int, round_: int, objective_lineages
     }
 
 
-def _step(label, tab, target, hint=''):
+def _step(label, tab, target, hint='', optional=False):
     """A next-step suggestion: the UI jumps to ``tab`` and highlights the element ``target``."""
-    return {'label': label, 'tab': tab, 'target': target, 'hint': hint}
+    step = {'label': label, 'tab': tab, 'target': target, 'hint': hint}
+    if optional:
+        step['optional'] = True  # shown as a side link; never blocks "接着做"
+    return step
 
 
 def next_steps(st):
@@ -308,7 +311,7 @@ def next_steps(st):
         else:
             steps.append(_step('按目标出题', 'questions', '#generate-questions', '也可以导入现成试卷或手工添加题目'))
             if r == 1 and not c['lesson_plan']['total']:
-                steps.append(_step('安排重点与课堂活动（可跳过）', 'prep', '#draft-lesson-plan'))
+                steps.append(_step('安排重点与课堂活动', 'prep', '#draft-lesson-plan', optional=True))
         return steps
     if not rc['submission']['total']:
         if not st['learners']:
@@ -337,6 +340,21 @@ def next_steps(st):
         else:
             steps.append(_step('讲评后再练', 'review', '#practice', '针对这些问题出一轮再练题，回到出题改题'))
     return steps
+
+
+def stage_status(counts, rc, r):
+    """Which loop stages are done for the latest round (drives the step navigation and "接着做")."""
+    graded = rc['grading']['total'] and rc['grading']['confirmed'] == rc['grading']['total']
+    return {
+        'prep': bool(counts['objective']['confirmed']),
+        'questions': bool(rc['question']['confirmed']),
+        'grading': bool(rc['submission']['total'] and graded and rc['grading']['total'] >= rc['submission']['total']),
+        'analysis': bool(
+            rc['analysis']['total'] and (rc['problem_pattern']['confirmed'] or not rc['problem_pattern']['total'])
+        ),
+        'review': bool(rc['review_plan']['confirmed']),
+        'round': r,
+    }
 
 
 class Workspace:
@@ -1763,6 +1781,7 @@ class Workspace:
             'pending_ab': pending_ab,
             'next': nxt,
             'latest_round': latest,
+            'stages': stage_status(counts, round_counts, latest),
         }
 
     def export(self, pid):

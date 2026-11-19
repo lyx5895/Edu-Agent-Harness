@@ -286,7 +286,8 @@ def test_next_step_guides_through_the_workflow(ws):
     assert ws.overview(pid)['next'][0]['label'] == '确认教学目标'
     ws.confirm(obj['id'])
     steps = ws.overview(pid)['next']
-    assert [x['target'] for x in steps] == ['#generate-questions', '#draft-lesson-plan']  # lesson plan is optional
+    assert [x['target'] for x in steps] == ['#generate-questions', '#draft-lesson-plan']
+    assert steps[1]['optional'] and 'optional' not in steps[0]  # lesson plan never blocks
 
     # The subject was picked wrong; it can still change because there is no question yet.
     assert ws.update_project(pid, subject='数学')['subject'] == 'math'
