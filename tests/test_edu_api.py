@@ -55,7 +55,7 @@ def test_teacher_flow_over_http(client):
     assert imp['created'] == 2
     graded = client.post(f'/api/projects/{pid}/grade', json={'round': 1}).json()
     assert graded['graded'] == 2 and graded['review_queue'] == 0
-    assert client.post(f'/api/projects/{pid}/gradings/confirm', json={'round': 1}).json() == {'confirmed': 2}
+    assert client.post(f'/api/projects/{pid}/gradings/confirm', json={'round': 1}).json() == {'confirmed': 2, 'held': 0}
     analysis = client.post(f'/api/projects/{pid}/analyze', json={'round': 1}).json()
     assert analysis['patterns'] and '批改 2 份' in analysis['context_note']
 
@@ -94,20 +94,28 @@ def test_next_lesson_route_needs_learning_status(client):
 
 
 def test_curriculum_routes(client):
-    pid = client.post('/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}).json()['id']
+    pid = client.post(
+        '/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}
+    ).json()['id']
     sug = client.get(f'/api/projects/{pid}/curriculum').json()
     assert sug['available'] and sug['items'] and sug['selected']
     found = client.get(f'/api/projects/{pid}/curriculum', params={'q': '基本不等式'}).json()
     assert found['items'][0]['id'] == 'math.B1.3.2'
-    upd = client.patch(f'/api/projects/{pid}', json={'lesson_scope': '图象与性质', 'curriculum_ids': ['math.B2.2.3.2']}).json()
+    upd = client.patch(
+        f'/api/projects/{pid}', json={'lesson_scope': '图象与性质', 'curriculum_ids': ['math.B2.2.3.2']}
+    ).json()
     assert upd['lesson_scope'] == '图象与性质' and upd['curriculum']['ids'] == ['math.B2.2.3.2']
 
 
 def test_question_review_routes(client):
-    pid = client.post('/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}).json()['id']
+    pid = client.post(
+        '/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}
+    ).json()['id']
     plan = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()['lesson_plan']
     client.post(f'/api/artifacts/{plan["id"]}/confirm', json={})
-    gen = client.post(f'/api/projects/{pid}/questions/generate', json={'types': ['calculation'], 'count': 1, 'ab': False}).json()
+    gen = client.post(
+        f'/api/projects/{pid}/questions/generate', json={'types': ['calculation'], 'count': 1, 'ab': False}
+    ).json()
     q = gen['candidates'][0]['questions'][0]
     cov = client.get(f'/api/projects/{pid}/coverage').json()
     assert cov['objectives'][0]['total'] == 1
@@ -155,9 +163,63 @@ def test_photo_answers_over_http(tmp_path):
     assert got.status_code == 200 and got.headers['content-type'] == 'image/jpeg'
     assert client.get('/api/photos/not-a-photo.jpeg').status_code == 400
     answers = [{'question_no': 1, 'text': '定义域 x>1，所以 1<x<9'}]
-    r = client.post(f'/api/projects/{pid}/photo-answers', json={'learner': '甲', 'answers': answers, 'photos': draft['photos']})
+    r = client.post(
+        f'/api/projects/{pid}/photo-answers', json={'learner': '甲', 'answers': answers, 'photos': draft['photos']}
+    )
     assert r.status_code == 200 and r.json()['created'] == 1
     bad = client.post(
-        f'/api/projects/{pid}/photo-answers/transcribe', data={'learner': '甲'}, files=[('files', ('x.png', b'nope', 'image/png'))]
+        f'/api/projects/{pid}/photo-answers/transcribe',
+        data={'learner': '甲'},
+        files=[('files', ('x.png', b'nope', 'image/png'))],
     )
     assert bad.status_code == 400
+
+
+def test_course_workspace_over_http(client):
+    crs = client.post('/api/courses', json={'title': '高一数学·上学期', 'subject': '数学'}).json()
+    cls = client.post('/api/classes', json={'name': '高一（3）班', 'aliases': ['甲', '乙']}).json()
+    off = client.post(f'/api/courses/{crs["id"]}/classes', json={'class_id': cls['id']}).json()
+    assert client.get('/api/home').json()['offerings'][0]['class_name'] == '高一（3）班'
+
+    key = {'Idempotency-Key': 'start-1'}
+    body = {'kind': 'prep', 'offering_id': off['id'], 'knowledge_module': '对数函数', 'lesson': '第2课时'}
+    started = client.post(f'/api/courses/{crs["id"]}/tasks', json=body, headers=key).json()
+    again = client.post(f'/api/courses/{crs["id"]}/tasks', json=body, headers=key).json()
+    assert started['task']['id'] == again['task']['id'] and len(client.get('/api/tasks').json()) == 1
+    pid = started['project']['id']
+
+    client.post(f'/api/projects/{pid}/materials', json={'text': '对数函数的定义域是 (0,+∞)。'})
+    plan = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()['lesson_plan']
+    client.post(f'/api/artifacts/{plan["id"]}/confirm', json={})
+    [session] = client.get(f'/api/offerings/{off["id"]}/sessions').json()
+    assert session['status'] == 'planned'
+    gen = client.post(
+        f'/api/projects/{pid}/questions/generate', json={'types': ['calculation'], 'count': 1, 'ab': False}
+    ).json()
+    q = gen['candidates'][0]['questions'][0]
+    client.post(f'/api/artifacts/{q["id"]}/confirm', json={})
+
+    a = client.post(f'/api/projects/{pid}/assignments', json={'offering_id': off['id']}).json()
+    client.post(f'/api/projects/{pid}/submissions', json={'csv': '甲,1,x>1 且 1<x<9', 'assignment_id': a['id']})
+    client.post(f'/api/projects/{pid}/grade', json={'assignment_id': a['id']})
+    assert len(client.get(f'/api/projects/{pid}/gradings?assignment_id={a["id"]}').json()) == 1
+    assert client.get(f'/api/projects/{pid}/gradings').json() == []
+    ov = client.get(f'/api/projects/{pid}').json()
+    assert ov['assignment_id'] == a['id'] and ov['assignments'][0]['class_name'] == '高一（3）班'
+    impact = client.get(f'/api/assignments/{a["id"]}/correction?question_lineage={q["lineage_id"]}').json()
+    assert impact['gradings'] == 1 and impact['other_assignments'] == []
+    assert client.patch(f'/api/sessions/{session["id"]}', json={'status': 'taught'}).json()['status'] == 'taught'
+    assert client.get('/api/migration/preview').json()['groups'] == []
+
+
+def test_topics_explain_derive_and_status_prefs_over_http(client):
+    crs = client.post('/api/courses', json={'title': '高一数学', 'subject': 'math'}).json()
+    unit = client.post(f'/api/courses/{crs["id"]}/units', json={'title': '对数函数'}).json()
+    t = client.post(f'/api/courses/{crs["id"]}/tasks', json={'kind': 'explain', 'knowledge_module': '对数函数'}).json()
+    assert t['project']['unit_id'] == unit['id']
+    assert client.get(f'/api/units/{unit["id"]}').json()['unit']['title'] == '对数函数'
+    assert client.get(f'/api/projects/{t["project"]["id"]}/class-status').json() is None  # no class: nothing to send
+    assert client.get(f'/api/projects/{t["project"]["id"]}/explanations').json() == []
+    assert client.post(f'/api/projects/{t["project"]["id"]}/explain', json={'question': ''}).status_code == 422
+    r = client.post(f'/api/projects/{t["project"]["id"]}/derive', json={'offering_id': 'off_missing'})
+    assert r.status_code == 404

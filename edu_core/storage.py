@@ -63,6 +63,57 @@ ALTER TABLE projects ADD COLUMN carryover TEXT NOT NULL DEFAULT '';
 ALTER TABLE projects ADD COLUMN lesson_scope TEXT NOT NULL DEFAULT '';
 ALTER TABLE projects ADD COLUMN curriculum TEXT NOT NULL DEFAULT '';
 """,
+    # Course workspace (COURSE_WORKSPACE_DESIGN.md 10): courses, classes and their members, offerings (a class
+    # taking a course), tasks, lesson sessions and assignments. Old per-lesson projects keep working; they become
+    # task workspaces once a teacher maps them to a course. '' means "not linked".
+    2: """
+CREATE TABLE IF NOT EXISTS courses(
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, subject TEXT NOT NULL, grade TEXT NOT NULL DEFAULT '',
+  term TEXT NOT NULL DEFAULT '', textbook TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '',
+  owner TEXT NOT NULL DEFAULT '', archived INTEGER NOT NULL DEFAULT 0, created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS class_groups(
+  id TEXT PRIMARY KEY, name TEXT NOT NULL, notes TEXT NOT NULL DEFAULT '', created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS class_members(
+  id TEXT PRIMARY KEY, class_id TEXT NOT NULL, alias TEXT NOT NULL, source TEXT NOT NULL DEFAULT '',
+  joined_at REAL NOT NULL, left_at REAL, UNIQUE(class_id, alias));
+CREATE TABLE IF NOT EXISTS offerings(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL, class_id TEXT NOT NULL, progress TEXT NOT NULL DEFAULT '',
+  created_at REAL NOT NULL, UNIQUE(course_id, class_id));
+CREATE TABLE IF NOT EXISTS tasks(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL, offering_id TEXT NOT NULL DEFAULT '', project_id TEXT NOT NULL,
+  kind TEXT NOT NULL, title TEXT NOT NULL, request TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'open',
+  created_at REAL NOT NULL, updated_at REAL NOT NULL);
+CREATE INDEX IF NOT EXISTS task_course ON tasks(course_id, status);
+CREATE TABLE IF NOT EXISTS lesson_sessions(
+  id TEXT PRIMARY KEY, offering_id TEXT NOT NULL, project_id TEXT NOT NULL DEFAULT '', task_id TEXT NOT NULL DEFAULT '',
+  title TEXT NOT NULL, planned_date TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'planned',
+  plan_artifact_id TEXT NOT NULL DEFAULT '', created_at REAL NOT NULL, updated_at REAL NOT NULL);
+CREATE INDEX IF NOT EXISTS session_offering ON lesson_sessions(offering_id, status);
+CREATE TABLE IF NOT EXISTS assignments(
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL, offering_id TEXT NOT NULL, round INTEGER NOT NULL DEFAULT 1,
+  parent_id TEXT NOT NULL DEFAULT '', title TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'assigned',
+  roster TEXT NOT NULL, pinned TEXT NOT NULL, created_at REAL NOT NULL);
+CREATE INDEX IF NOT EXISTS assignment_offering ON assignments(offering_id);
+CREATE INDEX IF NOT EXISTS assignment_project ON assignments(project_id);
+CREATE TABLE IF NOT EXISTS idempotency(
+  key TEXT PRIMARY KEY, scope TEXT NOT NULL, status TEXT NOT NULL, result TEXT NOT NULL DEFAULT '',
+  created_at REAL NOT NULL);
+ALTER TABLE projects ADD COLUMN course_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN offering_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE artifacts ADD COLUMN course_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE artifacts ADD COLUMN task_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE artifacts ADD COLUMN assignment_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE materials ADD COLUMN course_id TEXT NOT NULL DEFAULT '';
+CREATE INDEX IF NOT EXISTS artifact_assignment ON artifacts(assignment_id, type);
+""",
+    # Topics (单元或主题) of a course, and per-task choices about what 本班学情 to send (design doc 2.1, 7.1).
+    3: """
+CREATE TABLE IF NOT EXISTS units(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL, title TEXT NOT NULL, position INTEGER NOT NULL DEFAULT 0,
+  created_at REAL NOT NULL, UNIQUE(course_id, title));
+ALTER TABLE projects ADD COLUMN unit_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN status_prefs TEXT NOT NULL DEFAULT '';
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 
@@ -125,6 +176,20 @@ class Store:
             raise
         finally:
             c.close()
+
+    def backup(self, label: str):
+        """Copy the database next to itself (``<db>.bak-<label>``) with SQLite's online backup; returns the path."""
+        if self.path == ':memory:':
+            return None
+        dest = f'{self.path}.bak-{label}'
+        src = self.connect()
+        dst = sqlite3.connect(dest)
+        try:
+            src.backup(dst)
+        finally:
+            dst.close()
+            src.close()
+        return dest
 
     @contextmanager
     def read(self):

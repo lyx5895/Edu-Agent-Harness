@@ -12,15 +12,22 @@ outside any transaction, then writes artifacts, references and generation record
 * ``lesson_plan`` (01), ``questions`` (02), ``submissions`` (03), ``analysis`` (04), ``review`` (05)
 * ``photos``: photo import (transcribe, then the teacher checks the text before import)
 * ``records``: staleness, overview and research export
+* ``courses``: courses, classes, offerings, tasks, lesson sessions, 本班学情, home, mapping old projects
+* ``assignments``: 布置记录 (pinned versions, roster snapshot), rubric correction for one class, re-pinning
+
+Student work (submissions, gradings, analyses, patterns, comparisons, 讲评稿) is scoped by ``assignment_id``;
+None means the project's own unbound work, as before courses existed.
 """
 
 from edu_core.workflow.analysis import AnalysisMixin
+from edu_core.workflow.assignments import AssignmentsMixin
 from edu_core.workflow.base import WorkspaceBase
 from edu_core.workflow.common import (
     Conflict,
     normalize_plan,
     usable_drafts,
 )
+from edu_core.workflow.courses import CoursesMixin
 from edu_core.workflow.lesson_plan import LessonPlanMixin
 from edu_core.workflow.photos import PhotosMixin
 from edu_core.workflow.projects import ProjectsMixin
@@ -53,6 +60,8 @@ from edu_core.workflow.submissions import SubmissionsMixin
 
 
 class Workspace(
+    CoursesMixin,
+    AssignmentsMixin,
     ProjectsMixin,
     LessonPlanMixin,
     QuestionsMixin,

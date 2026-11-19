@@ -183,3 +183,31 @@ label.inline { display: flex; align-items: center; gap: 4px; flex-direction: row
 .ph-answer { margin-bottom: 10px; }
 .ph-answer textarea { width: 100%; }
 @media (max-width: 760px) { .ph-review { grid-template-columns: 1fr; } .ph-review .ph-thumbs { position: static; flex-direction: row; } }
+
+/* 我的教学（课程工作台） */
+.home-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.home-head h1 { margin: 0 8px 0 0; font-size: 22px; }
+.home-head label { display: flex; align-items: center; gap: 6px; flex-direction: row; font-size: 14px; }
+.task-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.task-row:last-child { border-bottom: 0; }
+.task-row .task-main { flex: 1; min-width: 200px; }
+.task-row .task-pending { font-size: 13px; color: var(--warn); }
+.offering { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.offering h4 { margin: 0 0 6px; }
+.session-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; padding: 4px 0; }
+.session-row .s-title { flex: 1; min-width: 160px; }
+.session-row.overdue .s-title { color: var(--warn); }
+.session-row input[type=date] { font-size: 13px; }
+.crumbs { font-size: 13px; margin-bottom: 2px; }
+.crumbs a { color: var(--accent); cursor: pointer; text-decoration: none; }
+.scope-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+.scope-bar label { display: flex; flex-direction: row; align-items: center; gap: 6px; font-size: 14px; }
+.assign-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.assign-row .muted { flex-basis: 100%; font-size: 12px; }
+.legacy-group { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+.legacy-group .grid-form { margin-top: 8px; }
+.correction { border: 1px solid var(--warn); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+@media (max-width: 760px) { .home-head label { width: 100%; } .home-head select { flex: 1; } }
+.home-head label { white-space: nowrap; }
+.session-row input[type=date] { width: auto; flex: 0 0 auto; padding: 2px 6px; }
+.scope-bar label { white-space: nowrap; }

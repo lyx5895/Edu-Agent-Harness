@@ -137,17 +137,21 @@ class ProjectsMixin:
             row_ = {
                 'name': ct['name'],
                 'description': ct['description'],
-                'affected': f"{len(ct['affected_learners'])}/{ct['total_learners']}",
+                'affected': f'{len(ct["affected_learners"])}/{ct["total_learners"]}',
             }
             t = trend.get(x['lineage_id'])
             if t and t['enough_evidence']:
                 row_['after_practice'] = (
-                    f"再练后仍有 {len(t['persisting'])} 人出错" if t['persisting'] else '再练后已改善'
+                    f'再练后仍有 {len(t["persisting"])} 人出错' if t['persisting'] else '再练后已改善'
                 )
             else:
                 row_['after_practice'] = '还没有再练结果'
             patterns.append(row_)
-        analyses = A.current(c, pid, 'analysis')
+        # Only a confirmed analysis carries its summary forward (design doc 7.1, 7.2).
+        analyses = [
+            A.confirmed_in_lineage(c, a['lineage_id']) for a in A.current(c, pid, 'analysis') if a['confirmed_version']
+        ]
+        analyses = [a for a in analyses if a]
         reviews = [r for r in A.current(c, pid, 'review_plan') if r['confirmed_version']]
         plan = self._plan(c, pid)
         snapshot = {
@@ -155,6 +159,9 @@ class ProjectsMixin:
             'from_title': p['title'],
             'from_lesson': p.get('lesson', ''),
             'summary': analyses[-1]['content'].get('summary', '') if analyses else '',
+            'note': '部分分析：' + analyses[-1]['content']['coverage']['label']
+            if analyses and analyses[-1]['content'].get('partial')
+            else '',
             'patterns': patterns,
             'review_focus': A.confirmed_in_lineage(c, reviews[-1]['lineage_id'])['content'].get('focus', [])
             if reviews
@@ -162,8 +169,33 @@ class ProjectsMixin:
             'objectives': [g['content']['text'] for g in self._goals(plan)],
         }
         if not (snapshot['patterns'] or snapshot['summary']):
-            raise Conflict('这一课时还没有学情分析结果，先完成“学情分析”再进入下一课时')
+            raise Conflict('这一课时还没有已确认的问题模式或学情分析，先在“学情分析”中确认再进入下一课时')
         return snapshot
+
+    def _prior_status(self, c, ctx, p):
+        """上一课时学情 (a lesson made by 进入下一课时) or 本班学情 (a task of a class, design doc 7.1).
+
+        The class status is computed when the model is called and registered in the manifest with the exact
+        analysis and pattern versions used, so later revisions do not change what this run read.
+        """
+        if p.get('carryover'):
+            carry = json.loads(p['carryover'])
+            ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
+            return carry | {'label': '上一课时学情'}
+        if p.get('offering_id'):
+            prefs = json.loads(p['status_prefs']) if p.get('status_prefs') else {}
+            carry = self._class_status(c, p['offering_id'], prefs)
+            if carry:
+                ctx.add_other(
+                    'class_status',
+                    p['offering_id'],
+                    sha(_json(carry)),
+                    analyses=carry['analysis_ids'],
+                    patterns=carry['pattern_ids'],
+                    partial=bool(carry.get('note')),
+                )
+                return carry | {'label': '本班学情'}
+        return None
 
     def next_lesson(self, pid, *, knowledge_module=None, lesson=None, title=None):
         """进入下一课时: a new project that inherits subject, grade, learner profile and roster, and carries this
@@ -171,7 +203,10 @@ class ProjectsMixin:
         with self.store.read() as c:
             p = self._project(c, pid)
             carry = self._carryover(c, pid)
-            roster = [r['alias'] for r in c.execute('SELECT alias FROM learners WHERE project_id=? ORDER BY created_at', (pid,))]
+            roster = [
+                r['alias']
+                for r in c.execute('SELECT alias FROM learners WHERE project_id=? ORDER BY created_at', (pid,))
+            ]
         old_lesson = p.get('lesson', '')
         if lesson is None:
             m = re.search(r'第\s*(\d+)\s*课时', old_lesson)
@@ -182,7 +217,7 @@ class ProjectsMixin:
             if old_lesson and old_lesson in base and lesson:
                 title = base.replace(old_lesson, lesson)
             else:
-                title = f"{base}｜{lesson or '下一课时'}"
+                title = f'{base}｜{lesson or "下一课时"}'
         new = self.create_project(
             title,
             p['subject'],
@@ -273,35 +308,75 @@ class ProjectsMixin:
                 for r in c.execute('SELECT id FROM projects ORDER BY created_at DESC')
             ]
 
-    def add_material(self, pid, text, filename='粘贴文本', kind='text', family_of=None):
+    def add_material(self, pid, text, filename='粘贴文本', kind='text', family_of=None, course_id=None):
+        """A material of one project (task), or with ``course_id`` and no project a shared course material."""
         text = (text or '').strip()
         if not text:
             raise ValueError('材料内容为空')
         if len(text) > 200_000:
             raise ValueError('材料过长（上限 20 万字）')
         with self.store.tx() as c:
-            self._project(c, pid)
+            if pid:
+                self._project(c, pid)
+                course_id = ''
+            else:
+                self._course(c, course_id)
+                pid = ''
             family = family_of or new_id('fam')
             mid = new_id('mat')
             c.execute(
-                'INSERT INTO materials VALUES(?,?,?,?,?,?,?,?)',
-                (mid, pid, family, kind, filename, sha(text), text, time.time()),
+                'INSERT INTO materials(id,project_id,family_id,kind,filename,sha256,text,created_at,course_id) '
+                'VALUES(?,?,?,?,?,?,?,?,?)',
+                (mid, pid, family, kind, filename, sha(text), text, time.time(), course_id),
             )
-            event(c, pid, 'material_added', {'material_id': mid, 'family_id': family, 'filename': filename})
-            return {'id': mid, 'family_id': family, 'filename': filename, 'chars': len(text)}
+            event(
+                c, pid or course_id, 'material_added', {'material_id': mid, 'family_id': family, 'filename': filename}
+            )
+            return {
+                'id': mid,
+                'family_id': family,
+                'filename': filename,
+                'chars': len(text),
+                'scope': 'project' if pid else 'course',
+            }
+
+    def _material_rows(self, c, pid):
+        """The project's own materials, then the shared materials of its course."""
+        rows = [
+            dict(r) | {'scope': 'project'}
+            for r in c.execute('SELECT * FROM materials WHERE project_id=? ORDER BY created_at', (pid,))
+        ]
+        course = c.execute('SELECT course_id FROM projects WHERE id=?', (pid,)).fetchone()
+        if course and course[0]:
+            rows += [
+                dict(r) | {'scope': 'course'}
+                for r in c.execute(
+                    "SELECT * FROM materials WHERE course_id=? AND project_id='' ORDER BY created_at", (course[0],)
+                )
+            ]
+        return rows
 
     def materials(self, pid):
         with self.store.read() as c:
-            return [
-                {**dict(r), 'chars': len(r['text']), 'text': r['text'][:400]}
-                for r in c.execute('SELECT * FROM materials WHERE project_id=? ORDER BY created_at', (pid,))
-            ]
+            return [{**r, 'chars': len(r['text']), 'text': r['text'][:400]} for r in self._material_rows(c, pid)]
 
     def _material_context(self, c, ctx, pid, limit=8000):
+        """Materials for a prompt. What was cut short or not sent at all is recorded in the manifest, so “已参考”
+        says so instead of implying the model read everything (design doc 4.3)."""
         out, used = [], 0
-        for r in c.execute('SELECT * FROM materials WHERE project_id=? ORDER BY created_at', (pid,)):
-            ctx.add_other('material', r['id'], r['sha256'], family_id=r['family_id'], filename=r['filename'])
+        for r in self._material_rows(c, pid):
             piece = r['text'][: max(0, limit - used)]
             used += len(piece)
-            out.append({'文件': r['filename'], '内容': piece})
+            ctx.add_other(
+                'material',
+                r['id'],
+                r['sha256'],
+                family_id=r['family_id'],
+                filename=r['filename'],
+                scope=r['scope'],
+                chars=len(r['text']),
+                sent=len(piece),
+            )
+            if piece:
+                out.append({'文件': r['filename'], '内容': piece})
         return out

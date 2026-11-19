@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import random
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 from edu_core import artifacts as A
@@ -13,6 +14,7 @@ from edu_core.context import describe
 from edu_core.llm import ModelUnavailable
 from edu_core.storage import Store, row
 from edu_core.subjects import KEYED_TYPES, QUESTION_TYPES, pack
+from edu_core.text import dump
 from edu_core.workflow.common import (
     Conflict,
     normalize_plan,
@@ -55,14 +57,157 @@ class WorkspaceBase:
             'prev_project_id',
             'lesson_scope',
             'created_at',
+            'course_id',
+            'offering_id',
+            'unit_id',
         )
         return {k: p.get(k, '') for k in keys} | {
             'carryover': json.loads(p['carryover']) if p.get('carryover') else None,
+            'status_prefs': json.loads(p['status_prefs']) if p.get('status_prefs') else {},
             'curriculum': json.loads(p['curriculum']) if p.get('curriculum') else None,
             'has_curriculum': CUR.available(p['subject']),
             'subject_name': p['pack']['name'],
             'question_types': p['pack']['types'],
         }
+
+    # ----- idempotency (design doc 8) -----
+
+    IDEMPOTENCY_ABANDONED = 15 * 60  # a 'running' key older than this belongs to a crashed request
+
+    def once(self, key, scope, fn):
+        """Run ``fn`` once per (scope, key): a retry with the same key returns the stored result.
+
+        Without a key the call simply runs. A key still running raises Conflict; a failed run frees the key.
+        """
+        if not key:
+            return fn()
+        key = f'{scope}:{key}'[:240]
+        with self.store.tx() as c:
+            r = c.execute('SELECT status, result, created_at FROM idempotency WHERE key=?', (key,)).fetchone()
+            if r and r['status'] == 'done':
+                return json.loads(r['result'])
+            if r and r['status'] == 'running' and time.time() - r['created_at'] < self.IDEMPOTENCY_ABANDONED:
+                raise Conflict('同一操作正在进行，请稍后刷新查看结果')
+            c.execute(
+                'INSERT OR REPLACE INTO idempotency(key,scope,status,result,created_at) VALUES(?,?,?,?,?)',
+                (key, scope, 'running', '', time.time()),
+            )
+        try:
+            result = fn()
+        except BaseException:
+            with self.store.tx() as c:
+                c.execute('DELETE FROM idempotency WHERE key=?', (key,))
+            raise
+        with self.store.tx() as c:
+            c.execute("UPDATE idempotency SET status='done', result=? WHERE key=?", (dump(result), key))
+        return json.loads(dump(result))
+
+    # ----- assignment scope (COURSE_WORKSPACE_DESIGN.md 10.1, 10.2) -----
+
+    def _assignment_row(self, c, aid):
+        a = row(c.execute('SELECT * FROM assignments WHERE id=?', (aid,)).fetchone())
+        if a is None:
+            raise KeyError(f'布置记录不存在：{aid}')
+        a['roster'] = json.loads(a['roster'] or '[]')
+        a['pinned'] = json.loads(a['pinned'] or '{}')
+        return a
+
+    def _scope(self, c, pid, round_, assignment_id):
+        """(project, round, assignment) of student work: a class assignment, or the project's own unbound work ('')."""
+        if not assignment_id:
+            if pid is None:
+                raise ValueError('缺少项目')
+            return pid, round_ or 1, ''
+        a = self._assignment_row(c, assignment_id)
+        if pid and a['project_id'] != pid:
+            raise Conflict('这次布置不属于当前项目')
+        return a['project_id'], a['round'], a['id']
+
+    def _scoped_questions(self, c, pid, round_, aid):
+        """题号 -> question version used by this work: the pinned version of a class assignment, else the confirmed one."""
+        if aid:
+            a = self._assignment_row(c, aid)
+            out = {}
+            for pin in a['pinned'].values():
+                q = A.get(c, pin['question'])
+                out[q['content']['no']] = q
+            return out
+        return {
+            q['content']['no']: A.confirmed_in_lineage(c, q['lineage_id'])
+            for q in A.current(c, pid, 'question', round_=round_)
+            if q['confirmed_version']
+        }
+
+    def _scoped_rubric(self, c, question_lineage, aid):
+        if aid:
+            pin = self._assignment_row(c, aid)['pinned'].get(question_lineage)
+            return A.get(c, pin['rubric']) if pin else None
+        return self._rubric_for(c, question_lineage)
+
+    def _roster(self, c, pid, aid):
+        """alias -> learner id: the assignment's roster snapshot, or the project's learners."""
+        if aid:
+            return {m['alias']: m['id'] for m in self._assignment_row(c, aid)['roster']}
+        return {r['alias']: r['id'] for r in c.execute('SELECT id, alias FROM learners WHERE project_id=?', (pid,))}
+
+    def _add_to_roster(self, c, pid, aid, alias):
+        """A learner outside the roster: added to the class (and this assignment's snapshot) or to the project."""
+        from edu_core.storage import new_id
+
+        if not aid:
+            lid = new_id('lrn')
+            c.execute('INSERT INTO learners VALUES(?,?,?,?)', (lid, pid, alias, time.time()))
+            return lid
+        a = self._assignment_row(c, aid)
+        class_id = c.execute('SELECT class_id FROM offerings WHERE id=?', (a['offering_id'],)).fetchone()[0]
+        m = c.execute('SELECT id FROM class_members WHERE class_id=? AND alias=?', (class_id, alias)).fetchone()
+        mid = m[0] if m else new_id('mem')
+        if not m:
+            c.execute(
+                'INSERT INTO class_members(id,class_id,alias,source,joined_at) VALUES(?,?,?,?,?)',
+                (mid, class_id, alias, 'import', time.time()),
+            )
+        roster = a['roster'] + [{'id': mid, 'alias': alias}]
+        c.execute('UPDATE assignments SET roster=? WHERE id=?', (dump(roster), aid))
+        return mid
+
+    # ----- write-back check (design doc 8) -----
+
+    def _basis_changed(self, c, manifest, assignment_id=''):
+        """Artifacts that replaced what a model call read while it ran: ids of the newer versions.
+
+        For a class assignment the pinned version is the basis, so a newer content version alone is not a change;
+        re-pinning or correcting it is.
+        """
+        pins = self._assignment_row(c, assignment_id)['pinned'] if assignment_id else {}
+        pinned_ids = {}
+        for q_lin, pin in pins.items():
+            pinned_ids[q_lin] = pin['question']
+            pinned_ids[pin.get('rubric_lineage')] = pin['rubric']
+        changed = []
+        for m in manifest:
+            if m.get('kind') not in A.TYPES or 'lineage_id' not in m:
+                continue
+            if m['lineage_id'] in pinned_ids:
+                if pinned_ids[m['lineage_id']] != m['id']:
+                    changed.append(pinned_ids[m['lineage_id']])
+                continue
+            newer = c.execute(
+                "SELECT id FROM artifacts WHERE lineage_id=? AND status='confirmed' AND version>? "
+                'ORDER BY version DESC LIMIT 1',
+                (m['lineage_id'], m['version']),
+            ).fetchone()
+            if newer:
+                changed.append(newer[0])
+        return changed
+
+    def _guard_basis(self, c, pid, artifact_id, manifest, assignment_id=''):
+        """A result computed from inputs that changed meanwhile is saved as "based on an old basis": it gets an open
+        stale mark and cannot be confirmed until the teacher keeps it or reruns it."""
+        changed = self._basis_changed(c, manifest, assignment_id)
+        if changed:
+            A.open_stale(c, pid, artifact_id, changed[0])
+        return bool(changed)
 
     def _parallel(self, fn, items):
         if not items:
@@ -109,13 +254,21 @@ class WorkspaceBase:
             return A.edit(c, aid, content, teacher=teacher)
 
     def confirm(self, aid, change_kind='substantive', teacher='teacher'):
+        """Adopt a version. One rule set for every caller (design doc 6.1): results with an open "依据已变化" mark
+        and gradings with undetermined points or open risks cannot be adopted through this generic path."""
         with self.store.tx() as c:
             a = A.get(c, aid)
+            if a['status'] != 'confirmed' and A.is_stale(c, aid):
+                raise Conflict('它的依据已经变化：请先在“记录与导出”中选择保留原结果或重新生成')
+            if a['type'] == 'grading' and (a['content'].get('undetermined') or a['content'].get('needs_teacher')):
+                raise Conflict('这条批改还有未判定的要点或待复核的疑点，请用“改判”逐项给分')
             if a['type'] == 'question':
                 rubric = self._rubric_for(c, a['lineage_id'], include_drafts=True)
                 if rubric is None:
                     raise Conflict('这道题还没有评分标准')
             done = A.confirm(c, aid, change_kind=change_kind, teacher=teacher)
+            if a['type'] == 'lesson_plan':
+                self._on_plan_confirmed(c, done)
             if a['type'] == 'question':
                 # A question and its rubric are confirmed together: grading needs both.
                 rubric = self._rubric_for(c, a['lineage_id'], include_drafts=True)

@@ -159,7 +159,7 @@ def test_full_loop(ws):
 
     with pytest.raises(Conflict):
         ws.analyze(pid)  # gradings must be confirmed first
-    assert ws.confirm_gradings(pid) == {'confirmed': 2}
+    assert ws.confirm_gradings(pid) == {'confirmed': 2, 'held': 0}
 
     out = ws.analyze(pid)
     [pattern] = out['patterns']  # the evidence-free pattern is dropped
@@ -430,8 +430,14 @@ def test_next_lesson_carries_learning_status_into_the_plan(ws):
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    [pattern] = ws.analyze(pid)['patterns']
+    out = ws.analyze(pid)
+    [pattern] = out['patterns']
     ws.confirm(pattern['id'])
+    # One pattern failed the evidence check, so the model summary is replaced by what the evidence shows.
+    assert out['analysis']['content']['summary_source'] == 'server'
+    assert out['analysis']['content']['summary'].startswith('有作答证据的问题：解对数不等式时遗漏定义域')
+    assert ws.next_lesson(pid)['carryover']['summary'] == ''  # an unconfirmed analysis is not carried over
+    ws.confirm(out['analysis']['id'])
 
     nxt = ws.next_lesson(pid)
     assert nxt['lesson'] == '第 3 课时' and nxt['title'] == '高一数学｜对数函数｜第 3 课时'
@@ -474,7 +480,9 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     # A requirement above the standard's wording is flagged; the citation survives the edit.
     with ws.store.read() as c:
         draft = ws._plan(c, pid, confirmed=False)
-    edited = ws.edit(draft['id'], {'objectives': [{'id': 'O1', 'text': '熟练掌握对数函数的单调性', 'success_criterion': 'x'}]})
+    edited = ws.edit(
+        draft['id'], {'objectives': [{'id': 'O1', 'text': '熟练掌握对数函数的单调性', 'success_criterion': 'x'}]}
+    )
     [o] = edited['content']['objectives']
     assert o['standard_ids'] == [offered[0]] and o['checks'][0].startswith('要求高于课标：课标为“了解”')
     added = ws.edit(draft['id'], {'objectives': [o, {'text': '能画出 y=log2x 的图象', 'success_criterion': 'y'}]})
@@ -524,7 +532,12 @@ def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
     }
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False, difficulty='基础')
     flags = gen['candidates'][0]['questions'][0]['content']['checks']['flags']
-    assert flags == ['与目标不符：只考了单调性', '超出范围：用到了换底公式', '难度偏高：要求基础，评估为较难', '题目问题：条件不足']
+    assert flags == [
+        '与目标不符：只考了单调性',
+        '超出范围：用到了换底公式',
+        '难度偏高：要求基础，评估为较难',
+        '题目问题：条件不足',
+    ]
 
     cov = ws.coverage(p['id'])
     [row] = cov['objectives']
@@ -541,8 +554,13 @@ def test_adopt_solver_answer_and_regenerate_one_question(ws):
     assert fixed['content']['reference'] == '直接得 x<9' and not fixed['content']['checks']['answer_suspect']
     assert fixed['version'] == 2 and fixed['status'] == 'draft'
     with pytest.raises(Conflict):
-        ws.adopt_solver_answer(ws.create_question(p['id'], {'type': 'calculation', 'stem': 's', 'reference': 'r'},
-                                                  {'points': [{'description': 'd', 'score': 1}]})['id'])
+        ws.adopt_solver_answer(
+            ws.create_question(
+                p['id'],
+                {'type': 'calculation', 'stem': 's', 'reference': 'r'},
+                {'points': [{'description': 'd', 'score': 1}]},
+            )['id']
+        )
 
     # 换一道 on the confirmed question: same number, same objective, next version of the same question
     ws.llm.handlers['regenerate_question'] = lambda r, p: {'questions': [question('解不等式 log2(x+1) < 2（更简单）')]}
@@ -663,8 +681,18 @@ def test_analysis_counts_learners_by_evidence_and_reports_objectives(ws):
     pid = p['id']
     q2 = ws.create_question(
         pid,
-        {'type': 'calculation', 'stem': '解不等式 log2(x-1) < 3（变式）', 'reference': '1<x<9', 'objective_ids': ['O1']},
-        {'points': [{'id': 'P1', 'description': '写出定义域 x>1', 'score': 2}, {'id': 'P2', 'description': '结论 1<x<9', 'score': 2}]},
+        {
+            'type': 'calculation',
+            'stem': '解不等式 log2(x-1) < 3（变式）',
+            'reference': '1<x<9',
+            'objective_ids': ['O1'],
+        },
+        {
+            'points': [
+                {'id': 'P1', 'description': '写出定义域 x>1', 'score': 2},
+                {'id': 'P2', 'description': '结论 1<x<9', 'score': 2},
+            ]
+        },
     )
     ws.confirm(q2['id'])
 
@@ -674,8 +702,15 @@ def test_analysis_counts_learners_by_evidence_and_reports_objectives(ws):
         assert payload['目标达成'][0]['题号'] == [1, 2]
         return {
             'summary': '有人遗漏定义域。',
-            'patterns': [{'name': '第 1 题漏定义域', 'description': 'x', 'tags': [group['错误标签']],
-                          'evidence': [{'eid': ev['eid'], 'quote': ev['学生原文'][:6]}], 'existing_pattern': ''}],
+            'patterns': [
+                {
+                    'name': '第 1 题漏定义域',
+                    'description': 'x',
+                    'tags': [group['错误标签']],
+                    'evidence': [{'eid': ev['eid'], 'quote': ev['学生原文'][:6]}],
+                    'existing_pattern': '',
+                }
+            ],
             'insufficient': [],
         }
 
@@ -709,7 +744,12 @@ def test_comparison_counts_only_points_written_for_the_pattern(ws):
     other = ws.create_question(  # round 2, question 2: same skill, not written for the pattern
         pid,
         {'type': 'calculation', 'stem': '解不等式 log2(x-1) < 3（另一题）', 'reference': '1<x<9'},
-        {'points': [{'id': 'P1', 'description': '写出定义域 x>1', 'score': 2}, {'id': 'P2', 'description': '结论 1<x<9', 'score': 2}]},
+        {
+            'points': [
+                {'id': 'P1', 'description': '写出定义域 x>1', 'score': 2},
+                {'id': 'P2', 'description': '结论 1<x<9', 'score': 2},
+            ]
+        },
         round_=2,
     )
     ws.confirm(other['id'])

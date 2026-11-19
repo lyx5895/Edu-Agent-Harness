@@ -108,6 +108,7 @@ class SubmissionsBody(BaseModel):
     csv: str = Field(min_length=1, max_length=2_000_000)
     round: int = 1
     add_missing: bool = False
+    assignment_id: str | None = None
 
 
 class PhotoAnswerIn(BaseModel):
@@ -122,11 +123,14 @@ class PhotoAnswersBody(BaseModel):
     photos: list[str] = Field(default_factory=list, max_length=8)
     add_missing: bool = False
     generation_id: str | None = Field(default=None, max_length=64)
+    assignment_id: str | None = None
 
 
 class RoundBody(BaseModel):
     round: int = 1
     regrade: bool = False
+    assignment_id: str | None = None
+    partial: bool = False
 
 
 class OverrideBody(BaseModel):
@@ -137,26 +141,133 @@ class OverrideBody(BaseModel):
 class ConfirmGradings(BaseModel):
     round: int = 1
     ids: list[str] | None = None
+    assignment_id: str | None = None
 
 
 class PracticeBody(BaseModel):
     pattern_ids: list[str] | None = None
     count: int = Field(default=1, ge=1, le=3)
     round: int | None = None
+    assignment_id: str | None = None
 
 
 class ReviewBody(BaseModel):
     round: int | None = None
     pattern_ids: list[str] | None = None
+    assignment_id: str | None = None
 
 
 class CompareBody(BaseModel):
     round_a: int = 1
     round_b: int = 2
+    assignment_id: str | None = None
 
 
 class ResolveBody(BaseModel):
     resolution: str
+
+
+class NewCourse(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+    subject: str = Field(min_length=1, max_length=20)
+    grade: str = Field(default='', max_length=40)
+    term: str = Field(default='', max_length=40)
+    textbook: str = Field(default='', max_length=200)
+    notes: str = Field(default='', max_length=2000)
+
+
+class CourseUpdate(BaseModel):
+    title: str | None = Field(default=None, max_length=120)
+    grade: str | None = Field(default=None, max_length=40)
+    term: str | None = Field(default=None, max_length=40)
+    textbook: str | None = Field(default=None, max_length=200)
+    notes: str | None = Field(default=None, max_length=2000)
+    archived: bool | None = None
+
+
+class NewClass(BaseModel):
+    name: str = Field(min_length=1, max_length=60)
+    aliases: list[str] = Field(default_factory=list, max_length=500)
+    notes: str = Field(default='', max_length=500)
+
+
+class LinkClass(BaseModel):
+    class_id: str
+
+
+class NewTask(BaseModel):
+    kind: Literal['prep', 'practice', 'grading', 'explain']
+    title: str = Field(default='', max_length=120)
+    offering_id: str = ''
+    request: str = Field(default='', max_length=2000)
+    knowledge_module: str = Field(default='', max_length=200)
+    lesson: str = Field(default='', max_length=100)
+    lesson_scope: str = Field(default='', max_length=200)
+    unit_id: str | None = None
+
+
+class TaskUpdate(BaseModel):
+    status: Literal['open', 'done', 'archived'] | None = None
+    title: str | None = Field(default=None, max_length=120)
+
+
+class SessionUpdate(BaseModel):
+    status: Literal['planned', 'taught', 'cancelled'] | None = None
+    planned_date: str | None = Field(default=None, max_length=10)
+    title: str | None = Field(default=None, max_length=120)
+
+
+class OfferingBody(BaseModel):
+    offering_id: str
+
+
+class AssignBody(BaseModel):
+    offering_id: str
+    round: int = 1
+    title: str = Field(default='', max_length=120)
+    parent_id: str = ''
+
+
+class CorrectRubric(BaseModel):
+    question_lineage: str
+    content: dict[str, Any]
+    note: str = Field(default='', max_length=500)
+
+
+class RepinBody(BaseModel):
+    question_lineage: str
+
+
+class UnitBody(BaseModel):
+    title: str = Field(min_length=1, max_length=60)
+
+
+class ProjectUnit(BaseModel):
+    unit_id: str = ''
+
+
+class ExplainBody(BaseModel):
+    question: str = Field(min_length=1, max_length=4000)
+    ask: str = Field(default='', max_length=500)
+    student_answer: str = Field(default='', max_length=4000)
+
+
+class DeriveBody(BaseModel):
+    offering_id: str
+    title: str = Field(default='', max_length=120)
+
+
+class StatusPrefs(BaseModel):
+    exclude: list[str] | None = Field(default=None, max_length=100)
+    exclude_summary: bool | None = None
+
+
+class MapBody(BaseModel):
+    project_ids: list[str] = Field(min_length=1, max_length=200)
+    course_id: str | None = None
+    course: dict[str, str] | None = None
+    class_id: str | None = None
+    class_name: str | None = Field(default=None, max_length=60)
 
 
 def default_workspace() -> Workspace:
@@ -212,6 +323,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             state['ws'] = default_workspace()
         return state['ws']
 
+    def once(request: Request, scope: str, fn):
+        """Idempotency-Key header (design doc 8): a retried request returns the first result instead of redoing it."""
+        return ws().once(request.headers.get('Idempotency-Key', '').strip()[:120], scope, fn)
+
     @app.exception_handler(KeyError)
     async def not_found(_: Request, e: KeyError):
         return JSONResponse({'detail': str(e).strip("'")}, status_code=404)
@@ -241,6 +356,7 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
                 for p in SUBJECTS.values()
             ],
             'question_types': QUESTION_TYPES,
+            'common_tags': error_tags('通用'),
             'models': w.settings.models,
             'model_ready': w.llm is not None,
         }
@@ -262,8 +378,8 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         )
 
     @app.get('/api/projects/{pid}')
-    def overview(pid: str):
-        return ws().overview(pid)
+    def overview(pid: str, assignment_id: str | None = None):
+        return ws().overview(pid, assignment_id or None)
 
     @app.patch('/api/projects/{pid}')
     def update_project(pid: str, body: ProjectUpdate):
@@ -316,16 +432,20 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         return ws().confirm(aid, body.change_kind)
 
     @app.post('/api/projects/{pid}/questions/generate')
-    def generate(pid: str, body: GenerateBody):
-        return ws().generate_questions(
-            pid,
-            types=body.types,
-            count=body.count,
-            difficulty=body.difficulty,
-            objective_ids=body.objective_ids,
-            notes=body.notes,
-            ab=body.ab,
-            purpose=body.purpose,
+    def generate(pid: str, body: GenerateBody, request: Request):
+        return once(
+            request,
+            f'generate:{pid}',
+            lambda: ws().generate_questions(
+                pid,
+                types=body.types,
+                count=body.count,
+                difficulty=body.difficulty,
+                objective_ids=body.objective_ids,
+                notes=body.notes,
+                ab=body.ab,
+                purpose=body.purpose,
+            ),
         )
 
     @app.post('/api/projects/{pid}/questions')
@@ -345,16 +465,18 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         return ws().adopt_solver_answer(qid)
 
     @app.post('/api/questions/{qid}/regenerate')
-    def regenerate(qid: str, body: RegenerateBody):
-        return ws().regenerate_question(qid, body.instruction, body.difficulty)
+    def regenerate(qid: str, body: RegenerateBody, request: Request):
+        return once(
+            request, f'regenerate:{qid}', lambda: ws().regenerate_question(qid, body.instruction, body.difficulty)
+        )
 
     @app.post('/api/projects/{pid}/choices')
     def choose(pid: str, body: ChoiceBody):
         return ws().choose(pid, body.group, body.verdict, body.reason)
 
     @app.post('/api/projects/{pid}/import-paper')
-    def import_paper(pid: str, body: TextBody):
-        return ws().import_paper(pid, body.text, body.filename)
+    def import_paper(pid: str, body: TextBody, request: Request):
+        return once(request, f'import-paper:{pid}', lambda: ws().import_paper(pid, body.text, body.filename))
 
     @app.get('/api/projects/{pid}/learners')
     def learners(pid: str):
@@ -365,51 +487,69 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         return ws().add_learners(pid, body.aliases)
 
     @app.post('/api/projects/{pid}/submissions')
-    def import_submissions(pid: str, body: SubmissionsBody):
-        return ws().import_submissions(pid, body.csv, body.round, body.add_missing)
+    def import_submissions(pid: str, body: SubmissionsBody, request: Request):
+        return once(
+            request,
+            f'submissions:{pid}',
+            lambda: ws().import_submissions(
+                pid, body.csv, body.round, body.add_missing, assignment_id=body.assignment_id
+            ),
+        )
 
     @app.get('/api/projects/{pid}/submissions')
-    def submissions(pid: str, round: int = 1):
-        return ws().submissions(pid, round)
+    def submissions(pid: str, round: int = 1, assignment_id: str | None = None):
+        return ws().submissions(pid, round, assignment_id=assignment_id or None)
 
     @app.post('/api/projects/{pid}/photo-answers/transcribe')
     async def transcribe_photos(
         pid: str,
         learner: str = Form(...),
         round: int = Form(1),
+        assignment_id: str = Form(''),
         files: list[UploadFile] = File(...),  # noqa: B008
     ):
         photos = [await f.read() for f in files]
         # The model call takes seconds: run it off the event loop, like the sync routes.
-        return await run_in_threadpool(ws().transcribe_photos, pid, learner, photos, round)
+        return await run_in_threadpool(ws().transcribe_photos, pid, learner, photos, round, assignment_id or None)
 
     @app.post('/api/projects/{pid}/photo-answers')
-    def import_photo_answers(pid: str, body: PhotoAnswersBody):
-        return ws().import_photo_answers(
-            pid,
-            body.learner,
-            [a.model_dump() for a in body.answers],
-            photos=body.photos,
-            round_=body.round,
-            add_missing=body.add_missing,
-            generation_id=body.generation_id,
+    def import_photo_answers(pid: str, body: PhotoAnswersBody, request: Request):
+        return once(
+            request,
+            f'photo-answers:{pid}',
+            lambda: ws().import_photo_answers(
+                pid,
+                body.learner,
+                [a.model_dump() for a in body.answers],
+                photos=body.photos,
+                round_=body.round,
+                add_missing=body.add_missing,
+                generation_id=body.generation_id,
+                assignment_id=body.assignment_id,
+            ),
         )
 
     @app.get('/api/photos/{name}')
     def photo(name: str):
-        return FileResponse(ws().photo_path(name), media_type='image/jpeg', headers={'Cache-Control': 'private, max-age=86400'})
+        return FileResponse(
+            ws().photo_path(name), media_type='image/jpeg', headers={'Cache-Control': 'private, max-age=86400'}
+        )
 
     @app.post('/api/projects/{pid}/grade')
-    def grade(pid: str, body: RoundBody):
-        return ws().grade_round(pid, body.round, body.regrade)
+    def grade(pid: str, body: RoundBody, request: Request):
+        return once(
+            request,
+            f'grade:{pid}',
+            lambda: ws().grade_round(pid, body.round, body.regrade, assignment_id=body.assignment_id),
+        )
 
     @app.get('/api/projects/{pid}/gradings')
-    def gradings(pid: str, round: int = 1):
-        return ws().gradings(pid, round)
+    def gradings(pid: str, round: int = 1, assignment_id: str | None = None):
+        return ws().gradings(pid, round, assignment_id=assignment_id or None)
 
     @app.get('/api/projects/{pid}/review-queue')
-    def queue(pid: str, round: int = 1):
-        return ws().review_queue(pid, round)
+    def queue(pid: str, round: int = 1, assignment_id: str | None = None):
+        return ws().review_queue(pid, round, assignment_id=assignment_id or None)
 
     @app.post('/api/gradings/{gid}/override')
     def override(gid: str, body: OverrideBody):
@@ -417,50 +557,244 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.post('/api/projects/{pid}/gradings/confirm')
     def confirm_gradings(pid: str, body: ConfirmGradings):
-        return ws().confirm_gradings(pid, body.round, body.ids)
+        return ws().confirm_gradings(pid, body.round, body.ids, assignment_id=body.assignment_id)
 
     @app.post('/api/projects/{pid}/analyze')
-    def analyze(pid: str, body: RoundBody):
-        return ws().analyze(pid, body.round)
+    def analyze(pid: str, body: RoundBody, request: Request):
+        return once(
+            request,
+            f'analyze:{pid}',
+            lambda: ws().analyze(pid, body.round, assignment_id=body.assignment_id, partial=body.partial),
+        )
 
     @app.get('/api/projects/{pid}/analyses')
-    def analyses(pid: str):
-        return ws().analyses(pid)
+    def analyses(pid: str, assignment_id: str | None = None):
+        return ws().analyses(pid, assignment_id or None)
 
     @app.get('/api/projects/{pid}/patterns')
-    def patterns(pid: str):
-        return ws().patterns(pid)
+    def patterns(pid: str, assignment_id: str | None = None):
+        return ws().patterns(pid, assignment_id or None)
 
     @app.post('/api/projects/{pid}/practice')
-    def practice(pid: str, body: PracticeBody):
-        return ws().practice(pid, body.pattern_ids, body.count, round_=body.round)
+    def practice(pid: str, body: PracticeBody, request: Request):
+        return once(
+            request,
+            f'practice:{pid}',
+            lambda: ws().practice(
+                pid, body.pattern_ids, body.count, round_=body.round, assignment_id=body.assignment_id
+            ),
+        )
 
     @app.post('/api/projects/{pid}/lesson-plan/draft')
-    def draft_lesson_plan(pid: str):
-        return ws().draft_lesson_plan(pid)
+    def draft_lesson_plan(pid: str, request: Request):
+        return once(request, f'lesson-plan:{pid}', lambda: ws().draft_lesson_plan(pid))
 
     @app.get('/api/projects/{pid}/lesson-plans')
     def lesson_plans(pid: str):
         return ws().lesson_plans(pid)
 
     @app.post('/api/projects/{pid}/review/draft')
-    def draft_review(pid: str, body: ReviewBody):
-        return ws().draft_review(pid, body.round, body.pattern_ids)
+    def draft_review(pid: str, body: ReviewBody, request: Request):
+        return once(
+            request,
+            f'review:{pid}',
+            lambda: ws().draft_review(pid, body.round, body.pattern_ids, assignment_id=body.assignment_id),
+        )
 
     @app.get('/api/projects/{pid}/review-plans')
-    def review_plans(pid: str, round: int | None = None):
-        return ws().review_plans(pid, round)
+    def review_plans(pid: str, round: int | None = None, assignment_id: str | None = None):
+        return ws().review_plans(pid, round, assignment_id=assignment_id or None)
 
     @app.post('/api/projects/{pid}/compare')
-    def compare(pid: str, body: CompareBody):
-        return ws().compare(pid, body.round_a, body.round_b)
+    def compare(pid: str, body: CompareBody, request: Request):
+        return once(
+            request,
+            f'compare:{pid}',
+            lambda: ws().compare(pid, body.round_a, body.round_b, assignment_id=body.assignment_id),
+        )
 
     @app.get('/api/projects/{pid}/comparisons')
-    def comparisons(pid: str):
+    def comparisons(pid: str, assignment_id: str | None = None):
         from edu_core import artifacts as A
 
         with ws().store.read() as c:
-            return A.current(c, pid, 'comparison')
+            return A.current(c, pid, 'comparison', assignment=assignment_id or '')
+
+    # ----- course workspace (COURSE_WORKSPACE_DESIGN.md) -----
+
+    @app.get('/api/home')
+    def home(course_id: str | None = None):
+        return ws().home(course_id)
+
+    @app.get('/api/courses')
+    def courses(include_archived: bool = False):
+        return ws().courses(include_archived)
+
+    @app.post('/api/courses')
+    def create_course(body: NewCourse):
+        return ws().create_course(**body.model_dump())
+
+    @app.get('/api/courses/{cid}')
+    def course(cid: str):
+        return ws().course(cid)
+
+    @app.patch('/api/courses/{cid}')
+    def update_course(cid: str, body: CourseUpdate):
+        return ws().update_course(cid, **body.model_dump())
+
+    @app.post('/api/courses/{cid}/materials')
+    def add_course_material(cid: str, body: TextBody):
+        return ws().add_material(None, body.text, body.filename, course_id=cid)
+
+    @app.post('/api/courses/{cid}/classes')
+    def link_class(cid: str, body: LinkClass):
+        return ws().link_class(cid, body.class_id)
+
+    @app.post('/api/courses/{cid}/tasks')
+    def start_task(cid: str, body: NewTask, request: Request):
+        return once(request, f'task:{cid}', lambda: ws().start_task(cid, **body.model_dump()))
+
+    @app.get('/api/tasks')
+    def tasks(course_id: str | None = None, status: str | None = 'open'):
+        return ws().tasks(course_id, status or None)
+
+    @app.patch('/api/tasks/{tid}')
+    def update_task(tid: str, body: TaskUpdate):
+        return ws().update_task(tid, **body.model_dump())
+
+    @app.get('/api/classes')
+    def classes():
+        return ws().classes()
+
+    @app.post('/api/classes')
+    def create_class(body: NewClass):
+        return ws().create_class(body.name, body.aliases, body.notes)
+
+    @app.get('/api/classes/{class_id}')
+    def class_detail(class_id: str):
+        return ws().class_detail(class_id)
+
+    @app.post('/api/classes/{class_id}/members')
+    def add_members(class_id: str, body: LearnersBody):
+        return ws().add_members(class_id, body.aliases)
+
+    @app.delete('/api/classes/{class_id}/members/{member_id}')
+    def remove_member(class_id: str, member_id: str):
+        return ws().remove_member(class_id, member_id)
+
+    @app.get('/api/offerings/{oid}/sessions')
+    def sessions(oid: str):
+        return ws().sessions(oid)
+
+    @app.get('/api/offerings/{oid}/next-lesson')
+    def suggest_next_lesson(oid: str):
+        return ws().suggest_next_lesson(oid)
+
+    @app.get('/api/offerings/{oid}/status')
+    def class_status(oid: str):
+        return ws().class_status(oid)
+
+    @app.get('/api/offerings/{oid}/assignments')
+    def offering_assignments(oid: str):
+        return ws().assignments(offering_id=oid)
+
+    @app.patch('/api/sessions/{sid}')
+    def update_session(sid: str, body: SessionUpdate):
+        return ws().update_session(sid, **body.model_dump())
+
+    @app.post('/api/projects/{pid}/use-plan')
+    def use_plan(pid: str, body: OfferingBody):
+        return ws().use_plan_for_class(pid, body.offering_id)
+
+    @app.get('/api/projects/{pid}/assignments')
+    def project_assignments(pid: str):
+        return ws().assignments(pid)
+
+    @app.post('/api/projects/{pid}/assignments')
+    def assign(pid: str, body: AssignBody, request: Request):
+        return once(
+            request,
+            f'assign:{pid}',
+            lambda: ws().assign(pid, body.offering_id, body.round, body.title, body.parent_id),
+        )
+
+    @app.get('/api/assignments/{aid}')
+    def assignment(aid: str):
+        return ws().assignment(aid)
+
+    @app.get('/api/assignments/{aid}/correction')
+    def correction_impact(aid: str, question_lineage: str):
+        return ws().correction_impact(aid, question_lineage)
+
+    @app.post('/api/assignments/{aid}/correct-rubric')
+    def correct_rubric(aid: str, body: CorrectRubric, request: Request):
+        return once(
+            request,
+            f'correct:{aid}',
+            lambda: ws().correct_rubric(aid, body.question_lineage, body.content, body.note),
+        )
+
+    @app.post('/api/assignments/{aid}/repin')
+    def repin(aid: str, body: RepinBody):
+        return ws().repin(aid, body.question_lineage)
+
+    @app.get('/api/courses/{cid}/units')
+    def units(cid: str):
+        return ws().units(cid)
+
+    @app.post('/api/courses/{cid}/units')
+    def create_unit(cid: str, body: UnitBody):
+        return ws().create_unit(cid, body.title)
+
+    @app.get('/api/units/{unit_id}')
+    def unit_view(unit_id: str):
+        return ws().unit_view(unit_id)
+
+    @app.patch('/api/units/{unit_id}')
+    def rename_unit(unit_id: str, body: UnitBody):
+        return ws().rename_unit(unit_id, body.title)
+
+    @app.put('/api/projects/{pid}/unit')
+    def set_project_unit(pid: str, body: ProjectUnit):
+        return ws().set_project_unit(pid, body.unit_id)
+
+    @app.post('/api/projects/{pid}/explain')
+    def explain(pid: str, body: ExplainBody, request: Request):
+        return once(request, f'explain:{pid}', lambda: ws().explain(pid, body.question, body.ask, body.student_answer))
+
+    @app.get('/api/projects/{pid}/explanations')
+    def explanations(pid: str):
+        return ws().explanations(pid)
+
+    @app.post('/api/projects/{pid}/derive')
+    def derive(pid: str, body: DeriveBody, request: Request):
+        return once(request, f'derive:{pid}', lambda: ws().derive_for_class(pid, body.offering_id, body.title))
+
+    @app.get('/api/projects/{pid}/class-status')
+    def task_class_status(pid: str):
+        return ws().task_class_status(pid)
+
+    @app.patch('/api/projects/{pid}/class-status')
+    def set_status_prefs(pid: str, body: StatusPrefs):
+        return ws().set_status_prefs(pid, body.exclude, body.exclude_summary)
+
+    @app.get('/api/migration/preview')
+    def migration_preview():
+        return ws().migration_preview()
+
+    @app.post('/api/migration/map')
+    def map_projects(body: MapBody, request: Request):
+        return once(
+            request,
+            'map',
+            lambda: ws().map_projects(
+                body.project_ids,
+                course_id=body.course_id,
+                course=body.course,
+                class_id=body.class_id,
+                class_name=body.class_name,
+            ),
+        )
 
     @app.get('/api/projects/{pid}/stale')
     def stale(pid: str):
@@ -493,7 +827,9 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     async def local_only(request: Request, call_next):
         # There are no accounts: refuse anyone but this machine unless EDU_ALLOW_REMOTE is set.
         if not ws().settings.allow_remote and not is_local_client(request.client.host if request.client else None):
-            return JSONResponse({'detail': '只允许本机访问（需要远程访问请设置 EDU_ALLOW_REMOTE=1 并自行加鉴权）'}, status_code=403)
+            return JSONResponse(
+                {'detail': '只允许本机访问（需要远程访问请设置 EDU_ALLOW_REMOTE=1 并自行加鉴权）'}, status_code=403
+            )
         return await call_next(request)
 
     @app.middleware('http')

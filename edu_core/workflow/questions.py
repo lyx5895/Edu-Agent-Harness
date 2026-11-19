@@ -85,7 +85,7 @@ class QuestionsMixin:
                 hints = [it['text'] for it in std['hints']]
                 standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
                 ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
-            carry = self._carryover_for_prompt(ctx, p)
+            carry = self._carryover_for_prompt(c, ctx, p)
             goal_list = [
                 {'index': i, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
                 for i, o in enumerate(objs)
@@ -106,7 +106,7 @@ class QuestionsMixin:
                 '课标教学提示': hints,
                 '课堂活动': self._activities_for_prompt(plan, objs),
                 '备课备注': plan['content'].get('notes', ''),
-                **({'上一课时学情': carry} if carry else {}),
+                **({carry.pop('label'): carry} if carry else {}),
                 '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
@@ -172,7 +172,9 @@ class QuestionsMixin:
         """What the quality review compares a question with: its objective, the lesson scope and cited standards."""
         obj = objs[d.objective_index]['content'] if 0 <= d.objective_index < len(objs) else None
         data = CUR.load(p['subject'])
-        standards = [data['by_id'][i]['text'] for i in (obj or {}).get('standard_ids', []) if data and i in data['by_id']]
+        standards = [
+            data['by_id'][i]['text'] for i in (obj or {}).get('standard_ids', []) if data and i in data['by_id']
+        ]
         return {
             '教学目标': obj['text'] if obj else '',
             '达成标准': obj.get('success_criterion', '') if obj else '',
@@ -209,7 +211,9 @@ class QuestionsMixin:
         asked = review.get('要求难度')
         levels = {'基础': 0, '中等': 1, '较难': 2}
         if asked in levels and out.difficulty != asked:
-            flags.append(f'难度偏{"高" if levels[out.difficulty] > levels[asked] else "低"}：要求{asked}，评估为{out.difficulty}')
+            flags.append(
+                f'难度偏{"高" if levels[out.difficulty] > levels[asked] else "低"}：要求{asked}，评估为{out.difficulty}'
+            )
         flags += [f'题目问题：{x}' for x in out.issues if x.strip()][:4]
         return {'difficulty': out.difficulty, 'flags': flags}, meta
 
@@ -275,11 +279,11 @@ class QuestionsMixin:
         checks['answer_suspect'] = checks.get('solver') == 'disagree' or bool(checks.get('reference_mismatch'))
         return checks
 
-    def _save_questions(
-        self, c, pid, items, objs, gid, *, status, round_, patterns=(), origin='generated', extra=None
-    ):
+    def _save_questions(self, c, pid, items, objs, gid, *, status, round_, patterns=(), origin='generated', extra=None):
         made = []
         no = self._next_no(c, pid, round_)
+        g = c.execute('SELECT context_manifest FROM generations WHERE id=?', (gid,)).fetchone() if gid else None
+        basis = json.loads(g[0]) if g else []
         for d, checks in items:
             checks = dict(checks)
             metas = checks.pop('_metas', [])
@@ -311,6 +315,8 @@ class QuestionsMixin:
                 round_=round_,
             )
             q['rubric'] = r
+            if status != 'candidate':
+                self._guard_basis(c, pid, q['id'], basis)
             made.append(q)
             if status != 'candidate':
                 no += 1
@@ -431,19 +437,24 @@ class QuestionsMixin:
             for a in plan['content'].get('activities', [])
         ]
 
-    @staticmethod
-    def _carryover_for_prompt(ctx, p):
-        """上一课时学情 for a lesson created by 进入下一课时: problem patterns with their re-practice result."""
-        if not p.get('carryover'):
+    def _carryover_for_prompt(self, c, ctx, p):
+        """上一课时学情 or 本班学情: problem patterns with their re-practice result."""
+        carry = self._prior_status(c, ctx, p)
+        if not carry:
             return None
-        carry = json.loads(p['carryover'])
-        ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
         return {
+            'label': carry['label'],
             '学情概述': carry['summary'],
             '问题模式': [
-                {'名称': x['name'], '描述': x['description'], '涉及人数': x['affected'], '再练情况': x['after_practice']}
+                {
+                    '名称': x['name'],
+                    '描述': x['description'],
+                    '涉及人数': x['affected'],
+                    '再练情况': x['after_practice'],
+                }
                 for x in carry['patterns']
             ],
+            **({'说明': carry['note']} if carry.get('note') else {}),
         }
 
     def coverage(self, pid, round_=1):
@@ -453,7 +464,9 @@ class QuestionsMixin:
         qs = self.questions(pid, round_=round_)
         rows = []
         for g in goals:
-            mine = [q for q in qs if g['lineage_id'] in q['content'].get('objective_ids', []) and q['status'] != 'candidate']
+            mine = [
+                q for q in qs if g['lineage_id'] in q['content'].get('objective_ids', []) and q['status'] != 'candidate'
+            ]
             flagged = [
                 q['content']['no']
                 for q in mine
@@ -503,7 +516,7 @@ class QuestionsMixin:
             pattern = None
             for lineage in q['content'].get('target_patterns', []):
                 pat = c.execute(
-                    "SELECT content FROM artifacts WHERE lineage_id=? ORDER BY version DESC LIMIT 1", (lineage,)
+                    'SELECT content FROM artifacts WHERE lineage_id=? ORDER BY version DESC LIMIT 1', (lineage,)
                 ).fetchone()
                 if pat:
                     pc = json.loads(pat['content'])
@@ -517,7 +530,11 @@ class QuestionsMixin:
             standards = []
             if cited:
                 data = CUR.load(p['subject'])
-                standards = [{'位置': data['by_id'][i]['label'], '原文': data['by_id'][i]['text']} for i in cited if i in data['by_id']]
+                standards = [
+                    {'位置': data['by_id'][i]['label'], '原文': data['by_id'][i]['text']}
+                    for i in cited
+                    if i in data['by_id']
+                ]
                 ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
         difficulty = difficulty or q['content'].get('difficulty_requested') or '中等'
         qtype = q['content']['type']
@@ -554,17 +571,44 @@ class QuestionsMixin:
             manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
             checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v2') for m in metas]
             content = _question_content(
-                d, q['content']['no'], q['round'], q['content'].get('objective_ids', []), q['content'].get('target_patterns', [])
+                d,
+                q['content']['no'],
+                q['round'],
+                q['content'].get('objective_ids', []),
+                q['content'].get('target_patterns', []),
             )
-            content.update(checks=checks, difficulty_requested=difficulty, regenerated_from=qid,
-                           instruction=instruction or '', purpose=q['content'].get('purpose', ''))
+            content.update(
+                checks=checks,
+                difficulty_requested=difficulty,
+                regenerated_from=qid,
+                instruction=instruction or '',
+                purpose=q['content'].get('purpose', ''),
+            )
             refs = [(r['ref_id'], r['role']) for r in A.get(c, qid)['refs']]
-            new = A.create(c, pid, 'question', content, origin='generated', refs=refs, generation_id=gid,
-                           lineage_id=q['lineage_id'], round_=q['round'])
+            new = A.create(
+                c,
+                pid,
+                'question',
+                content,
+                origin='generated',
+                refs=refs,
+                generation_id=gid,
+                lineage_id=q['lineage_id'],
+                round_=q['round'],
+            )
             rubric = _rubric_from(d.points, q['lineage_id'], (q['content'].get('target_patterns') or [None])[0])
-            new['rubric'] = A.create(c, pid, 'rubric', rubric, origin='generated', refs=[(new['id'], 'question'), *refs],
-                                     generation_id=gid, lineage_id=old_rubric['lineage_id'] if old_rubric else None,
-                                     round_=q['round'])
+            new['rubric'] = A.create(
+                c,
+                pid,
+                'rubric',
+                rubric,
+                origin='generated',
+                refs=[(new['id'], 'question'), *refs],
+                generation_id=gid,
+                lineage_id=old_rubric['lineage_id'] if old_rubric else None,
+                round_=q['round'],
+            )
+            self._guard_basis(c, pid, new['id'], ctx.manifest)
         return {'question': new, 'context_note': describe(ctx.manifest)}
 
     def questions(self, pid, round_=None):

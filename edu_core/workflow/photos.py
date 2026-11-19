@@ -7,7 +7,6 @@ grading points at words the teacher has seen; the photos stay on disk for side-b
 from __future__ import annotations
 
 import base64
-import time
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -15,7 +14,7 @@ from pydantic import BaseModel, Field
 from edu_core import artifacts as A
 from edu_core import images
 from edu_core.context import Context, describe
-from edu_core.storage import event, new_id, record_generation
+from edu_core.storage import event, record_generation
 from edu_core.subjects import QUESTION_TYPES
 from edu_core.workflow.common import Conflict, _json
 
@@ -53,21 +52,13 @@ class PhotosMixin:
     def _image_root(self):
         return Path(self.settings.db).parent / 'edu-images'
 
-    @staticmethod
-    def _round_questions(c, pid, round_):
-        return {
-            q['content']['no']: A.confirmed_in_lineage(c, q['lineage_id'])
-            for q in A.current(c, pid, 'question', round_=round_)
-            if q['confirmed_version']
-        }
-
     def photo_path(self, name):
         path = images.path(name, self._image_root())
         if not path.exists():
             raise KeyError('照片不存在')
         return path
 
-    def transcribe_photos(self, pid, learner, photos, round_=1):
+    def transcribe_photos(self, pid, learner, photos, round_=1, assignment_id=None):
         """Step 1: transcribe the photos question by question. Nothing is imported yet."""
         llm = self._model()
         learner = (learner or '').strip()
@@ -79,8 +70,9 @@ class PhotosMixin:
             raise ValueError(f'一次最多上传 {MAX_PHOTOS} 张照片')
         prepared = [images.prepare(data) for data in photos]
         with self.store.read() as c:
+            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
             p = self._project(c, pid)
-            questions = self._round_questions(c, pid, round_)
+            questions = self._scoped_questions(c, pid, round_, aid)
         if not questions:
             raise Conflict(f'第 {round_} 轮还没有已确认的题目，请先确认题目再导入作答')
         ctx = Context('transcribe')
@@ -94,7 +86,9 @@ class PhotosMixin:
                 item['选项'] = q['content']['options']
             q_view.append(item)
         names = []
-        parts = [{'type': 'text', 'text': _json({'学科': p['pack']['name'], '题目': q_view, '照片张数': len(prepared)})}]
+        parts = [
+            {'type': 'text', 'text': _json({'学科': p['pack']['name'], '题目': q_view, '照片张数': len(prepared)})}
+        ]
         for i, (name, raw) in enumerate(prepared, 1):
             images.store(name, raw, self._image_root())
             ctx.add_other('photo', name, name.split('.')[0])
@@ -131,7 +125,12 @@ class PhotosMixin:
             rows.append(r)
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, PROMPT_VERSION)
-            event(c, pid, 'photos_transcribed', {'learner': learner, 'round': round_, 'photos': names, 'generation_id': gid})
+            event(
+                c,
+                pid,
+                'photos_transcribed',
+                {'learner': learner, 'round': round_, 'photos': names, 'generation_id': gid},
+            )
         return {
             'learner': learner,
             'round': round_,
@@ -143,7 +142,9 @@ class PhotosMixin:
             'context_note': describe(ctx.manifest),
         }
 
-    def import_photo_answers(self, pid, learner, answers, *, photos=(), round_=1, add_missing=False, generation_id=None):
+    def import_photo_answers(
+        self, pid, learner, answers, *, photos=(), round_=1, add_missing=False, generation_id=None, assignment_id=None
+    ):
         """Step 2: the teacher-checked text becomes this student's submissions; the photos stay attached."""
         learner = (learner or '').strip()
         if not learner:
@@ -166,14 +167,14 @@ class PhotosMixin:
         if not rows:
             raise ValueError('没有可导入的作答（全部为空）')
         with self.store.tx() as c:
+            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
             self._project(c, pid)
-            questions = self._round_questions(c, pid, round_)
-            known = c.execute('SELECT id FROM learners WHERE project_id=? AND alias=?', (pid, learner)).fetchone()
+            questions = self._scoped_questions(c, pid, round_, aid)
+            known = self._roster(c, pid, aid).get(learner)
             if known:
-                learner_id = known['id']
+                learner_id = known
             elif add_missing:
-                learner_id = new_id('lrn')
-                c.execute('INSERT INTO learners VALUES(?,?,?,?)', (learner_id, pid, learner, time.time()))
+                learner_id = self._add_to_roster(c, pid, aid, learner)
             else:
                 raise Conflict(f'名单中没有 {learner}：先加入学生名单，或勾选“名单外的学生自动加入”')
             created, problems = [], []
@@ -193,7 +194,7 @@ class PhotosMixin:
                 }
                 if generation_id:
                     content['transcription_generation'] = generation_id
-                lineage = self._submission_lineage(c, pid, learner_id, q['lineage_id'], round_)
+                lineage = self._submission_lineage(c, pid, learner_id, q['lineage_id'], round_, aid)
                 created.append(
                     A.create(
                         c,
@@ -207,7 +208,13 @@ class PhotosMixin:
                         round_=round_,
                         lineage_id=lineage,
                         change_kind='substantive',
+                        assignment_id=aid,
                     )['id']
                 )
-            event(c, pid, 'photo_answers_imported', {'learner': learner, 'round': round_, 'count': len(created), 'photos': photos})
+            event(
+                c,
+                pid,
+                'photo_answers_imported',
+                {'learner': learner, 'round': round_, 'count': len(created), 'photos': photos},
+            )
         return {'created': len(created), 'problems': problems}

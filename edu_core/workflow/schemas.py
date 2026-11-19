@@ -124,5 +124,14 @@ class ReviewOutput(BaseModel):
     closing: str = Field(max_length=600)
 
 
+class ExplainOutput(BaseModel):
+    focus: list[str]
+    steps: list[str]
+    pitfalls: list[str]
+    answer_comment: str = Field(max_length=1200)
+    quotes: list[str]
+    follow_up: list[str]
+
+
 class PitfallOutput(BaseModel):
     pitfalls: list[Pitfall]

@@ -8,7 +8,7 @@ generation and is also what the UI shows as "已参考", so the note always matc
 from edu_core.artifacts import TYPES
 
 WHITELIST = {
-    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum', 'carryover'},
+    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum', 'carryover', 'class_status'},
     'import_paper': {'project', 'material'},
     'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
@@ -18,11 +18,23 @@ WHITELIST = {
     'analyze': {'project', 'lesson_plan', 'question', 'rubric', 'grading', 'submission', 'problem_pattern'},
     'pitfalls': {'project', 'lesson_plan', 'question', 'rubric'},
     'practice': {'project', 'lesson_plan', 'question', 'rubric', 'problem_pattern', 'review_plan'},
-    'draft_lesson_plan': {'project', 'material', 'carryover', 'curriculum'},
+    'draft_lesson_plan': {'project', 'material', 'carryover', 'class_status', 'curriculum'},
+    # 直接准备讲解 (design doc 5.5): the question and one optional student answer the teacher pasted, nothing else.
+    'explain': {'project', 'material', 'pasted'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
-LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'photo': '作答照片', 'carryover': '上一课时学情', 'curriculum': '课程标准'}
+LABELS = {
+    **TYPES,
+    'project': '项目背景',
+    'material': '材料',
+    'question_stem': '题干',
+    'photo': '作答照片',
+    'carryover': '上一课时学情',
+    'class_status': '本班学情',
+    'pasted': '老师粘贴的题目与作答',
+    'curriculum': '课程标准',
+}
 
 
 class ContextViolation(PermissionError):
@@ -79,12 +91,21 @@ def describe(manifest: list[dict]) -> str:
     parts = []
     for kind, items in groups.items():
         label = LABELS.get(kind, kind)
-        if kind in ('project', 'carryover'):
+        if kind in ('project', 'carryover', 'pasted'):
             parts.append(label)
         elif kind == 'curriculum':
             parts.append(f'{label} {sum(len(i.get("items", [])) for i in items)} 条')
         elif kind == 'material':
-            parts.append(f'{label} {len(items)} 份')
+            cut = sum(1 for i in items if 0 < i.get('sent', i.get('chars', 0)) < i.get('chars', 0))
+            unsent = sum(1 for i in items if 'sent' in i and i['sent'] == 0)
+            notes = []
+            if cut:
+                notes.append(f'{cut} 份截断')
+            if unsent:
+                notes.append(f'{unsent} 份未发送（超出长度）')
+            parts.append(f'{label} {len(items)} 份' + (f'（{"，".join(notes)}）' if notes else ''))
+        elif kind == 'class_status':
+            parts.append(label)
         elif len(items) == 1 and 'version' in items[0]:
             state = '已确认' if items[0].get('status') == 'confirmed' else '未确认'
             parts.append(f'{label}第 {items[0]["version"]} 版（{state}）')

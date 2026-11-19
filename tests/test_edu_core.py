@@ -399,7 +399,15 @@ def test_store_migrates_a_database_that_already_has_the_columns(tmp_path):
     path = tmp_path / 'patched.sqlite'
     _old_database(path)
     c = sqlite3.connect(path)
-    for column in ('knowledge_module', 'lesson', 'learner_profile', 'prev_project_id', 'carryover', 'lesson_scope', 'curriculum'):
+    for column in (
+        'knowledge_module',
+        'lesson',
+        'learner_profile',
+        'prev_project_id',
+        'carryover',
+        'lesson_scope',
+        'curriculum',
+    ):
         c.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT NOT NULL DEFAULT ''")
     c.execute("UPDATE projects SET lesson='第 2 课时'")
     c.commit()
@@ -439,7 +447,10 @@ def test_redact_images_keeps_text_and_leaves_the_request_alone():
     msgs = [
         {
             'role': 'user',
-            'content': [{'type': 'text', 'text': 'hi'}, {'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,AAAA'}}],
+            'content': [
+                {'type': 'text', 'text': 'hi'},
+                {'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,AAAA'}},
+            ],
         }
     ]
     out = redact_images(msgs)

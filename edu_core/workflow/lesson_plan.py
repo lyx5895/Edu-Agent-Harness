@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 from edu_core import artifacts as A
 from edu_core import curriculum as CUR
 from edu_core.context import Context, describe
@@ -49,27 +47,35 @@ class LessonPlanMixin:
                     sha(_json([it['id'] for it in std['content']])),
                     items=[it['id'] for it in std['content']],
                 )
-            carry = None
-            if p.get('carryover'):
-                carry = json.loads(p['carryover'])
-                ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
+            carry = self._prior_status(c, ctx, p)
         extra = {}
         if carry:
-            extra['上一课时学情'] = {
-                '上一课时': carry['from_lesson'] or carry['from_title'],
-                '上一课时目标': carry['objectives'],
+            prior_key = '上一课时' if carry['label'] == '上一课时学情' else '班级与进度'
+            extra[carry['label']] = {
+                prior_key: carry['from_lesson'] or carry['from_title'],
+                '上一课时目标' if prior_key == '上一课时' else '近期目标': carry['objectives'],
                 '学情概述': carry['summary'],
                 '问题模式': [
-                    {'名称': x['name'], '描述': x['description'], '涉及人数': x['affected'], '再练情况': x['after_practice']}
+                    {
+                        '名称': x['name'],
+                        '描述': x['description'],
+                        '涉及人数': x['affected'],
+                        '再练情况': x['after_practice'],
+                    }
                     for x in carry['patterns']
                 ],
                 '讲评重点': carry['review_focus'],
+                **({'说明': carry['note']} if carry.get('note') else {}),
             }
         if std:
             extra['课程标准'] = {
                 '来源': CUR.load(p['subject'])['title'],
                 '内容要求': [
-                    {'编号': it['id'], '位置': it['label'] + ('（选学，不作为考试要求）' if it.get('optional') else ''), '原文': it['text']}
+                    {
+                        '编号': it['id'],
+                        '位置': it['label'] + ('（选学，不作为考试要求）' if it.get('optional') else ''),
+                        '原文': it['text'],
+                    }
                     for it in std['content']
                 ],
                 '学业要求': [it['text'] for it in std['requirements']],

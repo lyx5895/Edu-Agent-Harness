@@ -25,19 +25,59 @@ class AnalysisMixin:
 
     # ----- analysis -----
 
-    def analyze(self, pid, round_=1):
+    def _coverage(self, c, pid, round_, aid):
+        """Who is in this analysis (design doc 7.3): roster, learners who answered, valid gradings and what is pending.
+
+        A grading is valid when its latest version is confirmed and its basis has not changed.
+        """
+        subs = A.current(c, pid, 'submission', round_=round_, assignment=aid)
+        by_sub = {
+            g['content']['submission_lineage']: g for g in A.current(c, pid, 'grading', round_=round_, assignment=aid)
+        }
+        valid, pending, ungraded, stale = [], 0, 0, 0
+        for s in subs:
+            g = by_sub.get(s['lineage_id'])
+            if g is None:
+                ungraded += 1
+            elif g['stale']:
+                stale += 1
+            elif g['status'] != 'confirmed':
+                pending += 1
+            else:
+                valid.append(g)
+        roster = len(self._roster(c, pid, aid))
+        received = len({s['content']['learner_id'] for s in subs})
+        complete = bool(subs) and not (pending or ungraded or stale)
+        label = f'名单 {roster} 人，收到 {received} 人的作答，有效批改 {len(valid)}/{len(subs)} 份'
+        if pending or ungraded or stale:
+            label += f'（未批改 {ungraded}，待复核或待确认 {pending}，依据已变化 {stale}）'
+        return valid, {
+            'roster': roster,
+            'received': received,
+            'submissions': len(subs),
+            'valid': len(valid),
+            'pending': pending,
+            'ungraded': ungraded,
+            'stale': stale,
+            'complete': complete,
+            'label': label,
+        }
+
+    def analyze(self, pid, round_=1, assignment_id=None, partial=False):
+        """学情分析 of one assignment (or the project's unbound work).
+
+        A complete analysis needs every submission to have a valid grading. With ``partial`` the teacher asks for
+        an analysis of what is graded so far; it is labelled with its coverage and never counts as the class result.
+        """
         llm = self._model()
         with self.store.read() as c:
+            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
             p = self._project(c, pid)
-            subs = A.current(c, pid, 'submission', round_=round_)
-            current_gradings = A.current(c, pid, 'grading', round_=round_)
-            confirmed = [A.confirmed_in_lineage(c, g['lineage_id']) for g in current_gradings if g['confirmed_version']]
-            confirmed = [g for g in confirmed if g]
-            questions = [
-                A.confirmed_in_lineage(c, q['lineage_id'])
-                for q in A.current(c, pid, 'question', round_=round_)
-                if q['confirmed_version']
-            ]
+            subs = A.current(c, pid, 'submission', round_=round_, assignment=aid)
+            confirmed, coverage = self._coverage(c, pid, round_, aid)
+            questions = list(self._scoped_questions(c, pid, round_, aid).values())
+            if subs and not coverage['complete'] and not partial:
+                raise Conflict(f'{coverage["label"]}。处理完复核和确认后再生成完整分析，或选择“只分析已确认的部分”')
             if subs and not confirmed:
                 raise Conflict('还没有已确认的批改，请先确认批改结果（可以批量确认）')
             ctx = Context('pitfalls' if not subs else 'analyze')
@@ -50,7 +90,7 @@ class AnalysisMixin:
             q_view = []
             for q in questions:
                 ctx.add_artifact(q)
-                rubric = self._rubric_for(c, q['lineage_id'])
+                rubric = self._scoped_rubric(c, q['lineage_id'], aid)
                 if rubric:
                     ctx.add_artifact(rubric)
                 q_view.append(
@@ -64,7 +104,7 @@ class AnalysisMixin:
                 )
             existing = []
             if subs:
-                for pat in A.current(c, pid, 'problem_pattern'):
+                for pat in A.current(c, pid, 'problem_pattern', assignment=aid):
                     if pat['confirmed_version']:
                         conf = A.confirmed_in_lineage(c, pat['lineage_id'])
                         ctx.add_artifact(conf)
@@ -97,8 +137,17 @@ class AnalysisMixin:
                     'round': round_,
                 }
                 a = A.create(
-                    c, pid, 'analysis', content, origin='generated', refs=ctx.refs(), generation_id=gid, round_=round_
+                    c,
+                    pid,
+                    'analysis',
+                    content,
+                    origin='generated',
+                    refs=ctx.refs(),
+                    generation_id=gid,
+                    round_=round_,
+                    assignment_id=aid,
                 )
+                self._guard_basis(c, pid, a['id'], ctx.manifest, aid)
             return {'analysis': a, 'patterns': [], 'context_note': describe(ctx.manifest)}
 
         evidence, by_tag, learners_all = {}, {}, set()
@@ -169,11 +218,22 @@ class AnalysisMixin:
                 'patterns': [],
                 'insufficient': [],
                 'learners': len(learners_all),
+                'coverage': coverage,
+                'partial': not coverage['complete'],
             }
             with self.store.tx() as c:
                 a = A.create(
-                    c, pid, 'analysis', content, origin='generated', refs=ctx.refs(), round_=round_, created_by='server'
+                    c,
+                    pid,
+                    'analysis',
+                    content,
+                    origin='generated',
+                    refs=ctx.refs(),
+                    round_=round_,
+                    created_by='server',
+                    assignment_id=aid,
                 )
+                self._guard_basis(c, pid, a['id'], ctx.manifest, aid)
             return {'analysis': a, 'patterns': [], 'context_note': describe(ctx.manifest)}
         user = _json(
             {
@@ -239,6 +299,21 @@ class AnalysisMixin:
                     'lineage': pat.existing_pattern if pat.existing_pattern in existing_ids else None,
                 }
             )
+        # The summary is model text: it stands only when every pattern it summarizes passed the evidence check.
+        # Otherwise it is replaced by a server-written statement of what the evidence shows (design doc 7.2).
+        if patterns and not dropped:
+            summary, summary_source = out.summary, 'model'
+        elif patterns:
+            summary = '有作答证据的问题：' + '；'.join(
+                f'{x["name"]}（{len(x["affected_learners"])}/{x["total_learners"]} 人）' for x in patterns
+            )
+            summary_source = 'server'
+        else:
+            summary = (
+                f'已确认的批改中有 {len({e["learner"] for e in evidence.values()})} 名学生失分，'
+                '但归纳出的问题模式都没有通过作答证据核对，暂不形成学情结论；请看得分统计和补查问题。'
+            )
+            summary_source = 'server'
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'analyze-v2')
             content = {
@@ -246,15 +321,28 @@ class AnalysisMixin:
                 'round': round_,
                 'stats': stats_view,
                 'objective_stats': objective_stats,
-                'summary': out.summary,
+                'summary': summary,
+                'summary_source': summary_source,
+                'unverified_summary': out.summary if summary_source == 'server' else '',
+                'coverage': coverage,
+                'partial': not coverage['complete'],
                 'insufficient': [x.model_dump() for x in out.insufficient],
                 'dropped_patterns': dropped,
                 'learners': len(learners_all),
                 'tag_counts': {t: len({evidence[e]['learner'] for e in eids}) for t, eids in by_tag.items()},
             }
             analysis = A.create(
-                c, pid, 'analysis', content, origin='generated', refs=ctx.refs(), generation_id=gid, round_=round_
+                c,
+                pid,
+                'analysis',
+                content,
+                origin='generated',
+                refs=ctx.refs(),
+                generation_id=gid,
+                round_=round_,
+                assignment_id=aid,
             )
+            based_on_old = self._guard_basis(c, pid, analysis['id'], ctx.manifest, aid)
             made = []
             for pat in patterns:
                 lineage = pat.pop('lineage')
@@ -272,17 +360,22 @@ class AnalysisMixin:
                         generation_id=gid,
                         lineage_id=lineage,
                         round_=round_,
+                        assignment_id=aid,
                     )
                 )
+                if based_on_old:
+                    self._guard_basis(c, pid, made[-1]['id'], ctx.manifest, aid)
         return {'analysis': analysis, 'patterns': made, 'context_note': describe(ctx.manifest)}
 
-    def analyses(self, pid):
+    def analyses(self, pid, assignment_id=None):
         with self.store.read() as c:
-            return A.current(c, pid, 'analysis')
+            pid, _, aid = self._scope(c, pid, None, assignment_id)
+            return A.current(c, pid, 'analysis', assignment=aid)
 
-    def patterns(self, pid):
+    def patterns(self, pid, assignment_id=None):
         with self.store.read() as c:
-            return A.current(c, pid, 'problem_pattern')
+            pid, _, aid = self._scope(c, pid, None, assignment_id)
+            return A.current(c, pid, 'problem_pattern', assignment=aid)
 
 
 def _objective_stats(goals, questions, gradings):
