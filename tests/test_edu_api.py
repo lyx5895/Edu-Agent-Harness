@@ -115,3 +115,22 @@ def test_question_review_routes(client):
     assert r.status_code == 200 and r.json()['version'] == 2
     bad = client.post(f'/api/questions/{q["id"]}/regenerate', json={'difficulty': '太难'})
     assert bad.status_code == 422
+
+
+def _app(tmp_path, **overrides):
+    settings = load_settings(db=str(tmp_path / 'edu.sqlite'), audit_rate=0.0, ab_rate=0.0, concurrency=2, **overrides)
+    return create_app(Workspace(Store(settings.db), FakeLLM(dict(HANDLERS)), settings, rng=random.Random(0)))
+
+
+def test_only_local_clients_by_default(tmp_path):
+    app = _app(tmp_path)
+    assert TestClient(app, client=('127.0.0.1', 50000)).get('/api/projects').status_code == 200
+    assert TestClient(app, client=('::1', 50000)).get('/api/projects').status_code == 200
+    remote = TestClient(app, client=('203.0.113.7', 50000))
+    assert remote.get('/api/projects').status_code == 403
+    assert remote.get('/').status_code == 403
+
+
+def test_remote_clients_when_allowed(tmp_path):
+    app = _app(tmp_path, allow_remote=True)
+    assert TestClient(app, client=('203.0.113.7', 50000)).get('/api/projects').status_code == 200

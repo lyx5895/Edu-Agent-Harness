@@ -34,7 +34,7 @@
 
 | 文件 | 行数（约） | 职责 |
 |---|---|---|
-| `edu_core/workflow.py` | 2500 | `Workspace`：全部业务流程、提示词、模型输出的 pydantic 模型、`next_steps`、`stage_status`、`normalize_plan` |
+| `edu_core/workflow/` | 2750 | `Workspace`：由各阶段模块组合而成。`base`（存储、模型、产物操作、`_plan`）、`projects`（项目、材料、课标、进入下一课时）、`lesson_plan`（01）、`questions`（02）、`submissions`（03）、`analysis`（04）、`review`（05）、`records`（依据已变化、概览、导出）；`schemas`（模型输出结构）、`prompts`（系统提示词）、`common`（`normalize_plan`、`usable_drafts` 等）、`steps`（`next_steps`、`stage_status`） |
 | `edu_core/artifacts.py` | 250 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询 |
 | `edu_core/context.py` | 95 | 上下文白名单 `WHITELIST`、`Context`、`describe()`（“已参考”文字） |
 | `edu_core/grading.py` | 340 | 无会话批改 `grade()` |
@@ -51,7 +51,7 @@
 
 ## 3. 数据模型
 
-SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHEMA`；新增列用启动时的迁移补上（`projects` 表的 `knowledge_module`、`lesson`、`learner_profile`、`prev_project_id`、`carryover`、`lesson_scope`、`curriculum`）。
+SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHEMA`。改动表结构时在 `MIGRATIONS` 里加一个新版本号（按顺序执行，记在 `PRAGMA user_version`），新建库和已有库走同一套迁移；第 1 版补上了 `projects` 表的 `knowledge_module`、`lesson`、`learner_profile`、`prev_project_id`、`carryover`、`lesson_scope`、`curriculum`。
 
 | 表 | 内容 |
 |---|---|

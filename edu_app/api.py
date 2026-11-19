@@ -7,6 +7,7 @@ runs these handlers in its thread pool.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import logging
 import tempfile
@@ -16,7 +17,6 @@ from typing import Any, Literal
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
-
 from pydantic import BaseModel, Field
 
 from edu_core.config import load_settings
@@ -176,6 +176,16 @@ def read_upload(path: Path, name: str) -> str:
             raise ValueError('PDF 中没有可提取的文字（可能是扫描件）')
         return text
     raise ValueError('只支持 .txt、.md、.csv 和文字版 PDF')
+
+
+def is_local_client(host: str | None) -> bool:
+    """Loopback peers only. 'testclient' is Starlette's in-process TestClient, never a network peer."""
+    if host == 'testclient':
+        return True
+    try:
+        return ipaddress.ip_address(host or '').is_loopback
+    except ValueError:
+        return False
 
 
 def create_app(workspace: Workspace | None = None) -> FastAPI:
@@ -436,6 +446,13 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             version = hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
             html = html.replace(f'/static/{name}"', f'/static/{name}?v={version}"')
         return HTMLResponse(html, headers={'Cache-Control': 'no-cache'})
+
+    @app.middleware('http')
+    async def local_only(request: Request, call_next):
+        # There are no accounts: refuse anyone but this machine unless EDU_ALLOW_REMOTE is set.
+        if not ws().settings.allow_remote and not is_local_client(request.client.host if request.client else None):
+            return JSONResponse({'detail': '只允许本机访问（需要远程访问请设置 EDU_ALLOW_REMOTE=1 并自行加鉴权）'}, status_code=403)
+        return await call_next(request)
 
     @app.middleware('http')
     async def revalidate_static(request: Request, call_next):

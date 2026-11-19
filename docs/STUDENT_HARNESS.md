@@ -72,7 +72,7 @@
 `scripts/ui_preview.py` 用一个脚本化的模型和一个示例班级启动服务，适合看界面、走流程。它的回复是写好的固定内容，不能用来判断教学质量。
 
 ```bash
-cd /default-filesys/workspace/ysb/Edu
+cd /default-filesys/workspace/ysb/Edu/edu-harness
 .envs/harness/bin/python scripts/ui_preview.py --port 7862
 ```
 
@@ -87,7 +87,7 @@ ssh -N -L 7862:127.0.0.1:7862 bysz1
 以下命令以 bysz1 为例。启动脚本只使用空闲 GPU（其他进程占用超过 1GB 时拒绝启动），不会结束别人的进程。
 
 ```bash
-cd /default-filesys/workspace/ysb/Edu
+cd /default-filesys/workspace/ysb/Edu/edu-harness
 .envs/harness/bin/python scripts/service.py start inference   # OmniEdu-9B，vLLM，GPU 1，端口 8000
 .envs/harness/bin/python scripts/service.py start harness     # 应用，端口 7860
 .envs/harness/bin/python scripts/service.py status harness

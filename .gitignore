@@ -1,6 +1,6 @@
-.envs/
-.cache/
-models/
+.envs
+.cache
+models
 logs/
 data/
 __pycache__/

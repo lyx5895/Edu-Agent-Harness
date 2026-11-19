@@ -38,7 +38,7 @@
 ## 快速开始
 
 ```bash
-cd /default-filesys/workspace/ysb/Edu
+cd /default-filesys/workspace/ysb/Edu/edu-harness
 export EDU_LLM_API_KEY=...            # 模型网关密钥，只放在环境变量里，不写进任何文件
 .envs/harness/bin/python -m uvicorn edu_app.api:app --host 127.0.0.1 --port 7870
 ```
@@ -50,7 +50,7 @@ ssh -N -L 7870:127.0.0.1:7870 <服务器>
 ```
 
 - 不设密钥也能启动，可以查看已有数据；需要模型的按钮会提示“未配置模型”。
-- 数据在 `data/edu.sqlite`。目前是单人本地工具，没有账号，只应监听 127.0.0.1。
+- 数据在 `data/edu.sqlite`。目前是单人本地工具，没有账号，只应监听 127.0.0.1；服务端也会拒绝非本机来源的请求（需要远程访问请设置 `EDU_ALLOW_REMOTE=1` 并自行加鉴权）。
 - 页面怎么用见[使用说明](docs/TEACHER_AGENT_GUIDE.md)。
 
 ## 配置
@@ -66,12 +66,26 @@ ssh -N -L 7870:127.0.0.1:7870 <服务器>
 | `EDU_MAX_TOKENS` | `6000` | 单次输出上限（推理模型的思考也占输出 token，太小会返回空内容） |
 | `EDU_CONCURRENCY` | `8` | 批改、自检的并发数 |
 | `EDU_DB` | `data/edu.sqlite` | 数据库路径 |
+| `EDU_ALLOW_REMOTE` | 无 | 设为 `1` 才接受非本机请求；默认只允许 127.0.0.1 / ::1 访问 |
 
 ## 代码结构
 
 ```text
 edu_core/              # 教师端核心，不依赖 Web 框架
-├── workflow.py        # Workspace：01–05 各阶段的业务流程、提示词、“下一步”
+├── workflow/          # Workspace：一个阶段一个模块
+│   ├── __init__.py    # Workspace 由各阶段模块组合而成
+│   ├── base.py        #   共用的存储、模型与产物操作，备课方案查询
+│   ├── projects.py    #   项目、材料、课标选择、进入下一课时
+│   ├── lesson_plan.py #   01 备课设计
+│   ├── questions.py   #   02 出题改题（出题、审核、独立解题、A/B、导入试卷、换一道）
+│   ├── submissions.py #   03 作业批改（名单、作答、批改、复核队列、改判）
+│   ├── analysis.py    #   04 学情分析
+│   ├── review.py      #   05 讲题答疑、讲评后再练、两轮对比
+│   ├── records.py     #   依据已变化、概览（“下一步”）、导出
+│   ├── schemas.py     # 模型输出的 pydantic 结构
+│   ├── prompts.py     # 各任务的系统提示词
+│   ├── common.py      # 评分要点、题目内容、备课方案整理等公共函数
+│   └── steps.py       # next_steps、stage_status（“下一步”与阶段状态）
 ├── artifacts.py       # 产物：版本、确认、上游引用、依据已变化
 ├── context.py         # 每类任务的上下文白名单与“已参考”
 ├── grading.py         # 逐要点批改、引用核对、复核、抽检
@@ -92,7 +106,7 @@ harness/               # 学生端 harness（v0.10，已冻结）
 ## 开发与测试
 
 ```bash
-.envs/harness/bin/python -m pytest -q tests     # 全部测试（教师端 + 学生端），假模型、临时数据库，约 7 秒
+.envs/harness/bin/python -m pytest -q tests     # 全部测试（教师端 + 学生端），假模型、临时数据库，约 35 秒
 EDU_LLM_API_KEY=... .envs/harness/bin/python scripts/edu_smoke.py --db /tmp/edu-smoke.sqlite   # 真实模型走一遍闭环
 EDU_LLM_API_KEY=... .envs/harness/bin/python scripts/edu_eval_grading.py \
   --data bench/data/stepverify-zh.jsonl --out reports/edu/grading-stepverify-zh.json            # 批改准确性评测
@@ -107,7 +121,7 @@ EDU_LLM_API_KEY=... .envs/harness/bin/python scripts/edu_eval_grading.py \
 - **课标匹配靠关键词**：课标没有出现老师用的词时（如生物课标写“叶绿体捕获光能”，不写“光合作用”），自动匹配会弱，需要老师自己勾选或搜索；“要求高于课标”的检查只认识“了解/知道/理解/掌握”一类用词。课标只收必修和选择性必修。
 - **题目审核和独立解题依赖另一个模型**：画图、多问类题目容易被误标“答案存疑”。
 - **作答只能导入文字（CSV）**：不支持拍照作答和整张试卷照片切题。
-- **单人本地工具**：没有账号和班级权限；SQLite 只适合单机单进程。
+- **单人本地工具**：没有账号和班级权限，只接受本机请求；SQLite 只适合单机单进程。
 - 和 coursemaker 的对接还没有做（计划见[设计文档第 12 节](docs/TEACHER_AGENT_DESIGN.md)）。
 
 ## 学生端 harness（已冻结）

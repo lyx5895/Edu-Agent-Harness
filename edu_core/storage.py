@@ -2,6 +2,7 @@
 
 import contextlib
 import json
+import re
 import sqlite3
 import time
 import uuid
@@ -49,6 +50,45 @@ CREATE TABLE IF NOT EXISTS events(
 """
 
 
+# Schema revisions, applied in order and recorded in PRAGMA user_version. SQLite cannot drop or reorder
+# columns, so a column is added by a new revision and never edited in place. A fresh database runs every
+# revision too, so there is one definition of the schema instead of two.
+MIGRATIONS = {
+    1: """
+ALTER TABLE projects ADD COLUMN knowledge_module TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN lesson TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN learner_profile TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN prev_project_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN carryover TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN lesson_scope TEXT NOT NULL DEFAULT '';
+ALTER TABLE projects ADD COLUMN curriculum TEXT NOT NULL DEFAULT '';
+""",
+}
+SCHEMA_VERSION = max(MIGRATIONS)
+
+
+def migrate(c) -> None:
+    """Bring an existing database up to SCHEMA_VERSION (newer databases are left alone)."""
+    version = c.execute('PRAGMA user_version').fetchone()[0]
+    if version > SCHEMA_VERSION:
+        return  # written by a newer build: do not touch it
+    for target in range(version + 1, SCHEMA_VERSION + 1):
+        c.execute('BEGIN IMMEDIATE')
+        try:
+            for statement in filter(None, (s.strip() for s in MIGRATIONS[target].split(';'))):
+                # Databases from before user_version may already have the column (the old startup
+                # added columns one by one): skip it instead of failing with "duplicate column".
+                m = re.fullmatch(r'ALTER TABLE (\w+) ADD COLUMN (\w+) .*', statement, re.S)
+                if m and m.group(2) in {r[1] for r in c.execute(f'PRAGMA table_info({m.group(1)})')}:
+                    continue
+                c.execute(statement)
+            c.execute(f'PRAGMA user_version={target}')
+            c.execute('COMMIT')
+        except BaseException:
+            c.execute('ROLLBACK')
+            raise
+
+
 def new_id(prefix: str) -> str:
     return f'{prefix}_{uuid.uuid4().hex[:16]}'
 
@@ -61,10 +101,7 @@ class Store:
         c = self.connect()
         try:
             c.executescript(SCHEMA)  # executescript manages its own transaction
-            columns = {r[1] for r in c.execute('PRAGMA table_info(projects)')}
-            for column in ('knowledge_module', 'lesson', 'learner_profile', 'prev_project_id', 'carryover', 'lesson_scope', 'curriculum'):
-                if column not in columns:
-                    c.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT NOT NULL DEFAULT ''")
+            migrate(c)
         finally:
             c.close()
 

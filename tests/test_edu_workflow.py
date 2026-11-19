@@ -580,3 +580,26 @@ def test_generation_sees_activities_standards_and_carried_over_status(ws):
     user = [c for c in ws.llm.calls if c['task'] == 'generate_questions'][-1]['user']
     assert user['上一课时学情']['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域'
     assert '上一课时学情' in gen['context_note']
+
+
+def test_grade_round_keeps_other_results_when_one_submission_errors(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    normal = judge_points(RULES)
+
+    def grade(role, payload):
+        if '触发错误' in payload['学生作答']:
+            raise RuntimeError('boom')
+        return normal(role, payload)
+
+    ws.llm.handlers['grade'] = grade
+    ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,触发错误')
+    out = ws.grade_round(pid)
+    assert out['graded'] == 1
+    [failed] = out['failed']
+    assert failed['learner'] == '乙' and 'RuntimeError' in failed['error']
+    assert [g['content']['learner_alias'] for g in ws.gradings(pid)] == ['甲']
+
+    ws.llm.handlers['grade'] = normal  # a retry grades only the submission that failed
+    assert ws.grade_round(pid)['graded'] == 1
+    assert {g['content']['learner_alias'] for g in ws.gradings(pid)} == {'甲', '乙'}

@@ -29,6 +29,8 @@ class Settings:
     max_tokens: int = 6000
     timeout: float = 180.0
     concurrency: int = 8
+    # Single-user local tool without accounts: only loopback clients unless explicitly opened up.
+    allow_remote: bool = False
 
 
 def load_settings(**overrides) -> Settings:
@@ -42,6 +44,7 @@ def load_settings(**overrides) -> Settings:
         'ab_rate': float(os.getenv('EDU_AB_RATE', Settings.ab_rate)),
         'max_tokens': int(os.getenv('EDU_MAX_TOKENS', Settings.max_tokens)),
         'concurrency': int(os.getenv('EDU_CONCURRENCY', Settings.concurrency)),
+        'allow_remote': os.getenv('EDU_ALLOW_REMOTE', '') in ('1', 'true', 'yes'),
     }
     values.update(overrides)
     return Settings(**values)

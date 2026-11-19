@@ -309,3 +309,67 @@ def test_every_subject_has_verified_curriculum_items(subject, query, expected):
     assert len(content) >= 40 and all(it['text'] and it['short'] for it in content)
     assert len({it['id'] for it in data['items']}) == len(data['items'])
     assert C.search(subject, query)[0]['id'].startswith(expected)
+
+
+def _old_database(path):
+    """A database as an earlier build left it: no revision marker and none of the added project columns."""
+    import sqlite3
+
+    from edu_core.storage import SCHEMA
+
+    c = sqlite3.connect(path)
+    c.executescript(SCHEMA)
+    c.execute("INSERT INTO projects(id,title,subject,created_at) VALUES('proj_old','旧项目','数学',0)")
+    c.commit()
+    c.close()
+
+
+def test_store_migrates_an_older_database(tmp_path):
+    import sqlite3
+
+    from edu_core.storage import SCHEMA_VERSION
+
+    path = tmp_path / 'old.sqlite'
+    _old_database(path)
+    for _ in range(2):  # re-opening an up-to-date database is a no-op
+        c = Store(path).connect()
+        try:
+            assert c.execute('PRAGMA user_version').fetchone()[0] == SCHEMA_VERSION
+            row = c.execute("SELECT knowledge_module, curriculum FROM projects WHERE id='proj_old'").fetchone()
+            assert tuple(row) == ('', '')
+        finally:
+            c.close()
+    assert sqlite3.connect(path).execute('PRAGMA user_version').fetchone()[0] == SCHEMA_VERSION
+
+
+def test_store_leaves_a_newer_database_alone(tmp_path):
+    path = tmp_path / 'newer.sqlite'
+    _old_database(path)
+    c = Store(path).connect()
+    c.execute('PRAGMA user_version=99')
+    c.close()
+    c = Store(path).connect()  # must not re-run migrations on a database from a newer build
+    assert c.execute('PRAGMA user_version').fetchone()[0] == 99
+    c.close()
+
+
+def test_store_migrates_a_database_that_already_has_the_columns(tmp_path):
+    """Databases from the column-by-column startup have the columns but user_version 0."""
+    import sqlite3
+
+    from edu_core.storage import SCHEMA_VERSION
+
+    path = tmp_path / 'patched.sqlite'
+    _old_database(path)
+    c = sqlite3.connect(path)
+    for column in ('knowledge_module', 'lesson', 'learner_profile', 'prev_project_id', 'carryover', 'lesson_scope', 'curriculum'):
+        c.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT NOT NULL DEFAULT ''")
+    c.execute("UPDATE projects SET lesson='第 2 课时'")
+    c.commit()
+    c.close()
+    c = Store(path).connect()
+    try:
+        assert c.execute('PRAGMA user_version').fetchone()[0] == SCHEMA_VERSION
+        assert c.execute("SELECT lesson FROM projects WHERE id='proj_old'").fetchone()[0] == '第 2 课时'
+    finally:
+        c.close()

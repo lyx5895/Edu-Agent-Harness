@@ -5,7 +5,7 @@
 ## 启动
 
 ```bash
-cd /default-filesys/workspace/ysb/Edu
+cd /default-filesys/workspace/ysb/Edu/edu-harness
 export EDU_LLM_API_KEY=...            # 模型网关密钥，只放在环境变量里
 .envs/harness/bin/python -m uvicorn edu_app.api:app --host 127.0.0.1 --port 7870
 ```
