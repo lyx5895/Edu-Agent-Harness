@@ -163,18 +163,18 @@ function renderContinue() {
   const go = CONTINUE[S.tab];
   const here = o.next.find((x) => x.tab === S.tab && !x.optional);
   const optional = o.next.find((x) => x.tab === S.tab && x.optional);
-  const side = optional ? `<span class="muted">可选：</span><button class="link" data-goto="${o.next.indexOf(optional)}">${esc(optional.label)}</button><span class="sep"></span>` : '';
+  const side = optional ? `<div class="side"><span class="muted">可选：</span><button class="link" data-goto="${o.next.indexOf(optional)}">${esc(optional.label)}</button></div>` : '';
   if (o.stages[S.tab] && !here) {
-    box.innerHTML = `${side}<button class="continue-btn" data-continue="1">接着做：${esc(go.label)} →</button>`;
+    box.innerHTML = `${side}<button class="continue-btn" data-continue="1">下一步：${esc(go.label)} →</button>`;
     return;
   }
   if (here) {
-    box.innerHTML = `<span class="muted">这一步还差：</span><button class="link" data-goto="${o.next.indexOf(here)}">${esc(here.label)}</button>`;
+    box.innerHTML = `${here.hint ? `<span class="muted hint">${esc(here.hint)}</span>` : ''}<button class="continue-btn secondary" data-goto="${o.next.indexOf(here)}">下一步：${esc(here.label)} →</button>`;
     return;
   }
   const blocking = o.next.find((x) => STAGES.includes(x.tab) && !x.optional);
   box.innerHTML = blocking
-    ? `<span class="muted">需要先完成“${esc(STAGE_NAME[blocking.tab])}”：</span><button class="link" data-goto="${o.next.indexOf(blocking)}">${esc(blocking.label)}</button>`
+    ? `<button class="continue-btn secondary" data-goto="${o.next.indexOf(blocking)}">下一步：先完成${esc(STAGE_NAME[blocking.tab])} · ${esc(blocking.label)} →</button>`
     : '';
 }
 

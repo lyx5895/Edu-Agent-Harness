@@ -47,7 +47,7 @@
       <div id="context-note" class="banner info hidden"></div>
 
       <div id="tab-prep" class="tab">
-        <div class="stage-head"><h2>备课设计</h2><p>明确教学目标，安排重点与课堂活动</p></div>
+        <div class="stage-head"><div><h2>备课设计</h2><p>明确教学目标，安排重点与课堂活动</p></div><div class="continue" data-stage="prep"></div></div>
         <div class="card">
           <h3>课程材料</h3>
           <div id="materials"></div>
@@ -70,11 +70,10 @@
           <p class="muted">可选。</p>
           <div id="lesson-plan"></div>
         </div>
-        <div class="continue" data-stage="prep"></div>
       </div>
 
       <div id="tab-questions" class="tab hidden">
-        <div class="stage-head"><h2>出题改题</h2><p>依据本课目标生成练习，同步答案与评分要点</p></div>
+        <div class="stage-head"><div><h2>出题改题</h2><p>依据本课目标生成练习，同步答案与评分要点</p></div><div class="continue" data-stage="questions"></div></div>
         <div class="card">
           <h3>按目标出题</h3>
           <div class="grid-form">
@@ -98,11 +97,10 @@
             <label>轮次 <select id="q-round"></select></label></div>
           <div id="questions"></div>
         </div>
-        <div class="continue" data-stage="questions"></div>
       </div>
 
       <div id="tab-grading" class="tab hidden">
-        <div class="stage-head"><h2>作业批改</h2><p>对照标准批改实际作答，保留错误位置与教师修订</p></div>
+        <div class="stage-head"><div><h2>作业批改</h2><p>对照标准批改实际作答，保留错误位置与教师修订</p></div><div class="continue" data-stage="grading"></div></div>
         <div class="card">
           <div class="card-head"><h3>学生名单与作答</h3><label>轮次 <select id="g-round"></select></label></div>
           <div class="two">
@@ -130,11 +128,10 @@
           <h4>本轮全部批改</h4>
           <div id="gradings"></div>
         </div>
-        <div class="continue" data-stage="grading"></div>
       </div>
 
       <div id="tab-analysis" class="tab hidden">
-        <div class="stage-head"><h2>学情分析</h2><p>汇总薄弱点与共性问题，确定需要重点讲解的内容</p></div>
+        <div class="stage-head"><div><h2>学情分析</h2><p>汇总薄弱点与共性问题，确定需要重点讲解的内容</p></div><div class="continue" data-stage="analysis"></div></div>
         <div class="card">
           <div class="card-head"><h3>汇总批改结果</h3>
             <div><label>轮次 <select id="a-round"></select></label> <button id="analyze">汇总学情</button></div></div>
@@ -152,11 +149,10 @@
             <label>后一轮 <input type="number" id="cmp-b" value="2" min="1"></label><button id="compare">对比</button></div>
           <div id="comparison"></div>
         </div>
-        <div class="continue" data-stage="analysis"></div>
       </div>
 
       <div id="tab-review" class="tab hidden">
-        <div class="stage-head"><h2>讲题答疑</h2><p>准备针对性的讲解与答疑，安排追问，检查学生理解</p></div>
+        <div class="stage-head"><div><h2>讲题答疑</h2><p>准备针对性的讲解与答疑，安排追问，检查学生理解</p></div><div class="continue" data-stage="review"></div></div>
         <div class="card">
           <div class="card-head"><h3>讲评稿</h3>
             <div><label>依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>
@@ -169,7 +165,6 @@
           <div class="row"><label>每个问题模式出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
             <button id="practice">生成再练题</button></div>
         </div>
-        <div class="continue" data-stage="review"></div>
       </div>
 
       <div id="tab-records" class="tab hidden">
