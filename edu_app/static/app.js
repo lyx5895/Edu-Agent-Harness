@@ -1421,6 +1421,7 @@ async function renderHome() {
       ? detail.materials.map((m) => `<div class="kv">${esc(m.filename)} <span class="pill">${m.chars} 字</span></div>`).join('')
       : '<div class="empty">还没有课程资料。</div>';
   }
+  await renderResearch();
   $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
   if (h.legacy_projects) await renderLegacy();
 }
@@ -1473,6 +1474,29 @@ async function renderUnitReview(oid, box) {
     <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
 }
 
+async function renderResearch() {
+  if (!S.course) return;
+  const [sum, cases, consents] = await Promise.all([
+    api('GET', `/api/research/summary?course_id=${encodeURIComponent(S.course)}`),
+    api('GET', `/api/research/cases?course_id=${encodeURIComponent(S.course)}`),
+    api('GET', `/api/courses/${S.course}/consents`),
+  ]);
+  const c = sum.counts || {};
+  const label = { teacher_tasks: '老师任务', runs: '运行', model_calls: '模型调用', research_cases: '研究案例', reviewed_cases: '已审定案例', source_groups: '来源组', contributors: '贡献者' };
+  $('#research-summary').innerHTML = Object.entries(label).filter(([k]) => k in c)
+    .map(([k, l]) => `<span class="pill" title="${esc((sum.definitions || {})[k] || '')}">${l} ${c[k] == null ? '未统计' : c[k]}</span>`).join(' ');
+  const stageName = { lesson_plan: '备课', questions: '出题', grading: '批改', analysis: '学情', review: '讲评', explanation: '讲解' };
+  const stateName = { pending: '待审定', approved: '已通过', rejected: '未通过', disputed: '有分歧', changed: '内容有变化，需重审' };
+  $('#research-cases').innerHTML = cases.length ? cases.map((x) => `<div class="task-row" data-case="${x.id}"><div class="task-main">${esc(stageName[x.stage] || x.stage)}
+      <span class="pill">${esc(stateName[x.status] || x.status)}</span>${x.split ? ` <span class="pill">${x.split === 'test' ? '测试集' : '开发集'}</span>` : ''}
+      <span class="muted">${x.artifact_ids.length} 个产物 · 来源组 ${esc(x.source_group.slice(-6))} · 审定 ${x.reviews.length} 次</span></div>
+      <div class="row"><input class="cr-reviewer" placeholder="审定人" style="width:7em"><input class="cr-standard" placeholder="审定标准">
+      <button class="small secondary" data-case-verdict="approve">通过</button><button class="small link" data-case-verdict="reject">不通过</button></div></div>`).join('')
+    : '<div class="kv muted">点“整理研究案例”按任务阶段生成；重试和内部调用不会增加案例。</div>';
+  $('#consent-list').innerHTML = consents.map((x) => `<div class="kv">${esc(x.purposes.join('、'))} · 版本 ${esc(x.version)} · ${esc(x.granted_by)}
+    ${x.revoked_at ? '<span class="pill">已撤回</span>' : `<button class="small link" data-consent-revoke="${x.id}">撤回</button>`}</div>`).join('') || '<div class="kv muted">还没有授权：训练数据导出不会包含本课程的内容。</div>';
+}
+
 function downloadJson(data, name) {
   const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' }));
   const a = document.createElement('a');
@@ -1499,6 +1523,22 @@ function bindExtras() {
     const pkg = await api('POST', `/api/projects/${S.pid}/coursemaker-package`);
     downloadJson(pkg, `${pkg.package_id}.json`);
     toast('交换包已生成并下载；课件做好后可回传，系统会记录它依据的版本');
+  }));
+  $('#cases-build').addEventListener('click', (e) => busy(e.target, '整理中…', async () => {
+    const r = await api('POST', `/api/research/cases/build?course_id=${encodeURIComponent(S.course)}`);
+    toast(`新增 ${r.created} 个研究案例`); await renderResearch();
+  }));
+  $('#dataset-export').addEventListener('click', (e) => busy(e.target, '导出中…', async () => {
+    const res = await fetch(`/api/datasets/export?course_id=${encodeURIComponent(S.course)}`, { method: 'POST', headers: { 'Idempotency-Key': newKey() } });
+    if (!res.ok) throw new Error((await res.json()).detail || '导出失败');
+    const data = await res.json();
+    downloadJson(data, `${data.manifest.version}.json`);
+    const ex = Object.entries(data.manifest.excluded).map(([k, n]) => `${k} ${n}`).join('，');
+    toast(`导出 ${data.records.length} 条；排除：${ex || '无'}`);
+  }));
+  $('#consent-grant').addEventListener('click', (e) => busy(e.target, '记录中…', async () => {
+    await api('POST', `/api/courses/${S.course}/consents`, { purposes: ['training'], version: $('#consent-version').value.trim(), granted_by: $('#consent-by').value.trim() });
+    toast('已记录授权'); await renderResearch();
   }));
   $('#home').addEventListener('click', async (e) => {
     const ob = e.target.closest('[data-objective]');
@@ -1527,6 +1567,17 @@ function bindExtras() {
       }
       return;
     }
+    const cv = e.target.closest('[data-case-verdict]');
+    if (cv) {
+      const row = cv.closest('[data-case]');
+      await busy(cv, '…', async () => {
+        const r = await api('POST', `/api/research/cases/${row.dataset.case}/review`, { reviewer: $('.cr-reviewer', row).value.trim(), standard: $('.cr-standard', row).value.trim(), verdict: cv.dataset.caseVerdict });
+        toast(`已记录审定：${r.status}`); await renderResearch();
+      });
+      return;
+    }
+    const rv = e.target.closest('[data-consent-revoke]');
+    if (rv) { await busy(rv, '…', async () => { const r = await api('POST', `/api/consents/${rv.dataset.consentRevoke}/revoke`); toast(`已撤回；标记了 ${r.datasets_marked.length} 个已导出的数据集`); await renderResearch(); }); }
   });
 }
 

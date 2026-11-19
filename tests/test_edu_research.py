@@ -1,5 +1,5 @@
 """Course objectives, unit review, phase C (A/B records, partial revision, materials, deliverables, coursemaker) and
-run records."""
+phase D (runs and research counts, source groups, research cases, consent and training export)."""
 
 import io
 import json
@@ -56,9 +56,11 @@ def test_runs_separate_tasks_runs_and_model_calls(ws):
         untagged = c.execute("SELECT COUNT(*) FROM generations WHERE project_id=? AND run_id=''", (pid,)).fetchone()[0]
     assert sorted(r['kind'] for r in runs) == ['draft_lesson_plan', 'generate_questions', 'regenerate_question']
     assert all(r['status'] == 'succeeded' for r in runs) and untagged == 0  # self-checks in worker threads too
-    counts = ws.export(pid)['manifest']['counts']
+    built = ws.build_research_cases(crs['id'])
+    counts = built['counts']
     assert counts['teacher_tasks'] == 1 and counts['runs'] == 3 and counts['model_calls'] > counts['runs']
-    assert counts['contributors'] is None  # no accounts: the number of teachers is not guessed
+    assert counts['research_cases'] == 2 and counts['contributors'] is None  # plan + questions; no accounts
+    assert ws.build_research_cases(crs['id'])['created'] == 0  # idempotent
 
 
 def test_failed_run_is_recorded(ws):
@@ -278,3 +280,47 @@ def test_coursemaker_package_and_returned_courseware(ws):
     assert any(m['artifact_id'] == cw['id'] for m in ws.stale(pid))  # upstream changed: the courseware is flagged
     old = ws.import_courseware(pid, pkg['package_id'], 'handout', [])
     assert old['stale']  # made from a package whose plan is no longer current
+
+
+# ----- source groups, research cases, consent and export -----
+
+
+def test_cases_need_independent_review_and_splits_follow_source_groups(ws):
+    crs, _o3, _o5, _pid, _q, a3 = analysed_class(ws)
+    ws.build_research_cases(crs['id'])
+    cases = {(x['stage'], x['scope']): x for x in ws.research_cases(crs['id'])}
+    assert {('lesson_plan', ''), (('questions', 'round1')), ('grading', a3['id']), ('analysis', a3['id'])} <= set(cases)
+    groups = {x['source_group'] for x in cases.values()}
+    assert len(groups) == 1  # plan, questions, gradings and analysis share one source
+    case = cases[('grading', a3['id'])]
+    with pytest.raises(Conflict):
+        ws.review_case(case['id'], 'teacher', 'approve', '逐点核对')  # the producer cannot review
+    ws.review_case(case['id'], '审定人甲', 'approve', '逐点核对评分要点')
+    assert ws.review_case(case['id'], '审定人乙', 'reject', '逐点核对评分要点')['status'] == 'disputed'
+    assert ws.review_case(case['id'], '教研组长', 'approve', '复议', role='adjudicator')['status'] == 'approved'
+    ws.freeze_split(crs['id'], test_ratio=0.999)
+    splits = {x['split'] for x in ws.research_cases(crs['id'])}
+    assert splits == {'test'}  # one source group, one split
+    with pytest.raises(Conflict):
+        ws.use_for_tuning([case['id']], '调批改提示词')
+    check = ws.check_split({cases[('lesson_plan', '')]['id']: 'dev', case['id']: 'test'})
+    assert check['crossing_groups'] == [case['source_group']]
+
+
+def test_training_export_needs_consent_and_keeps_student_text_out(ws):
+    crs, _o3, _o5, _pid, _q, _a3 = analysed_class(ws)
+    first = ws.export_dataset(crs['id'])
+    assert first['records'] == [] and first['manifest']['excluded']['no_training_consent'] >= 2
+    consent = ws.grant_consent(crs['id'], ['training'], 'v1', '张老师')
+    data = ws.export_dataset(crs['id'])
+    m = data['manifest']
+    assert m['counts']['demonstration'] == 2 and m['counts']['preference'] == 0  # plan and question
+    assert m['excluded']['student_text'] >= 1 and m['excluded']['verification_student_text'] >= 1
+    blob = json.dumps(data['records'], ensure_ascii=False)
+    assert MISSED not in blob and '乙' not in blob
+    assert {r['split'] for r in data['records']} <= {'dev', 'test'} and all(
+        r['consent']['version'] == 'v1' for r in data['records']
+    )
+    marked = ws.revoke_consent(consent['id'])['datasets_marked']
+    assert len(marked) == 1
+    assert ws.export_dataset(crs['id'])['records'] == []

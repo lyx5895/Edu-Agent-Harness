@@ -303,6 +303,31 @@ class MergeBody(BaseModel):
     sources: list[str] = Field(min_length=2, max_length=10)
 
 
+class CaseReview(BaseModel):
+    reviewer: str = Field(min_length=1, max_length=60)
+    verdict: Literal['approve', 'reject']
+    standard: str = Field(min_length=1, max_length=500)
+    note: str = Field(default='', max_length=1000)
+    role: Literal['reviewer', 'adjudicator'] = 'reviewer'
+
+
+class SplitBody(BaseModel):
+    course_id: str | None = None
+    test_ratio: float = Field(default=0.2, gt=0, lt=1)
+    seed: str = Field(default='v1', max_length=40)
+
+
+class TuningBody(BaseModel):
+    case_ids: list[str] = Field(min_length=1, max_length=500)
+    purpose: str = Field(min_length=1, max_length=200)
+
+
+class ConsentBody(BaseModel):
+    purposes: list[Literal['training', 'evaluation', 'research']] = Field(min_length=1)
+    version: str = Field(min_length=1, max_length=40)
+    granted_by: str = Field(min_length=1, max_length=60)
+
+
 class MapBody(BaseModel):
     project_ids: list[str] = Field(min_length=1, max_length=200)
     course_id: str | None = None
@@ -891,6 +916,58 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.post('/api/projects/{pid}/courseware')
     def import_courseware(pid: str, body: CoursewareBody):
         return ws().import_courseware(pid, body.package_id, body.kind, body.files, body.external_run_id, body.note)
+
+    # ----- research records -----
+
+    @app.get('/api/research/summary')
+    def research_summary(course_id: str | None = None):
+        return ws().research_summary(course_id)
+
+    @app.post('/api/research/cases/build')
+    def build_cases(course_id: str | None = None):
+        return ws().build_research_cases(course_id)
+
+    @app.get('/api/research/cases')
+    def research_cases(course_id: str | None = None, status: str | None = None):
+        return ws().research_cases(course_id, status)
+
+    @app.post('/api/research/cases/{case_id}/review')
+    def review_case(case_id: str, body: CaseReview):
+        return ws().review_case(case_id, body.reviewer, body.verdict, body.standard, body.note, body.role)
+
+    @app.post('/api/research/split')
+    def freeze_split(body: SplitBody):
+        return ws().freeze_split(body.course_id, body.test_ratio, body.seed)
+
+    @app.post('/api/research/tuning')
+    def use_for_tuning(body: TuningBody):
+        return ws().use_for_tuning(body.case_ids, body.purpose)
+
+    @app.get('/api/research/source-groups')
+    def source_groups(course_id: str | None = None):
+        return ws().source_groups(course_id)
+
+    @app.get('/api/courses/{cid}/consents')
+    def consents(cid: str):
+        return ws().consents(cid)
+
+    @app.post('/api/courses/{cid}/consents')
+    def grant_consent(cid: str, body: ConsentBody):
+        return ws().grant_consent(cid, body.purposes, body.version, body.granted_by)
+
+    @app.post('/api/consents/{consent_id}/revoke')
+    def revoke_consent(consent_id: str):
+        return ws().revoke_consent(consent_id)
+
+    @app.post('/api/datasets/export')
+    def export_dataset(course_id: str | None = None):
+        data = ws().export_dataset(course_id)
+        body = json.dumps(data, ensure_ascii=False, indent=1, default=str)
+        return Response(
+            body,
+            media_type='application/json',
+            headers={'Content-Disposition': f'attachment; filename="{data["manifest"]["version"]}.json"'},
+        )
 
     @app.get('/api/migration/preview')
     def migration_preview():

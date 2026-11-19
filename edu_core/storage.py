@@ -153,6 +153,22 @@ CREATE TABLE IF NOT EXISTS packages(
   id TEXT PRIMARY KEY, project_id TEXT NOT NULL, contract TEXT NOT NULL, payload TEXT NOT NULL, sha TEXT NOT NULL,
   created_at REAL NOT NULL);
 """,
+    # Phase D: research cases with independent review, training consent, dataset exports (AB spec 6-9).
+    7: """
+CREATE TABLE IF NOT EXISTS research_cases(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL DEFAULT '', project_id TEXT NOT NULL, task_id TEXT NOT NULL DEFAULT '',
+  stage TEXT NOT NULL, scope TEXT NOT NULL DEFAULT '', artifact_ids TEXT NOT NULL, source_group TEXT NOT NULL,
+  split TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'pending', created_at REAL NOT NULL,
+  UNIQUE(project_id, stage, scope));
+CREATE TABLE IF NOT EXISTS case_reviews(
+  id TEXT PRIMARY KEY, case_id TEXT NOT NULL, reviewer TEXT NOT NULL, role TEXT NOT NULL, verdict TEXT NOT NULL,
+  standard TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS consents(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL, purposes TEXT NOT NULL, version TEXT NOT NULL, granted_by TEXT NOT NULL,
+  granted_at REAL NOT NULL, revoked_at REAL);
+CREATE TABLE IF NOT EXISTS dataset_exports(
+  id TEXT PRIMARY KEY, version TEXT NOT NULL, manifest TEXT NOT NULL, created_at REAL NOT NULL);
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 

@@ -77,6 +77,19 @@
             </div>
           </details>
         </div>
+        <div class="card" id="research-card">
+          <h3>研究记录与训练授权</h3>
+          <p class="muted">研究记录分别统计老师任务、运行、模型调用和研究案例；训练数据只来自已授权的课程，学生作答一律不进入。</p>
+          <div id="research-summary"></div>
+          <div class="row"><button class="small secondary" id="cases-build">整理研究案例</button>
+            <button class="small secondary" id="dataset-export">导出训练数据</button></div>
+          <div id="research-cases"></div>
+          <details><summary>训练数据授权</summary>
+            <div id="consent-list"></div>
+            <div class="row"><input id="consent-version" placeholder="授权版本，例如 2026-11 v1"><input id="consent-by" placeholder="授权人">
+              <button class="small" id="consent-grant">授权本课程内容用于训练</button></div>
+          </details>
+        </div>
         <div class="card">
           <h3>课程资料</h3>
           <p class="muted">本课程所有工作都会参考这里的资料（各班共用，不含学生作答）。</p>

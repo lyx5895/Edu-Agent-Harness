@@ -142,6 +142,8 @@ class RecordsMixin:
             sessions = [dict(r) for r in c.execute('SELECT * FROM lesson_sessions WHERE project_id=?', (pid,))]
             runs = [dict(r) for r in c.execute('SELECT * FROM runs WHERE project_id=? ORDER BY started_at', (pid,))]
             comparisons = [row(r) for r in c.execute('SELECT * FROM comparisons WHERE project_id=?', (pid,))]
+            cases = [row(r) for r in c.execute('SELECT * FROM research_cases WHERE project_id=?', (pid,))]
+            groups = self._source_groups(c, [pid])
         by_id = {a['id']: a for a in arts}
         edits = []
         for a in arts:
@@ -151,16 +153,20 @@ class RecordsMixin:
                 edits.append(
                     {'artifact_id': a['id'], 'edit_of': a['edit_of'], 'origin': a['origin'], 'changed_fields': changed}
                 )
+        for a in arts:
+            a['source_group'] = groups.get(a['id'], '')
         manifest = {
             'project': p,
             'exported_at': time.time(),
             'counts': {
-                # Separate counts (design doc 11.8): teacher tasks, runs, internal model calls and versions.
+                # Separate counts (design doc 11.8): teacher tasks, runs, internal model calls, versions and cases.
                 'teacher_tasks': len(tasks),
                 'runs': len(runs),
                 'model_calls': len(gens),
+                'research_cases': len(cases),
                 'assignments': len(assignments),
                 'material_families': len({m['family_id'] for m in mats}),
+                'source_groups': len(set(groups.values())),
                 'course_projects': 1,
                 # Without accounts nobody is identified: the number of teachers is not guessed.
                 'contributors': None,
@@ -168,7 +174,7 @@ class RecordsMixin:
                 'artifact_versions': len(arts),
                 'artifact_lineages': len({a['lineage_id'] for a in arts}),
             },
-            'note': '一次运行是老师发起的一次模型操作，其中的自检、复核和重试都是模型调用，不计为新增案例；同一材料家族的产物应作为一组切分。学生只以代号出现，导出前仍需去标识检查。研究导出不是教师文件，教师文件请用“导出文件”。',
+            'note': '研究案例按任务阶段整理，重试、内部复核和多个版本不增加案例；同一来源组的产物应作为一组切分。学生只以代号出现，导出前仍需去标识检查。研究导出不是教师文件，教师文件请用“导出文件”。',
         }
         return {
             'manifest': manifest,
@@ -186,4 +192,5 @@ class RecordsMixin:
             'lesson_sessions': sessions,
             'runs': runs,
             'comparisons': comparisons,
+            'research_cases': cases,
         }

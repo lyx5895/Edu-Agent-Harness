@@ -35,6 +35,7 @@ from edu_core.workflow.photos import PhotosMixin
 from edu_core.workflow.projects import ProjectsMixin
 from edu_core.workflow.questions import QuestionsMixin
 from edu_core.workflow.records import RecordsMixin
+from edu_core.workflow.research import ResearchMixin
 from edu_core.workflow.review import ReviewMixin
 from edu_core.workflow.schemas import (
     Activity,
@@ -65,6 +66,7 @@ class Workspace(
     CoursesMixin,
     ObjectivesMixin,
     DeliveryMixin,
+    ResearchMixin,
     AssignmentsMixin,
     ProjectsMixin,
     LessonPlanMixin,
