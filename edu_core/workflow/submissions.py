@@ -20,6 +20,7 @@ from edu_core.text import dump
 from edu_core.workflow.common import (
     Conflict,
 )
+from edu_core.workflow.runs import operation
 
 
 class SubmissionsMixin:
@@ -119,6 +120,7 @@ class SubmissionsMixin:
 
     # ----- grading -----
 
+    @operation('grade')
     def grade_round(self, pid, round_=1, regrade=False, assignment_id=None):
         """Grade every submission that has no current grading (or whose grading is stale).
 

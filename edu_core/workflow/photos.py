@@ -17,6 +17,7 @@ from edu_core.context import Context, describe
 from edu_core.storage import event, record_generation
 from edu_core.subjects import QUESTION_TYPES
 from edu_core.workflow.common import Conflict, _json
+from edu_core.workflow.runs import operation
 
 PROMPT_VERSION = 'transcribe-v1'
 MAX_PHOTOS = 8
@@ -58,6 +59,7 @@ class PhotosMixin:
             raise KeyError('照片不存在')
         return path
 
+    @operation('transcribe')
     def transcribe_photos(self, pid, learner, photos, round_=1, assignment_id=None):
         """Step 1: transcribe the photos question by question. Nothing is imported yet."""
         llm = self._model()

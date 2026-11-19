@@ -16,6 +16,7 @@ from edu_core.workflow.common import (
 from edu_core.workflow.prompts import (
     LESSON_PLAN_SYSTEM,
 )
+from edu_core.workflow.runs import operation
 from edu_core.workflow.schemas import (
     LessonPlanOutput,
 )
@@ -26,6 +27,7 @@ class LessonPlanMixin:
 
     # ----- 01 lesson plan (重点难点与课堂活动) -----
 
+    @operation('draft_lesson_plan')
     def draft_lesson_plan(self, pid):
         """备课方案: objectives with success criteria, key points, difficulties and timed activities, confirmed as one."""
         llm = self._model()

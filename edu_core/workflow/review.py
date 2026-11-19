@@ -17,6 +17,7 @@ from edu_core.workflow.prompts import (
     PRACTICE_SYSTEM,
     REVIEW_SYSTEM,
 )
+from edu_core.workflow.runs import operation
 from edu_core.workflow.schemas import (
     ExplainOutput,
     QuestionSet,
@@ -41,6 +42,7 @@ class ReviewMixin:
                 best[a['lineage_id']] = a
         return sorted(best.values(), key=lambda a: a['created_at'])
 
+    @operation('draft_review')
     def draft_review(self, pid, round_=None, pattern_ids=None, assignment_id=None):
         """讲评稿: focus, key steps, typical errors quoted from students, and follow-up questions per pattern."""
         llm = self._model()
@@ -130,6 +132,7 @@ class ReviewMixin:
             self._guard_basis(c, pid, plan['id'], ctx.manifest, aid)
         return {'review_plan': plan, 'context_note': describe(ctx.manifest)}
 
+    @operation('explain')
     def explain(self, pid, question, ask='', student_answer='', teacher='teacher'):
         """直接准备讲解 (design doc 5.5): from a pasted question (and optionally one student's answer), without any
         学情分析. Without an answer it is a general explanation with possible pitfalls; with one, the comment is about
@@ -219,6 +222,7 @@ class ReviewMixin:
         with self.store.read() as c:
             return c.execute('SELECT COALESCE(MAX(round),1) FROM artifacts WHERE project_id=?', (pid,)).fetchone()[0]
 
+    @operation('practice')
     def practice(self, pid, pattern_ids=None, count=1, types=None, round_=None, assignment_id=None):
         """讲评后再练: questions targeting the confirmed problem patterns of ``round_`` (default: latest), as a new round.
 

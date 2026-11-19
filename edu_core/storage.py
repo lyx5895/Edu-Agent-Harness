@@ -1,6 +1,7 @@
 """SQLite storage (design doc 10). Model calls never run inside a transaction: read, call, then write."""
 
 import contextlib
+import contextvars
 import json
 import re
 import sqlite3
@@ -114,6 +115,15 @@ CREATE TABLE IF NOT EXISTS units(
 ALTER TABLE projects ADD COLUMN unit_id TEXT NOT NULL DEFAULT '';
 ALTER TABLE projects ADD COLUMN status_prefs TEXT NOT NULL DEFAULT '';
 """,
+    # Runs: one teacher-started model operation; every model call records its run (design doc 8, 12).
+    4: """
+CREATE TABLE IF NOT EXISTS runs(
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL, task_id TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'running', error TEXT NOT NULL DEFAULT '', user_id TEXT NOT NULL DEFAULT '',
+  started_at REAL NOT NULL, finished_at REAL);
+CREATE INDEX IF NOT EXISTS run_project ON runs(project_id);
+ALTER TABLE generations ADD COLUMN run_id TEXT NOT NULL DEFAULT '';
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 
@@ -206,10 +216,34 @@ def event(c, project_id, kind, payload):
     )
 
 
+# The run (one teacher-started operation) a model call belongs to; set by Workspace around each operation.
+CURRENT_RUN: contextvars.ContextVar[str] = contextvars.ContextVar('edu_current_run', default='')
+
+GENERATION_COLUMNS = (
+    'id',
+    'project_id',
+    'task',
+    'role',
+    'model_requested',
+    'model_returned',
+    'prompt_version',
+    'context_manifest',
+    'request',
+    'response',
+    'usage',
+    'latency_ms',
+    'candidate_group',
+    'position',
+    'variant',
+    'created_at',
+    'run_id',
+)
+
+
 def record_generation(c, project_id, meta, manifest, prompt_version, *, group=None, position=None, variant=None):
     gid = new_id('gen')
     c.execute(
-        'INSERT INTO generations VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        f'INSERT INTO generations({",".join(GENERATION_COLUMNS)}) VALUES({",".join("?" * len(GENERATION_COLUMNS))})',
         (
             gid,
             project_id,
@@ -227,6 +261,7 @@ def record_generation(c, project_id, meta, manifest, prompt_version, *, group=No
             position,
             variant,
             time.time(),
+            CURRENT_RUN.get(),
         ),
     )
     return gid

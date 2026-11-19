@@ -28,6 +28,7 @@ from edu_core.workflow.prompts import (
     SOLVE_SYSTEM,
     VARIANTS,
 )
+from edu_core.workflow.runs import artifact_project, operation
 from edu_core.workflow.schemas import (
     ImportedPaper,
     QualityOutput,
@@ -63,6 +64,7 @@ class QuestionsMixin:
             )
             return q
 
+    @operation('generate_questions')
     def generate_questions(
         self, pid, *, types=None, count=2, difficulty='中等', notes='', objective_ids=None, ab=None, purpose='课堂练习'
     ):
@@ -364,6 +366,7 @@ class QuestionsMixin:
             event(c, pid, 'ab_choice', {'group': group, 'verdict': verdict, 'reason': reason})
             return {'verdict': verdict, 'promoted': promoted}
 
+    @operation('import_paper')
     def import_paper(self, pid, text, filename='导入试卷'):
         llm = self._model()
         material = self.add_material(pid, text, filename=filename, kind='paper')
@@ -501,6 +504,7 @@ class QuestionsMixin:
             content['checks'] = ck
             return A.edit(c, qid, content, teacher=teacher)
 
+    @operation('regenerate_question', artifact_project)
     def regenerate_question(self, qid, instruction='', difficulty=None):
         """换一道: a new question for the same objective and type, saved as the next version of this question."""
         llm = self._model()

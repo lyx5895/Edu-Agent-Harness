@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextvars
 import json
 import random
 import time
@@ -212,8 +213,10 @@ class WorkspaceBase:
     def _parallel(self, fn, items):
         if not items:
             return []
+        # Each item runs in a copy of the caller's context, so the current run and user reach the worker threads.
         with ThreadPoolExecutor(max_workers=max(1, min(self.settings.concurrency, len(items)))) as pool:
-            return list(pool.map(fn, items))
+            futures = [pool.submit(contextvars.copy_context().run, fn, item) for item in items]
+            return [f.result() for f in futures]
 
     # ----- generic artifact operations -----
 

@@ -14,6 +14,7 @@ from edu_core.workflow.prompts import (
     ANALYZE_SYSTEM,
     PITFALL_SYSTEM,
 )
+from edu_core.workflow.runs import operation
 from edu_core.workflow.schemas import (
     AnalysisOutput,
     PitfallOutput,
@@ -63,6 +64,7 @@ class AnalysisMixin:
             'label': label,
         }
 
+    @operation('analyze')
     def analyze(self, pid, round_=1, assignment_id=None, partial=False):
         """学情分析 of one assignment (or the project's unbound work).
 
