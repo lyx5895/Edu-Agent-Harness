@@ -177,9 +177,9 @@ def _tool_point(point, answer):
         return tools.algebra_equal(last[-1], expected), last[-1].strip(), '代数等价核对'
     if kind == 'chem_equation':
         for line in answer.splitlines():
-            balanced = tools.chem_balanced(line)
-            if balanced is not None:
-                return balanced, line.strip(), '化学方程式配平核对'
+            if tools.chem_balanced(line) is not None:
+                # Only the first equation the student wrote is checked; substances and balance, never conditions.
+                return tools.chem_equation_check(line, expected), line.strip(), '化学方程式（物质与配平）核对'
     return None, '', ''
 
 
@@ -240,7 +240,7 @@ def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0
                     'tool',
                     quote=sentence,
                     reason=how + ('一致' if decision else '不一致'),
-                    tag='' if decision else '计算错误',
+                    tag='' if decision else ('配平错误' if p['check'].get('kind') == 'chem_equation' else '计算错误'),
                 )
 
     pending = [p for p in points if results[p['id']] is None]

@@ -167,8 +167,10 @@ def numeric_equal(got: tuple[float, str], want: tuple[float, str], tol: float = 
 def check_numeric(answer: str, expected: str, tol: float = 1e-3) -> tuple[bool | None, str]:
     """Is the expected quantity the final answer? Looks at the last sentence first.
 
-    Returns (decision, evidence sentence). True only if a final-sentence number matches; False only if
-    the final sentence has numbers, none matches, and the expected value appears nowhere in the answer.
+    Returns (decision, evidence sentence). True only if the last quantity of the final sentence matches (the
+    stated result, not an intermediate number in the same sentence); False only if the final sentence has
+    numbers, none matches, and the expected value appears nowhere in the answer. Anything else goes to the
+    model (design doc 7.5: the tool only decides when the final answer is clear).
     """
     want_list = quantities(expected)
     if not want_list:
@@ -179,8 +181,10 @@ def check_numeric(answer: str, expected: str, tol: float = 1e-3) -> tuple[bool |
         return None, ''
     last = lines[-1].strip()
     final = quantities(last)
-    if any(numeric_equal(q, want, tol) for q in final):
+    if final and numeric_equal(final[-1], want, tol):
         return True, last
+    if any(numeric_equal(q, want, tol) for q in final):
+        return None, ''  # the value appears, but is it the result? e.g. "由 5 和 3 得 8"
     anywhere = any(numeric_equal(q, want, tol) for q in quantities(answer))
     if final and not anywhere:
         return False, last
@@ -300,15 +304,59 @@ def _side(text: str) -> Counter | None:
     return total
 
 
-def chem_balanced(equation: str) -> bool | None:
-    """True if both sides have the same atoms; None if the text is not a parseable equation."""
+def _sides(equation: str):
     text = unicodedata.normalize('NFKC', equation or '')
     # Reaction conditions written over the arrow (e.g. "=点燃=") are dropped.
     text = re.sub(r'=+[^=A-Z]*?=+', '=', text)
     parts = [p for p in re.split(r'==|=|→|⟶|->|⇌', text) if p.strip()]
-    if len(parts) != 2:
+    return parts if len(parts) == 2 else None
+
+
+def chem_balanced(equation: str) -> bool | None:
+    """True if both sides have the same atoms; None if the text is not a parseable equation."""
+    parts = _sides(equation)
+    if parts is None:
         return None
     left, right = (_side(p) for p in parts)
     if not left or not right:
         return None
     return left == right
+
+
+def species(side: str) -> frozenset | None:
+    """The substances on one side, without coefficients or state marks: {'H2', 'O2'}."""
+    out = set()
+    for term in re.split(r'\s+\+\s+|\+(?=[A-Z0-9(])', side.strip()):
+        term = term.strip()
+        if not term:
+            continue
+        formula = re.match(r'^(\d+)?\s*(.+)$', term).group(2).translate(SUBSCRIPTS)
+        formula = re.sub(r'[↑↓\s]|\((?:s|l|g|aq)\)', '', formula)
+        if not _formula_atoms(formula):
+            return None
+        out.add(formula)
+    return frozenset(out) or None
+
+
+def chem_equation_check(equation: str, expected: str = '') -> bool | None:
+    """Decide a chemical-equation point only where balancing can decide it (design doc 7.5).
+
+    Balancing proves conservation, not that the reaction is the right one. So: an unbalanced equation is False;
+    a balanced one is True only when its substances are exactly those of the expected equation; a balanced
+    equation with other substances, or with no expected equation to compare, is left to the model (None).
+    Reaction conditions are never judged here.
+    """
+    balanced = chem_balanced(equation)
+    if balanced is None:
+        return None
+    if not balanced:
+        return False
+    want = _sides(expected) if expected else None
+    got = _sides(equation)
+    if not want:
+        return None
+    w = tuple(species(x) for x in want)
+    g = tuple(species(x) for x in got)
+    if None in w or None in g:
+        return None
+    return True if w == g else None

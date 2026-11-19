@@ -116,6 +116,14 @@ def test_tools():
     assert tools.algebra_equal('__import__("os")', 'x') is None  # never eval'd
     assert tools.chem_balanced('2KMnO4 =加热= K2MnO4 + MnO2 + O2↑') is True
     assert tools.chem_balanced('Fe + O2 = Fe3O4') is False
+    # The tool decides only where it can (design doc 7.5).
+    assert tools.check_numeric('由 5 和 3 得 8', '5')[0] is None  # 5 is not the stated result
+    assert tools.check_numeric('所以结果为 5', '5')[0] is True
+    want = '2H2 + O2 =点燃= 2H2O'
+    assert tools.chem_equation_check('2H₂ + O₂ = 2H₂O', want) is True
+    assert tools.chem_equation_check('H2 + O2 = H2O', want) is False  # unbalanced
+    assert tools.chem_equation_check('H2 + O2 = H2O2', want) is None  # balanced, but another product
+    assert tools.chem_equation_check('2H2 + O2 = 2H2O') is None  # nothing to compare the substances with
 
 
 # ---------- grading ----------
@@ -198,6 +206,32 @@ def test_numeric_check_point_decided_by_tool():
         llm, subject='physics', question={'type': 'calculation', 'stem': 's'}, rubric=rubric, answer='v=45/3\n=15 km/h'
     )
     assert r['points'][0]['source'] == 'tool' and r['total'] == 2
+
+
+def test_balanced_equation_with_another_product_goes_to_the_model():
+    rubric = {
+        'points': [
+            {
+                'id': 'P1',
+                'description': '方程式',
+                'score': 2,
+                'check': {'kind': 'chem_equation', 'expected': '2H2+O2=点燃=2H2O'},
+            }
+        ]
+    }
+    q = {'type': 'short_answer', 'stem': '写出氢气燃烧的化学方程式'}
+    llm = FakeLLM(
+        {
+            'grade': lambda r, p: {'points': [point('P1', 0, 'missed', 'H2+O2=H2O2', tag='化学方程式错误')]},
+            'review': lambda r, p: {'points': [point('P1', 0, 'missed', 'H2+O2=H2O2', tag='化学方程式错误')]},
+        }
+    )
+    r, _ = grade(llm, subject='chemistry', question=q, rubric=rubric, answer='H2+O2=H2O2')
+    assert r['points'][0]['source'] != 'tool' and r['total'] == 0  # balanced, but not water: not the tool's call
+    r, _ = grade(FakeLLM({}), subject='chemistry', question=q, rubric=rubric, answer='2H2+O2=2H2O')
+    assert r['points'][0]['source'] == 'tool' and r['total'] == 2
+    r, _ = grade(FakeLLM({}), subject='chemistry', question=q, rubric=rubric, answer='H2+O2=H2O')
+    assert r['points'][0]['source'] == 'tool' and r['points'][0]['error_tag'] == '配平错误'
 
 
 def test_writing_is_suggested_only_and_not_reviewed():
