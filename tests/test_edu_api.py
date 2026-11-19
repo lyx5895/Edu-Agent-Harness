@@ -77,4 +77,7 @@ def test_error_codes(client):
 def test_static_page(client):
     page = client.get('/')
     assert page.status_code == 200 and 'Edu-Agent' in page.text
-    assert client.get('/static/app.js').status_code == 200
+    assert page.headers['cache-control'] == 'no-cache'
+    assert '/static/app.js?v=' in page.text and '/static/app.css?v=' in page.text  # content-versioned assets
+    js = client.get('/static/app.js')
+    assert js.status_code == 200 and js.headers['cache-control'] == 'no-cache'

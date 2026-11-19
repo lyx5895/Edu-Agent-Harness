@@ -6,6 +6,7 @@ runs these handlers in its thread pool.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import tempfile
@@ -13,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -357,7 +358,19 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.get('/')
     def index():
-        return FileResponse(STATIC / 'index.html')
+        # Version the asset URLs by content so a browser never runs an old script against a new API.
+        html = (STATIC / 'index.html').read_text(encoding='utf-8')
+        for name in ('app.js', 'app.css'):
+            version = hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
+            html = html.replace(f'/static/{name}"', f'/static/{name}?v={version}"')
+        return HTMLResponse(html, headers={'Cache-Control': 'no-cache'})
+
+    @app.middleware('http')
+    async def revalidate_static(request: Request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith('/static/'):
+            response.headers['Cache-Control'] = 'no-cache'  # always revalidate (ETag), never serve stale code
+        return response
 
     app.mount('/static', StaticFiles(directory=STATIC), name='static')
 
