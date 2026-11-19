@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from edu_core import artifacts as A
 from edu_core.context import Context, describe
-from edu_core.storage import record_generation
+from edu_core.storage import CURRENT_RUN, event, record_generation
 from edu_core.subjects import QUESTION_TYPES, SUGGESTED_ONLY_TYPES
 from edu_core.text import sha, verbatim_quote
 from edu_core.workflow.common import (
@@ -208,6 +208,145 @@ class ReviewMixin:
     def explanations(self, pid):
         with self.store.read() as c:
             return A.current(c, pid, 'explanation')
+
+    def unit_review_preview(self, offering_id, assignment_ids):
+        """单元讲评 (design doc 5.6), step 1: what each chosen assignment of one class contributes, so the teacher
+        decides what to include: participation, valid gradings, open items, question versions, confirmed patterns."""
+        with self.store.read() as c:
+            return [self._unit_review_row(c, offering_id, aid) for aid in assignment_ids]
+
+    def _unit_review_row(self, c, offering_id, aid):
+        a = self._assignment_row(c, aid)
+        if a['offering_id'] != offering_id:
+            raise Conflict('单元讲评只能合并同一个班的布置')
+        view = self._assignment_views(c, assignment_id=aid)[0]
+        _valid, cov = self._coverage(c, a['project_id'], a['round'], aid)
+        pats = [x for x in self._round_patterns(c, a['project_id'], a['round'], aid) if x['status'] == 'confirmed']
+        return {
+            'assignment_id': aid,
+            'title': a['title'],
+            'round': a['round'],
+            'roster': view['roster'],
+            'received': view['received'],
+            'coverage': cov,
+            'open_items': cov['pending'] + cov['ungraded'] + cov['stale'],
+            'questions': [
+                {
+                    'no': pin.get('no'),
+                    'question_version': A.get(c, pin['question'])['version'],
+                    'rubric_version': A.get(c, pin['rubric'])['version'],
+                }
+                for pin in sorted(a['pinned'].values(), key=lambda x: x.get('no') or 0)
+            ],
+            'patterns': [{'lineage': x['lineage_id'], 'name': x['content']['name']} for x in pats],
+        }
+
+    @operation('unit_review', lambda self, args, kwargs: '')
+    def draft_unit_review(self, offering_id, assignment_ids, pattern_ids=None, title='', teacher='teacher'):
+        """单元讲评, step 2: one 讲评稿 over several assignments of the same class, in a new task of that class. It
+        reads only those assignments' confirmed patterns, pinned questions and confirmed analyses, and records which
+        assignments and how much of each was included."""
+        assignment_ids = list(dict.fromkeys(assignment_ids or []))
+        if len(assignment_ids) < 2:
+            raise ValueError('单元讲评至少选择两份作业；只有一份时请在该作业里准备讲评')
+        llm = self._model()
+        with self.store.read() as c:
+            o = self._offering(c, offering_id)
+            rows = [self._unit_review_row(c, offering_id, aid) for aid in assignment_ids]
+            pats, originals, summaries, refs = [], [], [], []
+            for aid in assignment_ids:
+                a = self._assignment_row(c, aid)
+                for x in self._round_patterns(c, a['project_id'], a['round'], aid):
+                    if x['status'] == 'confirmed' and (not pattern_ids or x['lineage_id'] in pattern_ids):
+                        pats.append((a, x))
+                for pin in sorted(a['pinned'].values(), key=lambda x: x.get('no') or 0):
+                    q, r = A.get(c, pin['question']), A.get(c, pin['rubric'])
+                    originals.append(
+                        {
+                            '作业': a['title'],
+                            '题号': q['content']['no'],
+                            '题目': q['content']['stem'][:500],
+                            '评分要点': [x['description'] for x in r['content']['points']],
+                        }
+                    )
+                    refs += [(q['id'], 'question'), (r['id'], 'rubric')]
+                for x in A.current(c, a['project_id'], 'analysis', assignment=aid):
+                    conf = A.confirmed_in_lineage(c, x['lineage_id']) if x['confirmed_version'] else None
+                    if conf and conf['content'].get('mode') == 'evidence':
+                        summaries.append(
+                            {
+                                '作业': a['title'],
+                                '概述': conf['content'].get('summary', ''),
+                                '部分分析': bool(conf['content'].get('partial')),
+                            }
+                        )
+                        refs.append((conf['id'], 'analysis'))
+            if not pats:
+                raise Conflict('所选作业里还没有已确认的问题模式')
+            units = {
+                self._project(c, self._assignment_row(c, aid)['project_id']).get('unit_id') for aid in assignment_ids
+            }
+        pattern_list = [
+            {
+                'index': i,
+                '作业': a['title'],
+                '名称': x['content']['name'],
+                '描述': x['content']['description'],
+                '涉及人数': f'{len(x["content"]["affected_learners"])}/{x["content"]["total_learners"]}',
+                '学生原文': [e['quote'] for e in x['content']['evidence'][:4]],
+            }
+            for i, (a, x) in enumerate(pats)
+        ]
+        started = self.start_task(
+            o['course_id'],
+            'explain',
+            title=title.strip() or f'{o["class_name"]}单元讲评',
+            offering_id=offering_id,
+            unit_id=units.pop() if len(units) == 1 and None not in units and '' not in units else None,
+        )
+        pid = started['project']['id']
+        ctx = Context('unit_review')
+        ctx.add_other('project', pid)
+        ctx.add_other('assignments', ','.join(assignment_ids), sha(_json(rows)), assignments=assignment_ids)
+        user = _json(
+            {
+                '学科': started['project']['subject_name'],
+                '说明': '这是同一个班几份作业合在一起的单元讲评',
+                '各次作业学情': summaries,
+                '原题': originals,
+                '问题模式': pattern_list,
+            }
+        )
+        out, meta = llm.complete(
+            'generator',
+            'draft_review',
+            REVIEW_SYSTEM.format(subject=started['project']['subject_name']),
+            user,
+            ReviewOutput,
+        )
+        sections, dropped = _review_sections(out, [x for _a, x in pats])
+        content = {
+            'scope': 'unit',
+            'assignments': rows,
+            'focus': out.focus,
+            'sections': sections,
+            'closing': out.closing,
+            'dropped': dropped,
+        }
+        with self.store.tx() as c:
+            c.execute('UPDATE runs SET project_id=? WHERE id=?', (pid, CURRENT_RUN.get()))
+            gid = record_generation(c, pid, meta, ctx.manifest, 'unit-review-v1')
+            plan = A.create(
+                c,
+                pid,
+                'review_plan',
+                content,
+                origin='generated',
+                generation_id=gid,
+                refs=refs + [(x['id'], 'problem_pattern') for _a, x in pats],
+            )
+            event(c, pid, 'unit_review_drafted', {'offering_id': offering_id, 'assignments': assignment_ids})
+        return {'review_plan': plan, 'project': started['project'], 'context_note': describe(ctx.manifest)}
 
     def review_plans(self, pid, round_=None, assignment_id=None):
         with self.store.read() as c:

@@ -262,6 +262,19 @@ class StatusPrefs(BaseModel):
     exclude_summary: bool | None = None
 
 
+class RelinkBody(BaseModel):
+    artifact_id: str
+    plan_objective_id: str
+    objective_id: str = ''
+
+
+class UnitReviewBody(BaseModel):
+    offering_id: str
+    assignment_ids: list[str] = Field(min_length=1, max_length=20)
+    pattern_ids: list[str] | None = None
+    title: str = Field(default='', max_length=120)
+
+
 class MapBody(BaseModel):
     project_ids: list[str] = Field(min_length=1, max_length=200)
     course_id: str | None = None
@@ -777,6 +790,36 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.patch('/api/projects/{pid}/class-status')
     def set_status_prefs(pid: str, body: StatusPrefs):
         return ws().set_status_prefs(pid, body.exclude, body.exclude_summary)
+
+    # ----- course objectives, unit review -----
+
+    @app.get('/api/courses/{cid}/objectives')
+    def course_objectives(cid: str, unit_id: str | None = None):
+        return ws().course_objectives(cid, unit_id)
+
+    @app.get('/api/objectives/{objective_id}')
+    def objective_view(objective_id: str):
+        return ws().objective_view(objective_id)
+
+    @app.post('/api/objectives/{objective_id}/reviewed')
+    def objective_reviewed(objective_id: str):
+        return ws().mark_objective_reviewed(objective_id)
+
+    @app.post('/api/objective-links')
+    def relink_objective(body: RelinkBody):
+        return ws().relink_objective(body.artifact_id, body.plan_objective_id, body.objective_id)
+
+    @app.post('/api/offerings/{oid}/unit-review/preview')
+    def unit_review_preview(oid: str, body: UnitReviewBody):
+        return ws().unit_review_preview(oid, body.assignment_ids)
+
+    @app.post('/api/offerings/{oid}/unit-review')
+    def draft_unit_review(oid: str, body: UnitReviewBody, request: Request):
+        return once(
+            request,
+            f'unit-review:{oid}',
+            lambda: ws().draft_unit_review(oid, body.assignment_ids, body.pattern_ids, body.title),
+        )
 
     @app.get('/api/migration/preview')
     def migration_preview():

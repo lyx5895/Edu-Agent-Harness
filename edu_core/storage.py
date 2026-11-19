@@ -124,6 +124,19 @@ CREATE TABLE IF NOT EXISTS runs(
 CREATE INDEX IF NOT EXISTS run_project ON runs(project_id);
 ALTER TABLE generations ADD COLUMN run_id TEXT NOT NULL DEFAULT '';
 """,
+    # Course objectives with versioned wording, linked from lesson plan objectives (design doc 7.4).
+    5: """
+CREATE TABLE IF NOT EXISTS objectives(
+  id TEXT PRIMARY KEY, course_id TEXT NOT NULL, unit_id TEXT NOT NULL DEFAULT '', code TEXT NOT NULL,
+  needs_review INTEGER NOT NULL DEFAULT 0, created_at REAL NOT NULL, UNIQUE(course_id, code));
+CREATE TABLE IF NOT EXISTS objective_versions(
+  objective_id TEXT NOT NULL, version INTEGER NOT NULL, text TEXT NOT NULL, success_criterion TEXT NOT NULL DEFAULT '',
+  source_artifact TEXT NOT NULL DEFAULT '', created_at REAL NOT NULL, PRIMARY KEY(objective_id, version));
+CREATE TABLE IF NOT EXISTS objective_links(
+  artifact_id TEXT NOT NULL, plan_objective_id TEXT NOT NULL, objective_id TEXT NOT NULL, version INTEGER NOT NULL,
+  source TEXT NOT NULL, created_at REAL NOT NULL, PRIMARY KEY(artifact_id, plan_objective_id));
+CREATE INDEX IF NOT EXISTS objective_link_target ON objective_links(objective_id);
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 

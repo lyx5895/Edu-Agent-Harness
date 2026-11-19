@@ -365,6 +365,7 @@ class CoursesMixin:
         """First adoption of a lesson plan in a class task creates its planned session; a later adoption updates the
         plan of a session that is still planned. Drafts alone never create sessions (design doc 5.2)."""
         p = self._project(c, plan['project_id'])
+        self._link_plan_objectives(c, plan)
         if not p.get('offering_id'):
             return
         s = c.execute(
@@ -785,21 +786,31 @@ class CoursesMixin:
                 for r in c.execute('SELECT id FROM projects WHERE unit_id=? ORDER BY created_at', (unit_id,))
             ]
             pids = {p['id'] for p in projects}
-            objectives, seen = [], set()
+            objectives = []
+            linked = {}
             for p in projects:
                 plan = self._plan(c, p['id'])
-                for o in plan['content']['objectives'] if plan else []:
-                    if o['text'] in seen:
-                        continue
-                    seen.add(o['text'])
-                    objectives.append(
-                        {
-                            'text': o['text'],
-                            'success_criterion': o.get('success_criterion', ''),
-                            'from': p['title'],
-                            'plan_version': plan['version'],
-                        }
+                if not plan:
+                    continue
+                for r in c.execute('SELECT * FROM objective_links WHERE artifact_id=?', (plan['id'],)):
+                    linked.setdefault(r['objective_id'], []).append(
+                        {'title': p['title'], 'plan_version': plan['version']}
                     )
+            for oid, used in linked.items():
+                o = c.execute('SELECT code, needs_review FROM objectives WHERE id=?', (oid,)).fetchone()
+                v = self._latest_objective_version(c, oid)
+                objectives.append(
+                    {
+                        'id': oid,
+                        'code': o['code'],
+                        'text': v['text'],
+                        'success_criterion': v['success_criterion'],
+                        'version': v['version'],
+                        'needs_review': bool(o['needs_review']),
+                        'from': '、'.join(u['title'] for u in used),
+                        'plan_version': used[-1]['plan_version'],
+                    }
+                )
             classes = []
             for o in self._offering_views(c, u['course_id']):
                 assignments = [a for a in self._assignment_views(c, offering_id=o['id']) if a['project_id'] in pids]

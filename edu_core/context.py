@@ -21,6 +21,8 @@ WHITELIST = {
     'draft_lesson_plan': {'project', 'material', 'carryover', 'class_status', 'curriculum'},
     # 直接准备讲解 (design doc 5.5): the question and one optional student answer the teacher pasted, nothing else.
     'explain': {'project', 'material', 'pasted'},
+    # 单元讲评 (design doc 5.6): several assignments of one class; their patterns, pinned questions, confirmed analyses.
+    'unit_review': {'project', 'assignments'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
@@ -33,6 +35,7 @@ LABELS = {
     'carryover': '上一课时学情',
     'class_status': '本班学情',
     'pasted': '老师粘贴的题目与作答',
+    'assignments': '所选的几份作业',
     'curriculum': '课程标准',
 }
 
@@ -91,7 +94,7 @@ def describe(manifest: list[dict]) -> str:
     parts = []
     for kind, items in groups.items():
         label = LABELS.get(kind, kind)
-        if kind in ('project', 'carryover', 'pasted'):
+        if kind in ('project', 'carryover', 'pasted', 'assignments'):
             parts.append(label)
         elif kind == 'curriculum':
             parts.append(f'{label} {sum(len(i.get("items", [])) for i in items)} 条')

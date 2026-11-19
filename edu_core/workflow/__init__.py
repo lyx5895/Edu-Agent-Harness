@@ -29,6 +29,7 @@ from edu_core.workflow.common import (
 )
 from edu_core.workflow.courses import CoursesMixin
 from edu_core.workflow.lesson_plan import LessonPlanMixin
+from edu_core.workflow.objectives import ObjectivesMixin
 from edu_core.workflow.photos import PhotosMixin
 from edu_core.workflow.projects import ProjectsMixin
 from edu_core.workflow.questions import QuestionsMixin
@@ -61,6 +62,7 @@ from edu_core.workflow.submissions import SubmissionsMixin
 
 class Workspace(
     CoursesMixin,
+    ObjectivesMixin,
     AssignmentsMixin,
     ProjectsMixin,
     LessonPlanMixin,

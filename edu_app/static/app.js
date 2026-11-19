@@ -99,6 +99,7 @@ async function init() {
     : '未配置模型：只能查看已有内容（设置 EDU_LLM_API_KEY 后重启服务）';
   bindEvents();
   bindHomeEvents();
+  bindExtras();
   const pid = store.get('edu.pid');
   const projects = await loadProjects(pid, false);
   if (store.get('edu.view') === 'project' && projects.some((p) => p.id === pid)) await selectProject(pid);
@@ -1370,7 +1371,8 @@ async function renderHome() {
           ${s.status === 'planned' ? `<input type="date" class="s-date" value="${esc(s.planned_date)}">
             <button class="small secondary" data-session-status="taught">已上</button><button class="small link" data-session-status="cancelled">取消</button>` : ''}
           ${s.project_id ? `<button class="small link" data-open-task="${s.project_id}" data-tab="prep">打开</button>` : ''}</div>`).join('')
-          : '<div class="kv">还没有课时安排。备课方案确认后会自动出现在这里。</div>'}</div>`).join('')
+          : '<div class="kv">还没有课时安排。备课方案确认后会自动出现在这里。</div>'}
+        <div class="row"><button class="small link" data-unit-review="${o.id}">单元讲评（合并几份作业）</button></div><div class="ur-box"></div></div>`).join('')
     : '<div class="empty">本课程还没有关联班级。布置作业、导入作答和查看学情需要班级。</div>';
   const classes = await api('GET', '/api/classes');
   const linked = new Set(h.offerings.map((o) => o.class_id));
@@ -1397,7 +1399,9 @@ const pct = (v) => (v == null ? '-' : `${Math.round(v * 100)}%`);
 async function renderUnit(uid) {
   const v = await api('GET', `/api/units/${uid}`);
   S.unit = uid;
-  const objs = v.objectives.length ? `<ul class="lines">${v.objectives.map((o) => `<li>${esc(o.text)} <span class="muted">（${esc(o.from)}，教案第 ${o.plan_version} 版）</span></li>`).join('')}</ul>` : '<div class="kv">还没有已确认的备课方案。</div>';
+  const objs = v.objectives.length ? `<ul class="lines">${v.objectives.map((o) => `<li><b>${esc(o.code)}</b> ${esc(o.text)} ${o.version > 1 ? `<span class="pill">描述第 ${o.version} 版</span>` : ''}
+      ${o.needs_review ? '<span class="pill warn">表述改过，请核对题目对应</span>' : ''} <span class="muted">（${esc(o.from)}）</span>
+      <button class="link small" data-objective="${o.id}">按目标查看</button></li>`).join('')}</ul><div id="objective-view"></div>` : '<div class="kv">还没有已确认的备课方案。</div>';
   const classes = v.classes.map((c) => `<div class="offering"><h4>${esc(c.class_name)}</h4>
     <div class="kv">课时：${c.sessions.map((s) => `${esc(s.title)}（${esc(s.status_label)}）`).join('、') || '无'}</div>
     <div class="kv">布置：${c.assignments.map((a) => `${esc(a.title)}（${esc(a.status_label)}，收到 ${a.received}/${a.roster}）`).join('、') || '无'}</div>
@@ -1410,6 +1414,57 @@ async function renderUnit(uid) {
     ${classes || '<div class="kv">这个主题还没有布置给任何班级。</div>'}
     ${open.length ? `<h4>进行中的工作</h4>${open.map((t) => `<div class="kv">${esc(t.title)} <button class="small link" data-open-task="${t.project_id}" data-tab="${t.tab}">打开</button></div>`).join('')}` : ''}
     <p class="muted">得分率只来自已确认的学情分析，不合成单一的掌握分数。</p></div>`;
+}
+
+async function renderObjective(oid) {
+  const v = await api('GET', `/api/objectives/${oid}`);
+  const cls = v.classes.map((c) => `<div class="kv"><b>${esc(c.class_name)}</b>：${esc(c.state)}
+    ${c.assignments.map((a) => `<div class="muted">· ${esc(a.assignment)}（${esc(a.status)}）${a.tested ? '' : '，没有考查这条目标'}
+      ${a.evidence ? `：得分率 ${pct(a.evidence.rate)}，全部得分 ${a.evidence.full}/${a.evidence.learners}${a.evidence.partial ? '（部分分析）' : ''}，帮助条件：${esc(a.evidence.help)}` : ''}</div>`).join('')}</div>`).join('');
+  $('#objective-view').innerHTML = `<div class="offering"><div class="card-head"><h4>${esc(v.code)} ${esc(v.text)}</h4>
+      ${v.needs_review ? `<button class="small secondary" data-objective-ok="${v.id}">已核对题目对应</button>` : ''}</div>
+    ${v.versions.length > 1 ? `<div class="kv">描述版本：${v.versions.map((x) => `第 ${x.version} 版「${esc(x.text)}」`).join(' → ')}</div>` : ''}
+    <div class="kv">教过：${v.plans.map((x) => `${esc(x.title)}（教案第 ${x.plan_version} 版）`).join('、') || '无'}</div>
+    <div class="kv">考查的题目：${v.questions.map((x) => `第 ${x.no} 题${x.round > 1 ? `（第 ${x.round} 轮）` : ''}`).join('、') || '还没有题目'}</div>
+    ${cls || '<div class="kv">还没有布置给班级。</div>'}<p class="muted">${esc(v.note)}</p></div>`;
+}
+
+async function renderUnitReview(oid, box) {
+  const list = await api('GET', `/api/offerings/${oid}/assignments`);
+  if (list.length < 2) { box.innerHTML = '<div class="kv">这个班至少要有两份作业才能做单元讲评；只有一份时在那份作业里准备讲评。</div>'; return; }
+  box.innerHTML = `<div class="kv">选择要合在一起讲评的作业：</div>${list.map((a) => `<label class="inline"><input type="checkbox" class="ur-pick" value="${a.id}" checked> ${esc(a.title)}（${esc(a.status_label)}）</label>`).join('')}
+    <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
+}
+
+function bindExtras() {
+  $('#home').addEventListener('click', async (e) => {
+    const ob = e.target.closest('[data-objective]');
+    if (ob) { await busy(ob, '…', () => renderObjective(ob.dataset.objective)); return; }
+    const ok = e.target.closest('[data-objective-ok]');
+    if (ok) { await busy(ok, '…', async () => { await api('POST', `/api/objectives/${ok.dataset.objectiveOk}/reviewed`); await renderObjective(ok.dataset.objectiveOk); }); return; }
+    const ur = e.target.closest('[data-unit-review]');
+    if (ur) { await busy(ur, '…', () => renderUnitReview(ur.dataset.unitReview, ur.closest('.offering').querySelector('.ur-box'))); return; }
+    const pv = e.target.closest('[data-ur-preview], [data-ur-go]');
+    if (pv) {
+      const box = pv.closest('.ur-box');
+      const ids = [...box.querySelectorAll('.ur-pick:checked')].map((x) => x.value);
+      const oid = pv.dataset.urPreview || pv.dataset.urGo;
+      if (pv.dataset.urPreview) {
+        await busy(pv, '…', async () => {
+          const rows = await api('POST', `/api/offerings/${oid}/unit-review/preview`, { offering_id: oid, assignment_ids: ids });
+          box.querySelector('.ur-preview').innerHTML = rows.map((r) => `<div class="kv">${esc(r.title)}：收到 ${r.received}/${r.roster}，${esc(r.coverage.label)}；未处理 ${r.open_items} 项；问题模式 ${r.patterns.length} 个</div>`).join('');
+        });
+      } else {
+        await busy(pv, '生成中…', async () => {
+          const r = await api('POST', `/api/offerings/${oid}/unit-review`, { offering_id: oid, assignment_ids: ids });
+          await loadProjects(r.project.id, false);
+          await selectProject(r.project.id, { tab: 'review' });
+          showNote(r.context_note); toast('单元讲评稿已生成（新任务），请核对后确认');
+        });
+      }
+      return;
+    }
+  });
 }
 
 async function renderLegacy() {
