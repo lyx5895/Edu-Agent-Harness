@@ -224,6 +224,8 @@ async function renderPrep() {
   $('#course-lesson').value = p.lesson || '';
   $('#course-profile').value = p.learner_profile || '';
   $('#course-notes').value = p.notes || '';
+  $('#course-scope').value = p.lesson_scope || '';
+  await renderCurriculum();
   renderCarryover(p.carryover);
   const [mats, plans] = await Promise.all([
     api('GET', `/api/projects/${S.pid}/materials`),
@@ -268,18 +270,53 @@ async function openNextLesson() {
 }
 
 function courseInfo() {
-  return {
+  const info = {
     knowledge_module: $('#course-module').value, lesson: $('#course-lesson').value,
-    learner_profile: $('#course-profile').value, notes: $('#course-notes').value,
+    learner_profile: $('#course-profile').value, notes: $('#course-notes').value, lesson_scope: $('#course-scope').value,
   };
+  if (S.curTouched) {
+    info.curriculum_ids = $$('#curriculum-list input:checked').map((i) => i.value);
+    info.curriculum_off = $('#curriculum-off').checked;
+  }
+  return info;
+}
+
+// 对应课标: suggested items for the course info; the teacher's ticks are saved with the course info.
+async function renderCurriculum(q) {
+  const box = $('#curriculum-box');
+  const p = S.overview.project;
+  box.classList.toggle('hidden', !p.has_curriculum);
+  if (!p.has_curriculum) return;
+  const keep = q !== undefined ? $$('#curriculum-list input:checked').map((i) => ({ id: i.value, html: i.closest('.cur-item').outerHTML })) : [];
+  const r = await api('GET', `/api/projects/${S.pid}/curriculum${q !== undefined ? `?q=${encodeURIComponent(q)}` : ''}`);
+  if (q === undefined) S.curTouched = false;
+  $('#curriculum-src').innerHTML = `依据<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.title)}</a>（${esc(r.scope)}）`;
+  $('#curriculum-note').textContent = q !== undefined
+    ? `“${q}”的搜索结果，勾选后保存课时信息。`
+    : r.chosen_by === 'teacher' ? '按你勾选的条目生成。目标会标出依据哪一条，要求不能高于课标用词。'
+      : '按课时信息自动匹配，生成备课方案时使用勾选的条目；可以增减，保存课时信息后生效。';
+  const selected = new Set(q !== undefined ? keep.map((k) => k.id) : r.selected);
+  const row = (it) => `<label class="cur-item">
+      <input type="checkbox" value="${esc(it.id)}" ${selected.has(it.id) ? 'checked' : ''}>
+      <span><b>${esc(it.label)}</b>${it.optional ? ' <span class="pill">选学</span>' : ''}<span class="muted"> · 第 ${it.page} 页</span><br>${esc(it.text)}</span></label>`;
+  const rest = r.items.filter((it) => !keep.some((k) => k.id === it.id));
+  const picked = rest.filter((it) => selected.has(it.id)).map(row);
+  const others = rest.filter((it) => !selected.has(it.id)).map(row);
+  // Only the ticked items are shown; other candidates stay folded so the page stays calm.
+  $('#curriculum-list').innerHTML = keep.map((k) => k.html).join('') + picked.join('')
+    + (others.length ? `<details class="cur-more" ${q !== undefined && !picked.length ? 'open' : ''}><summary>其他可能相关的条目（${others.length}）</summary>${others.join('')}</details>` : '')
+    + (!keep.length && !rest.length ? '<div class="empty">没有匹配的课标条目，换个说法搜索，或勾选“不参考课标”。</div>' : '');
+  $('#curriculum-off').checked = r.off;
+  box.classList.toggle('off', r.off);
 }
 
 async function saveCourseInfo() {
   const info = courseInfo();
   const p = S.overview.project;
   const changed = info.knowledge_module !== (p.knowledge_module || '') || info.lesson !== (p.lesson || '')
-    || info.learner_profile !== (p.learner_profile || '') || info.notes !== (p.notes || '');
-  if (changed) await api('PATCH', `/api/projects/${S.pid}`, info);
+    || info.learner_profile !== (p.learner_profile || '') || info.notes !== (p.notes || '')
+    || info.lesson_scope !== (p.lesson_scope || '') || !!S.curTouched;
+  if (changed) { await api('PATCH', `/api/projects/${S.pid}`, info); S.curTouched = false; }
   return changed;
 }
 
@@ -505,7 +542,10 @@ function lessonPlanItem(a) {
     <div class="item-head"><div>${statusPill(a)}</div></div>
     <h4>教学目标</h4>
     <ol class="lines">${(c.objectives || []).map((o) => `<li><b>${esc(o.text)}</b> ${o.inferred ? '<span class="pill">由导入试卷反推</span>' : ''}
-      <div class="kv">达成标准：${esc(o.success_criterion || '（未填写）')}</div></li>`).join('')}</ol>
+      ${(o.checks || []).map((x) => `<span class="pill warn">${esc(x)}</span>`).join(' ')}
+      ${o.beyond_reason ? `<span class="pill warn" title="${esc(o.beyond_reason)}">超出课标：${esc(o.beyond_reason)}</span>` : ''}
+      <div class="kv">达成标准：${esc(o.success_criterion || '（未填写）')}</div>
+      ${(o.standard_refs || []).length ? `<div class="std-refs">依据课标：${o.standard_refs.map((s) => `<span class="std" tabindex="0" title="${esc(s.text)}（课标第 ${s.page} 页）">${esc(s.label)}</span>`).join('')}</div>` : ''}</li>`).join('')}</ol>
     <h4>重点</h4>${lines(c.key_points)}<h4>难点</h4>${lines(c.difficulties)}
     <h4>课堂活动（共 ${total} 分钟）</h4>
     <table><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td>
@@ -727,6 +767,10 @@ function bindEvents() {
     toast(`第 ${r.round} 轮再练题：${r.questions.length} 道，请在“02 出题改题”中确认` + ((r.dropped || []).length ? `；丢弃 ${r.dropped.length} 道：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0);
     S.showRound = r.round; S.tab = 'questions'; await refresh();
   }));
+  $('#curriculum-list').addEventListener('change', () => { S.curTouched = true; });
+  $('#curriculum-off').addEventListener('change', (e) => { S.curTouched = true; $('#curriculum-box').classList.toggle('off', e.target.checked); });
+  $('#curriculum-search').addEventListener('click', (e) => busy(e.target, '搜索中…', () => renderCurriculum($('#curriculum-q').value.trim())));
+  $('#curriculum-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#curriculum-search').click(); } });
   $('#draft-lesson-plan').addEventListener('click', (e) => {
     if (e.target.textContent === '重新生成' && !window.confirm('重新生成会产生一个新版本的草稿，当前方案保留在历史里。继续吗？')) return;
     busy(e.target, '生成中…（约半分钟）', async () => {

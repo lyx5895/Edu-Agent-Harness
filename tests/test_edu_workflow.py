@@ -59,7 +59,16 @@ HANDLERS = {
     'review': judge_points(RULES),
     'analyze': analyze,
     'draft_lesson_plan': lambda r, p: {
-        'objectives': [{'text': '能在解对数不等式时检查定义域', 'success_criterion': '写出真数大于零'}],
+        'objectives': [
+            {
+                'text': '能在解对数不等式时检查定义域',
+                'success_criterion': '写出真数大于零',
+                # cite the first standard item offered, plus one the model made up
+                'standard_ids': [x['编号'] for x in p.get('课程标准', {}).get('内容要求', [])][:1] + ['math.X9.9.9'],
+                'beyond_standard': False,
+                'beyond_reason': '',
+            }
+        ],
         'key_points': ['真数大于零'],
         'difficulties': ['取交集'],
         'activities': [
@@ -112,7 +121,7 @@ def setup_round_one(ws):
     p = ws.create_project('高一数学｜对数函数｜第2课时', '数学', grade='高一', knowledge_module='对数函数')
     ws.add_material(p['id'], '对数函数 y=log_a x 的定义域是 (0,+∞)。')
     plan = ws.draft_lesson_plan(p['id'])
-    assert plan['context_note'] == '已参考：项目背景、材料 1 份'
+    assert plan['context_note'] == '已参考：项目背景、材料 1 份、课程标准 3 条'
     ws.confirm(plan['lesson_plan']['id'])
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
     [q] = gen['candidates'][0]['questions']
@@ -428,9 +437,57 @@ def test_next_lesson_carries_learning_status_into_the_plan(ws):
     assert ws.overview(nxt['id'])['learners'] == 3  # roster comes along
 
     plan = ws.draft_lesson_plan(nxt['id'])  # course info + carried-over 学情, no material needed
-    assert plan['context_note'] == '已参考：项目背景、上一课时学情'
+    assert plan['context_note'] == '已参考：项目背景、课程标准 3 条、上一课时学情'
     sent = ws.llm.calls[-1]['user']['上一课时学情']
     assert sent['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域' and sent['上一课时'] == '第2课时'
     # A project that was not created as a next lesson never mentions one.
     ws.draft_lesson_plan(pid)
     assert '上一课时学情' not in ws.llm.calls[-1]['user']
+
+
+def test_plan_is_drafted_against_the_curriculum_standard(ws):
+    p = ws.create_project('高一数学', 'math', knowledge_module='对数函数', lesson='第2课时')
+    pid = p['id']
+    ws.update_project(pid, lesson_scope='对数函数的图像与性质')
+    sug = ws.curriculum(pid)
+    assert sug['available'] and sug['selected'][0] == 'math.B2.2.3.2'  # 对数函数②: 图象与单调性
+    assert sug['chosen_by'] is None  # nothing chosen yet: the automatic pick is used and saved at drafting
+
+    plan = ws.draft_lesson_plan(pid)['lesson_plan']['content']
+    sent = ws.llm.calls[-1]['user']
+    assert sent['本课时内容'] == '对数函数的图像与性质'
+    offered = [x['编号'] for x in sent['课程标准']['内容要求']]
+    assert offered == sug['selected'] and sent['课程标准']['教学提示']
+    [o] = plan['objectives']
+    assert o['standard_ids'] == [offered[0]]  # the made-up id is dropped
+    assert 'checks' not in o and plan['curriculum'] == {'ids': sorted(offered)}
+    assert ws.curriculum(pid)['chosen_by'] == 'auto'
+
+    # A requirement above the standard's wording is flagged; the citation survives the edit.
+    with ws.store.read() as c:
+        draft = ws._plan(c, pid, confirmed=False)
+    edited = ws.edit(draft['id'], {'objectives': [{'id': 'O1', 'text': '熟练掌握对数函数的单调性', 'success_criterion': 'x'}]})
+    [o] = edited['content']['objectives']
+    assert o['standard_ids'] == [offered[0]] and o['checks'][0].startswith('要求高于课标：课标为“了解”')
+    added = ws.edit(draft['id'], {'objectives': [o, {'text': '能画出 y=log2x 的图象', 'success_criterion': 'y'}]})
+    assert added['content']['objectives'][1]['checks'] == ['未对应课标']
+
+    # The teacher's own pick wins and is not reset by later course-info edits; 不参考课标 turns it off.
+    ws.update_project(pid, curriculum_ids=['math.B2.2.3.1', 'nope'])
+    ws.update_project(pid, knowledge_module='对数')
+    assert ws.curriculum(pid)['selected'] == ['math.B2.2.3.1']
+    ws.update_project(pid, curriculum_off=True)
+    ws.draft_lesson_plan(pid)
+    assert '课程标准' not in ws.llm.calls[-1]['user']
+
+
+def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
+    p = ws.create_project('高一数学', 'math', knowledge_module='对数函数')
+    ws.draft_lesson_plan(p['id'])
+    ws.update_project(p['id'], knowledge_module='基本不等式')
+    assert ws.curriculum(p['id'])['selected'] == ['math.B1.3.2']  # the automatic pick was dropped and redone
+    h = ws.create_project('历史｜辛亥革命', 'history', knowledge_module='辛亥革命')
+    assert ws.curriculum(h['id']) == {'available': False}
+    ws.draft_lesson_plan(h['id'])
+    assert '课程标准' not in ws.llm.calls[-1]['user']
+    assert ws.overview(h['id'])['project']['has_curriculum'] is False

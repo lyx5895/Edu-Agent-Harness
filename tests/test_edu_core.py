@@ -267,3 +267,20 @@ def test_gateway_repairs_once_then_fails():
     gw = Gateway('http://x/v1', 'k', {'generator': 'm'}, client=httpx.Client(transport=httpx.MockTransport(always_bad)))
     with pytest.raises(ModelUnavailable):
         gw.complete('generator', 't', 's', 'u', QuestionSet)
+
+
+def test_math_curriculum_items_are_verified_and_searchable():
+    from edu_core import curriculum as C
+
+    data = C.load('math')
+    ids = [it['id'] for it in data['items']]
+    assert len(ids) == len(set(ids)) and sum(it['kind'] == 'content' for it in data['items']) == 154
+    assert data['source_url'].startswith('http://www.moe.gov.cn/') and len(data['source_sha256']) == 64
+    assert data['by_id']['math.B2.2.3.3']['text'] == '知道对数函数y=logax与指数函数y=ax互为反函数(a>0,且a≠1)。'
+    top = C.search('math', '对数函数 对数的概念与运算')[0]
+    assert top['id'] == 'math.B2.2.3.1'
+    assert C.search('math', '') == [] and C.load('history') is None
+    assert (C.level('了解对数函数的概念'), C.level('理解对数的概念'), C.level('熟练掌握')) == (1, 2, 3)
+    ctx = C.context('math', ['math.B2.2.3.2', 'math.X9'], '对数函数')
+    assert [it['id'] for it in ctx['content']] == ['math.B2.2.3.2']
+    assert all(it['id'].startswith('math.B2.') for it in ctx['hints'] + ctx['requirements'])

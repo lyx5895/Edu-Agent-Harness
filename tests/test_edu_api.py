@@ -35,7 +35,7 @@ def test_teacher_flow_over_http(client):
     assert up.status_code == 200 and up.json()['filename'] == '讲义.md'
 
     drafted = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()
-    assert drafted['context_note'] == '已参考：项目背景、材料 2 份'
+    assert drafted['context_note'] == '已参考：项目背景、材料 2 份、课程标准 3 条'
     plan = drafted['lesson_plan']
     assert plan['content']['objectives'][0]['id'] == 'O1'
     assert client.post(f'/api/artifacts/{plan["id"]}/confirm', json={}).json()['status'] == 'confirmed'
@@ -91,3 +91,13 @@ def test_next_lesson_route_needs_learning_status(client):
     r = client.post(f'/api/projects/{pid}/next-lesson', json={})
     assert r.status_code == 409 and '学情分析' in r.json()['detail']
     assert client.get(f'/api/projects/{pid}').json()['next_lesson'] is None
+
+
+def test_curriculum_routes(client):
+    pid = client.post('/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}).json()['id']
+    sug = client.get(f'/api/projects/{pid}/curriculum').json()
+    assert sug['available'] and sug['items'] and sug['selected']
+    found = client.get(f'/api/projects/{pid}/curriculum', params={'q': '基本不等式'}).json()
+    assert found['items'][0]['id'] == 'math.B1.3.2'
+    upd = client.patch(f'/api/projects/{pid}', json={'lesson_scope': '图象与性质', 'curriculum_ids': ['math.B2.2.3.2']}).json()
+    assert upd['lesson_scope'] == '图象与性质' and upd['curriculum']['ids'] == ['math.B2.2.3.2']

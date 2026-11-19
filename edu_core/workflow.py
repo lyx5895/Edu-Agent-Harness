@@ -18,6 +18,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from edu_core import artifacts as A
+from edu_core import curriculum as CUR
 from edu_core import grading
 from edu_core.config import Settings
 from edu_core.context import Context, describe
@@ -108,8 +109,14 @@ class Activity(BaseModel):
     objective_index: int
 
 
+class PlanObjective(ObjectiveDraft):
+    standard_ids: list[str]
+    beyond_standard: bool
+    beyond_reason: str = Field(max_length=200)
+
+
 class LessonPlanOutput(BaseModel):
-    objectives: list[ObjectiveDraft]
+    objectives: list[PlanObjective]
     key_points: list[str]
     difficulties: list[str]
     activities: list[Activity]
@@ -193,6 +200,13 @@ LESSON_PLAN_SYSTEM = """你是经验丰富的高中{subject}教师，为这一�
 4. notes 写需要提醒老师的事项，没有就填空字符串。
 5. 如果输入里有“上一课时学情”，说明这是接着上一课时上的：在难点和课堂活动中安排针对其中仍存在问题的简短回顾或巩固（例如课前 5 分钟），
    并在 notes 里写明哪项安排对应上一课时的哪个问题；回顾不能挤占本课主要内容。没有这项输入就不要提上一课时。
+6. 如果输入里有“本课时内容”，目标、重点难点和课堂活动只围绕本课时内容；其他内容只能作为简短回顾或铺垫，不能单独成为一条目标。
+7. 如果输入里有“课程标准”：
+   - 每条目标在 standard_ids 中填写它依据的内容要求编号（只能用输入中给出的编号）；
+   - 目标对学生的要求不能高于所依据条目的用词：课标写“了解”“知道”的，目标不能写“理解”“掌握”；写“理解”的，不能写“掌握”“熟练”；
+   - 遵守输入中的学业要求和教学提示，不安排课标没有要求的难题、技巧题、偏题怪题，例题和活动的难度与课标一致；
+   - 确实需要超出课标时（例如老师在“老师说明”里明确要求），beyond_standard 填 true，并在 beyond_reason 写明理由；否则 beyond_standard 填 false，beyond_reason 填空字符串。
+   没有“课程标准”时，standard_ids 填空数组，beyond_standard 填 false，beyond_reason 填空字符串。
 以课时信息为准；参考材料只用来确定内容范围，不要照抄。只输出 JSON。"""
 
 REVIEW_SYSTEM = """你是高中{subject}教师，根据已确认的学情分析为下一节课准备针对性的讲评。
@@ -368,6 +382,11 @@ def normalize_plan(plan):
         item = {'id': oid, 'text': text[:200], 'success_criterion': str(o.get('success_criterion', '')).strip()[:300]}
         if o.get('inferred'):
             item['inferred'] = True
+        ids = [str(x) for x in o.get('standard_ids') or [] if str(x).strip()]
+        if ids:
+            item['standard_ids'] = ids
+        if str(o.get('beyond_reason') or '').strip():
+            item['beyond_reason'] = str(o['beyond_reason']).strip()[:200]
         objectives.append(item)
     if not objectives:
         raise ValueError('备课方案至少需要一条教学目标')
@@ -388,13 +407,16 @@ def normalize_plan(plan):
     def lines(key):
         return [str(x).strip() for x in plan.get(key) or [] if str(x).strip()]
 
-    return {
+    out = {
         'objectives': objectives,
         'key_points': lines('key_points'),
         'difficulties': lines('difficulties'),
         'activities': activities,
         'notes': str(plan.get('notes', '')).strip()[:600],
     }
+    if plan.get('curriculum'):
+        out['curriculum'] = plan['curriculum']  # which standard items the plan was drafted against
+    return out
 
 
 class Workspace:
@@ -429,10 +451,13 @@ class Workspace:
             'lesson',
             'learner_profile',
             'prev_project_id',
+            'lesson_scope',
             'created_at',
         )
         return {k: p.get(k, '') for k in keys} | {
             'carryover': json.loads(p['carryover']) if p.get('carryover') else None,
+            'curriculum': json.loads(p['curriculum']) if p.get('curriculum') else None,
+            'has_curriculum': CUR.available(p['subject']),
             'subject_name': p['pack']['name'],
             'question_types': p['pack']['types'],
         }
@@ -471,6 +496,74 @@ class Workspace:
             )
             event(c, pid, 'project_created', {'title': title, 'subject': sp['id']})
             return self._project_view(self._project(c, pid))
+
+    def _curriculum_query(self, p):
+        return ' '.join(x for x in (p.get('knowledge_module', ''), p.get('lesson_scope', '')) if x) or p['title']
+
+    def curriculum(self, pid, q=None):
+        """对应课标: suggestions for the course info (or a search), and what is selected."""
+        with self.store.read() as c:
+            p = self._project(c, pid)
+        data = CUR.load(p['subject'])
+        if not data:
+            return {'available': False}
+        chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
+        query = q if q is not None else self._curriculum_query(p)
+        found = CUR.search(p['subject'], query, k=8)
+        auto = self._auto_pick(found)
+        selected = chosen['ids'] if chosen else [it['id'] for it in auto]
+        by_id = data['by_id']
+        extra = [by_id[i] for i in selected if i in by_id and i not in {f['id'] for f in found}]
+
+        def view(it):
+            return {
+                'id': it['id'],
+                'label': it['label'],
+                'short': CUR.short_label(it),
+                'text': it['text'],
+                'page': it['page'],
+                'optional': bool(it.get('optional')),
+            }
+
+        return {
+            'available': True,
+            'title': data['title'],
+            'source_url': data['source_url'],
+            'scope': data['scope'],
+            'query': query,
+            'items': [view(it) for it in extra + found],
+            'selected': selected,
+            'off': bool(chosen and chosen.get('off')),
+            'chosen_by': chosen.get('chosen_by') if chosen else None,
+        }
+
+    @staticmethod
+    def _auto_pick(found):
+        if not found:
+            return []
+        top = found[0]['score']
+        # 选学 items (not examined) are offered but never picked automatically
+        return [it for it in found if it['score'] >= 0.75 * top and not it.get('optional')][:4]
+
+    def _curriculum_for_plan(self, c, p):
+        """Resolve the standard items for drafting: the teacher's pick, else an automatic pick saved for review."""
+        data = CUR.load(p['subject'])
+        if not data:
+            return None
+        chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
+        if chosen and chosen.get('off'):
+            return None
+        if chosen:
+            ids = chosen['ids']
+        else:
+            ids = [it['id'] for it in self._auto_pick(CUR.search(p['subject'], self._curriculum_query(p), k=8))]
+            c.execute(
+                'UPDATE projects SET curriculum=? WHERE id=?',
+                (_json({'ids': ids, 'off': False, 'chosen_by': 'auto'}), p['id']),
+            )
+        if not ids:
+            return None
+        return CUR.context(p['subject'], ids, self._curriculum_query(p))
 
     def _carryover(self, c, pid):
         """What the next lesson inherits from this one: confirmed problem patterns (with the re-practice result
@@ -549,7 +642,7 @@ class Workspace:
         with self.store.tx() as c:
             c.execute(
                 'UPDATE projects SET prev_project_id=?, carryover=? WHERE id=?', (pid, _json(carry), new['id'])
-            )
+            )  # 本课时内容 and the standard items are left empty: the next lesson covers new content
             for alias in roster:
                 c.execute(
                     'INSERT INTO learners(id,project_id,alias,created_at) VALUES(?,?,?,?)',
@@ -570,6 +663,9 @@ class Workspace:
         knowledge_module=None,
         lesson=None,
         learner_profile=None,
+        lesson_scope=None,
+        curriculum_ids=None,
+        curriculum_off=None,
     ):
         """Edit project info. The subject can only change before any question exists (questions depend on it)."""
         with self.store.tx() as c:
@@ -587,9 +683,21 @@ class Workspace:
                 ('knowledge_module', knowledge_module),
                 ('lesson', lesson),
                 ('learner_profile', learner_profile),
+                ('lesson_scope', lesson_scope),
             ):
                 if value is not None:
                     changes[key] = value.strip()[:500]
+            if curriculum_ids is not None or curriculum_off is not None:
+                prev = json.loads(p['curriculum']) if p.get('curriculum') else {}
+                data = CUR.load(p['subject'])
+                ids = prev.get('ids', []) if curriculum_ids is None else curriculum_ids
+                ids = [i for i in dict.fromkeys(ids) if data and i in data['by_id']]
+                off = prev.get('off', False) if curriculum_off is None else bool(curriculum_off)
+                changes['curriculum'] = _json({'ids': ids, 'off': off, 'chosen_by': 'teacher'})
+            if 'knowledge_module' in changes or 'lesson_scope' in changes:
+                prev = json.loads(p['curriculum']) if p.get('curriculum') else {}
+                if prev.get('chosen_by') == 'auto' and 'curriculum' not in changes:
+                    changes['curriculum'] = ''  # the automatic pick follows the course info; a teacher's pick stays
             if subject is not None and pack(subject)['id'] != p['subject']:
                 has_questions = c.execute(
                     "SELECT 1 FROM artifacts WHERE project_id=? AND type='question' LIMIT 1", (pid,)
@@ -597,6 +705,7 @@ class Workspace:
                 if has_questions:
                     raise Conflict('项目里已经有题目，不能再改学科；请新建一个项目')
                 changes['subject'] = pack(subject)['id']
+                changes['curriculum'] = ''
             for key, value in changes.items():
                 c.execute(f'UPDATE projects SET {key}=? WHERE id=?', (value, pid))
             if changes:
@@ -667,7 +776,18 @@ class Workspace:
             src = A.get(c, aid)
             if src['type'] in ('grading', 'analysis', 'comparison'):
                 raise Conflict('批改请用“改判”，分析和对比请重新生成')
+            if src['type'] == 'lesson_plan' and isinstance(content, dict) and 'objectives' in content:
+                old = {o['id']: o for o in src['content'].get('objectives', [])}
+                for o in content['objectives'] or []:
+                    prev = old.get(o.get('id'))
+                    if prev:
+                        for key in ('standard_ids', 'beyond_reason'):
+                            if key not in o and key in prev:
+                                o[key] = prev[key]
             content = self._validate_content(src['type'], content, src['content'])
+            if src['type'] == 'lesson_plan':
+                p = self._project(c, src['project_id'])
+                CUR.plan_checks(p['subject'], content['objectives'], used=bool(content.get('curriculum')))
             return A.edit(c, aid, content, teacher=teacher)
 
     def confirm(self, aid, change_kind='substantive', teacher='teacher'):
@@ -802,6 +922,11 @@ class Workspace:
             ctx = Context('generate_questions')
             ctx.add_other('project', pid)
             ctx.add_artifact(plan)
+            cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
+            hints = []
+            if cited:
+                hints = [it['text'] for it in CUR.context(p['subject'], cited, self._curriculum_query(p))['hints']]
+                ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
             goal_list = [
                 {'index': i, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
                 for i, o in enumerate(objs)
@@ -817,6 +942,8 @@ class Workspace:
                 '教学目标': goal_list,
                 '本课重点': plan['content'].get('key_points', []),
                 '本课难点': plan['content'].get('difficulties', []),
+                '本课时内容': p.get('lesson_scope', ''),
+                '课标教学提示': hints,
                 '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
@@ -1612,6 +1739,16 @@ class Workspace:
             if not (p.get('knowledge_module') or materials):
                 raise Conflict('请先填写课时信息中的知识模块，或添加参考材料')
             prior = self._plan(c, pid, confirmed=False)
+        with self.store.tx() as c:
+            std = self._curriculum_for_plan(c, p)
+        with self.store.read() as c:
+            if std:
+                ctx.add_other(
+                    'curriculum',
+                    p['subject'],
+                    sha(_json([it['id'] for it in std['content']])),
+                    items=[it['id'] for it in std['content']],
+                )
             carry = None
             if p.get('carryover'):
                 carry = json.loads(p['carryover'])
@@ -1628,11 +1765,22 @@ class Workspace:
                 ],
                 '讲评重点': carry['review_focus'],
             }
+        if std:
+            extra['课程标准'] = {
+                '来源': CUR.load(p['subject'])['title'],
+                '内容要求': [
+                    {'编号': it['id'], '位置': it['label'] + ('（选学，不作为考试要求）' if it.get('optional') else ''), '原文': it['text']}
+                    for it in std['content']
+                ],
+                '学业要求': [it['text'] for it in std['requirements']],
+                '教学提示': [it['text'] for it in std['hints']],
+            }
         user = _json(
             {
                 '学科': p['pack']['name'],
                 '年级': p['grade'],
                 '知识模块': p.get('knowledge_module', ''),
+                '本课时内容': p.get('lesson_scope', ''),
                 '课时': p.get('lesson', ''),
                 '学生基础': p.get('learner_profile', ''),
                 '老师说明': p['notes'],
@@ -1650,9 +1798,18 @@ class Workspace:
         )
         if not out.objectives:
             raise ModelUnavailable('模型没有给出教学目标，请重试')
+        allowed_ids = {it['id'] for it in std['content']} if std else set()
+        objectives = []
+        for o in out.objectives:
+            d = o.model_dump()
+            d['standard_ids'] = [i for i in d['standard_ids'] if i in allowed_ids]  # invented ids are dropped
+            if not d.pop('beyond_standard'):
+                d['beyond_reason'] = ''
+            objectives.append(d)
         content = normalize_plan(
             {
-                'objectives': [o.model_dump() for o in out.objectives],
+                'objectives': objectives,
+                'curriculum': {'ids': sorted(allowed_ids)} if std else None,
                 'key_points': out.key_points,
                 'difficulties': out.difficulties,
                 'activities': [
@@ -1667,8 +1824,9 @@ class Workspace:
                 'notes': out.notes,
             }
         )
+        CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v3')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v4')
             plan = A.create(
                 c,
                 pid,

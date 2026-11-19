@@ -8,7 +8,7 @@ generation and is also what the UI shows as "已参考", so the note always matc
 from edu_core.artifacts import TYPES
 
 WHITELIST = {
-    'generate_questions': {'project', 'material', 'lesson_plan'},
+    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum'},
     'import_paper': {'project', 'material'},
     'self_check_solve': {'question_stem'},
     'grade': {'question', 'rubric', 'submission'},
@@ -16,11 +16,11 @@ WHITELIST = {
     'analyze': {'project', 'lesson_plan', 'question', 'rubric', 'grading', 'submission', 'problem_pattern'},
     'pitfalls': {'project', 'lesson_plan', 'question', 'rubric'},
     'practice': {'project', 'lesson_plan', 'question', 'rubric', 'problem_pattern', 'review_plan'},
-    'draft_lesson_plan': {'project', 'material', 'carryover'},
+    'draft_lesson_plan': {'project', 'material', 'carryover', 'curriculum'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
-LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'carryover': '上一课时学情'}
+LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'carryover': '上一课时学情', 'curriculum': '课程标准'}
 
 
 class ContextViolation(PermissionError):
@@ -79,6 +79,8 @@ def describe(manifest: list[dict]) -> str:
         label = LABELS.get(kind, kind)
         if kind in ('project', 'carryover'):
             parts.append(label)
+        elif kind == 'curriculum':
+            parts.append(f'{label} {sum(len(i.get("items", [])) for i in items)} 条')
         elif kind == 'material':
             parts.append(f'{label} {len(items)} 份')
         elif len(items) == 1 and 'version' in items[0]:

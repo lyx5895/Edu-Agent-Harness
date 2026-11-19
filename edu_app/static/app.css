@@ -147,3 +147,19 @@ button.link { background: none; color: var(--accent); padding: 0; font-size: 14p
 .carry { border-left: 3px solid var(--accent); }
 .carry-list { margin: 6px 0; padding-left: 18px; }
 .carry-list li { margin-bottom: 6px; }
+.cur-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cur-head a { color: var(--accent); }
+#curriculum-list { display: grid; gap: 6px; margin: 6px 0; }
+.cur-item { display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: start; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; font-size: 13px; line-height: 1.6; color: var(--text); }
+.cur-item input { margin-top: 4px; }
+.cur-item:has(input:checked) { border-color: var(--accent); }
+#curriculum-box.off #curriculum-list { opacity: .45; pointer-events: none; }
+.cur-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cur-tools #curriculum-q { flex: 1; min-width: 200px; }
+label.inline { display: flex; align-items: center; gap: 4px; flex-direction: row; font-size: 13px; }
+.std-refs { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.std { display: inline-block; margin: 0 4px 2px 0; padding: 0 6px; border-radius: 4px; border: 1px solid var(--line); cursor: help; }
+.cur-more { margin-top: 2px; }
+.cur-more summary { cursor: pointer; font-size: 13px; color: var(--accent); margin-bottom: 6px; }
+.cur-more .cur-item { margin-bottom: 6px; }

@@ -53,6 +53,9 @@ class ProjectUpdate(BaseModel):
     knowledge_module: str | None = Field(default=None, max_length=200)
     lesson: str | None = Field(default=None, max_length=100)
     learner_profile: str | None = Field(default=None, max_length=500)
+    lesson_scope: str | None = Field(default=None, max_length=200)
+    curriculum_ids: list[str] | None = Field(default=None, max_length=30)
+    curriculum_off: bool | None = None
 
 
 class TextBody(BaseModel):
@@ -233,6 +236,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.patch('/api/projects/{pid}')
     def update_project(pid: str, body: ProjectUpdate):
         return ws().update_project(pid, **body.model_dump())
+
+    @app.get('/api/projects/{pid}/curriculum')
+    def curriculum(pid: str, q: str | None = None):
+        return ws().curriculum(pid, q)
 
     @app.post('/api/projects/{pid}/next-lesson')
     def next_lesson(pid: str, body: NextLesson):

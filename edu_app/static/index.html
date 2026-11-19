@@ -54,8 +54,16 @@
           <div class="grid-form">
             <label>知识模块<input id="course-module" placeholder="例如：对数函数"></label>
             <label>课时<input id="course-lesson" placeholder="例如：第 2 课时（45 分钟）"></label>
+            <label class="wide">本课时内容<input id="course-scope" placeholder="例如：对数函数的图象与性质（目标和活动只围绕这部分）"></label>
             <label class="wide">学生基础<textarea id="course-profile" rows="2" placeholder="例如：刚学完指数函数，计算较熟练，定义域意识薄弱"></textarea></label>
             <label class="wide">其他要求（可选）<input id="course-notes" placeholder="例如：本课侧重解对数不等式"></label>
+            <div class="wide hidden" id="curriculum-box">
+              <div class="cur-head"><span class="label">对应课程标准</span><span class="muted" id="curriculum-src"></span></div>
+              <p class="muted" id="curriculum-note"></p>
+              <div id="curriculum-list"></div>
+              <div class="cur-tools"><input id="curriculum-q" placeholder="搜索其他课标条目，例如：基本不等式"><button class="small secondary" id="curriculum-search">搜索</button>
+                <label class="inline"><input type="checkbox" id="curriculum-off"> 不参考课标</label></div>
+            </div>
             <div class="wide"><button id="save-course" class="secondary">保存课时信息</button></div>
           </div>
         </div>
