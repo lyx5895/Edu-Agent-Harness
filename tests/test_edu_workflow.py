@@ -55,6 +55,14 @@ HANDLERS = {
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
     'practice': lambda r, p: {'questions': [question('解不等式 log3(x-2) < 2（巩固）', target=0)]},
     'self_check_solve': lambda r, p: {'answer': '定义域 x>1；单调递增得 x-1<8；所以 1<x<9', 'final_answer': '1<x<9'},
+    'review_question': lambda r, p: {
+        'tests_objective': True,
+        'objective_note': '',
+        'in_scope': True,
+        'scope_note': '',
+        'difficulty': p.get('要求难度') or '中等',
+        'issues': [],
+    },
     'grade': judge_points(RULES),
     'review': judge_points(RULES),
     'analyze': analyze,
@@ -273,8 +281,8 @@ def test_usable_drafts_fill_keyed_points_and_report_dropped():
 def test_self_check_calls_are_recorded(ws):
     p, q = setup_round_one(ws)
     tasks = [g['task'] for g in ws.export(p['id'])['generations']]
-    assert 'self_check_solve' in tasks and 'grade' in tasks
-    assert len(q['content']['checks']['generation_ids']) == 2
+    assert 'self_check_solve' in tasks and 'grade' in tasks and 'review_question' in tasks
+    assert len(q['content']['checks']['generation_ids']) == 3  # review + solve + grade of the solution
 
 
 def test_next_step_guides_through_the_workflow(ws):
@@ -496,3 +504,57 @@ def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
     assert sug['available'] and sug['selected'] == []
     ws.draft_lesson_plan(a['id'])
     assert '课程标准' not in ws.llm.calls[-1]['user']
+
+
+def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
+    p, q = setup_round_one(ws)
+    sent = [c for c in ws.llm.calls if c['task'] == 'review_question'][-1]['user']
+    assert sent['教学目标'] == '能在解对数不等式时检查定义域' and sent['要求难度'] == '中等'
+    assert sent['课标条目']  # the standard items the objective cites
+    assert q['content']['checks']['difficulty'] == '中等' and q['content']['checks']['flags'] == []
+    assert q['content']['difficulty_requested'] == '中等' and q['content']['purpose'] == '课堂练习'
+
+    ws.llm.handlers['review_question'] = lambda r, p: {
+        'tests_objective': False,
+        'objective_note': '只考了单调性',
+        'in_scope': False,
+        'scope_note': '用到了换底公式',
+        'difficulty': '较难',
+        'issues': ['条件不足'],
+    }
+    gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False, difficulty='基础')
+    flags = gen['candidates'][0]['questions'][0]['content']['checks']['flags']
+    assert flags == ['与目标不符：只考了单调性', '超出范围：用到了换底公式', '难度偏高：要求基础，评估为较难', '题目问题：条件不足']
+
+    cov = ws.coverage(p['id'])
+    [row] = cov['objectives']
+    assert (row['id'], row['total'], row['confirmed']) == ('O1', 2, 1) and row['flagged'] == [2]
+
+
+def test_adopt_solver_answer_and_regenerate_one_question(ws):
+    p, q = setup_round_one(ws)
+    ws.llm.handlers['self_check_solve'] = lambda r, p: {'answer': '直接得 x<9', 'final_answer': 'x<9'}
+    gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
+    [bad] = gen['candidates'][0]['questions']
+    assert bad['content']['checks']['answer_suspect']
+    fixed = ws.adopt_solver_answer(bad['id'])
+    assert fixed['content']['reference'] == '直接得 x<9' and not fixed['content']['checks']['answer_suspect']
+    assert fixed['version'] == 2 and fixed['status'] == 'draft'
+    with pytest.raises(Conflict):
+        ws.adopt_solver_answer(ws.create_question(p['id'], {'type': 'calculation', 'stem': 's', 'reference': 'r'},
+                                                  {'points': [{'description': 'd', 'score': 1}]})['id'])
+
+    # 换一道 on the confirmed question: same number, same objective, next version of the same question
+    ws.llm.handlers['regenerate_question'] = lambda r, p: {'questions': [question('解不等式 log2(x+1) < 2（更简单）')]}
+    out = ws.regenerate_question(q['id'], instruction='更简单一些', difficulty='基础')
+    new = out['question']
+    sent = ws.llm.calls[[c['task'] for c in ws.llm.calls].index('regenerate_question')]['user']
+    assert sent['原题（请换一道，不要重复）'] == q['content']['stem'] and sent['老师的修改要求'] == '更简单一些'
+    assert (new['lineage_id'], new['version'], new['status']) == (q['lineage_id'], 2, 'draft')
+    assert new['content']['no'] == q['content']['no'] and new['content']['objective_ids'] == ['O1']
+    assert new['rubric']['lineage_id'] == q['rubric']['lineage_id'] and new['rubric']['version'] == 2
+    current = {x['lineage_id']: x for x in ws.questions(p['id'], round_=1)}[q['lineage_id']]
+    assert current['content']['stem'].endswith('（更简单）') and current['rubric']['id'] == new['rubric']['id']
+    ws.confirm(new['id'], change_kind='substantive')  # question and rubric confirmed together
+    after = {x['lineage_id']: x for x in ws.questions(p['id'], round_=1)}[q['lineage_id']]
+    assert after['status'] == 'confirmed' and after['rubric']['status'] == 'confirmed'

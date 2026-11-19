@@ -67,6 +67,15 @@ class ImportedPaper(BaseModel):
     questions: list[QuestionDraft]
 
 
+class QualityOutput(BaseModel):
+    tests_objective: bool
+    objective_note: str = Field(max_length=200)
+    in_scope: bool
+    scope_note: str = Field(max_length=200)
+    difficulty: Literal['基础', '中等', '较难']
+    issues: list[str]
+
+
 class SolveOutput(BaseModel):
     answer: str = Field(max_length=4000)
     final_answer: str = Field(max_length=300)
@@ -176,6 +185,13 @@ IMPORT_SYSTEM = """你是高中{subject}教研员。老师提供了一份现成�
 3. 根据这些题目反推 1 到 5 条教学目标（objectives），每道题的 objective_index 指向对应目标。target_pattern_index 填 -1。
    如果输入里已有备课方案的教学目标，题目考查的是其中某条就直接用它的序号（已有目标排在前面，序号从 0 开始），只为没有覆盖的内容新增目标。
 4. answer_key、accepted、check_kind 的要求：选择判断题给 answer_key；填空题给 answer_key 和 accepted；数值结果可设 numeric；其他填 none。
+只输出 JSON。"""
+
+QUALITY_SYSTEM = """你是高中{subject}教研员，审核一道练习题。只根据输入判断，不改写题目。
+1. tests_objective：这道题是否真正考查了给出的教学目标、能用来判断它的达成标准；不是时在 objective_note 说明它实际考的是什么，是则填空字符串。
+2. in_scope：本课考查的新内容是否在“本课时内容”和“课标条目”的范围内，对学生的要求没有高于课标用词。学生之前已经学过的知识和方法（初中内容、本课之前的高中内容，如解一元二次不等式）可以作为工具使用，不算超出；只有用到本课之后才学的内容、课标没有要求的内容或技巧，才算超出。超出时在 scope_note 写明超出的地方，否则填空字符串。没有给出本课时内容和课标条目时，按教学目标判断。
+3. difficulty：结合学生基础估计难度。基础＝直接用概念或公式一两步可得；中等＝需要几步推理或简单综合；较难＝多步综合、需要转化，或有容易忽略的陷阱。
+4. issues：题目本身的问题，例如条件不足或矛盾、有多个正确答案、选项设计有误、表述有歧义、参考答案或评分要点与题目不符；没有就填空列表。每条一句话。
 只输出 JSON。"""
 
 SOLVE_SYSTEM = """你是认真的高中{subject}学生。独立完成下面这道题。
@@ -970,7 +986,7 @@ class Workspace:
             )
             out, meta = llm.complete('generator', 'generate_questions', system, user, QuestionSet)
             drafts, dropped = usable_drafts(out.questions, allowed)
-            checks = self._parallel(lambda d: self._self_check(p, d), drafts)
+            checks = self._parallel(lambda d: self._self_check(p, d, self._review_ctx(p, objs, d, difficulty)), drafts)
             return variant, meta, list(zip(drafts, checks)), dropped
 
         runs = [run(v) for v in variants]
@@ -989,7 +1005,14 @@ class Workspace:
                     variant=variant,
                 )
                 made = self._save_questions(
-                    c, pid, items, objs, gid, status='candidate' if group else 'draft', round_=1
+                    c,
+                    pid,
+                    items,
+                    objs,
+                    gid,
+                    status='candidate' if group else 'draft',
+                    round_=1,
+                    extra={'difficulty_requested': difficulty, 'purpose': purpose},
                 )
                 result['candidates'].append(
                     {
@@ -1002,10 +1025,63 @@ class Workspace:
                 )
         return result
 
-    def _self_check(self, p, d: QuestionDraft):
-        """Another model solves the question without the key; the grader checks that answer (design doc 4 ②)."""
+    def _review_ctx(self, p, objs, d, difficulty=None, pattern=None):
+        """What the quality review compares a question with: its objective, the lesson scope and cited standards."""
+        obj = objs[d.objective_index]['content'] if 0 <= d.objective_index < len(objs) else None
+        data = CUR.load(p['subject'])
+        standards = [data['by_id'][i]['text'] for i in (obj or {}).get('standard_ids', []) if data and i in data['by_id']]
+        return {
+            '教学目标': obj['text'] if obj else '',
+            '达成标准': obj.get('success_criterion', '') if obj else '',
+            '针对的问题': pattern or '',
+            '本课时内容': p.get('lesson_scope', ''),
+            '课标条目': standards,
+            '学生基础': p.get('learner_profile', ''),
+            '要求难度': difficulty or '',
+        }
+
+    def _quality(self, p, d: QuestionDraft, review):
+        """Reviewer judgement: does the question test its objective, stay in scope, match the asked difficulty?"""
+        out, meta = self.llm.complete(
+            'reviewer',
+            'review_question',
+            QUALITY_SYSTEM.format(subject=p['pack']['name']),
+            _json(
+                {
+                    **{k: v for k, v in review.items() if v},
+                    '题型': QUESTION_TYPES[d.type],
+                    '题目': d.stem,
+                    '选项': [f'{"ABCDEFGH"[i]}. {o}' for i, o in enumerate(d.options[:8])],
+                    '参考答案': d.reference,
+                    '评分要点': [x.description for x in d.points],
+                }
+            ),
+            QualityOutput,
+        )
+        flags = []
+        if review.get('教学目标') and not out.tests_objective:
+            flags.append(f'与目标不符：{out.objective_note or "没有考到这条目标"}')
+        if not out.in_scope:
+            flags.append(f'超出范围：{out.scope_note or "用到了本课时或课标以外的内容"}')
+        asked = review.get('要求难度')
+        levels = {'基础': 0, '中等': 1, '较难': 2}
+        if asked in levels and out.difficulty != asked:
+            flags.append(f'难度偏{"高" if levels[out.difficulty] > levels[asked] else "低"}：要求{asked}，评估为{out.difficulty}')
+        flags += [f'题目问题：{x}' for x in out.issues if x.strip()][:4]
+        return {'difficulty': out.difficulty, 'flags': flags}, meta
+
+    def _self_check(self, p, d: QuestionDraft, review=None):
+        """Another model solves the question without the key; the grader checks that answer (design doc 4 ②).
+        With ``review``, a reviewer also checks objective, scope and difficulty."""
         subject = p['subject']
         checks = {'notes': [], '_metas': []}
+        if review is not None and self.llm is not None:
+            try:
+                quality, qmeta = self._quality(p, d, review)
+                checks.update(quality)
+                checks['_metas'].append(qmeta)
+            except ModelUnavailable as e:
+                checks['notes'].append(f'题目审核失败：{e}')
         for x in d.points:
             if x.check_kind == 'numeric' and x.check_expected.strip():
                 from edu_core.tools import check_numeric
@@ -1040,7 +1116,7 @@ class Workspace:
             res, grade_metas = grading.grade(
                 self.llm, subject=subject, question=question, rubric=rubric, answer=answer, review=False
             )
-            checks['_metas'] = [meta, *grade_metas]
+            checks['_metas'] = [*checks['_metas'], meta, *grade_metas]
             agree = res['undetermined'] == 0 and res['total'] >= res['max_total'] - 1e-9
             checks.update(
                 solver='agree' if agree else 'disagree',
@@ -1056,7 +1132,9 @@ class Workspace:
         checks['answer_suspect'] = checks.get('solver') == 'disagree' or bool(checks.get('reference_mismatch'))
         return checks
 
-    def _save_questions(self, c, pid, items, objs, gid, *, status, round_, patterns=(), origin='generated'):
+    def _save_questions(
+        self, c, pid, items, objs, gid, *, status, round_, patterns=(), origin='generated', extra=None
+    ):
         made = []
         no = self._next_no(c, pid, round_)
         for d, checks in items:
@@ -1070,6 +1148,7 @@ class Workspace:
                 d, no, round_, [obj['lineage_id']] if obj else [], [pattern['lineage_id']] if pattern else []
             )
             content['checks'] = checks
+            content.update(extra or {})
             refs = ([(obj['id'], 'lesson_plan')] if obj else []) + (
                 [(pattern['id'], 'problem_pattern')] if pattern else []
             )
@@ -1195,6 +1274,120 @@ class Workspace:
             'context_note': describe(ctx.manifest),
         }
 
+    def coverage(self, pid, round_=1):
+        """目标覆盖: how many questions each confirmed objective has in a round, and how many need a look."""
+        with self.store.read() as c:
+            goals = self._goals(self._plan(c, pid))
+        qs = self.questions(pid, round_=round_)
+        rows = []
+        for g in goals:
+            mine = [q for q in qs if g['lineage_id'] in q['content'].get('objective_ids', []) and q['status'] != 'candidate']
+            flagged = [
+                q['content']['no']
+                for q in mine
+                if q['content'].get('checks', {}).get('answer_suspect') or q['content'].get('checks', {}).get('flags')
+            ]
+            rows.append(
+                {
+                    'id': g['lineage_id'],
+                    'text': g['content']['text'],
+                    'total': len(mine),
+                    'confirmed': sum(1 for q in mine if q['confirmed_version']),
+                    'flagged': flagged,
+                }
+            )
+        loose = [q['content']['no'] for q in qs if not q['content'].get('objective_ids') and q['status'] != 'candidate']
+        return {'round': round_, 'objectives': rows, 'unassigned': loose}
+
+    def adopt_solver_answer(self, qid, teacher='teacher'):
+        """答案存疑 → take the independent solver's answer as a new draft version for the teacher to confirm."""
+        with self.store.tx() as c:
+            q = A.get(c, qid)
+            if q['type'] != 'question':
+                raise ValueError('只能对题目操作')
+            ck = dict(q['content'].get('checks') or {})
+            if not ck.get('solver_answer'):
+                raise Conflict('这道题没有独立解题的结果')
+            content = dict(q['content'])
+            if content['type'] in KEYED_TYPES or content['type'] == 'fill_blank':
+                content['answer_key'] = ck.get('solver_final', '').strip()
+            content['reference'] = ck['solver_answer']
+            ck.update(answer_suspect=False, solver='adopted', notes=['已采用独立解题的答案，请核对后确认'])
+            content['checks'] = ck
+            return A.edit(c, qid, content, teacher=teacher)
+
+    def regenerate_question(self, qid, instruction='', difficulty=None):
+        """换一道: a new question for the same objective and type, saved as the next version of this question."""
+        llm = self._model()
+        with self.store.read() as c:
+            q = A.get(c, qid)
+            if q['type'] != 'question':
+                raise ValueError('只能对题目操作')
+            pid = q['project_id']
+            p = self._project(c, pid)
+            plan = self._plan(c, pid)
+            objs = self._confirmed_objectives(c, pid, q['content'].get('objective_ids') or None) if plan else []
+            objs = objs[:1]
+            pattern = None
+            for lineage in q['content'].get('target_patterns', []):
+                pat = c.execute(
+                    "SELECT content FROM artifacts WHERE lineage_id=? ORDER BY version DESC LIMIT 1", (lineage,)
+                ).fetchone()
+                if pat:
+                    pc = json.loads(pat['content'])
+                    pattern = f'{pc["name"]}：{pc["description"]}'
+            old_rubric = self._rubric_for(c, q['lineage_id'], include_drafts=True)
+            ctx = Context('generate_questions')
+            ctx.add_other('project', pid)
+            if plan:
+                ctx.add_artifact(plan)
+        difficulty = difficulty or q['content'].get('difficulty_requested') or '中等'
+        qtype = q['content']['type']
+        system = GENERATE_SYSTEM.format(
+            subject=p['pack']['name'], types=f'{qtype}（{QUESTION_TYPES[qtype]}）', variant=VARIANTS['a']
+        )
+        user = _json(
+            {
+                '学科': p['pack']['name'],
+                '年级': p['grade'],
+                '教学目标': [
+                    {'index': 0, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
+                    for o in objs
+                ],
+                '针对的问题': pattern or '',
+                '本课时内容': p.get('lesson_scope', ''),
+                '学生基础': p.get('learner_profile', ''),
+                '每个目标出题数': 1,
+                '难度': difficulty,
+                '原题（请换一道，不要重复）': q['content']['stem'],
+                '老师的修改要求': instruction or '换一道考查同一目标的新题',
+            }
+        )
+        out, meta = llm.complete('generator', 'regenerate_question', system, user, QuestionSet)
+        drafts, dropped = usable_drafts(out.questions, [qtype])
+        if not drafts:
+            raise ModelUnavailable('模型没有给出可用的题目，请重试' + (f'（{dropped[0]}）' if dropped else ''))
+        d = drafts[0].model_copy(update={'objective_index': 0 if objs else -1})
+        checks = self._self_check(p, d, self._review_ctx(p, objs, d, difficulty, pattern))
+        with self.store.tx() as c:
+            gid = record_generation(c, pid, meta, ctx.manifest, 'regenerate-v1')
+            metas = checks.pop('_metas', [])
+            manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
+            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v1') for m in metas]
+            content = _question_content(
+                d, q['content']['no'], q['round'], q['content'].get('objective_ids', []), q['content'].get('target_patterns', [])
+            )
+            content.update(checks=checks, difficulty_requested=difficulty, regenerated_from=qid,
+                           instruction=instruction or '', purpose=q['content'].get('purpose', ''))
+            refs = [(r['ref_id'], r['role']) for r in A.get(c, qid)['refs']]
+            new = A.create(c, pid, 'question', content, origin='generated', refs=refs, generation_id=gid,
+                           lineage_id=q['lineage_id'], round_=q['round'])
+            rubric = _rubric_from(d.points, q['lineage_id'], (q['content'].get('target_patterns') or [None])[0])
+            new['rubric'] = A.create(c, pid, 'rubric', rubric, origin='generated', refs=[(new['id'], 'question'), *refs],
+                                     generation_id=gid, lineage_id=old_rubric['lineage_id'] if old_rubric else None,
+                                     round_=q['round'])
+        return {'question': new, 'context_note': describe(ctx.manifest)}
+
     def questions(self, pid, round_=None):
         with self.store.read() as c:
             qs = A.current(c, pid, 'question', round_=round_)
@@ -1210,7 +1403,8 @@ class Workspace:
                         'SELECT candidate_group, position, variant FROM generations WHERE id=?', (q['generation_id'],)
                     ).fetchone()
                     q['candidate'] = dict(g) if g and g['candidate_group'] else None
-            return qs
+            # by question number, so a question keeps its place after it is edited or regenerated
+            return sorted(qs, key=lambda q: (q['round'], q['status'] == 'candidate', q['content'].get('no', 0)))
 
     # ----- roster and submissions -----
 
@@ -2037,7 +2231,12 @@ class Workspace:
         )
         out, meta = llm.complete('generator', 'practice', system, user, QuestionSet)
         drafts, dropped = usable_drafts(out.questions, allowed, n_patterns=len(pats))
-        checks = self._parallel(lambda d: self._self_check(p, d), drafts)
+
+        def review(d):
+            pat = pats[d.target_pattern_index]['content']
+            return self._review_ctx(p, objs, d, pattern=f'{pat["name"]}：{pat["description"]}')
+
+        checks = self._parallel(lambda d: self._self_check(p, d, review(d)), drafts)
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'practice-v1')
             made = self._save_questions(

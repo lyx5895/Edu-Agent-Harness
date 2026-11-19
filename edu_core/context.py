@@ -11,6 +11,7 @@ WHITELIST = {
     'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum'},
     'import_paper': {'project', 'material'},
     'self_check_solve': {'question_stem'},
+    'review_question': {'question_stem', 'lesson_plan', 'curriculum'},
     'grade': {'question', 'rubric', 'submission'},
     'review': {'question', 'rubric', 'submission'},
     'analyze': {'project', 'lesson_plan', 'question', 'rubric', 'grading', 'submission', 'problem_pattern'},

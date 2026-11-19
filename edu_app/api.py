@@ -11,11 +11,12 @@ import json
 import logging
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+
 from pydantic import BaseModel, Field
 
 from edu_core.config import load_settings
@@ -78,12 +79,18 @@ class GenerateBody(BaseModel):
     notes: str = Field(default='', max_length=1000)
     ab: bool | None = None
     purpose: str = Field(default='课堂练习', max_length=40)
+    objective_ids: list[str] | None = None
 
 
 class ManualQuestion(BaseModel):
     question: dict[str, Any]
     rubric: dict[str, Any]
     round: int = 1
+
+
+class RegenerateBody(BaseModel):
+    instruction: str = Field(default='', max_length=300)
+    difficulty: Literal['基础', '中等', '较难'] | None = None
 
 
 class ChoiceBody(BaseModel):
@@ -290,6 +297,7 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             types=body.types,
             count=body.count,
             difficulty=body.difficulty,
+            objective_ids=body.objective_ids,
             notes=body.notes,
             ab=body.ab,
             purpose=body.purpose,
@@ -302,6 +310,18 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.get('/api/projects/{pid}/questions')
     def questions(pid: str, round: int | None = None):
         return ws().questions(pid, round)
+
+    @app.get('/api/projects/{pid}/coverage')
+    def coverage(pid: str, round: int = 1):
+        return ws().coverage(pid, round)
+
+    @app.post('/api/questions/{qid}/adopt-solver')
+    def adopt_solver(qid: str):
+        return ws().adopt_solver_answer(qid)
+
+    @app.post('/api/questions/{qid}/regenerate')
+    def regenerate(qid: str, body: RegenerateBody):
+        return ws().regenerate_question(qid, body.instruction, body.difficulty)
 
     @app.post('/api/projects/{pid}/choices')
     def choose(pid: str, body: ChoiceBody):

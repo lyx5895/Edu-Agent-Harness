@@ -333,7 +333,12 @@ async function renderQuestions() {
     box.innerHTML = types.map((t) => `<label><input type="checkbox" value="${t}" ${t !== 'writing' ? 'checked' : ''}> ${esc(S.meta.question_types[t])}</label>`).join('');
   }
   const round = Number($('#q-round').value || 1);
-  const qs = await api('GET', `/api/projects/${S.pid}/questions?round=${round}`);
+  const [qs, cov] = await Promise.all([
+    api('GET', `/api/projects/${S.pid}/questions?round=${round}`),
+    api('GET', `/api/projects/${S.pid}/coverage?round=${round}`),
+  ]);
+  S.goals = Object.fromEntries(cov.objectives.map((o, i) => [o.id, { no: i + 1, text: o.text }]));
+  renderCoverage(cov);
   const candidates = qs.filter((q) => q.status === 'candidate' && q.candidate && S.overview.pending_ab.includes(q.candidate.candidate_group));
   const groups = {};
   candidates.forEach((q) => { (groups[q.candidate.candidate_group] ||= { A: [], B: [] })[q.candidate.position].push(q); });
@@ -350,17 +355,33 @@ async function renderQuestions() {
     + `<div class="row"><button class="secondary" data-act="new-question">手工添加题目</button></div><div class="new-question-area"></div>`;
 }
 
+// 目标覆盖: one line per objective; an objective without questions gets a one-click 补题.
+function renderCoverage(cov) {
+  const box = $('#coverage');
+  if (!cov.objectives.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="coverage"><div class="label">目标覆盖（第 ${cov.round} 轮）</div>${cov.objectives.map((o, i) => `<div class="cov-row${o.total ? '' : ' none'}">
+      <span class="cov-no">目标 ${i + 1}</span><span class="cov-text">${esc(o.text)}</span>
+      <span class="cov-count">${o.total ? `${o.total} 道 · 已确认 ${o.confirmed}` : '<span class="pill bad">还没有题</span>'}</span>
+      ${o.flagged.length ? `<span class="pill warn">第 ${o.flagged.join('、')} 题待核对</span>` : ''}
+      ${cov.round === 1 ? `<button class="small secondary" data-fill="${esc(o.id)}">补 1 道</button>` : ''}</div>`).join('')}
+    ${cov.unassigned.length ? `<div class="muted">第 ${cov.unassigned.join('、')} 题没有对应目标</div>` : ''}</div>`;
+}
+
 function questionBody(q) {
   const c = q.content;
   const r = q.rubric ? q.rubric.content : { points: [], total: 0 };
   const checks = c.checks || {};
   const warn = [];
   if (checks.answer_suspect) warn.push('<span class="pill bad">答案存疑</span>');
-  if (checks.solver === 'agree') warn.push('<span class="pill ok">独立解题自检通过</span>');
-  const notes = (checks.notes || []).map((n) => `<div class="kv">⚠ ${esc(n)}</div>`).join('');
+  if ((checks.flags || []).length) warn.push('<span class="pill warn">需核对</span>');
+  if (checks.solver === 'agree' && !(checks.flags || []).length) warn.push('<span class="pill ok">自检通过</span>');
+  if (checks.difficulty) warn.push(`<span class="pill">难度 ${esc(checks.difficulty)}</span>`);
+  const notes = [...(checks.flags || []), ...(checks.notes || [])].map((n) => `<div class="kv flag">⚠ ${esc(n)}</div>`).join('');
+  const goal = (c.objective_ids || []).map((id) => S.goals && S.goals[id]).filter(Boolean)[0];
   const options = (c.options || []).map((o, i) => `<div>${'ABCDEFGH'[i]}. ${esc(o)}</div>`).join('');
   return `<div class="item-head"><div><b>第 ${c.no} 题</b> · ${esc(S.meta.question_types[c.type] || c.type)} · 满分 ${r.total}
       ${(c.target_patterns || []).length ? '<span class="pill info">巩固练习</span>' : ''}</div><div>${warn.join(' ')}</div></div>
+    ${goal ? `<div class="kv">考查目标 ${goal.no}：${esc(goal.text)}${c.difficulty_requested ? ` · 要求难度 ${esc(c.difficulty_requested)}` : ''}${c.instruction ? ` · 换题要求：${esc(c.instruction)}` : ''}</div>` : ''}
     <div class="stem">${esc(c.stem)}</div>${options}
     ${c.answer_key ? `<div class="kv">答案：${esc(c.answer_key)}${(c.accepted || []).length ? '（也接受：' + esc(c.accepted.join('、')) + '）' : ''}</div>` : ''}
     <div class="kv">参考答案：${esc(c.reference)}</div>${notes}
@@ -378,6 +399,8 @@ function questionItem(q) {
     ${questionBody(q)}
     <div class="item-actions" style="margin-top:8px">
       <button class="small secondary" data-act="edit-question">编辑</button>
+      <button class="small secondary" data-act="regen-open">换一道</button>
+      ${(q.content.checks || {}).answer_suspect && (q.content.checks || {}).solver_answer ? '<button class="small secondary" data-act="adopt-solver">采用独立解题的答案</button>' : ''}
       ${qDraft || rDraft ? `${changeKindSelect(needsKind)}<button class="small" data-act="confirm-question">确认题目与评分标准</button>` : ''}
     </div><div class="edit-area"></div></div>`;
 }
@@ -727,6 +750,17 @@ function bindEvents() {
     toast((r.candidate_group ? '生成了 A/B 两版，请先选择' : `生成了 ${r.candidates[0].questions.length} 道题，请核对后确认`) + (dropped.length ? `；丢弃 ${dropped.length} 道不完整的题：${dropped.join('；')}` : ''), dropped.length > 0);
     S.showRound = 1; await refresh();
   }));
+  $('#coverage').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-fill]');
+    if (!b) return;
+    busy(b, '出题中…', async () => {
+      const types = $$('#type-boxes input:checked').map((i) => i.value);
+      const r = await api('POST', `/api/projects/${S.pid}/questions/generate`, {
+        types, count: 1, difficulty: $('#q-difficulty').value, purpose: $('#q-purpose').value, notes: $('#q-notes').value, ab: false, objective_ids: [b.dataset.fill],
+      });
+      showNote(r.context_note); toast('已为这条目标补了 1 道题，请核对后确认'); S.showRound = 1; await refresh();
+    });
+  });
   $('#import-paper').addEventListener('click', (e) => busy(e.target, '整理中…', async () => {
     const r = await api('POST', `/api/projects/${S.pid}/import-paper`, { text: $('#paper-text').value, filename: '导入试卷' });
     $('#paper-text').value = ''; showNote(r.context_note);
@@ -822,6 +856,31 @@ async function onAction(e) {
       if (box) box.remove(); else { const area = btn.closest('.edit-area') || btn.closest('.new-question-area'); if (area) area.innerHTML = ''; }
       break;
     }
+    case 'regen-open':
+      $('.edit-area', item).innerHTML = `<div class="regen">
+        <select class="regen-kind"><option value="">换一道同类题</option><option value="更简单">更简单</option><option value="更难">更难</option><option value="换个真实情境">换个真实情境</option></select>
+        <input class="regen-note" placeholder="其他要求（选填），例如：不要用分数">
+        <button class="small" data-act="regen-go">生成</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
+      break;
+    case 'regen-go': {
+      const kind = $('.regen-kind', item).value;
+      const note = $('.regen-note', item).value.trim();
+      const levels = ['基础', '中等', '较难'];
+      const now = (await api('GET', `/api/projects/${S.pid}/questions?round=${$('#q-round').value || 1}`)).find((x) => x.id === item.dataset.id);
+      const cur = levels.indexOf((now && now.content.difficulty_requested) || '中等');
+      const difficulty = kind === '更简单' ? levels[Math.max(0, cur - 1)] : kind === '更难' ? levels[Math.min(2, cur + 1)] : null;
+      await busy(btn, '换题与自检中…', async () => {
+        const r = await api('POST', `/api/questions/${item.dataset.id}/regenerate`, { instruction: [kind, note].filter(Boolean).join('；'), difficulty });
+        showNote(r.context_note); toast('已换成新的一版，请核对后确认'); S.showRound = Number($('#q-round').value || 1); await refresh();
+      });
+      break;
+    }
+    case 'adopt-solver':
+      await busy(btn, '处理中…', async () => {
+        await api('POST', `/api/questions/${item.dataset.id}/adopt-solver`);
+        toast('已采用独立解题的答案，存为新版本，请核对后确认'); S.showRound = Number($('#q-round').value || 1); await refresh();
+      });
+      break;
     case 'edit-question': {
       const qs = await api('GET', `/api/projects/${S.pid}/questions?round=${$('#q-round').value || 1}`);
       const q = qs.find((x) => x.id === item.dataset.id);

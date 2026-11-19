@@ -101,3 +101,17 @@ def test_curriculum_routes(client):
     assert found['items'][0]['id'] == 'math.B1.3.2'
     upd = client.patch(f'/api/projects/{pid}', json={'lesson_scope': '图象与性质', 'curriculum_ids': ['math.B2.2.3.2']}).json()
     assert upd['lesson_scope'] == '图象与性质' and upd['curriculum']['ids'] == ['math.B2.2.3.2']
+
+
+def test_question_review_routes(client):
+    pid = client.post('/api/projects', json={'title': '高一数学', 'subject': 'math', 'knowledge_module': '对数函数'}).json()['id']
+    plan = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()['lesson_plan']
+    client.post(f'/api/artifacts/{plan["id"]}/confirm', json={})
+    gen = client.post(f'/api/projects/{pid}/questions/generate', json={'types': ['calculation'], 'count': 1, 'ab': False}).json()
+    q = gen['candidates'][0]['questions'][0]
+    cov = client.get(f'/api/projects/{pid}/coverage').json()
+    assert cov['objectives'][0]['total'] == 1
+    r = client.post(f'/api/questions/{q["id"]}/adopt-solver')
+    assert r.status_code == 200 and r.json()['version'] == 2
+    bad = client.post(f'/api/questions/{q["id"]}/regenerate', json={'difficulty': '太难'})
+    assert bad.status_code == 422
