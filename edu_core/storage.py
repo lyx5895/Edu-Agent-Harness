@@ -61,6 +61,10 @@ class Store:
         c = self.connect()
         try:
             c.executescript(SCHEMA)  # executescript manages its own transaction
+            columns = {r[1] for r in c.execute('PRAGMA table_info(projects)')}
+            for column in ('knowledge_module', 'lesson', 'learner_profile'):  # course info added later
+                if column not in columns:
+                    c.execute(f"ALTER TABLE projects ADD COLUMN {column} TEXT NOT NULL DEFAULT ''")
         finally:
             c.close()
 

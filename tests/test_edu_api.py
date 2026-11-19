@@ -34,10 +34,11 @@ def test_teacher_flow_over_http(client):
     )
     assert up.status_code == 200 and up.json()['filename'] == '讲义.md'
 
-    drafted = client.post(f'/api/projects/{pid}/objectives/draft').json()
+    drafted = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()
     assert drafted['context_note'] == '已参考：项目背景、材料 2 份'
-    obj = drafted['objectives'][0]
-    assert client.post(f'/api/artifacts/{obj["id"]}/confirm', json={}).json()['status'] == 'confirmed'
+    plan = drafted['lesson_plan']
+    assert plan['content']['objectives'][0]['id'] == 'O1'
+    assert client.post(f'/api/artifacts/{plan["id"]}/confirm', json={}).json()['status'] == 'confirmed'
 
     gen = client.post(
         f'/api/projects/{pid}/questions/generate', json={'types': ['calculation'], 'count': 1, 'ab': False}
@@ -70,7 +71,9 @@ def test_error_codes(client):
     assert client.post('/api/projects', json={'title': 'x', 'subject': '美术'}).status_code == 400
     pid = client.post('/api/projects', json={'title': 'x', 'subject': 'history'}).json()['id']
     r = client.post(f'/api/projects/{pid}/questions/generate', json={})
-    assert r.status_code == 409 and '教学目标' in r.json()['detail']
+    assert r.status_code == 409 and '备课方案' in r.json()['detail']
+    upd = client.patch(f'/api/projects/{pid}', json={'knowledge_module': '辛亥革命', 'lesson': '第1课时'}).json()
+    assert upd['knowledge_module'] == '辛亥革命' and upd['lesson'] == '第1课时'
     assert client.get('/api/nothing').status_code == 404
 
 

@@ -34,6 +34,9 @@ class NewProject(BaseModel):
     subject: str
     grade: str = ''
     notes: str = Field(default='', max_length=2000)
+    knowledge_module: str = Field(default='', max_length=200)
+    lesson: str = Field(default='', max_length=100)
+    learner_profile: str = Field(default='', max_length=500)
 
 
 class ProjectUpdate(BaseModel):
@@ -41,6 +44,9 @@ class ProjectUpdate(BaseModel):
     subject: str | None = None
     grade: str | None = None
     notes: str | None = Field(default=None, max_length=2000)
+    knowledge_module: str | None = Field(default=None, max_length=200)
+    lesson: str | None = Field(default=None, max_length=100)
+    learner_profile: str | None = Field(default=None, max_length=500)
 
 
 class TextBody(BaseModel):
@@ -62,6 +68,7 @@ class GenerateBody(BaseModel):
     difficulty: str = '中等'
     notes: str = Field(default='', max_length=1000)
     ab: bool | None = None
+    purpose: str = Field(default='课堂练习', max_length=40)
 
 
 class ManualQuestion(BaseModel):
@@ -203,7 +210,15 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.post('/api/projects')
     def create_project(body: NewProject):
-        return ws().create_project(body.title, body.subject, body.grade, body.notes)
+        return ws().create_project(
+            body.title,
+            body.subject,
+            body.grade,
+            body.notes,
+            knowledge_module=body.knowledge_module,
+            lesson=body.lesson,
+            learner_profile=body.learner_profile,
+        )
 
     @app.get('/api/projects/{pid}')
     def overview(pid: str):
@@ -232,14 +247,6 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             text = read_upload(Path(tmp.name), file.filename or 'x.txt')
         return ws().add_material(pid, text, file.filename or '上传文件', kind='file')
 
-    @app.post('/api/projects/{pid}/objectives/draft')
-    def draft_objectives(pid: str):
-        return ws().draft_objectives(pid)
-
-    @app.post('/api/projects/{pid}/objectives')
-    def manual_objective(pid: str, body: ContentBody):
-        return ws().create_manual(pid, 'objective', body.content)
-
     @app.get('/api/projects/{pid}/artifacts')
     def artifacts(pid: str, type: str, round: int | None = None):
         from edu_core import artifacts as A
@@ -262,7 +269,13 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.post('/api/projects/{pid}/questions/generate')
     def generate(pid: str, body: GenerateBody):
         return ws().generate_questions(
-            pid, types=body.types, count=body.count, difficulty=body.difficulty, notes=body.notes, ab=body.ab
+            pid,
+            types=body.types,
+            count=body.count,
+            difficulty=body.difficulty,
+            notes=body.notes,
+            ab=body.ab,
+            purpose=body.purpose,
         )
 
     @app.post('/api/projects/{pid}/questions')

@@ -10,6 +10,7 @@ import csv
 import io
 import json
 import random
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Literal
@@ -35,10 +36,6 @@ QuestionType = Literal[tuple(QUESTION_TYPES)]  # type: ignore[valid-type]
 class ObjectiveDraft(BaseModel):
     text: str = Field(max_length=200)
     success_criterion: str = Field(max_length=300)
-
-
-class ObjectiveSet(BaseModel):
-    objectives: list[ObjectiveDraft]
 
 
 class PointDraft(BaseModel):
@@ -112,6 +109,7 @@ class Activity(BaseModel):
 
 
 class LessonPlanOutput(BaseModel):
+    objectives: list[ObjectiveDraft]
     key_points: list[str]
     difficulties: list[str]
     activities: list[Activity]
@@ -138,10 +136,6 @@ class PitfallOutput(BaseModel):
 
 
 # ---------- prompts ----------
-
-OBJECTIVES_SYSTEM = """你是经验丰富的高中{subject}教研员。根据项目背景和老师提供的材料，起草 2 到 5 条本课时可检验的教学目标。
-每条目标写成学生能做到的具体行为（例如“能在解对数不等式时检查真数大于零”），success_criterion 写明怎样从学生作答判断是否达成。
-不要超出材料和项目背景的范围。只输出 JSON。"""
 
 GENERATE_SYSTEM = """你是高中{subject}命题老师，根据已确认的教学目标出题。
 要求：
@@ -173,6 +167,7 @@ IMPORT_SYSTEM = """你是高中{subject}教研员。老师提供了一份现成�
 1. 保留题目原文，不要改写；options 只在选择题中填写，每个选项不带字母前缀。
 2. 试卷附有答案就使用试卷答案；没有就起草参考答案。每道题必须有至少一个可检验的评分要点，分值之和为该题满分（试卷标明分值时按试卷分值）。
 3. 根据这些题目反推 1 到 5 条教学目标（objectives），每道题的 objective_index 指向对应目标。target_pattern_index 填 -1。
+   如果输入里已有备课方案的教学目标，题目考查的是其中某条就直接用它的序号（已有目标排在前面，序号从 0 开始），只为没有覆盖的内容新增目标。
 4. answer_key、accepted、check_kind 的要求：选择判断题给 answer_key；填空题给 answer_key 和 accepted；数值结果可设 numeric；其他填 none。
 只输出 JSON。"""
 
@@ -190,12 +185,13 @@ ANALYZE_SYSTEM = """你是高中{subject}教研员，根据已确认的批改结
 5. summary 用两三句话概括本轮学情，不写泛泛的教学建议。
 只输出 JSON。"""
 
-LESSON_PLAN_SYSTEM = """你是经验丰富的高中{subject}教师，根据已确认的教学目标安排这节课的重点难点和课堂活动。
+LESSON_PLAN_SYSTEM = """你是经验丰富的高中{subject}教师，为这一课时写一份备课方案。
 要求：
-1. key_points 写本课重点（2 到 4 条），difficulties 写学生容易卡住的难点（1 到 3 条），都要具体到本课内容。
-2. activities 按课堂顺序安排 3 到 6 个活动，写明名称、用时（分钟）、做法；objective_index 指向对应目标的序号（从 0 开始），没有对应目标填 -1。总用时不超过一节课（约 40 到 45 分钟）。
-3. notes 写需要提醒老师的事项，没有就填空字符串。
-不要超出教学目标和材料的范围。只输出 JSON。"""
+1. objectives 写 2 到 4 条可检验的教学目标：每条写成学生能做到的具体行为（例如“能在解对数不等式时检查真数大于零”），success_criterion 写明怎样从学生作答判断是否达成。
+2. key_points 写本课重点（2 到 4 条），difficulties 写学生容易卡住的难点（1 到 3 条），都要具体到本课内容，并结合学生基础。
+3. activities 按课堂顺序安排 3 到 6 个活动，写明名称、用时（分钟）、做法；objective_index 指向对应目标的序号（从 0 开始），没有对应目标填 -1。总用时不超过课时长度（默认约 40 到 45 分钟）。
+4. notes 写需要提醒老师的事项，没有就填空字符串。
+以课时信息为准；参考材料只用来确定内容范围，不要照抄。只输出 JSON。"""
 
 REVIEW_SYSTEM = """你是高中{subject}教师，根据已确认的学情分析为下一节课准备针对性的讲评。
 要求：
@@ -251,7 +247,7 @@ def usable_drafts(drafts, allowed, n_patterns=None):
     return kept, dropped
 
 
-def _question_content(d: QuestionDraft, no: int, round_: int, objective_lineages, target_patterns=()):
+def _question_content(d: QuestionDraft, no: int, round_: int, objective_ids, target_patterns=()):
     keyed = d.type in KEYED_TYPES or d.type == 'fill_blank'
     return {
         'no': no,
@@ -261,7 +257,7 @@ def _question_content(d: QuestionDraft, no: int, round_: int, objective_lineages
         'answer_key': d.answer_key.strip() if keyed else '',
         'accepted': [a for a in d.accepted if a.strip()] if d.type == 'fill_blank' else [],
         'reference': d.reference.strip(),
-        'objective_lineages': list(objective_lineages),
+        'objective_ids': list(objective_ids),
         'target_patterns': list(target_patterns),
         'round': round_,
     }
@@ -290,28 +286,23 @@ def next_steps(st):
         )
     c, rc, r = st['counts'], st['round'], st['r']
     label_r = f'（第 {r} 轮）' if r > 1 else ''
-    if not c['objective']['confirmed']:
-        if c['objective']['total']:
-            steps.append(_step('确认教学目标', 'prep', '#objectives', '编辑后点“确认”，确认过的目标才会用于出题'))
-        elif not st['materials']:
+    if not c['lesson_plan']['confirmed']:
+        if c['lesson_plan']['total']:
             steps.append(
-                _step(
-                    '添加课程材料',
-                    'prep',
-                    '#material-text',
-                    '粘贴或上传教材、讲义、教案，再按材料起草目标；也可以手工添加目标',
-                )
+                _step('确认备课方案', 'prep', '#lesson-plan', '核对目标、重点难点和课堂活动，整体确认后用于出题')
             )
+        elif not st['has_context']:
+            steps.append(_step('填写课时信息', 'prep', '#course-module', '至少填写知识模块，或添加参考材料'))
         else:
-            steps.append(_step('起草教学目标', 'prep', '#draft-objectives', '按已添加的材料起草，之后可以编辑'))
+            steps.append(
+                _step('生成备课方案', 'prep', '#draft-lesson-plan', '目标、重点难点和课堂活动一起生成，之后可以编辑')
+            )
         return steps
     if not rc['question']['confirmed']:
         if rc['question']['total']:
             steps.append(_step('确认题目' + label_r, 'questions', '#questions', '核对题目、答案和评分要点后确认'))
         else:
             steps.append(_step('按目标出题', 'questions', '#generate-questions', '也可以导入现成试卷或手工添加题目'))
-            if r == 1 and not c['lesson_plan']['total']:
-                steps.append(_step('安排重点与课堂活动', 'prep', '#draft-lesson-plan', optional=True))
         return steps
     if not rc['submission']['total']:
         if not st['learners']:
@@ -346,7 +337,7 @@ def stage_status(counts, rc, r):
     """Which loop stages are done for the latest round (drives the step navigation and "接着做")."""
     graded = rc['grading']['total'] and rc['grading']['confirmed'] == rc['grading']['total']
     return {
-        'prep': bool(counts['objective']['confirmed']),
+        'prep': bool(counts['lesson_plan']['confirmed']),
         'questions': bool(rc['question']['confirmed']),
         'grading': bool(rc['submission']['total'] and graded and rc['grading']['total'] >= rc['submission']['total']),
         'analysis': bool(
@@ -354,6 +345,53 @@ def stage_status(counts, rc, r):
         ),
         'review': bool(rc['review_plan']['confirmed']),
         'round': r,
+    }
+
+
+def normalize_plan(plan):
+    """Validate a lesson plan; objectives keep stable ids (O1, O2, ...) across edits, new ones get the next id."""
+    objectives, used = [], set()
+    raw = plan.get('objectives') or []
+    taken = [int(m.group(1)) for o in raw if (m := re.fullmatch(r'O(\d+)', str(o.get('id', ''))))]
+    nxt = max(taken, default=0)
+    for o in raw:
+        text = str(o.get('text', '')).strip()
+        if not text:
+            continue
+        oid = str(o.get('id') or '')
+        if not re.fullmatch(r'O\d+', oid) or oid in used:
+            nxt += 1
+            oid = f'O{nxt}'
+        used.add(oid)
+        item = {'id': oid, 'text': text[:200], 'success_criterion': str(o.get('success_criterion', '')).strip()[:300]}
+        if o.get('inferred'):
+            item['inferred'] = True
+        objectives.append(item)
+    if not objectives:
+        raise ValueError('备课方案至少需要一条教学目标')
+    activities = []
+    for a in plan.get('activities') or []:
+        name = str(a.get('name', '')).strip()
+        if not name:
+            continue
+        activities.append(
+            {
+                'name': name[:60],
+                'minutes': max(0, min(int(a.get('minutes') or 0), 90)),
+                'description': str(a.get('description', '')).strip()[:400],
+                'objective_ids': [x for x in a.get('objective_ids', []) if x in used],
+            }
+        )
+
+    def lines(key):
+        return [str(x).strip() for x in plan.get(key) or [] if str(x).strip()]
+
+    return {
+        'objectives': objectives,
+        'key_points': lines('key_points'),
+        'difficulties': lines('difficulties'),
+        'activities': activities,
+        'notes': str(plan.get('notes', '')).strip()[:600],
     }
 
 
@@ -379,7 +417,18 @@ class Workspace:
         return p
 
     def _project_view(self, p):
-        return {k: p[k] for k in ('id', 'title', 'subject', 'grade', 'notes', 'created_at')} | {
+        keys = (
+            'id',
+            'title',
+            'subject',
+            'grade',
+            'notes',
+            'knowledge_module',
+            'lesson',
+            'learner_profile',
+            'created_at',
+        )
+        return {k: p.get(k, '') for k in keys} | {
             'subject_name': p['pack']['name'],
             'question_types': p['pack']['types'],
         }
@@ -392,20 +441,45 @@ class Workspace:
 
     # ----- projects and materials -----
 
-    def create_project(self, title, subject, grade='', notes='', owner=''):
+    def create_project(
+        self, title, subject, grade='', notes='', owner='', knowledge_module='', lesson='', learner_profile=''
+    ):
         if not title.strip():
             raise ValueError('请填写项目名称')
         sp = pack(subject)
         pid = new_id('proj')
         with self.store.tx() as c:
             c.execute(
-                'INSERT INTO projects VALUES(?,?,?,?,?,?,?)',
-                (pid, title.strip(), sp['id'], grade.strip(), notes.strip(), owner, time.time()),
+                'INSERT INTO projects(id,title,subject,grade,notes,owner,created_at,knowledge_module,lesson,learner_profile) '
+                'VALUES(?,?,?,?,?,?,?,?,?,?)',
+                (
+                    pid,
+                    title.strip(),
+                    sp['id'],
+                    grade.strip(),
+                    notes.strip(),
+                    owner,
+                    time.time(),
+                    knowledge_module.strip(),
+                    lesson.strip(),
+                    learner_profile.strip(),
+                ),
             )
             event(c, pid, 'project_created', {'title': title, 'subject': sp['id']})
             return self._project_view(self._project(c, pid))
 
-    def update_project(self, pid, *, title=None, subject=None, grade=None, notes=None):
+    def update_project(
+        self,
+        pid,
+        *,
+        title=None,
+        subject=None,
+        grade=None,
+        notes=None,
+        knowledge_module=None,
+        lesson=None,
+        learner_profile=None,
+    ):
         """Edit project info. The subject can only change before any question exists (questions depend on it)."""
         with self.store.tx() as c:
             p = self._project(c, pid)
@@ -418,6 +492,13 @@ class Workspace:
                 changes['grade'] = grade.strip()
             if notes is not None:
                 changes['notes'] = notes.strip()
+            for key, value in (
+                ('knowledge_module', knowledge_module),
+                ('lesson', lesson),
+                ('learner_profile', learner_profile),
+            ):
+                if value is not None:
+                    changes[key] = value.strip()[:500]
             if subject is not None and pack(subject)['id'] != p['subject']:
                 has_questions = c.execute(
                     "SELECT 1 FROM artifacts WHERE project_id=? AND type='question' LIMIT 1", (pid,)
@@ -513,15 +594,6 @@ class Workspace:
                     A.confirm(c, rubric['id'], change_kind=change_kind, teacher=teacher)
             return done
 
-    def create_manual(self, pid, type_, content, teacher='teacher'):
-        """Teacher-authored objective (questions are created with their rubric via create_question)."""
-        if type_ != 'objective':
-            raise ValueError('手工新建目前只支持教学目标；题目请用“手工添加题目”')
-        with self.store.tx() as c:
-            self._project(c, pid)
-            content = self._validate_content('objective', content, {})
-            return A.create(c, pid, 'objective', content, origin='teacher', created_by=teacher)
-
     def create_question(self, pid, question, rubric, teacher='teacher', round_=1):
         with self.store.tx() as c:
             p = self._project(c, pid)
@@ -547,10 +619,8 @@ class Workspace:
         if not isinstance(content, dict):
             raise ValueError('内容格式错误')
         merged = {**previous, **content}
-        if type_ == 'objective':
-            if not str(merged.get('text', '')).strip():
-                raise ValueError('教学目标不能为空')
-            merged.setdefault('success_criterion', '')
+        if type_ == 'lesson_plan':
+            merged = normalize_plan(merged)
         elif type_ == 'question':
             if merged.get('type') not in QUESTION_TYPES:
                 raise ValueError('未知题型')
@@ -560,7 +630,7 @@ class Workspace:
             merged.setdefault('answer_key', '')
             merged.setdefault('accepted', [])
             merged.setdefault('reference', '')
-            merged.setdefault('objective_lineages', [])
+            merged.setdefault('objective_ids', [])
             merged.setdefault('target_patterns', [])
             if merged['type'] in KEYED_TYPES and not merged['answer_key'].strip():
                 raise ValueError('选择题和判断题需要填写答案')
@@ -604,63 +674,45 @@ class Workspace:
         ).fetchone()
         return row(rows)
 
-    # ----- objectives -----
-
-    def draft_objectives(self, pid):
-        llm = self._model()
-        with self.store.read() as c:
-            p = self._project(c, pid)
-            ctx = Context('draft_objectives')
-            ctx.add_other('project', pid)
-            materials = self._material_context(c, ctx, pid)
-        user = _json(
-            {
-                '学科': p['pack']['name'],
-                '年级': p['grade'],
-                '项目': p['title'],
-                '老师说明': p['notes'],
-                '材料': materials,
-            }
-        )
-        out, meta = llm.complete(
-            'generator', 'draft_objectives', OBJECTIVES_SYSTEM.format(subject=p['pack']['name']), user, ObjectiveSet
-        )
-        with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'objectives-v1')
-            made = [
-                A.create(
-                    c,
-                    pid,
-                    'objective',
-                    {'text': o.text, 'success_criterion': o.success_criterion},
-                    origin='generated',
-                    generation_id=gid,
-                )
-                for o in out.objectives
-            ]
-        return {'objectives': made, 'context_note': describe(ctx.manifest)}
-
     # ----- questions -----
 
-    def _confirmed_objectives(self, c, pid, objective_ids=None):
-        objs = [a for a in A.current(c, pid, 'objective') if a['confirmed_version']]
-        objs = [A.confirmed_in_lineage(c, a['lineage_id']) for a in objs]
-        if objective_ids:
-            wanted = set(objective_ids)
-            objs = [o for o in objs if o['id'] in wanted or o['lineage_id'] in wanted]
-        return objs
+    def _plan(self, c, pid, *, confirmed=True):
+        """The project's lesson plan: its confirmed version, or (confirmed=False) its latest version."""
+        plans = A.current(c, pid, 'lesson_plan')
+        if not plans:
+            return None
+        return A.confirmed_in_lineage(c, plans[0]['lineage_id']) if confirmed else plans[0]
 
-    def generate_questions(self, pid, *, types=None, count=2, difficulty='中等', notes='', objective_ids=None, ab=None):
+    @staticmethod
+    def _goals(plan):
+        """Plan objectives as handles: ``id`` is the plan artifact (for refs), ``lineage_id`` the stable objective id."""
+        if not plan:
+            return []
+        return [{'id': plan['id'], 'lineage_id': o['id'], 'content': o} for o in plan['content']['objectives']]
+
+    def _confirmed_objectives(self, c, pid, objective_ids=None):
+        goals = self._goals(self._plan(c, pid))
+        if objective_ids:
+            goals = [g for g in goals if g['lineage_id'] in set(objective_ids)]
+        return goals
+
+    def generate_questions(
+        self, pid, *, types=None, count=2, difficulty='中等', notes='', objective_ids=None, ab=None, purpose='课堂练习'
+    ):
         llm = self._model()
         with self.store.read() as c:
             p = self._project(c, pid)
+            plan = self._plan(c, pid)
+            if plan is None:
+                raise Conflict('请先确认备课方案，再按目标出题')
             objs = self._confirmed_objectives(c, pid, objective_ids)
             if not objs:
-                raise Conflict('请先确认至少一条教学目标，再按目标出题')
+                raise Conflict('备课方案里没有选中的教学目标')
             ctx = Context('generate_questions')
             ctx.add_other('project', pid)
+            ctx.add_artifact(plan)
             goal_list = [
-                {'index': i, '目标': ctx.add_artifact(o)['text'], '达成标准': o['content'].get('success_criterion', '')}
+                {'index': i, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
                 for i, o in enumerate(objs)
             ]
             materials = self._material_context(c, ctx, pid, limit=6000)
@@ -672,9 +724,13 @@ class Workspace:
                 '学科': p['pack']['name'],
                 '年级': p['grade'],
                 '教学目标': goal_list,
+                '本课重点': plan['content'].get('key_points', []),
+                '本课难点': plan['content'].get('difficulties', []),
+                '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
                 '每个目标出题数': max(1, min(int(count), 5)),
+                '练习用途': purpose,
                 '难度': difficulty,
                 '老师说明': notes or p['notes'],
             }
@@ -792,7 +848,7 @@ class Workspace:
                 d, no, round_, [obj['lineage_id']] if obj else [], [pattern['lineage_id']] if pattern else []
             )
             content['checks'] = checks
-            refs = ([(obj['id'], 'objective')] if obj else []) + (
+            refs = ([(obj['id'], 'lesson_plan')] if obj else []) + (
                 [(pattern['id'], 'problem_pattern')] if pattern else []
             )
             q = A.create(
@@ -868,30 +924,54 @@ class Workspace:
             ctx.add_other(
                 'material', material['id'], sha(text.strip()), family_id=material['family_id'], filename=filename
             )
+        with self.store.read() as c:
+            current_plan = self._plan(c, pid, confirmed=False)
+        existing = current_plan['content']['objectives'] if current_plan else []
         system = IMPORT_SYSTEM.format(subject=p['pack']['name'])
         out, meta = llm.complete(
-            'generator', 'import_paper', system, _json({'学科': p['pack']['name'], '试卷': text[:30000]}), ImportedPaper
+            'generator',
+            'import_paper',
+            system,
+            _json({'学科': p['pack']['name'], '已有教学目标': [o['text'] for o in existing], '试卷': text[:30000]}),
+            ImportedPaper,
         )
         allowed = set(QUESTION_TYPES)
         drafts, dropped = usable_drafts(out.questions, allowed)
         checks = [{'notes': ['由导入试卷整理，评分要点和教学目标为反推，请核对'], 'imported': True} for _ in drafts]
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'import-v1')
-            objs = [
-                A.create(
-                    c,
-                    pid,
-                    'objective',
-                    {'text': o.text, 'success_criterion': o.success_criterion, 'inferred': True},
-                    origin='imported',
-                    generation_id=gid,
-                )
+            known = {o['text'].strip() for o in existing}
+            added = [
+                {'text': o.text, 'success_criterion': o.success_criterion, 'inferred': True}
                 for o in out.objectives
+                if o.text.strip() not in known
             ]
+            base = (
+                current_plan['content']
+                if current_plan
+                else {'key_points': [], 'difficulties': [], 'activities': [], 'notes': ''}
+            )
+            content = normalize_plan({**base, 'objectives': [*existing, *added]})
+            plan = A.create(
+                c,
+                pid,
+                'lesson_plan',
+                content,
+                origin='imported',
+                generation_id=gid,
+                lineage_id=current_plan['lineage_id'] if current_plan else None,
+            )
+            objs = self._goals(plan)  # existing objectives first, so the model's indexes line up
             made = self._save_questions(
                 c, pid, list(zip(drafts, checks)), objs, gid, status='draft', round_=1, origin='imported'
             )
-        return {'objectives': objs, 'questions': made, 'dropped': dropped, 'context_note': describe(ctx.manifest)}
+        return {
+            'lesson_plan': plan,
+            'objectives': [o['content'] for o in objs],
+            'questions': made,
+            'dropped': dropped,
+            'context_note': describe(ctx.manifest),
+        }
 
     def questions(self, pid, round_=None):
         with self.store.read() as c:
@@ -1199,7 +1279,10 @@ class Workspace:
                 raise Conflict('还没有已确认的批改，请先确认批改结果（可以批量确认）')
             ctx = Context('pitfalls' if not subs else 'analyze')
             ctx.add_other('project', pid)
-            objectives = [ctx.add_artifact(o)['text'] for o in self._confirmed_objectives(c, pid)]
+            plan = self._plan(c, pid)
+            if plan:
+                ctx.add_artifact(plan)
+            objectives = [g['content']['text'] for g in self._goals(plan)]
             q_view = []
             for q in questions:
                 ctx.add_artifact(q)
@@ -1428,24 +1511,26 @@ class Workspace:
     # ----- 01 lesson plan (重点难点与课堂活动) -----
 
     def draft_lesson_plan(self, pid):
+        """备课方案: objectives with success criteria, key points, difficulties and timed activities, confirmed as one."""
         llm = self._model()
         with self.store.read() as c:
             p = self._project(c, pid)
-            objs = self._confirmed_objectives(c, pid)
-            if not objs:
-                raise Conflict('请先确认教学目标，再安排重点与课堂活动')
             ctx = Context('draft_lesson_plan')
             ctx.add_other('project', pid)
-            goals = [{'index': i, '目标': ctx.add_artifact(o)['text']} for i, o in enumerate(objs)]
-            materials = self._material_context(c, ctx, pid, limit=6000)
-            prior = next(iter(A.current(c, pid, 'lesson_plan')), None)
+            materials = self._material_context(c, ctx, pid, limit=8000)
+            if not (p.get('knowledge_module') or materials):
+                raise Conflict('请先填写课时信息中的知识模块，或添加参考材料')
+            prior = self._plan(c, pid, confirmed=False)
         user = _json(
             {
                 '学科': p['pack']['name'],
                 '年级': p['grade'],
+                '知识模块': p.get('knowledge_module', ''),
+                '课时': p.get('lesson', ''),
+                '学生基础': p.get('learner_profile', ''),
                 '老师说明': p['notes'],
-                '教学目标': goals,
-                '材料': materials,
+                '项目名称': p['title'],
+                '参考材料': materials,
             }
         )
         out, meta = llm.complete(
@@ -1455,22 +1540,27 @@ class Workspace:
             user,
             LessonPlanOutput,
         )
-        content = {
-            'key_points': [x for x in out.key_points if x.strip()],
-            'difficulties': [x for x in out.difficulties if x.strip()],
-            'activities': [
-                {
-                    **a.model_dump(exclude={'objective_index'}),
-                    'objective_lineage': objs[a.objective_index]['lineage_id']
-                    if 0 <= a.objective_index < len(objs)
-                    else None,
-                }
-                for a in out.activities
-            ],
-            'notes': out.notes,
-        }
+        if not out.objectives:
+            raise ModelUnavailable('模型没有给出教学目标，请重试')
+        content = normalize_plan(
+            {
+                'objectives': [o.model_dump() for o in out.objectives],
+                'key_points': out.key_points,
+                'difficulties': out.difficulties,
+                'activities': [
+                    {
+                        **a.model_dump(exclude={'objective_index'}),
+                        'objective_ids': [f'O{a.objective_index + 1}']
+                        if 0 <= a.objective_index < len(out.objectives)
+                        else [],
+                    }
+                    for a in out.activities
+                ],
+                'notes': out.notes,
+            }
+        )
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v1')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v2')
             plan = A.create(
                 c,
                 pid,
@@ -1512,7 +1602,11 @@ class Workspace:
                 raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
             ctx = Context('draft_review')
             ctx.add_other('project', pid)
-            goals = [ctx.add_artifact(o)['text'] for o in self._confirmed_objectives(c, pid)]
+            plan = self._plan(c, pid)
+            if plan:
+                ctx.add_artifact(plan)
+            goals = [g['content']['text'] for g in self._goals(plan)]
+            key_points = plan['content'].get('key_points', []) if plan else []
             analyses = [a for a in A.current(c, pid, 'analysis', round_=round_)]
             summary = ''
             if analyses:
@@ -1546,7 +1640,14 @@ class Workspace:
             ]
             prior = next(iter(A.current(c, pid, 'review_plan', round_=round_)), None)
         user = _json(
-            {'学科': p['pack']['name'], '教学目标': goals, '学情概括': summary, '原题': originals, '问题模式': pat_list}
+            {
+                '学科': p['pack']['name'],
+                '教学目标': goals,
+                '本课重点': key_points,
+                '学情概括': summary,
+                '原题': originals,
+                '问题模式': pat_list,
+            }
         )
         out, meta = llm.complete(
             'generator', 'draft_review', REVIEW_SYSTEM.format(subject=p['pack']['name']), user, ReviewOutput
@@ -1627,8 +1728,11 @@ class Workspace:
             if review:
                 review = A.confirmed_in_lineage(c, review['lineage_id'])
                 review_focus = ctx.add_artifact(review)['focus']
-            objs = self._confirmed_objectives(c, pid)
-            goal_list = [{'index': i, '目标': ctx.add_artifact(o)['text']} for i, o in enumerate(objs)]
+            plan = self._plan(c, pid)
+            if plan:
+                ctx.add_artifact(plan)
+            objs = self._goals(plan)
+            goal_list = [{'index': i, '目标': o['content']['text']} for i, o in enumerate(objs)]
             pat_list = [
                 {
                     'index': i,
@@ -1764,6 +1868,7 @@ class Workspace:
                 'round': round_counts,
                 'r': latest,
                 'materials': mats,
+                'has_context': bool(mats or p.get('knowledge_module')),
                 'learners': learners,
                 'queue': len(self.review_queue(pid, latest)),
                 'pending_ab': pending_ab,

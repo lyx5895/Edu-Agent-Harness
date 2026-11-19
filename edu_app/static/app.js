@@ -217,37 +217,38 @@ function renderProjectEdit() {
 // ---------- 01 备课设计 ----------
 
 async function renderPrep() {
-  const [mats, objs] = await Promise.all([
+  const p = S.overview.project;
+  $('#course-module').value = p.knowledge_module || '';
+  $('#course-lesson').value = p.lesson || '';
+  $('#course-profile').value = p.learner_profile || '';
+  $('#course-notes').value = p.notes || '';
+  const [mats, plans] = await Promise.all([
     api('GET', `/api/projects/${S.pid}/materials`),
-    api('GET', `/api/projects/${S.pid}/artifacts?type=objective`),
+    api('GET', `/api/projects/${S.pid}/lesson-plans`),
   ]);
   $('#materials').innerHTML = mats.length
     ? mats.map((m) => `<div class="item"><div class="item-head"><b>${esc(m.filename)}</b><span class="pill">${m.chars} 字</span></div><div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div></div>`).join('')
-    : '<div class="empty">还没有材料。添加教材、讲义或教案后，可以按材料起草教学目标。</div>';
-  $('#objectives').innerHTML = objs.length ? objs.map(objectiveItem).join('') : '<div class="empty">还没有教学目标。</div>';
-  $('#tab-prep details').open = !mats.length;  // open only while the project has no material yet
-  const plans = await api('GET', `/api/projects/${S.pid}/lesson-plans`);
-  $('#lesson-plan').innerHTML = plans.length ? plans.map(lessonPlanItem).join('') : '<div class="empty">还没有安排。确认教学目标后可以按目标安排重点、难点和课堂活动。</div>';
+    : '<div class="empty">没有材料也可以生成备课方案；有教材或讲义时添加进来，内容范围会更准。</div>';
+  $('#lesson-plan').innerHTML = plans.length
+    ? lessonPlanItem(plans[0])
+    : '<div class="empty">填写课时信息后点“生成备课方案”：教学目标、重点难点和课堂活动会一起生成，你可以修改后整体确认。</div>';
+  $('#draft-lesson-plan').textContent = plans.length ? '重新生成' : '生成备课方案';
 }
 
-function objectiveItem(a) {
-  const c = a.content;
-  const needsKind = a.status === 'draft' && a.confirmed_version;
-  return `<div class="item" data-id="${a.id}">
-    <div class="item-head"><div><b>${esc(c.text)}</b> ${c.inferred ? '<span class="pill">由导入试卷反推</span>' : ''}</div><div>${statusPill(a)}</div></div>
-    <div class="kv">达成标准：${esc(c.success_criterion || '（未填写）')}</div>
-    <div class="item-actions">
-      <button class="small secondary" data-act="edit-objective">编辑</button>
-      ${a.status !== 'confirmed' ? `${changeKindSelect(needsKind)}<button class="small" data-act="confirm">确认</button>` : ''}
-    </div>
-    <div class="edit-area"></div>
-  </div>`;
+function courseInfo() {
+  return {
+    knowledge_module: $('#course-module').value, lesson: $('#course-lesson').value,
+    learner_profile: $('#course-profile').value, notes: $('#course-notes').value,
+  };
 }
 
-function objectiveForm(c = {}) {
-  return `<div class="edit-grid"><label>目标<input class="f-text" value="${esc(c.text || '')}"></label>
-    <label>达成标准<input class="f-crit" value="${esc(c.success_criterion || '')}"></label>
-    <div class="item-actions"><button class="small" data-act="save-objective">保存为新版本</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
+async function saveCourseInfo() {
+  const info = courseInfo();
+  const p = S.overview.project;
+  const changed = info.knowledge_module !== (p.knowledge_module || '') || info.lesson !== (p.lesson || '')
+    || info.learner_profile !== (p.learner_profile || '') || info.notes !== (p.notes || '');
+  if (changed) await api('PATCH', `/api/projects/${S.pid}`, info);
+  return changed;
 }
 
 // ---------- 02 出题改题 ----------
@@ -467,25 +468,40 @@ const lines = (xs) => (xs && xs.length ? `<ul class="lines">${xs.map((x) => `<li
 function lessonPlanItem(a) {
   const c = a.content;
   const total = (c.activities || []).reduce((n, x) => n + (Number(x.minutes) || 0), 0);
+  const goalNo = Object.fromEntries((c.objectives || []).map((o, i) => [o.id, i + 1]));
   return `<div class="item" data-id="${a.id}">
-    <div class="item-head"><div><b>教学安排</b></div><div>${statusPill(a)}</div></div>
+    <div class="item-head"><div>${statusPill(a)}</div></div>
+    <h4>教学目标</h4>
+    <ol class="lines">${(c.objectives || []).map((o) => `<li><b>${esc(o.text)}</b> ${o.inferred ? '<span class="pill">由导入试卷反推</span>' : ''}
+      <div class="kv">达成标准：${esc(o.success_criterion || '（未填写）')}</div></li>`).join('')}</ol>
     <h4>重点</h4>${lines(c.key_points)}<h4>难点</h4>${lines(c.difficulties)}
     <h4>课堂活动（共 ${total} 分钟）</h4>
-    <table><tr><th>活动</th><th>用时</th><th>做法</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td></tr>`).join('')}</table>
+    <table><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td>
+      <td>${(x.objective_ids || []).map((id) => (goalNo[id] ? `目标 ${goalNo[id]}` : '')).join('、')}</td></tr>`).join('')}</table>
     ${c.notes ? `<div class="kv">提醒：${esc(c.notes)}</div>` : ''}
-    <div class="item-actions"><button class="small secondary" data-act="edit-lesson-plan">编辑</button>
-      ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认</button>` : ''}</div>
+    <div class="item-actions"><button class="small secondary" data-act="edit-lesson-plan">修改</button>
+      ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认备课方案</button>` : ''}</div>
     <div class="edit-area"></div></div>`;
 }
 
+function objectiveRow(o = {}) {
+  return `<div class="obj-row" data-oid="${esc(o.id || '')}" data-inferred="${o.inferred ? '1' : ''}">
+    <input class="o-text" placeholder="教学目标" value="${esc(o.text || '')}">
+    <input class="o-crit" placeholder="达成标准：怎样从作答判断达成" value="${esc(o.success_criterion || '')}">
+    <button class="small danger" data-act="remove-objective-row" title="删除">×</button></div>`;
+}
+
 function lessonPlanForm(c) {
-  const acts = (c.activities || []).map((x) => `${x.name}｜${x.minutes}｜${x.description}`).join('\n');
+  const goalNo = Object.fromEntries((c.objectives || []).map((o, i) => [o.id, i + 1]));
+  const acts = (c.activities || []).map((x) => [x.name, x.minutes, x.description, (x.objective_ids || []).map((id) => goalNo[id]).filter(Boolean).join(',')].join('｜')).join('\n');
   return `<div class="edit-grid">
+    <span class="label">教学目标</span><div class="f-objectives">${(c.objectives || []).map(objectiveRow).join('')}</div>
+    <div><button class="small secondary" data-act="add-objective-row">添加目标</button></div>
     <label>重点（每行一条）<textarea class="f-key" rows="3">${esc((c.key_points || []).join('\n'))}</textarea></label>
     <label>难点（每行一条）<textarea class="f-diff" rows="2">${esc((c.difficulties || []).join('\n'))}</textarea></label>
-    <label>课堂活动（每行：名称｜分钟｜做法）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
+    <label>课堂活动（每行：名称｜分钟｜做法｜对应目标序号，如 1,2）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
     <label>提醒<input class="f-notes" value="${esc(c.notes || '')}"></label>
-    <div class="item-actions"><button class="small" data-act="save-lesson-plan">保存为新版本</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
+    <div class="item-actions"><button class="small" data-act="save-lesson-plan">保存修改</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
 }
 
 // ---------- 05 讲题答疑 ----------
@@ -609,19 +625,14 @@ function bindEvents() {
     await busy(null, '', async () => { await api('POST', `/api/projects/${S.pid}/materials/upload`, fd); toast('文件已导入'); await refresh(); });
     e.target.value = '';
   });
-  $('#draft-objectives').addEventListener('click', (e) => busy(e.target, '起草中…', async () => {
-    const r = await api('POST', `/api/projects/${S.pid}/objectives/draft`);
-    showNote(r.context_note); toast(`起草了 ${r.objectives.length} 条目标，请编辑后确认`); await refresh();
+  $('#save-course').addEventListener('click', (e) => busy(e.target, '保存中…', async () => {
+    const changed = await saveCourseInfo();
+    toast(changed ? '课时信息已保存' : '没有改动'); await refresh();
   }));
-  $('#add-objective').addEventListener('click', () => {
-    const box = $('#objectives');
-    if ($('.new-objective', box)) return;
-    box.insertAdjacentHTML('afterbegin', `<div class="item new-objective">${objectiveForm()}</div>`);
-  });
   $('#generate-questions').addEventListener('click', (e) => busy(e.target, '出题与自检中…（约 1 分钟）', async () => {
     const types = $$('#type-boxes input:checked').map((i) => i.value);
     const r = await api('POST', `/api/projects/${S.pid}/questions/generate`, {
-      types, count: Number($('#q-count').value), difficulty: $('#q-difficulty').value, notes: $('#q-notes').value, ab: $('#q-ab').checked ? true : false,
+      types, count: Number($('#q-count').value), difficulty: $('#q-difficulty').value, purpose: $('#q-purpose').value, notes: $('#q-notes').value, ab: $('#q-ab').checked ? true : false,
     });
     showNote(r.context_note);
     const dropped = r.candidates.flatMap((c) => c.dropped || []);
@@ -631,7 +642,7 @@ function bindEvents() {
   $('#import-paper').addEventListener('click', (e) => busy(e.target, '整理中…', async () => {
     const r = await api('POST', `/api/projects/${S.pid}/import-paper`, { text: $('#paper-text').value, filename: '导入试卷' });
     $('#paper-text').value = ''; showNote(r.context_note);
-    toast(`导入了 ${r.questions.length} 道题、反推 ${r.objectives.length} 条目标，请核对确认` + ((r.dropped || []).length ? `；${r.dropped.length} 道无法整理：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0); await refresh();
+    toast(`导入了 ${r.questions.length} 道题，备课方案已补充反推的目标（草稿），请核对确认` + ((r.dropped || []).length ? `；${r.dropped.length} 道无法整理：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0); await refresh();
   }));
   $('#add-roster').addEventListener('click', (e) => busy(e.target, '加入中…', async () => {
     const aliases = $('#roster').value.split(/[\n,，]/).map((s) => s.trim()).filter(Boolean);
@@ -669,10 +680,14 @@ function bindEvents() {
     toast(`第 ${r.round} 轮再练题：${r.questions.length} 道，请在“02 出题改题”中确认` + ((r.dropped || []).length ? `；丢弃 ${r.dropped.length} 道：${r.dropped.join('；')}` : ''), (r.dropped || []).length > 0);
     S.showRound = r.round; S.tab = 'questions'; await refresh();
   }));
-  $('#draft-lesson-plan').addEventListener('click', (e) => busy(e.target, '安排中…', async () => {
-    const r = await api('POST', `/api/projects/${S.pid}/lesson-plan/draft`);
-    showNote(r.context_note); toast('已按目标安排重点与课堂活动，请核对后确认'); await refresh();
-  }));
+  $('#draft-lesson-plan').addEventListener('click', (e) => {
+    if (e.target.textContent === '重新生成' && !window.confirm('重新生成会产生一个新版本的草稿，当前方案保留在历史里。继续吗？')) return;
+    busy(e.target, '生成中…（约半分钟）', async () => {
+      await saveCourseInfo();  // what the teacher typed is what the plan is based on
+      const r = await api('POST', `/api/projects/${S.pid}/lesson-plan/draft`);
+      showNote(r.context_note); toast('备课方案已生成，请核对修改后确认'); await refresh();
+    });
+  });
   $('#draft-review').addEventListener('click', (e) => busy(e.target, '生成中…', async () => {
     const ids = $$('#review-patterns input:checked').map((i) => i.value);
     const r = await api('POST', `/api/projects/${S.pid}/review/draft`, { round: Number($('#r-round').value || 1), pattern_ids: ids });
@@ -710,21 +725,6 @@ async function onAction(e) {
     case 'confirm':
       await busy(btn, '确认中…', async () => { await api('POST', `/api/artifacts/${item.dataset.id}/confirm`, { change_kind: kind() }); toast('已确认'); await refresh(); });
       break;
-    case 'edit-objective': {
-      const a = await api('GET', `/api/artifacts/${item.dataset.id}`);
-      $('.edit-area', item).innerHTML = objectiveForm(a.content);
-      break;
-    }
-    case 'save-objective': {
-      const box = btn.closest('.item');
-      const content = { text: $('.f-text', box).value, success_criterion: $('.f-crit', box).value };
-      await busy(btn, '保存中…', async () => {
-        if (box.classList.contains('new-objective')) await api('POST', `/api/projects/${S.pid}/objectives`, { content });
-        else await api('PUT', `/api/artifacts/${box.dataset.id}`, { content });
-        toast('已保存为草稿，确认后生效'); await refresh();
-      });
-      break;
-    }
     case 'cancel-edit': {
       const box = btn.closest('.new-objective');
       if (box) box.remove(); else { const area = btn.closest('.edit-area') || btn.closest('.new-question-area'); if (area) area.innerHTML = ''; }
@@ -808,15 +808,27 @@ async function onAction(e) {
       $('.edit-area', item).innerHTML = act === 'edit-review' ? reviewForm(a.content) : lessonPlanForm(a.content);
       break;
     }
+    case 'add-objective-row':
+      $('.f-objectives', item).insertAdjacentHTML('beforeend', objectiveRow());
+      break;
+    case 'remove-objective-row':
+      btn.closest('.obj-row').remove();
+      break;
     case 'save-lesson-plan': {
       const split = (v) => v.split('\n').map((x) => x.trim()).filter(Boolean);
+      const rows = $$('.obj-row', item);
+      const objectives = rows.map((r) => ({
+        id: r.dataset.oid || undefined, text: $('.o-text', r).value, success_criterion: $('.o-crit', r).value,
+        inferred: r.dataset.inferred === '1' || undefined,
+      })).filter((o) => o.text.trim());
       const activities = split($('.f-acts', item).value).map((line) => {
-        const [name, minutes, ...rest] = line.split(/[｜|]/);
-        return { name: (name || '').trim(), minutes: Number(minutes) || 0, description: rest.join('｜').trim() };
+        const [name, minutes, description, goals] = line.split(/[｜|]/);
+        const ids = (goals || '').split(/[,，、\s]+/).map((n) => rows[Number(n) - 1]).filter(Boolean).map((r) => r.dataset.oid).filter(Boolean);
+        return { name: (name || '').trim(), minutes: Number(minutes) || 0, description: (description || '').trim(), objective_ids: ids };
       });
       await busy(btn, '保存中…', async () => {
-        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { key_points: split($('.f-key', item).value), difficulties: split($('.f-diff', item).value), activities, notes: $('.f-notes', item).value } });
-        toast('已保存为草稿，确认后生效'); await refresh();
+        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { objectives, key_points: split($('.f-key', item).value), difficulties: split($('.f-diff', item).value), activities, notes: $('.f-notes', item).value } });
+        toast('已保存修改，确认后生效'); await refresh();
       });
       break;
     }

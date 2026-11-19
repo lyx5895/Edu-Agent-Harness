@@ -48,8 +48,18 @@
 
       <div id="tab-prep" class="tab">
         <div class="stage-head"><div><h2>备课设计</h2><p>明确教学目标，安排重点与课堂活动</p></div><div class="continue" data-stage="prep"></div></div>
+        <div class="card" id="course-info">
+          <h3>课时信息</h3>
+          <div class="grid-form">
+            <label>知识模块<input id="course-module" placeholder="例如：对数函数"></label>
+            <label>课时<input id="course-lesson" placeholder="例如：第 2 课时（45 分钟）"></label>
+            <label class="wide">学生基础<textarea id="course-profile" rows="2" placeholder="例如：刚学完指数函数，计算较熟练，定义域意识薄弱"></textarea></label>
+            <label class="wide">其他要求（可选）<input id="course-notes" placeholder="例如：本课侧重解对数不等式"></label>
+            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button></div>
+          </div>
+        </div>
         <div class="card">
-          <h3>课程材料</h3>
+          <h3>参考材料 <span class="muted">（可选）</span></h3>
           <div id="materials"></div>
           <details>
             <summary>添加材料</summary>
@@ -59,15 +69,7 @@
           </details>
         </div>
         <div class="card">
-          <div class="card-head"><h3>教学目标</h3>
-            <div><button id="draft-objectives">按材料起草目标</button> <button id="add-objective" class="secondary">手工添加</button></div></div>
-          <p class="muted">只有确认过的目标才会传给出题。</p>
-          <div id="objectives"></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>重点难点与课堂活动</h3>
-            <button id="draft-lesson-plan" class="secondary">按目标安排</button></div>
-          <p class="muted">可选。</p>
+          <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
         </div>
       </div>
@@ -79,6 +81,7 @@
           <div class="grid-form">
             <div class="wide"><span class="label">题型</span><div id="type-boxes" class="checks"></div></div>
             <label>每个目标出题数<input type="number" id="q-count" min="1" max="5" value="2"></label>
+            <label>练习用途<select id="q-purpose"><option>课堂练习</option><option>课后作业</option><option>单元检测</option></select></label>
             <label>难度<select id="q-difficulty"><option>基础</option><option selected>中等</option><option>较难</option></select></label>
             <label class="wide">出题说明（可选）<input id="q-notes" placeholder="例如：结合生活情境"></label>
             <label class="inline"><input type="checkbox" id="q-ab"> 这次出 A/B 两版供选择</label>

@@ -17,7 +17,7 @@ from edu_core.text import dump, sha
 
 TYPES = {
     'objective': '教学目标',
-    'lesson_plan': '教学安排',
+    'lesson_plan': '备课方案',
     'question': '题目',
     'rubric': '评分标准',
     'submission': '学生作答',

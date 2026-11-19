@@ -1,4 +1,4 @@
-"""Full teacher loop with a scripted model: objectives -> questions -> grading -> analysis -> practice -> comparison."""
+"""Full teacher loop with a scripted model: lesson plan -> questions -> grading -> analysis -> practice -> comparison."""
 
 import random
 
@@ -52,9 +52,6 @@ def analyze(role, payload):
 
 
 HANDLERS = {
-    'draft_objectives': lambda r, p: {
-        'objectives': [{'text': '能在解对数不等式时检查定义域', 'success_criterion': '写出真数大于零'}]
-    },
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
     'practice': lambda r, p: {'questions': [question('解不等式 log3(x-2) < 2（巩固）', target=0)]},
     'self_check_solve': lambda r, p: {'answer': '定义域 x>1；单调递增得 x-1<8；所以 1<x<9', 'final_answer': '1<x<9'},
@@ -62,6 +59,7 @@ HANDLERS = {
     'review': judge_points(RULES),
     'analyze': analyze,
     'draft_lesson_plan': lambda r, p: {
+        'objectives': [{'text': '能在解对数不等式时检查定义域', 'success_criterion': '写出真数大于零'}],
         'key_points': ['真数大于零'],
         'difficulties': ['取交集'],
         'activities': [
@@ -111,15 +109,16 @@ def ws(tmp_path):
 
 
 def setup_round_one(ws):
-    p = ws.create_project('高一数学｜对数函数｜第2课时', '数学', grade='高一')
+    p = ws.create_project('高一数学｜对数函数｜第2课时', '数学', grade='高一', knowledge_module='对数函数')
     ws.add_material(p['id'], '对数函数 y=log_a x 的定义域是 (0,+∞)。')
-    objs = ws.draft_objectives(p['id'])
-    assert objs['context_note'] == '已参考：项目背景、材料 1 份'
-    ws.confirm(objs['objectives'][0]['id'])
+    plan = ws.draft_lesson_plan(p['id'])
+    assert plan['context_note'] == '已参考：项目背景、材料 1 份'
+    ws.confirm(plan['lesson_plan']['id'])
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
     [q] = gen['candidates'][0]['questions']
     assert q['content']['checks']['solver'] == 'agree' and not q['content']['checks']['answer_suspect']
-    assert '教学目标第 1 版（已确认）' in gen['context_note']
+    assert '备课方案第 1 版（已确认）' in gen['context_note']
+    assert q['content']['objective_ids'] == ['O1']
     ws.confirm(q['id'])
     ws.add_learners(p['id'], ['甲', '乙', '丙'])
     return p, q
@@ -214,9 +213,8 @@ def test_teacher_override_and_queue(ws):
 
 
 def test_ab_candidates_and_choice(ws):
-    p = ws.create_project('物理｜匀速直线运动', 'physics')
-    ws.add_material(p['id'], '速度等于路程除以时间。')
-    ws.confirm(ws.draft_objectives(p['id'])['objectives'][0]['id'])
+    p = ws.create_project('物理｜匀速直线运动', 'physics', knowledge_module='匀速直线运动')
+    ws.confirm(ws.draft_lesson_plan(p['id'])['lesson_plan']['id'])  # course info alone is enough
     gen = ws.generate_questions(p['id'], types=['calculation'], ab=True)
     assert gen['candidate_group'] and [c['position'] for c in gen['candidates']] == ['A', 'B']
     assert {c['variant'] for c in gen['candidates']} == {'a', 'b'}
@@ -239,7 +237,7 @@ def test_pitfalls_without_submissions(ws):
     assert '未基于学生作答' in out['analysis']['content']['note']
 
 
-def test_questions_need_confirmed_objectives(ws):
+def test_questions_need_a_confirmed_lesson_plan(ws):
     p = ws.create_project('历史｜辛亥革命', 'history')
     with pytest.raises(Conflict):
         ws.generate_questions(p['id'])
@@ -274,20 +272,22 @@ def test_next_step_guides_through_the_workflow(ws):
     p = ws.create_project('高一数学', 'chinese')
     pid = p['id']
     [step] = ws.overview(pid)['next']
-    assert step == {
-        'label': '添加课程材料',
-        'tab': 'prep',
-        'target': '#material-text',
-        'hint': step['hint'],
-    }  # no material yet: not "draft objectives"
-    ws.add_material(pid, '对数函数的定义域是 (0,+∞)。')
-    assert ws.overview(pid)['next'][0]['target'] == '#draft-objectives'
-    obj = ws.draft_objectives(pid)['objectives'][0]
-    assert ws.overview(pid)['next'][0]['label'] == '确认教学目标'
-    ws.confirm(obj['id'])
+    assert (step['label'], step['tab'], step['target']) == ('填写课时信息', 'prep', '#course-module')
+    with pytest.raises(Conflict):
+        ws.draft_lesson_plan(pid)  # nothing to plan from yet
+    ws.update_project(pid, knowledge_module='对数函数', lesson='第2课时', learner_profile='刚学完指数函数')
+    assert ws.overview(pid)['next'][0]['target'] == '#draft-lesson-plan'  # material is optional
+    plan = ws.draft_lesson_plan(pid)['lesson_plan']
+    assert (
+        ws.llm.calls[-1]['user']['知识模块'] == '对数函数' and ws.llm.calls[-1]['user']['学生基础'] == '刚学完指数函数'
+    )
+    assert ws.overview(pid)['next'][0]['label'] == '确认备课方案'
+    with pytest.raises(Conflict):
+        ws.generate_questions(pid)  # the plan is still a draft
+    ws.confirm(plan['id'])
     steps = ws.overview(pid)['next']
-    assert [x['target'] for x in steps] == ['#generate-questions', '#draft-lesson-plan']
-    assert steps[1]['optional'] and 'optional' not in steps[0]  # lesson plan never blocks
+    assert [x['target'] for x in steps] == ['#generate-questions']
+    assert ws.overview(pid)['stages']['prep']
 
     # The subject was picked wrong; it can still change because there is no question yet.
     assert ws.update_project(pid, subject='数学')['subject'] == 'math'
@@ -311,10 +311,11 @@ def test_next_step_guides_through_the_workflow(ws):
 def test_lesson_plan_review_and_second_round(ws):
     p, _q = setup_round_one(ws)
     pid = p['id']
-    plan = ws.draft_lesson_plan(pid)
-    acts = plan['lesson_plan']['content']['activities']
-    assert acts[0]['objective_lineage'] and acts[1]['objective_lineage'] is None  # out-of-range index dropped
-    assert '教学目标' in plan['context_note']
+    with ws.store.read() as c:
+        plan = ws._plan(c, pid)
+    acts = plan['content']['activities']
+    assert acts[0]['objective_ids'] == ['O1'] and acts[1]['objective_ids'] == []  # out-of-range index dropped
+    assert plan['content']['key_points'] == ['真数大于零']
 
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
@@ -359,3 +360,45 @@ def test_lesson_plan_review_and_second_round(ws):
     assert labels[0] == '对比第 1、2 轮'
     cmp = ws.compare(pid, 1, 2)  # still finds round-1 pattern versions after round 2 analysis
     assert cmp['content']['patterns'][0]['name'] == '解对数不等式时遗漏定义域'
+
+
+def test_plan_is_one_artifact_and_edits_keep_objective_ids(ws):
+    p, q = setup_round_one(ws)
+    pid = p['id']
+    with ws.store.read() as c:
+        plan = ws._plan(c, pid)
+    content = plan['content']
+    edited = {
+        **content,
+        'objectives': [
+            {**content['objectives'][0], 'text': '能先写出真数大于零再求解'},
+            {'text': '能用区间表示解集', 'success_criterion': '写成 (1,9)'},
+        ],
+        'key_points': [*content['key_points'], '区间表示'],
+    }
+    draft = ws.edit(plan['id'], edited)
+    assert [o['id'] for o in draft['content']['objectives']] == ['O1', 'O2']  # ids survive edits; new one appended
+    with pytest.raises(ValueError):
+        ws.edit(plan['id'], {**content, 'objectives': []})
+    ws.confirm(draft['id'], change_kind='substantive')
+    flagged = {m['artifact_id'] for m in ws.stale(pid)}
+    assert q['id'] in flagged  # questions built on the old plan are flagged for review
+
+
+def test_import_paper_merges_inferred_objectives_into_the_plan(ws):
+    p, _q = setup_round_one(ws)  # plan has O1 "能在解对数不等式时检查定义域"
+    pid = p['id']
+    paper = question('解不等式 log2(x+1) > 1')
+    ws.llm.handlers['import_paper'] = lambda r, payload: {
+        'objectives': [
+            {'text': '能在解对数不等式时检查定义域', 'success_criterion': '同上'},  # already in the plan
+            {'text': '能判断底数对单调性的影响', 'success_criterion': '分类讨论'},
+        ],
+        'questions': [{**paper, 'objective_index': 1}],
+    }
+    out = ws.import_paper(pid, '1. 解不等式 log2(x+1) > 1。')
+    assert ws.llm.calls[-1]['user']['已有教学目标'] == ['能在解对数不等式时检查定义域']
+    objectives = out['lesson_plan']['content']['objectives']
+    assert [o['id'] for o in objectives] == ['O1', 'O2'] and objectives[1]['inferred']  # duplicate not re-added
+    assert out['lesson_plan']['status'] == 'draft' and out['lesson_plan']['version'] == 2
+    assert out['questions'][0]['content']['objective_ids'] == ['O2']
