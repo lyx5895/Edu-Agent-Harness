@@ -293,6 +293,7 @@ async function renderCurriculum(q) {
   $('#curriculum-src').innerHTML = `依据<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.title)}</a>（${esc(r.scope)}）`;
   $('#curriculum-note').textContent = q !== undefined
     ? `“${q}”的搜索结果，勾选后保存课时信息。`
+    : r.weak ? '没有找到明确对应的课标条目：请从下面勾选或换个说法搜索；都不勾选时，备课方案不受课标约束。'
     : r.chosen_by === 'teacher' ? '按你勾选的条目生成。目标会标出依据哪一条，要求不能高于课标用词。'
       : '按课时信息自动匹配，生成备课方案时使用勾选的条目；可以增减，保存课时信息后生效。';
   const selected = new Set(q !== undefined ? keep.map((k) => k.id) : r.selected);

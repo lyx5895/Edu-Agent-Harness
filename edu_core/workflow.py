@@ -419,6 +419,9 @@ def normalize_plan(plan):
     return out
 
 
+WEAK_MATCH = 6.0  # below this best score the automatic curriculum pick is left to the teacher
+
+
 class Workspace:
     def __init__(self, store: Store, llm, settings: Settings, rng=None):
         self.store = store
@@ -535,12 +538,13 @@ class Workspace:
             'selected': selected,
             'off': bool(chosen and chosen.get('off')),
             'chosen_by': chosen.get('chosen_by') if chosen else None,
+            'weak': not chosen and not auto and bool(found),
         }
 
     @staticmethod
     def _auto_pick(found):
-        if not found:
-            return []
+        if not found or found[0]['score'] < WEAK_MATCH:
+            return []  # no clear match: offer the candidates, but do not constrain the plan with a guess
         top = found[0]['score']
         # 选学 items (not examined) are offered but never picked automatically
         return [it for it in found if it['score'] >= 0.75 * top and not it.get('optional')][:4]

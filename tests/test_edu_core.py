@@ -279,8 +279,33 @@ def test_math_curriculum_items_are_verified_and_searchable():
     assert data['by_id']['math.B2.2.3.3']['text'] == '知道对数函数y=logax与指数函数y=ax互为反函数(a>0,且a≠1)。'
     top = C.search('math', '对数函数 对数的概念与运算')[0]
     assert top['id'] == 'math.B2.2.3.1'
-    assert C.search('math', '') == [] and C.load('history') is None
+    assert C.search('math', '') == [] and C.load('art') is None
     assert (C.level('了解对数函数的概念'), C.level('理解对数的概念'), C.level('熟练掌握')) == (1, 2, 3)
     ctx = C.context('math', ['math.B2.2.3.2', 'math.X9'], '对数函数')
     assert [it['id'] for it in ctx['content']] == ['math.B2.2.3.2']
     assert all(it['id'].startswith('math.B2.') for it in ctx['hints'] + ctx['requirements'])
+
+
+@pytest.mark.parametrize(
+    'subject,query,expected',
+    [
+        ('chinese', '整本书阅读', 'chinese.G1.'),
+        ('english', '定语从句', 'english.B6.'),
+        ('politics', '矛盾分析法', 'politics.B4.1.4'),
+        ('history', '辛亥革命', 'history.B1.1.8'),
+        ('geography', '大气受热过程 热力环流', 'geography.B1.1.6'),
+        ('physics', '匀变速直线运动', 'physics.B1.1.1.3'),
+        ('chemistry', '氧化还原反应', 'chemistry.B2.2.2'),
+        ('biology', '种群数量变化', 'biology.X2.'),
+        ('ai', '人工智能 机器学习', 'ai.X4.'),
+    ],
+)
+def test_every_subject_has_verified_curriculum_items(subject, query, expected):
+    from edu_core import curriculum as C
+
+    data = C.load(subject)
+    assert data['source_url'].startswith('http://www.moe.gov.cn/') and len(data['source_sha256']) == 64
+    content = [it for it in data['items'] if it['kind'] == 'content']
+    assert len(content) >= 40 and all(it['text'] and it['short'] for it in content)
+    assert len({it['id'] for it in data['items']}) == len(data['items'])
+    assert C.search(subject, query)[0]['id'].startswith(expected)

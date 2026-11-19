@@ -487,7 +487,12 @@ def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
     ws.update_project(p['id'], knowledge_module='基本不等式')
     assert ws.curriculum(p['id'])['selected'] == ['math.B1.3.2']  # the automatic pick was dropped and redone
     h = ws.create_project('历史｜辛亥革命', 'history', knowledge_module='辛亥革命')
-    assert ws.curriculum(h['id']) == {'available': False}
+    assert ws.curriculum(h['id'])['selected'] == ['history.B1.1.8']  # 1.8 辛亥革命与中华民国的建立
     ws.draft_lesson_plan(h['id'])
+    assert ws.llm.calls[-1]['user']['课程标准']['内容要求'][0]['位置'].endswith('1.8辛亥革命与中华民国的建立')
+    # A topic the standard does not cover is not guessed at: candidates are offered, nothing is ticked.
+    a = ws.create_project('人工智能', 'ai', knowledge_module='支持向量机 核函数')
+    sug = ws.curriculum(a['id'])
+    assert sug['available'] and sug['selected'] == []
+    ws.draft_lesson_plan(a['id'])
     assert '课程标准' not in ws.llm.calls[-1]['user']
-    assert ws.overview(h['id'])['project']['has_curriculum'] is False

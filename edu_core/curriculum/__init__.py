@@ -39,8 +39,8 @@ def available(subject: str) -> bool:
 
 
 def short_label(item: dict) -> str:
-    """Last part of the label, e.g. ``对数函数②``."""
-    return item['label'].split('·')[-1]
+    """How a citation is shown, e.g. ``对数函数②`` or ``1.8 辛亥革命与中华民国的建立``."""
+    return item.get('short') or item['label'].split('·')[-1]
 
 
 def _norm(text: str) -> str:
@@ -71,7 +71,8 @@ def _idf(items):
 def _score(data, query_grams, item):
     """Own heading counts double, the text once, the enclosing unit/theme names only a little."""
     own, text = _grams(short_label(item)), _grams(item['text'])
-    outer = _grams(' '.join(x for x in (item.get('unit'), item.get('theme')) if x))
+    # the enclosing headings: math keeps unit/theme fields, the other subjects carry them in the label
+    outer = _grams(' '.join(x for x in (item.get('unit'), item.get('theme')) if x) or item['label'])
     idf = data['idf']
     total = 0.0
     for g in query_grams:
@@ -86,7 +87,16 @@ def search(subject: str, query: str, k: int = 6, kinds=('content',)) -> list[dic
     if not data or not query.strip():
         return []
     q = _grams(query)
-    scored = [(s, it) for it in data['items'] if it['kind'] in kinds and (s := _score(data, q, it)) > 0]
+    # A whole term the teacher typed (e.g. 相互作用与运动定律) that names an item's heading path is strong evidence.
+    terms = [t for t in re.split(r'[\s,，、;；]+', _norm(query)) if len(t) >= 3]
+
+    def total(it):
+        base = _score(data, q, it)
+        path = _norm(it['label'])
+        bonus = sum(sum(data['idf'].get(g, 0.0) for g in _grams(t)) * 0.5 for t in terms if t in path)
+        return base + bonus if base > 0 else 0.0
+
+    scored = [(s, it) for it in data['items'] if it['kind'] in kinds and (s := total(it)) > 0]
     scored.sort(key=lambda x: -x[0])
     if not scored:
         return []
