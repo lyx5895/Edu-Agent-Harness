@@ -402,3 +402,35 @@ def test_import_paper_merges_inferred_objectives_into_the_plan(ws):
     assert [o['id'] for o in objectives] == ['O1', 'O2'] and objectives[1]['inferred']  # duplicate not re-added
     assert out['lesson_plan']['status'] == 'draft' and out['lesson_plan']['version'] == 2
     assert out['questions'][0]['content']['objective_ids'] == ['O2']
+
+
+def test_next_lesson_carries_learning_status_into_the_plan(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    ws.update_project(pid, lesson='第2课时', learner_profile='刚学完指数函数')
+    with pytest.raises(Conflict):
+        ws.next_lesson(pid)  # no 学情 yet
+    ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    [pattern] = ws.analyze(pid)['patterns']
+    ws.confirm(pattern['id'])
+
+    nxt = ws.next_lesson(pid)
+    assert nxt['lesson'] == '第 3 课时' and nxt['title'] == '高一数学｜对数函数｜第 3 课时'
+    assert nxt['subject'] == 'math' and nxt['knowledge_module'] == '对数函数'
+    assert nxt['learner_profile'] == '刚学完指数函数' and nxt['prev_project_id'] == pid
+    carry = nxt['carryover']
+    assert carry['patterns'][0]['name'] == '解对数不等式时遗漏定义域'
+    assert carry['patterns'][0]['affected'] == '1/2' and carry['patterns'][0]['after_practice'] == '还没有再练结果'
+    assert carry['objectives'] == ['能在解对数不等式时检查定义域'] and carry['summary']
+    assert ws.overview(pid)['next_lesson']['id'] == nxt['id']
+    assert ws.overview(nxt['id'])['learners'] == 3  # roster comes along
+
+    plan = ws.draft_lesson_plan(nxt['id'])  # course info + carried-over 学情, no material needed
+    assert plan['context_note'] == '已参考：项目背景、上一课时学情'
+    sent = ws.llm.calls[-1]['user']['上一课时学情']
+    assert sent['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域' and sent['上一课时'] == '第2课时'
+    # A project that was not created as a next lesson never mentions one.
+    ws.draft_lesson_plan(pid)
+    assert '上一课时学情' not in ws.llm.calls[-1]['user']

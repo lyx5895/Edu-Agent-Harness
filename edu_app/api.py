@@ -39,6 +39,12 @@ class NewProject(BaseModel):
     learner_profile: str = Field(default='', max_length=500)
 
 
+class NextLesson(BaseModel):
+    knowledge_module: str | None = Field(default=None, max_length=200)
+    lesson: str | None = Field(default=None, max_length=200)
+    title: str | None = Field(default=None, max_length=200)
+
+
 class ProjectUpdate(BaseModel):
     title: str | None = Field(default=None, max_length=120)
     subject: str | None = None
@@ -227,6 +233,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.patch('/api/projects/{pid}')
     def update_project(pid: str, body: ProjectUpdate):
         return ws().update_project(pid, **body.model_dump())
+
+    @app.post('/api/projects/{pid}/next-lesson')
+    def next_lesson(pid: str, body: NextLesson):
+        return ws().next_lesson(pid, **body.model_dump())
 
     @app.get('/api/projects/{pid}/materials')
     def materials(pid: str):

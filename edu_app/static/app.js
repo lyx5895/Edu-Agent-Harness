@@ -132,7 +132,7 @@ const CONTINUE = {
   analysis: [{ label: '准备针对性讲评，定位讲解重点', tab: 'review' }],
   review: [
     { label: '生成对应的巩固练习', tab: 'review', target: '#practice' },
-    { label: '进入下一课时 · 优化后续备课', tab: 'prep' },
+    { label: '进入下一课时 · 优化后续备课', action: 'next-lesson' },
   ],
 };
 
@@ -164,8 +164,11 @@ function renderContinue() {
   if (!box) return;
   const o = S.overview;
   const done = !!o.stages[S.tab];
+  // A later lesson only needs this lesson's 学情 (in any round), so it stays open after 再练 starts round 2.
+  const hasStatus = o.counts.problem_pattern.confirmed > 0 || !!o.next_lesson;
   const buttons = CONTINUE[S.tab]
-    .map((g, i) => `<button class="continue-btn${i ? ' ghost' : ''}" data-continue="${i}"${done ? '' : ' disabled'}>下一步：${esc(g.label)} →</button>`)
+    .map((g) => (g.action === 'next-lesson' && o.next_lesson ? { ...g, label: `进入下一课时（${o.next_lesson.title}）` } : g))
+    .map((g, i) => `<button class="continue-btn${i ? ' ghost' : ''}" data-continue="${i}"${done || (g.action === 'next-lesson' && hasStatus) ? '' : ' disabled'}>下一步：${esc(g.label)} →</button>`)
     .join('');
   let hint = '';
   if (!done) {
@@ -221,6 +224,7 @@ async function renderPrep() {
   $('#course-lesson').value = p.lesson || '';
   $('#course-profile').value = p.learner_profile || '';
   $('#course-notes').value = p.notes || '';
+  renderCarryover(p.carryover);
   const [mats, plans] = await Promise.all([
     api('GET', `/api/projects/${S.pid}/materials`),
     api('GET', `/api/projects/${S.pid}/lesson-plans`),
@@ -232,6 +236,35 @@ async function renderPrep() {
     ? lessonPlanItem(plans[0])
     : '<div class="empty">填写课时信息后点“生成备课方案”：教学目标、重点难点和课堂活动会一起生成，你可以修改后整体确认。</div>';
   $('#draft-lesson-plan').textContent = plans.length ? '重新生成' : '生成备课方案';
+}
+
+function renderCarryover(c) {
+  const box = $('#carryover-card');
+  box.classList.toggle('hidden', !c);
+  if (!c) return;
+  const pats = c.patterns.map((x) => `<li><b>${esc(x.name)}</b> <span class="pill">${esc(x.affected)} 人</span> <span class="pill ${x.after_practice.includes('仍有') ? 'warn' : ''}">${esc(x.after_practice)}</span><div class="muted">${esc(x.description)}</div></li>`).join('');
+  box.innerHTML = `<div class="card-head"><h3>上一课时的学情（已带入）</h3><button class="link" data-open-project="${esc(c.from_project)}">回到上一课时</button></div>
+    <p class="muted">来自「${esc(c.from_title)}」。生成备课方案时会参考这些问题，安排简短的回顾或巩固。</p>
+    ${c.summary ? `<p>${esc(c.summary)}</p>` : ''}
+    ${pats ? `<ul class="carry-list">${pats}</ul>` : ''}
+    ${c.review_focus.length ? `<p class="muted">上一课时讲评重点：${c.review_focus.map(esc).join('；')}</p>` : ''}`;
+}
+
+function nextLessonName(lesson) {
+  const m = /第\s*(\d+)\s*课时/.exec(lesson || '');
+  return m ? lesson.replace(/第\s*\d+\s*课时/, `第 ${Number(m[1]) + 1} 课时`) : '';
+}
+
+async function openNextLesson() {
+  const o = S.overview;
+  if (o.next_lesson) { S.tab = 'prep'; await loadProjects(o.next_lesson.id); return; }
+  const card = $('#next-lesson-card');
+  $('#nl-module').value = o.project.knowledge_module || '';
+  $('#nl-lesson').value = nextLessonName(o.project.lesson);
+  const pats = (await api('GET', `/api/projects/${S.pid}/patterns`)).filter((x) => x.confirmed_version);
+  $('#nl-carry').innerHTML = `<div class="muted">将带入：已确认的问题模式 ${pats.length} 个${pats.length ? `（${pats.map((x) => esc(x.content.name)).join('、')}）` : ''}、学情概述、讲评重点和本课目标。</div>`;
+  card.classList.remove('hidden');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function courseInfo() {
@@ -593,6 +626,7 @@ function bindEvents() {
       const btn = e.target.closest('[data-continue]');
       if (btn.disabled) return;
       const c = CONTINUE[S.tab][Number(btn.dataset.continue)];
+      if (c.action === 'next-lesson') { openNextLesson(); return; }
       goNext({ tab: c.tab, target: c.target || `#tab-${c.tab} .stage-head` });
     }
   });
@@ -625,6 +659,18 @@ function bindEvents() {
     const fd = new FormData(); fd.append('file', file);
     await busy(null, '', async () => { await api('POST', `/api/projects/${S.pid}/materials/upload`, fd); toast('文件已导入'); await refresh(); });
     e.target.value = '';
+  });
+  $('#nl-cancel').addEventListener('click', () => $('#next-lesson-card').classList.add('hidden'));
+  $('#nl-create').addEventListener('click', (e) => busy(e.target, '创建中…', async () => {
+    const p = await api('POST', `/api/projects/${S.pid}/next-lesson`, { knowledge_module: $('#nl-module').value, lesson: $('#nl-lesson').value });
+    $('#next-lesson-card').classList.add('hidden');
+    S.tab = 'prep';
+    await loadProjects(p.id);
+    toast('已新建下一课时，上一课时的学情已带入；核对课时信息后生成备课方案');
+  }));
+  document.querySelector('#workspace').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-open-project]');
+    if (b) { S.tab = 'prep'; loadProjects(b.dataset.openProject); }
   });
   $('#save-course').addEventListener('click', (e) => busy(e.target, '保存中…', async () => {
     const changed = await saveCourseInfo();

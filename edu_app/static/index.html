@@ -48,6 +48,7 @@
 
       <div id="tab-prep" class="tab">
         <div class="stage-head"><div><h2>备课设计</h2><p>明确教学目标，安排重点与课堂活动</p></div><div class="continue" data-stage="prep"></div></div>
+        <div class="card carry hidden" id="carryover-card"></div>
         <div class="card" id="course-info">
           <h3>课时信息</h3>
           <div class="grid-form">
@@ -156,6 +157,16 @@
 
       <div id="tab-review" class="tab hidden">
         <div class="stage-head"><div><h2>讲题答疑</h2><p>准备针对性的讲解与答疑，安排追问，检查学生理解</p></div><div class="continue" data-stage="review"></div></div>
+        <div class="card hidden" id="next-lesson-card">
+          <h3>进入下一课时</h3>
+          <p class="muted">新建下一课时：沿用学科、年级、学生基础和学生名单，并把本课时的学情带进下一课时的备课方案。</p>
+          <div class="grid-form">
+            <label>知识模块<input id="nl-module"></label>
+            <label>课时<input id="nl-lesson" placeholder="例如：第 3 课时"></label>
+            <div class="wide" id="nl-carry"></div>
+            <div class="wide"><button id="nl-create">新建下一课时，开始备课</button> <button id="nl-cancel" class="link">取消</button></div>
+          </div>
+        </div>
         <div class="card">
           <div class="card-head"><h3>讲评稿</h3>
             <div><label>依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>

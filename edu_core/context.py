@@ -16,11 +16,11 @@ WHITELIST = {
     'analyze': {'project', 'lesson_plan', 'question', 'rubric', 'grading', 'submission', 'problem_pattern'},
     'pitfalls': {'project', 'lesson_plan', 'question', 'rubric'},
     'practice': {'project', 'lesson_plan', 'question', 'rubric', 'problem_pattern', 'review_plan'},
-    'draft_lesson_plan': {'project', 'material'},
+    'draft_lesson_plan': {'project', 'material', 'carryover'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
-LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干'}
+LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'carryover': '上一课时学情'}
 
 
 class ContextViolation(PermissionError):
@@ -77,7 +77,7 @@ def describe(manifest: list[dict]) -> str:
     parts = []
     for kind, items in groups.items():
         label = LABELS.get(kind, kind)
-        if kind in ('project',):
+        if kind in ('project', 'carryover'):
             parts.append(label)
         elif kind == 'material':
             parts.append(f'{label} {len(items)} 份')

@@ -191,6 +191,8 @@ LESSON_PLAN_SYSTEM = """你是经验丰富的高中{subject}教师，为这一�
 2. key_points 写本课重点（2 到 4 条），difficulties 写学生容易卡住的难点（1 到 3 条），都要具体到本课内容，并结合学生基础。
 3. activities 按课堂顺序安排 3 到 6 个活动，写明名称、用时（分钟）、做法；objective_index 指向对应目标的序号（从 0 开始），没有对应目标填 -1。总用时不超过课时长度（默认约 40 到 45 分钟）。
 4. notes 写需要提醒老师的事项，没有就填空字符串。
+5. 如果输入里有“上一课时学情”，说明这是接着上一课时上的：在难点和课堂活动中安排针对其中仍存在问题的简短回顾或巩固（例如课前 5 分钟），
+   并在 notes 里写明哪项安排对应上一课时的哪个问题；回顾不能挤占本课主要内容。没有这项输入就不要提上一课时。
 以课时信息为准；参考材料只用来确定内容范围，不要照抄。只输出 JSON。"""
 
 REVIEW_SYSTEM = """你是高中{subject}教师，根据已确认的学情分析为下一节课准备针对性的讲评。
@@ -426,9 +428,11 @@ class Workspace:
             'knowledge_module',
             'lesson',
             'learner_profile',
+            'prev_project_id',
             'created_at',
         )
         return {k: p.get(k, '') for k in keys} | {
+            'carryover': json.loads(p['carryover']) if p.get('carryover') else None,
             'subject_name': p['pack']['name'],
             'question_types': p['pack']['types'],
         }
@@ -467,6 +471,93 @@ class Workspace:
             )
             event(c, pid, 'project_created', {'title': title, 'subject': sp['id']})
             return self._project_view(self._project(c, pid))
+
+    def _carryover(self, c, pid):
+        """What the next lesson inherits from this one: confirmed problem patterns (with the re-practice result
+        when there is one), the 学情 summary, the 讲评 focus and this lesson's objectives. Frozen at creation."""
+        p = self._project(c, pid)
+        trend = {}
+        comparisons = A.current(c, pid, 'comparison')
+        if comparisons:
+            for r in comparisons[-1]['content']['patterns']:
+                trend[r['pattern_lineage']] = r
+        patterns = []
+        for x in A.current(c, pid, 'problem_pattern'):
+            conf = A.confirmed_in_lineage(c, x['lineage_id'])
+            if not conf:
+                continue
+            ct = conf['content']
+            row_ = {
+                'name': ct['name'],
+                'description': ct['description'],
+                'affected': f"{len(ct['affected_learners'])}/{ct['total_learners']}",
+            }
+            t = trend.get(x['lineage_id'])
+            if t and t['enough_evidence']:
+                row_['after_practice'] = (
+                    f"再练后仍有 {len(t['persisting'])} 人出错" if t['persisting'] else '再练后已改善'
+                )
+            else:
+                row_['after_practice'] = '还没有再练结果'
+            patterns.append(row_)
+        analyses = A.current(c, pid, 'analysis')
+        reviews = [r for r in A.current(c, pid, 'review_plan') if r['confirmed_version']]
+        plan = self._plan(c, pid)
+        snapshot = {
+            'from_project': pid,
+            'from_title': p['title'],
+            'from_lesson': p.get('lesson', ''),
+            'summary': analyses[-1]['content'].get('summary', '') if analyses else '',
+            'patterns': patterns,
+            'review_focus': A.confirmed_in_lineage(c, reviews[-1]['lineage_id'])['content'].get('focus', [])
+            if reviews
+            else [],
+            'objectives': [g['content']['text'] for g in self._goals(plan)],
+        }
+        if not (snapshot['patterns'] or snapshot['summary']):
+            raise Conflict('这一课时还没有学情分析结果，先完成“学情分析”再进入下一课时')
+        return snapshot
+
+    def next_lesson(self, pid, *, knowledge_module=None, lesson=None, title=None):
+        """进入下一课时: a new project that inherits subject, grade, learner profile and roster, and carries this
+        lesson's 学情 into its 备课方案."""
+        with self.store.read() as c:
+            p = self._project(c, pid)
+            carry = self._carryover(c, pid)
+            roster = [r['alias'] for r in c.execute('SELECT alias FROM learners WHERE project_id=? ORDER BY created_at', (pid,))]
+        old_lesson = p.get('lesson', '')
+        if lesson is None:
+            m = re.search(r'第\s*(\d+)\s*课时', old_lesson)
+            lesson = re.sub(r'第\s*\d+\s*课时', f'第 {int(m.group(1)) + 1} 课时', old_lesson) if m else ''
+        module = p.get('knowledge_module', '') if knowledge_module is None else knowledge_module
+        if not title:
+            base = p['title']
+            if old_lesson and old_lesson in base and lesson:
+                title = base.replace(old_lesson, lesson)
+            else:
+                title = f"{base}｜{lesson or '下一课时'}"
+        new = self.create_project(
+            title,
+            p['subject'],
+            grade=p['grade'],
+            notes=p['notes'],
+            owner=p['owner'],
+            knowledge_module=module,
+            lesson=lesson,
+            learner_profile=p.get('learner_profile', ''),
+        )
+        with self.store.tx() as c:
+            c.execute(
+                'UPDATE projects SET prev_project_id=?, carryover=? WHERE id=?', (pid, _json(carry), new['id'])
+            )
+            for alias in roster:
+                c.execute(
+                    'INSERT INTO learners(id,project_id,alias,created_at) VALUES(?,?,?,?)',
+                    (new_id('lrn'), new['id'], alias, time.time()),
+                )
+            event(c, pid, 'next_lesson_created', {'next_project': new['id']})
+            event(c, new['id'], 'carried_over', {'from_project': pid, 'patterns': len(carry['patterns'])})
+            return self._project_view(self._project(c, new['id']))
 
     def update_project(
         self,
@@ -1521,6 +1612,22 @@ class Workspace:
             if not (p.get('knowledge_module') or materials):
                 raise Conflict('请先填写课时信息中的知识模块，或添加参考材料')
             prior = self._plan(c, pid, confirmed=False)
+            carry = None
+            if p.get('carryover'):
+                carry = json.loads(p['carryover'])
+                ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
+        extra = {}
+        if carry:
+            extra['上一课时学情'] = {
+                '上一课时': carry['from_lesson'] or carry['from_title'],
+                '上一课时目标': carry['objectives'],
+                '学情概述': carry['summary'],
+                '问题模式': [
+                    {'名称': x['name'], '描述': x['description'], '涉及人数': x['affected'], '再练情况': x['after_practice']}
+                    for x in carry['patterns']
+                ],
+                '讲评重点': carry['review_focus'],
+            }
         user = _json(
             {
                 '学科': p['pack']['name'],
@@ -1531,6 +1638,7 @@ class Workspace:
                 '老师说明': p['notes'],
                 '项目名称': p['title'],
                 '参考材料': materials,
+                **extra,
             }
         )
         out, meta = llm.complete(
@@ -1560,7 +1668,7 @@ class Workspace:
             }
         )
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v2')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v3')
             plan = A.create(
                 c,
                 pid,
@@ -1856,6 +1964,9 @@ class Workspace:
                 )
             ]
             latest = max(rounds)
+            nxt_row = c.execute(
+                'SELECT id, title FROM projects WHERE prev_project_id=? ORDER BY created_at DESC LIMIT 1', (pid,)
+            ).fetchone()
             round_counts = {}
             for t in A.TYPES:
                 items = A.current(c, pid, t, round_=latest)
@@ -1886,6 +1997,7 @@ class Workspace:
             'pending_ab': pending_ab,
             'next': nxt,
             'latest_round': latest,
+            'next_lesson': dict(nxt_row) if nxt_row else None,
             'stages': stage_status(counts, round_counts, latest),
         }
 

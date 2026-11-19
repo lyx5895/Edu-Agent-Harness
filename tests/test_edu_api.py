@@ -84,3 +84,10 @@ def test_static_page(client):
     assert '/static/app.js?v=' in page.text and '/static/app.css?v=' in page.text  # content-versioned assets
     js = client.get('/static/app.js')
     assert js.status_code == 200 and js.headers['cache-control'] == 'no-cache'
+
+
+def test_next_lesson_route_needs_learning_status(client):
+    pid = client.post('/api/projects', json={'title': '历史｜辛亥革命', 'subject': 'history'}).json()['id']
+    r = client.post(f'/api/projects/{pid}/next-lesson', json={})
+    assert r.status_code == 409 and '学情分析' in r.json()['detail']
+    assert client.get(f'/api/projects/{pid}').json()['next_lesson'] is None
