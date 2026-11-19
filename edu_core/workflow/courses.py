@@ -14,6 +14,7 @@ import re
 import time
 
 from edu_core import artifacts as A
+from edu_core.access import CURRENT_USER
 from edu_core.storage import event, new_id, row
 from edu_core.subjects import pack
 from edu_core.workflow.common import Conflict
@@ -79,6 +80,7 @@ class CoursesMixin:
                     time.time(),
                 ),
             )
+            self._record_owner(c, 'course', cid)
             event(c, cid, 'course_created', {'title': title, 'subject': subject})
             return self._course(c, cid)
 
@@ -104,7 +106,10 @@ class CoursesMixin:
                 + ('' if include_archived else ' WHERE archived=0')
                 + ' ORDER BY created_at DESC'
             )
-            return [self._course(c, r['id']) for r in c.execute(sql).fetchall()]
+            visible = self.visible_course_ids(c)
+            return [
+                self._course(c, r['id']) for r in c.execute(sql).fetchall() if visible is None or r['id'] in visible
+            ]
 
     def course(self, cid):
         with self.store.read() as c:
@@ -131,6 +136,7 @@ class CoursesMixin:
                 (cid, name.strip(), notes.strip(), time.time()),
             )
             self._insert_members(c, cid, aliases, 'roster')
+            self._record_owner(c, 'class', cid)
             event(c, cid, 'class_created', {'name': name})
         return self.class_detail(cid)
 
@@ -186,6 +192,15 @@ class CoursesMixin:
 
     def classes(self):
         with self.store.read() as c:
+            u, visible = CURRENT_USER.get(), self.visible_course_ids(c)
+
+            def mine(r):
+                if visible is None or r['owner_id'] == u['id']:
+                    return True
+                return any(
+                    o[0] in visible for o in c.execute('SELECT course_id FROM offerings WHERE class_id=?', (r['id'],))
+                )
+
             return [
                 {
                     **dict(r),
@@ -194,6 +209,7 @@ class CoursesMixin:
                     ).fetchone()[0],
                 }
                 for r in c.execute('SELECT * FROM class_groups ORDER BY created_at').fetchall()
+                if mine(r)
             ]
 
     def link_class(self, course_id, class_id):
@@ -322,6 +338,10 @@ class CoursesMixin:
 
     def _task_views(self, c, *, course_id=None, status='open', task_id=None):
         sql, args = 'SELECT * FROM tasks WHERE 1=1', []
+        visible = self.visible_course_ids(c)
+        if visible is not None:
+            sql += f' AND course_id IN ({",".join("?" * len(visible)) or "NULL"})'
+            args += sorted(visible)
         if task_id:
             sql, args = sql + ' AND id=?', [*args, task_id]
         if course_id:
@@ -865,9 +885,11 @@ class CoursesMixin:
     def home(self, course_id=None):
         """我的教学: courses, work to continue and what needs the teacher, all from the actual records."""
         with self.store.read() as c:
+            visible = self.visible_course_ids(c)
             courses = [
                 self._course(c, r['id'])
                 for r in c.execute('SELECT id FROM courses WHERE archived=0 ORDER BY created_at DESC')
+                if visible is None or r['id'] in visible
             ]
             course = next((x for x in courses if x['id'] == course_id), courses[0] if courses else None)
             offerings = self._offering_views(c, course['id']) if course else []
@@ -904,7 +926,10 @@ class CoursesMixin:
                                 'text': f'{a["class_name"]}·{a["title"]}：{len(a["updates"])} 道题有新版本（本次布置仍用原版本）',
                             }
                         )
-            legacy = c.execute("SELECT COUNT(*) FROM projects WHERE course_id=''").fetchone()[0]
+            # Old projects have no owner: only an admin (or the local single user) sees them to map them.
+            legacy = (
+                c.execute("SELECT COUNT(*) FROM projects WHERE course_id=''").fetchone()[0] if visible is None else 0
+            )
         return {
             'courses': courses,
             'course': course,

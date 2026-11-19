@@ -10,6 +10,7 @@
   <header class="topbar">
     <div class="brand">Edu-Agent <span>教师工作台</span></div>
     <div class="topbar-right">
+      <span id="user-box" class="muted hidden"><span id="user-name"></span> <button id="logout-btn" class="link small">退出</button></span>
       <button id="home-btn" class="secondary">我的教学</button>
       <select id="project-select" aria-label="所有工作区"></select>
       <button id="new-project-btn" class="link">新建单独项目</button>
@@ -17,6 +18,12 @@
   </header>
 
   <main>
+    <section id="login" class="card hidden">
+      <h2>登录</h2>
+      <p class="muted">请输入管理员发给你的访问码。</p>
+      <div class="row"><input id="login-token" type="password" placeholder="edu_…"><button id="login-go">登录</button></div>
+    </section>
+
     <section id="home" class="hidden">
       <div class="home-head">
         <h1>我的教学</h1>

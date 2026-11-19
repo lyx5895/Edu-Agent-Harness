@@ -19,6 +19,7 @@ Student work (submissions, gradings, analyses, patterns, comparisons, 讲评稿)
 None means the project's own unbound work, as before courses existed.
 """
 
+from edu_core.workflow.accounts import AccountsMixin
 from edu_core.workflow.analysis import AnalysisMixin
 from edu_core.workflow.assignments import AssignmentsMixin
 from edu_core.workflow.base import WorkspaceBase
@@ -67,6 +68,7 @@ class Workspace(
     ObjectivesMixin,
     DeliveryMixin,
     ResearchMixin,
+    AccountsMixin,
     AssignmentsMixin,
     ProjectsMixin,
     LessonPlanMixin,

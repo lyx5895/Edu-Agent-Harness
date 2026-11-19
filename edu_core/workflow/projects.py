@@ -47,6 +47,7 @@ class ProjectsMixin:
                     learner_profile.strip(),
                 ),
             )
+            self._record_owner(c, 'project', pid)
             event(c, pid, 'project_created', {'title': title, 'subject': sp['id']})
             return self._project_view(self._project(c, pid))
 
@@ -303,10 +304,8 @@ class ProjectsMixin:
 
     def projects(self):
         with self.store.read() as c:
-            return [
-                self._project_view(self._project(c, r['id']))
-                for r in c.execute('SELECT id FROM projects ORDER BY created_at DESC')
-            ]
+            rows = [dict(r) for r in c.execute('SELECT id, course_id, owner_id FROM projects ORDER BY created_at DESC')]
+            return [self._project_view(self._project(c, r['id'])) for r in self.filter_projects(c, rows)]
 
     def add_material(self, pid, text, filename='粘贴文本', kind='text', family_of=None, course_id=None):
         """A material of one project (task), or with ``course_id`` and no project a shared course material."""

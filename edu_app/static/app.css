@@ -213,3 +213,5 @@ label.inline { display: flex; align-items: center; gap: 4px; flex-direction: row
 .scope-bar label { white-space: nowrap; }
 .row .s-title { min-width: 12em; }
 .mat-focus { width: 100%; margin-top: 6px; font-size: 13px; }
+#login { max-width: 460px; margin: 40px auto; }
+#user-box { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }

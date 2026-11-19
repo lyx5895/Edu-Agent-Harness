@@ -15,12 +15,13 @@ import urllib.parse
 from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
+from edu_core.access import CURRENT_USER, is_admin
 from edu_core.config import load_settings
 from edu_core.context import ContextViolation
 from edu_core.llm import Gateway, ModelUnavailable
@@ -30,6 +31,47 @@ from edu_core.workflow import Conflict, Workspace
 
 STATIC = Path(__file__).parent / 'static'
 log = logging.getLogger('edu_app')
+
+COOKIE = 'edu_token'
+PUBLIC_ROUTES = {'/', '/api/meta', '/api/me', '/api/login', '/api/logout'}
+ADMIN_ROUTES = ('/api/migration', '/api/users', '/api/datasets', '/api/research/split', '/api/research/tuning')
+# Path parameter -> record kind checked by can_access (None: checked through another parameter of the same route).
+PATH_KINDS = {
+    'pid': 'project',
+    'aid': 'artifact',
+    'qid': 'artifact',
+    'gid': 'artifact',
+    'cid': 'course',
+    'class_id': 'class',
+    'member_id': None,
+    'oid': 'offering',
+    'sid': 'session',
+    'unit_id': 'unit',
+    'tid': 'task',
+    'mark_id': 'stale',
+    'name': 'photo',
+    'choice_id': 'choice',
+    'case_id': 'case',
+    'consent_id': 'consent',
+    'objective_id': 'objective',
+    'group': 'group',
+    'kind': None,
+    'path': None,
+}
+# Query or JSON body fields naming records.
+FIELD_KINDS = {
+    'assignment_id': 'assignment',
+    'offering_id': 'offering',
+    'class_id': 'class',
+    'course_id': 'course',
+    'unit_id': 'unit',
+    'parent_id': 'assignment',
+    'objective_id': 'objective',
+    'package_id': 'package',
+    'artifact_id': 'artifact',
+    'group': 'group',
+}
+LIST_KINDS = {'project_ids': 'project', 'assignment_ids': 'assignment', 'sources': 'artifact', 'case_ids': 'case'}
 
 
 class NewProject(BaseModel):
@@ -257,6 +299,20 @@ class StatusPrefs(BaseModel):
     exclude_summary: bool | None = None
 
 
+class LoginBody(BaseModel):
+    token: str = Field(min_length=1, max_length=200)
+
+
+class NewUser(BaseModel):
+    name: str = Field(min_length=1, max_length=40)
+    role: Literal['teacher', 'admin'] = 'teacher'
+
+
+class ShareBody(BaseModel):
+    name: str = Field(min_length=1, max_length=40)
+    role: Literal['owner', 'member'] = 'member'
+
+
 class RelinkBody(BaseModel):
     artifact_id: str
     plan_objective_id: str
@@ -388,6 +444,56 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         if state['ws'] is None:
             state['ws'] = default_workspace()
         return state['ws']
+
+    async def authorize(request: Request):
+        """Every route (design doc 10): with accounts on, the signed-in user must be allowed to access each record the
+        request names, in the path, the query or the JSON body. The browser's course or class id is never trusted."""
+        w = ws()
+        if not w.settings.auth:
+            return
+        route = request.scope.get('route')
+        template = getattr(route, 'path', request.url.path)
+        if template in PUBLIC_ROUTES:
+            return
+        user = getattr(request.state, 'user', None)
+        if user is None:
+            raise HTTPException(401, '请先登录')
+        if template.startswith(ADMIN_ROUTES) and not is_admin(user):
+            raise HTTPException(403, '只有管理员可以使用')
+        checks = []
+        for key, value in request.path_params.items():
+            kind = (
+                'assignment'
+                if key == 'aid' and template.startswith('/api/assignments/')
+                else PATH_KINDS.get(key, 'unknown')
+            )
+            if kind == 'unknown':
+                raise HTTPException(500, f'未声明权限检查的路径参数：{key}')
+            if kind:
+                checks.append((kind, value))
+        for key, value in request.query_params.items():
+            if key in FIELD_KINDS and value:
+                checks.append((FIELD_KINDS[key], value))
+        if template.startswith('/api/research') and not is_admin(user) and not request.query_params.get('course_id'):
+            raise HTTPException(403, '请指定课程')
+        if request.method in ('POST', 'PUT', 'PATCH') and request.headers.get('content-type', '').startswith(
+            'application/json'
+        ):
+            try:
+                data = await request.json()
+            except ValueError:
+                data = None
+            if isinstance(data, dict):
+                for key, value in data.items():
+                    if key in FIELD_KINDS and isinstance(value, str) and value:
+                        checks.append((FIELD_KINDS[key], value))
+                    elif key in LIST_KINDS and isinstance(value, list):
+                        checks += [(LIST_KINDS[key], v) for v in value if isinstance(v, str)]
+        for kind, ident in checks:
+            if not await run_in_threadpool(w.can_access, user, kind, ident):
+                raise HTTPException(403, '没有权限访问这条记录')
+
+    app.router.dependencies.append(Depends(authorize))
 
     def once(request: Request, scope: str, fn):
         """Idempotency-Key header (design doc 8): a retried request returns the first result instead of redoing it."""
@@ -860,6 +966,43 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     def set_status_prefs(pid: str, body: StatusPrefs):
         return ws().set_status_prefs(pid, body.exclude, body.exclude_summary)
 
+    # ----- accounts -----
+
+    @app.get('/api/me')
+    def me(request: Request):
+        return {'auth': ws().settings.auth, 'user': getattr(request.state, 'user', None)}
+
+    @app.post('/api/login')
+    def login(body: LoginBody):
+        user = ws().authenticate(body.token)
+        if user is None:
+            raise HTTPException(401, '访问码无效')
+        res = JSONResponse({'user': user})
+        res.set_cookie(COOKIE, body.token, httponly=True, samesite='strict', max_age=30 * 86400)
+        return res
+
+    @app.post('/api/logout')
+    def logout():
+        res = JSONResponse({'ok': True})
+        res.delete_cookie(COOKIE)
+        return res
+
+    @app.get('/api/users')
+    def users():
+        return ws().users()
+
+    @app.post('/api/users')
+    def create_user(body: NewUser):
+        return ws().create_user(body.name, body.role)
+
+    @app.get('/api/courses/{cid}/members')
+    def course_members(cid: str):
+        return ws().course_members(cid)
+
+    @app.post('/api/courses/{cid}/members')
+    def share_course(cid: str, body: ShareBody):
+        return ws().share_course(cid, body.name, body.role)
+
     # ----- course objectives, unit review -----
 
     @app.get('/api/courses/{cid}/objectives')
@@ -1013,6 +1156,21 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             version = hashlib.sha256((STATIC / name).read_bytes()).hexdigest()[:12]
             html = html.replace(f'/static/{name}"', f'/static/{name}?v={version}"')
         return HTMLResponse(html, headers={'Cache-Control': 'no-cache'})
+
+    @app.middleware('http')
+    async def identify(request: Request, call_next):
+        # The user is set here, in the request's task, so the handler (and its worker thread) sees it.
+        request.state.user = None
+        w = ws()
+        if w.settings.auth:
+            header = request.headers.get('authorization', '')
+            token = header[7:] if header.lower().startswith('bearer ') else request.cookies.get(COOKIE, '')
+            request.state.user = await run_in_threadpool(w.authenticate, token) if token else None
+        reset = CURRENT_USER.set(request.state.user)
+        try:
+            return await call_next(request)
+        finally:
+            CURRENT_USER.reset(reset)
 
     @app.middleware('http')
     async def local_only(request: Request, call_next):

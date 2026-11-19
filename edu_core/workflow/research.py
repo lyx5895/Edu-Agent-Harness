@@ -1,7 +1,7 @@
 """Research records (COURSE_WORKSPACE_DESIGN.md 12; AB_AND_TRAINING_DATA.md 6–9).
 
 * Counts keep teacher tasks, runs, internal model calls, artifact versions and research cases apart; retries and
-  internal reviews never add cases. Without accounts no contributor count is reported.
+  internal reviews never add cases. Contributor counts are reported only when real accounts exist.
 * Source groups join everything that shares material, original questions, answers, rubrics or derivation, so a
   split never puts one source on both sides.
 * Research cases are one per task stage; a formal case needs an independent review (not by anyone who produced
@@ -312,6 +312,10 @@ class ResearchMixin:
             runs = c.execute(
                 f'SELECT kind, status, COUNT(*) n FROM runs WHERE project_id IN ({marks}) GROUP BY kind, status', pids
             ).fetchall()
+            users = c.execute(
+                f"SELECT COUNT(DISTINCT user_id) FROM runs WHERE project_id IN ({marks}) AND user_id!=''", pids
+            ).fetchone()[0]
+            accounts = c.execute('SELECT COUNT(*) FROM users').fetchone()[0]
             counts = {
                 'teacher_tasks': c.execute(
                     f'SELECT COUNT(*) FROM tasks WHERE project_id IN ({marks})', pids
@@ -335,7 +339,7 @@ class ResearchMixin:
                 'courses': c.execute(
                     f"SELECT COUNT(DISTINCT course_id) FROM projects WHERE id IN ({marks}) AND course_id!=''", pids
                 ).fetchone()[0],
-                'contributors': None,  # no accounts: the number of teachers is not guessed
+                'contributors': users if accounts else None,
             }
         return {
             'counts': counts,

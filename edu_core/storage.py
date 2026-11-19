@@ -169,6 +169,16 @@ CREATE TABLE IF NOT EXISTS consents(
 CREATE TABLE IF NOT EXISTS dataset_exports(
   id TEXT PRIMARY KEY, version TEXT NOT NULL, manifest TEXT NOT NULL, created_at REAL NOT NULL);
 """,
+    # Accounts, course membership and record owners (design doc 10).
+    8: """
+CREATE TABLE IF NOT EXISTS users(
+  id TEXT PRIMARY KEY, name TEXT NOT NULL UNIQUE, role TEXT NOT NULL DEFAULT 'teacher', token_sha TEXT NOT NULL UNIQUE,
+  disabled INTEGER NOT NULL DEFAULT 0, created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS course_members(
+  course_id TEXT NOT NULL, user_id TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'owner', PRIMARY KEY(course_id, user_id));
+ALTER TABLE projects ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE class_groups ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';
+""",
 }
 SCHEMA_VERSION = max(MIGRATIONS)
 

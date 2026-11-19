@@ -99,7 +99,11 @@ async function init() {
     : '未配置模型：只能查看已有内容（设置 EDU_LLM_API_KEY 后重启服务）';
   bindEvents();
   bindHomeEvents();
+  bindLogin();
   bindExtras();
+  const me = await api('GET', '/api/me');
+  if (me.auth && !me.user) { showLogin(); return; }
+  if (me.user) { $('#user-name').textContent = `${me.user.name}${me.user.role === 'admin' ? '（管理员）' : ''}`; $('#user-box').classList.remove('hidden'); }
   const pid = store.get('edu.pid');
   const projects = await loadProjects(pid, false);
   if (store.get('edu.view') === 'project' && projects.some((p) => p.id === pid)) await selectProject(pid);
@@ -1495,6 +1499,20 @@ async function renderResearch() {
     : '<div class="kv muted">点“整理研究案例”按任务阶段生成；重试和内部调用不会增加案例。</div>';
   $('#consent-list').innerHTML = consents.map((x) => `<div class="kv">${esc(x.purposes.join('、'))} · 版本 ${esc(x.version)} · ${esc(x.granted_by)}
     ${x.revoked_at ? '<span class="pill">已撤回</span>' : `<button class="small link" data-consent-revoke="${x.id}">撤回</button>`}</div>`).join('') || '<div class="kv muted">还没有授权：训练数据导出不会包含本课程的内容。</div>';
+}
+
+function showLogin() {
+  S.view = 'login';
+  ['#home', '#workspace', '#welcome'].forEach((x) => $(x).classList.add('hidden'));
+  $('#login').classList.remove('hidden');
+}
+
+function bindLogin() {
+  $('#login-go').addEventListener('click', (e) => busy(e.target, '登录中…', async () => {
+    await api('POST', '/api/login', { token: $('#login-token').value.trim() });
+    window.location.reload();
+  }));
+  $('#logout-btn').addEventListener('click', async () => { await api('POST', '/api/logout'); window.location.reload(); });
 }
 
 function downloadJson(data, name) {

@@ -144,6 +144,7 @@ class RecordsMixin:
             comparisons = [row(r) for r in c.execute('SELECT * FROM comparisons WHERE project_id=?', (pid,))]
             cases = [row(r) for r in c.execute('SELECT * FROM research_cases WHERE project_id=?', (pid,))]
             groups = self._source_groups(c, [pid])
+            accounts = c.execute('SELECT COUNT(*) FROM users').fetchone()[0]
         by_id = {a['id']: a for a in arts}
         edits = []
         for a in arts:
@@ -168,8 +169,8 @@ class RecordsMixin:
                 'material_families': len({m['family_id'] for m in mats}),
                 'source_groups': len(set(groups.values())),
                 'course_projects': 1,
-                # Without accounts nobody is identified: the number of teachers is not guessed.
-                'contributors': None,
+                # Only real accounts identify contributors; without them the number of teachers is not guessed.
+                'contributors': len({r['user_id'] for r in runs if r['user_id']}) if accounts else None,
                 'model_responses': len(gens),
                 'artifact_versions': len(arts),
                 'artifact_lineages': len({a['lineage_id'] for a in arts}),

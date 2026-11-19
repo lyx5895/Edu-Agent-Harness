@@ -36,6 +36,8 @@ class Settings:
     concurrency: int = 8
     # Single-user local tool without accounts: only loopback clients unless explicitly opened up.
     allow_remote: bool = False
+    # Accounts and per-record access checks (design doc 10). Off: local single-user tool, as before.
+    auth: bool = False
 
 
 def load_settings(**overrides) -> Settings:
@@ -51,6 +53,7 @@ def load_settings(**overrides) -> Settings:
         'max_tokens': int(os.getenv('EDU_MAX_TOKENS', Settings.max_tokens)),
         'concurrency': int(os.getenv('EDU_CONCURRENCY', Settings.concurrency)),
         'allow_remote': os.getenv('EDU_ALLOW_REMOTE', '') in ('1', 'true', 'yes'),
+        'auth': os.getenv('EDU_AUTH', '') in ('1', 'true', 'yes'),
     }
     values.update(overrides)
     return Settings(**values)
