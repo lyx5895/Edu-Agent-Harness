@@ -224,6 +224,62 @@ def _question_content(d: QuestionDraft, no: int, round_: int, objective_lineages
     }
 
 
+def _step(label, tab, target, hint=''):
+    """A next-step suggestion: the UI jumps to ``tab`` and highlights the element ``target``."""
+    return {'label': label, 'tab': tab, 'target': target, 'hint': hint}
+
+
+def next_steps(counts, materials, learners, queue, pending_ab, stale):
+    """What the teacher should do next, in workflow order. Pending choices and stale results come first."""
+    steps = []
+    if pending_ab:
+        steps.append(_step('选择 A/B 候选题', 'questions', '#ab-panel', '先在两版候选题中选一版'))
+    if stale:
+        steps.append(_step('处理依据已变化的产物', 'records', '#stale-list', f'{len(stale)} 个产物的上游有实质修改'))
+    c = counts
+    if not c['objective']['confirmed']:
+        if c['objective']['total']:
+            steps.append(_step('确认教学目标', 'objectives', '#objectives', '编辑后点“确认”，确认过的目标才会用于出题'))
+        elif not materials:
+            steps.append(
+                _step(
+                    '添加课程材料',
+                    'objectives',
+                    '#material-text',
+                    '粘贴或上传教材、讲义、教案，再按材料起草目标；也可以手工添加目标',
+                )
+            )
+        else:
+            steps.append(_step('起草教学目标', 'objectives', '#draft-objectives', '按已添加的材料起草，之后可以编辑'))
+    elif not c['question']['confirmed']:
+        if c['question']['total']:
+            steps.append(_step('确认题目', 'questions', '#questions', '核对题目、答案和评分要点后确认'))
+        else:
+            steps.append(
+                _step('按本课目标出题', 'questions', '#generate-questions', '也可以导入现成试卷或手工添加题目')
+            )
+    elif not c['submission']['total']:
+        if not learners:
+            steps.append(_step('添加学生名单', 'grading', '#roster', '每行一个学生代号，不要写真实姓名'))
+        else:
+            steps.append(_step('导入学生作答', 'grading', '#sub-csv', '每行：学生代号,题号,作答'))
+    elif c['grading']['total'] < c['submission']['total']:
+        steps.append(_step('批改作答', 'grading', '#grade-round'))
+    elif queue:
+        steps.append(_step('处理复核队列', 'grading', '#queue', f'{queue} 份批改需要老师判定'))
+    elif c['grading']['confirmed'] < c['grading']['total']:
+        steps.append(_step('确认批改', 'grading', '#confirm-auto', '复核队列以外的批改可以批量确认'))
+    elif not c['analysis']['total']:
+        steps.append(_step('汇总学情', 'analysis', '#analyze'))
+    elif not c['problem_pattern']['confirmed'] and c['problem_pattern']['total']:
+        steps.append(_step('确认问题模式', 'analysis', '#patterns', '确认后才能针对它出巩固练习'))
+    elif c['problem_pattern']['confirmed']:
+        steps.append(_step('生成巩固练习', 'practice', '#practice'))
+    else:
+        steps.append(_step('查看学情分析', 'analysis', '#analysis'))
+    return steps
+
+
 class Workspace:
     def __init__(self, store: Store, llm, settings: Settings, rng=None):
         self.store = store
@@ -270,6 +326,32 @@ class Workspace:
                 (pid, title.strip(), sp['id'], grade.strip(), notes.strip(), owner, time.time()),
             )
             event(c, pid, 'project_created', {'title': title, 'subject': sp['id']})
+            return self._project_view(self._project(c, pid))
+
+    def update_project(self, pid, *, title=None, subject=None, grade=None, notes=None):
+        """Edit project info. The subject can only change before any question exists (questions depend on it)."""
+        with self.store.tx() as c:
+            p = self._project(c, pid)
+            changes = {}
+            if title is not None:
+                if not title.strip():
+                    raise ValueError('请填写项目名称')
+                changes['title'] = title.strip()
+            if grade is not None:
+                changes['grade'] = grade.strip()
+            if notes is not None:
+                changes['notes'] = notes.strip()
+            if subject is not None and pack(subject)['id'] != p['subject']:
+                has_questions = c.execute(
+                    "SELECT 1 FROM artifacts WHERE project_id=? AND type='question' LIMIT 1", (pid,)
+                ).fetchone()
+                if has_questions:
+                    raise Conflict('项目里已经有题目，不能再改学科；请新建一个项目')
+                changes['subject'] = pack(subject)['id']
+            for key, value in changes.items():
+                c.execute(f'UPDATE projects SET {key}=? WHERE id=?', (value, pid))
+            if changes:
+                event(c, pid, 'project_updated', changes)
             return self._project_view(self._project(c, pid))
 
     def projects(self):
@@ -1417,23 +1499,7 @@ class Workspace:
             ]
         stale = self.stale(pid)
         queue = sum(len(self.review_queue(pid, r)) for r in rounds)
-        nxt = []
-        if not counts['objective']['confirmed']:
-            nxt.append('确认教学目标' if counts['objective']['total'] else '起草教学目标')
-        elif not counts['question']['confirmed']:
-            nxt.append('按本课目标出题' if not counts['question']['total'] else '确认题目')
-        elif not counts['submission']['total']:
-            nxt.append('导入学生作答')
-        elif counts['grading']['total'] < counts['submission']['total']:
-            nxt.append('批改作答')
-        elif queue:
-            nxt.append('处理复核队列')
-        elif not counts['analysis']['total']:
-            nxt.append('汇总学情')
-        elif not counts['problem_pattern']['confirmed']:
-            nxt.append('确认问题模式')
-        else:
-            nxt.append('生成巩固练习')
+        nxt = next_steps(counts, mats, learners, queue, pending_ab, stale)
         return {
             'project': p,
             'counts': counts,

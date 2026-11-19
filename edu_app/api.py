@@ -35,6 +35,13 @@ class NewProject(BaseModel):
     notes: str = Field(default='', max_length=2000)
 
 
+class ProjectUpdate(BaseModel):
+    title: str | None = Field(default=None, max_length=120)
+    subject: str | None = None
+    grade: str | None = None
+    notes: str | None = Field(default=None, max_length=2000)
+
+
 class TextBody(BaseModel):
     text: str = Field(min_length=1, max_length=200_000)
     filename: str = '粘贴文本'
@@ -194,6 +201,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.get('/api/projects/{pid}')
     def overview(pid: str):
         return ws().overview(pid)
+
+    @app.patch('/api/projects/{pid}')
+    def update_project(pid: str, body: ProjectUpdate):
+        return ws().update_project(pid, **body.model_dump())
 
     @app.get('/api/projects/{pid}/materials')
     def materials(pid: str):

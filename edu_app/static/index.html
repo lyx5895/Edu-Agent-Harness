@@ -22,7 +22,7 @@
       <p class="muted">以“课程项目”为单位保存工作，例如“高一数学｜对数函数｜第2课时”。五类任务共享同一份背景资料。</p>
       <form id="project-form" class="grid-form">
         <label>项目名称<input name="title" required placeholder="高一数学｜对数函数｜第2课时"></label>
-        <label>学科<select name="subject" id="subject-select"></select></label>
+        <label>学科<select name="subject" id="subject-select" required></select></label>
         <label>年级<input name="grade" placeholder="高一"></label>
         <label class="wide">老师说明（可选）<textarea name="notes" rows="2" placeholder="学生基础、本课重点等"></textarea></label>
         <div class="wide"><button type="submit">创建</button> <button type="button" id="cancel-project" class="secondary">取消</button></div>
@@ -34,10 +34,12 @@
         <div>
           <h2 id="project-title"></h2>
           <div id="project-meta" class="muted"></div>
+          <button id="edit-project" class="small secondary" type="button">编辑项目</button>
         </div>
         <div id="overview-stats" class="stats"></div>
         <div id="next-step" class="next"></div>
       </div>
+      <div id="project-edit" class="card hidden"></div>
       <div id="stale-banner" class="banner warn hidden"></div>
       <div id="context-note" class="banner info hidden"></div>
 

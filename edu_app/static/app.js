@@ -80,7 +80,8 @@ function fillRoundSelect(sel, keep = true) {
 
 async function init() {
   S.meta = await api('GET', '/api/meta');
-  $('#subject-select').innerHTML = S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  $('#subject-select').innerHTML = '<option value="" disabled selected>请选择学科</option>'
+    + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
   const ms = $('#model-status');
   ms.textContent = S.meta.model_ready ? `模型：${S.meta.models.grader} / 复核：${S.meta.models.reviewer}` : '未配置模型（只能查看）';
   ms.className = 'pill ' + (S.meta.model_ready ? 'ok' : 'bad');
@@ -132,7 +133,9 @@ function renderOverview() {
     stat('批改已确认', 'grading'), stat('问题模式已确认', 'problem_pattern'),
     `<span class="stat"><b>${o.review_queue}</b> 待复核</span>`,
   ].join('');
-  $('#next-step').innerHTML = `下一步：<b>${esc(o.next.join('、'))}</b>`;
+  $('#next-step').innerHTML = o.next.map((step, i) => `<button class="next-btn" data-next="${i}" title="跳到要操作的位置">
+      <span>下一步：${esc(step.label)}</span><span>→</span></button>${step.hint ? `<div class="next-hint">${esc(step.hint)}</div>` : ''}`).join('');
+  if (!$('#project-edit').classList.contains('hidden')) renderProjectEdit();
   const banner = $('#stale-banner');
   const parts = [];
   if (o.stale.length) parts.push(`有 ${o.stale.length} 个产物的依据已变化（上游有实质修改），请到“⑥ 过期与导出”处理。`);
@@ -146,6 +149,34 @@ async function renderTab() {
   $$('.tab').forEach((t) => t.classList.toggle('hidden', t.id !== `tab-${S.tab}`));
   const fn = { objectives: renderObjectives, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, practice: renderPractice, records: renderRecords }[S.tab];
   try { await fn(); } catch (e) { toast(e.message, true); }
+}
+
+async function goNext(step) {
+  S.tab = step.tab;
+  showNote('');
+  await renderTab();
+  const el = $(step.target);
+  if (!el) return;
+  const details = el.closest('details');
+  if (details) details.open = true;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.remove('flash');
+  void el.offsetWidth;  // restart the animation
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 1700);
+  if (el.matches('input, textarea')) el.focus({ preventScroll: true });
+}
+
+function renderProjectEdit() {
+  const p = S.overview.project;
+  const locked = S.overview.counts.question.total > 0;
+  $('#project-edit').innerHTML = `<h3>编辑项目</h3><div class="grid-form">
+    <label>项目名称<input class="pe-title" value="${esc(p.title)}"></label>
+    <label>学科<select class="pe-subject" ${locked ? 'disabled' : ''}>${S.meta.subjects.map((s) => `<option value="${s.id}" ${s.id === p.subject ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
+    <label>年级<input class="pe-grade" value="${esc(p.grade)}"></label>
+    <label class="wide">老师说明<textarea class="pe-notes" rows="2">${esc(p.notes)}</textarea></label>
+    ${locked ? '<div class="wide muted">项目里已经有题目，学科不能再改；需要换学科请新建项目。</div>' : ''}
+    <div class="wide"><button data-act="save-project">保存</button> <button class="secondary" data-act="close-project-edit">取消</button></div></div>`;
 }
 
 // ---------- ① materials & objectives ----------
@@ -428,11 +459,28 @@ function bindEvents() {
   $('#project-select').addEventListener('change', (e) => selectProject(e.target.value));
   $('#new-project-btn').addEventListener('click', () => showWelcome(true));
   $('#cancel-project').addEventListener('click', () => showWelcome(false));
+  // Pick the subject from the project name ("高一数学…") unless the teacher chose one by hand.
+  const subjectSel = $('#subject-select');
+  subjectSel.addEventListener('change', () => { subjectSel.dataset.manual = '1'; });
+  $('#project-form [name=title]').addEventListener('input', (e) => {
+    if (subjectSel.dataset.manual) return;
+    const hit = S.meta.subjects.find((s) => e.target.value.includes(s.name) || (s.id === 'ai' && /AI|人工智能/i.test(e.target.value)));
+    if (hit) subjectSel.value = hit.id;
+  });
+  $('#next-step').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-next]');
+    if (btn) goNext(S.overview.next[Number(btn.dataset.next)]);
+  });
+  $('#edit-project').addEventListener('click', () => {
+    const box = $('#project-edit');
+    box.classList.toggle('hidden');
+    if (!box.classList.contains('hidden')) renderProjectEdit();
+  });
   $('#project-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
     const p = await busy(e.submitter, '创建中…', () => api('POST', '/api/projects', Object.fromEntries(f.entries())));
-    if (p) { e.target.reset(); await loadProjects(p.id); toast('项目已创建，先添加课程材料'); }
+    if (p) { e.target.reset(); delete subjectSel.dataset.manual; await loadProjects(p.id); toast('项目已创建，先添加课程材料'); }
   });
   $('#tabs').addEventListener('click', (e) => { if (e.target.dataset.tab) { S.tab = e.target.dataset.tab; showNote(''); renderTab(); } });
   ['#q-round', '#g-round', '#a-round'].forEach((sel) => $(sel).addEventListener('change', renderTab));
@@ -632,6 +680,21 @@ async function onAction(e) {
         await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { name: $('.f-name', item).value, description: $('.f-desc', item).value } });
         toast('已保存为草稿'); await refresh();
       });
+      break;
+    case 'save-project':
+      await busy(btn, '保存中…', async () => {
+        const box = $('#project-edit');
+        const body = { title: $('.pe-title', box).value, grade: $('.pe-grade', box).value, notes: $('.pe-notes', box).value };
+        const sel = $('.pe-subject', box);
+        if (!sel.disabled) body.subject = sel.value;
+        await api('PATCH', `/api/projects/${S.pid}`, body);
+        box.classList.add('hidden');
+        toast('项目已更新');
+        await loadProjects(S.pid);
+      });
+      break;
+    case 'close-project-edit':
+      $('#project-edit').classList.add('hidden');
       break;
     case 'regrade-stale':
       await busy(btn, '重新批改中…', async () => {

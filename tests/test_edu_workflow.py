@@ -229,3 +229,39 @@ def test_self_check_calls_are_recorded(ws):
     tasks = [g['task'] for g in ws.export(p['id'])['generations']]
     assert 'self_check_solve' in tasks and 'grade' in tasks
     assert len(q['content']['checks']['generation_ids']) == 2
+
+
+def test_next_step_guides_through_the_workflow(ws):
+    p = ws.create_project('高一数学', 'chinese')
+    pid = p['id']
+    [step] = ws.overview(pid)['next']
+    assert step == {
+        'label': '添加课程材料',
+        'tab': 'objectives',
+        'target': '#material-text',
+        'hint': step['hint'],
+    }  # no material yet: not "draft objectives"
+    ws.add_material(pid, '对数函数的定义域是 (0,+∞)。')
+    assert ws.overview(pid)['next'][0]['target'] == '#draft-objectives'
+    obj = ws.draft_objectives(pid)['objectives'][0]
+    assert ws.overview(pid)['next'][0]['label'] == '确认教学目标'
+    ws.confirm(obj['id'])
+    assert ws.overview(pid)['next'][0]['target'] == '#generate-questions'
+
+    # The subject was picked wrong; it can still change because there is no question yet.
+    assert ws.update_project(pid, subject='数学')['subject'] == 'math'
+    q = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions'][0]
+    assert ws.overview(pid)['next'][0]['label'] == '确认题目'
+    with pytest.raises(Conflict):
+        ws.update_project(pid, subject='physics')
+    assert ws.update_project(pid, title='高一数学｜对数函数')['title'] == '高一数学｜对数函数'
+    ws.confirm(q['id'])
+    assert ws.overview(pid)['next'][0]['target'] == '#roster'
+    ws.add_learners(pid, ['S01'])
+    assert ws.overview(pid)['next'][0]['target'] == '#sub-csv'
+    ws.import_submissions(pid, 'S01,1,定义域 x>1，又 x-1<8，所以 1<x<9')
+    assert ws.overview(pid)['next'][0]['target'] == '#grade-round'
+    ws.grade_round(pid)
+    assert ws.overview(pid)['next'][0]['target'] == '#confirm-auto'  # graded but not confirmed yet
+    ws.confirm_gradings(pid)
+    assert ws.overview(pid)['next'][0]['target'] == '#analyze'

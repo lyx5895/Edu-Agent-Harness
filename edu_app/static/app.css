@@ -82,3 +82,11 @@ th { color: var(--muted); font-weight: 500; }
   padding: 9px 16px; border-radius: 8px; font-size: 14px; max-width: 90vw; z-index: 20; }
 .toast.error { background: var(--bad); color: #fff; }
 .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+
+.next { padding: 8px; }
+.next-btn { width: 100%; text-align: left; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.next-hint { font-size: 12px; color: var(--accent); margin: 6px 2px 0; }
+.next-btn + .next-btn, .next-hint + .next-btn { margin-top: 8px; }
+#edit-project { margin-top: 6px; }
+@keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 30%, 70% { box-shadow: 0 0 0 4px var(--warn); } }
+.flash { animation: flash 1.6s ease-in-out 1; border-radius: 8px; }
