@@ -2,6 +2,8 @@
 
 import json
 
+from edu_core.llm import redact_images
+
 
 class FakeLLM:
     def __init__(self, handlers, models=None):
@@ -12,13 +14,18 @@ class FakeLLM:
             'grader': 'fake-grader',
             'analyst': 'fake-analyst',
             'reviewer': 'fake-reviewer',
+            'reader': 'fake-reader',
         }
 
     def model_for(self, role):
         return self.models[role]
 
     def complete(self, role, task, system, user, schema):
-        payload = json.loads(user)
+        if isinstance(user, list):  # text plus images
+            payload = json.loads(next(p['text'] for p in user if p.get('type') == 'text'))
+            payload['_images'] = sum(1 for p in user if p.get('type') == 'image_url')
+        else:
+            payload = json.loads(user)
         self.calls.append({'role': role, 'task': task, 'user': payload, 'system': system})
         handler = self.handlers.get(task) or self.handlers.get(f'{role}:{task}')
         if handler is None:
@@ -32,7 +39,7 @@ class FakeLLM:
             'model_returned': self.models[role] + '-0001',
             'usage': {'total_tokens': 10},
             'latency_ms': 1,
-            'request': [{'role': 'user', 'content': user}],
+            'request': redact_images([{'role': 'user', 'content': user}]),
             'response': json.dumps(reply, ensure_ascii=False),
         }
         return result, meta

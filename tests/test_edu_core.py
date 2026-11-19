@@ -373,3 +373,46 @@ def test_store_migrates_a_database_that_already_has_the_columns(tmp_path):
         assert c.execute("SELECT lesson FROM projects WHERE id='proj_old'").fetchone()[0] == '第 2 课时'
     finally:
         c.close()
+
+
+def test_photo_prepare_rejects_non_images_and_turns_upright(tmp_path):
+    import io
+
+    from PIL import Image
+
+    from edu_core import images
+
+    with pytest.raises(ValueError):
+        images.prepare(b'not an image')
+    im = Image.new('RGB', (40, 20), 'white')
+    exif = im.getexif()
+    exif[0x0112] = 6  # rotated 90 degrees, as phones store it
+    buf = io.BytesIO()
+    im.save(buf, format='JPEG', exif=exif)
+    name, raw = images.prepare(buf.getvalue())
+    assert Image.open(io.BytesIO(raw)).size == (20, 40)
+    assert images.store(name, raw, tmp_path).read_bytes() == raw
+    with pytest.raises(ValueError):
+        images.path('../edu.sqlite', tmp_path)
+
+
+def test_redact_images_keeps_text_and_leaves_the_request_alone():
+    from edu_core.llm import redact_images
+
+    msgs = [
+        {
+            'role': 'user',
+            'content': [{'type': 'text', 'text': 'hi'}, {'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,AAAA'}}],
+        }
+    ]
+    out = redact_images(msgs)
+    assert out[0]['content'][0]['text'] == 'hi' and 'base64' not in str(out)
+    assert 'base64' in str(msgs)
+
+
+def test_strict_schema_uses_inclusive_bounds():
+    """Gemini rejects exclusiveMinimum/exclusiveMaximum; pydantic still enforces the strict bound."""
+    schema = strict_schema(QuestionSet)
+    text = str(schema)
+    assert 'exclusiveMinimum' not in text and 'exclusiveMaximum' not in text
+    assert "'minimum': 0" in text

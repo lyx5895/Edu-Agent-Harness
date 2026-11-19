@@ -12,6 +12,9 @@ DEFAULT_MODELS = {
     'grader': 'DeepSeek-V4.1-Flash',
     'analyst': 'DeepSeek-V4.1-Flash',
     'reviewer': 'qwen3.8-flash',
+    # Transcribes photos of student work; must accept image input. DeepSeek-V4.1-Flash fails here on the
+    # gateway (image + system prompt + json_schema -> bad_alloc; without a schema it thinks past max_tokens).
+    'reader': 'gemini-3.8-flash',
 }
 
 

@@ -134,3 +134,30 @@ def test_only_local_clients_by_default(tmp_path):
 def test_remote_clients_when_allowed(tmp_path):
     app = _app(tmp_path, allow_remote=True)
     assert TestClient(app, client=('203.0.113.7', 50000)).get('/api/projects').status_code == 200
+
+
+def test_photo_answers_over_http(tmp_path):
+    from test_edu_workflow import _photo, setup_round_one
+
+    settings = load_settings(db=str(tmp_path / 'edu.sqlite'), audit_rate=0.0, ab_rate=0.0, concurrency=2)
+    ws = Workspace(Store(settings.db), FakeLLM(dict(HANDLERS)), settings, rng=random.Random(1))
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    client = TestClient(create_app(ws))
+    r = client.post(
+        f'/api/projects/{pid}/photo-answers/transcribe',
+        data={'learner': '甲', 'round': '1'},
+        files=[('files', ('p1.png', _photo(), 'image/png'))],
+    )
+    assert r.status_code == 200, r.text
+    draft = r.json()
+    got = client.get(f'/api/photos/{draft["photos"][0]}')
+    assert got.status_code == 200 and got.headers['content-type'] == 'image/jpeg'
+    assert client.get('/api/photos/not-a-photo.jpeg').status_code == 400
+    answers = [{'question_no': 1, 'text': '定义域 x>1，所以 1<x<9'}]
+    r = client.post(f'/api/projects/{pid}/photo-answers', json={'learner': '甲', 'answers': answers, 'photos': draft['photos']})
+    assert r.status_code == 200 and r.json()['created'] == 1
+    bad = client.post(
+        f'/api/projects/{pid}/photo-answers/transcribe', data={'learner': '甲'}, files=[('files', ('x.png', b'nope', 'image/png'))]
+    )
+    assert bad.status_code == 400

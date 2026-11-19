@@ -603,3 +603,56 @@ def test_grade_round_keeps_other_results_when_one_submission_errors(ws):
     ws.llm.handlers['grade'] = normal  # a retry grades only the submission that failed
     assert ws.grade_round(pid)['graded'] == 1
     assert {g['content']['learner_alias'] for g in ws.gradings(pid)} == {'甲', '乙'}
+
+
+def _photo(color='white'):
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new('RGB', (64, 48), color).save(buf, format='PNG')
+    return buf.getvalue()
+
+
+def _transcribe(role, payload):
+    assert payload['_images'] == 1 and [q['题号'] for q in payload['题目']] == [1]
+    assert all('参考答案' not in q for q in payload['题目'])  # the reader never sees the key
+    return {
+        'answers': [
+            {'question_no': 1, 'text': '定义域 x>1，又 x-1<8', 'uncertain': False, 'note': ''},
+            {'question_no': 1, 'text': '所以 1<x<[看不清]', 'uncertain': True, 'note': '最后一个数字被涂改'},
+            {'question_no': 7, 'text': '多出来的一题', 'uncertain': False, 'note': ''},
+        ],
+        'note': '',
+    }
+
+
+HANDLERS['transcribe'] = _transcribe
+
+
+def test_photo_import_transcribes_then_imports_checked_text(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    draft = ws.transcribe_photos(pid, '甲', [_photo()])
+    [row] = draft['answers']
+    assert row['text'] == '定义域 x>1，又 x-1<8\n所以 1<x<[看不清]' and row['uncertain']
+    assert len(draft['dropped']) == 1 and '第 7 题' in draft['dropped'][0]
+    assert draft['context_note'] == '已参考：项目背景、题干 1 份、作答照片 1 份'
+    [name] = draft['photos']
+    assert ws.photo_path(name).exists()
+    with ws.store.read() as c:
+        g = c.execute('SELECT request FROM generations WHERE id=?', (draft['generation_id'],)).fetchone()
+    assert 'base64' not in g['request']  # photos live on disk, not in the generation log
+    assert ws.submissions(pid) == []  # nothing is imported before the teacher checks the text
+
+    with pytest.raises(ValueError, match='看不清'):
+        ws.import_photo_answers(pid, '甲', draft['answers'], photos=draft['photos'])
+    fixed = [{**row, 'text': '定义域 x>1，又 x-1<8\n所以 1<x<9'}]
+    with pytest.raises(Conflict):
+        ws.import_photo_answers(pid, '丁', fixed, photos=draft['photos'])
+    out = ws.import_photo_answers(pid, '甲', fixed, photos=draft['photos'], generation_id=draft['generation_id'])
+    assert out == {'created': 1, 'problems': []}
+    [sub] = ws.submissions(pid)
+    assert sub['content']['source'] == 'photo' and sub['content']['photos'] == [name]
+    assert ws.grade_round(pid)['graded'] == 1

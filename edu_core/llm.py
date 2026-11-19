@@ -44,7 +44,11 @@ def strict_schema(model: type[BaseModel]) -> dict:
             for k, v in node.items():
                 if k in ('title', 'default', 'description'):
                     continue  # schema metadata, not data
-                if k == 'properties':
+                if k in ('exclusiveMinimum', 'exclusiveMaximum'):
+                    # Gemini rejects these keywords ("Unknown name exclusiveMinimum"); the bound is
+                    # inclusive there, and pydantic re-validates the reply anyway.
+                    out[k.replace('exclusive', '').lower()] = v
+                elif k == 'properties':
                     out[k] = {name: fix(sub) for name, sub in v.items()}  # property names are data: keep all
                 else:
                     out[k] = fix(v)
@@ -69,6 +73,22 @@ def parse_json(raw: str):
         raise ValueError('空输出')
     value, _ = json.JSONDecoder().raw_decode(text)
     return value
+
+
+def redact_images(messages):
+    """Copy of chat messages with inline images replaced by a short note (photos are stored on disk)."""
+    out = []
+    for m in messages:
+        content = m.get('content')
+        if isinstance(content, list):
+            content = [
+                {'type': 'text', 'text': f'[图片，{len(part["image_url"]["url"])} 字符，已省略]'}
+                if part.get('type') == 'image_url'
+                else part
+                for part in content
+            ]
+        out.append({**m, 'content': content})
+    return out
 
 
 class Gateway:
@@ -140,7 +160,7 @@ class Gateway:
                     'usage': usage,
                     'latency_ms': int((time.time() - started) * 1000),
                     'attempts': attempts,
-                    'request': messages,
+                    'request': redact_images(messages),
                     'response': raw,
                     'repaired': round_ > 0,
                 }

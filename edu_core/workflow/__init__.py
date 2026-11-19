@@ -10,6 +10,7 @@ outside any transaction, then writes artifacts, references and generation record
 * ``base``: store and model plumbing, artifact operations, lesson plan lookups
 * ``projects``: projects, materials, curriculum picks, 进入下一课时
 * ``lesson_plan`` (01), ``questions`` (02), ``submissions`` (03), ``analysis`` (04), ``review`` (05)
+* ``photos``: photo import (transcribe, then the teacher checks the text before import)
 * ``records``: staleness, overview and research export
 """
 
@@ -21,6 +22,7 @@ from edu_core.workflow.common import (
     usable_drafts,
 )
 from edu_core.workflow.lesson_plan import LessonPlanMixin
+from edu_core.workflow.photos import PhotosMixin
 from edu_core.workflow.projects import ProjectsMixin
 from edu_core.workflow.questions import QuestionsMixin
 from edu_core.workflow.records import RecordsMixin
@@ -55,6 +57,7 @@ class Workspace(
     LessonPlanMixin,
     QuestionsMixin,
     SubmissionsMixin,
+    PhotosMixin,
     AnalysisMixin,
     ReviewMixin,
     RecordsMixin,

@@ -10,6 +10,7 @@ from edu_core.artifacts import TYPES
 WHITELIST = {
     'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum', 'carryover'},
     'import_paper': {'project', 'material'},
+    'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},
     'grade': {'question', 'rubric', 'submission'},
@@ -21,7 +22,7 @@ WHITELIST = {
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
 }
 
-LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'carryover': '上一课时学情', 'curriculum': '课程标准'}
+LABELS = {**TYPES, 'project': '项目背景', 'material': '材料', 'question_stem': '题干', 'photo': '作答照片', 'carryover': '上一课时学情', 'curriculum': '课程标准'}
 
 
 class ContextViolation(PermissionError):

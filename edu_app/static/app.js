@@ -453,6 +453,7 @@ async function renderGrading() {
     api('GET', `/api/projects/${S.pid}/review-queue?round=${round}`),
     api('GET', `/api/projects/${S.pid}/gradings?round=${round}`),
   ]);
+  $('#ph-learners').innerHTML = learners.map((l) => `<option value="${esc(l.alias)}">`).join('');
   $('#roster-list').textContent = learners.length ? `名单（${learners.length} 人）：${learners.map((l) => l.alias).join('、')}` : '名单为空';
   $('#queue-count').textContent = queue.length;
   $('#queue').innerHTML = queue.length ? queue.map(queueItem).join('') : '<div class="empty">复核队列为空。</div>';
@@ -476,6 +477,39 @@ function pointsDetail(points) {
     ${p.audit ? `<br>抽检意见：${esc(p.audit.status)} ${esc(p.audit.reason || '')}` : ''}</div>`).join('');
 }
 
+const photoUrl = (name) => `/api/photos/${encodeURIComponent(name)}`;
+
+function photoThumbs(names) {
+  return `<div class="ph-thumbs">${names.map((n, i) => `<a href="${photoUrl(n)}" target="_blank" rel="noopener" title="第 ${i + 1} 张，点击看原图"><img src="${photoUrl(n)}" alt="第 ${i + 1} 张照片" loading="lazy"></a>`).join('')}</div>`;
+}
+
+function renderPicked() {
+  const files = S.photoFiles || [];
+  $$('#ph-picked img').forEach((img) => URL.revokeObjectURL(img.src));
+  $('#ph-picked').innerHTML = files.length
+    ? `<div class="ph-thumbs">${files.map((f, i) => `<figure><img src="${URL.createObjectURL(f)}" alt="第 ${i + 1} 张"><button class="small secondary" data-remove="${i}">移除</button></figure>`).join('')}</div>
+       <div class="muted">已选 ${files.length} 张（最多 8 张），请按试卷顺序添加</div>`
+    : '';
+}
+
+function renderPhotoDraft() {
+  const d = S.photoDraft;
+  if (!d) { $('#ph-draft').innerHTML = ''; return; }
+  const unsure = d.answers.filter((a) => a.uncertain).length;
+  $('#ph-draft').innerHTML = `<h4>${esc(d.learner)} 的识别结果（第 ${d.round} 轮）${unsure ? ` <span class="pill warn">${unsure} 题需要对照照片核对</span>` : ''}</h4>
+    ${d.note ? `<div class="kv flag">${esc(d.note)}</div>` : ''}
+    ${(d.dropped || []).length ? `<div class="kv flag">未采用：${esc(d.dropped.join('；'))}</div>` : ''}
+    <div class="ph-review">
+      <div>${photoThumbs(d.photos)}</div>
+      <div>${d.answers.map((a) => `<div class="ph-answer"><div class="kv"><b>第 ${a.question_no} 题</b> ${esc(a.stem || '')}</div>
+        ${a.missing ? '<span class="pill">照片中没找到</span> ' : ''}${a.uncertain ? '<span class="pill warn">看不清，请核对</span> ' : ''}${a.note && !a.missing ? `<span class="kv flag">${esc(a.note)}</span>` : ''}
+        <textarea data-no="${a.question_no}" rows="${Math.min(8, Math.max(2, (a.text.match(/\n/g) || []).length + 2))}" placeholder="没有作答就留空">${esc(a.text)}</textarea></div>`).join('')}</div>
+    </div>
+    <div class="row"><label class="inline"><input type="checkbox" id="ph-add-missing"> 名单外的学生自动加入</label>
+      <button id="ph-import">确认导入</button> <button id="ph-discard" class="secondary">放弃</button></div>
+    <p class="muted">导入的是上面框里的文字，空着的题不导入；照片会附在作答上，复核时可以对照。</p>`;
+}
+
 function queueItem(g) {
   const c = g.content;
   const tags = S.subject.tags;
@@ -484,6 +518,7 @@ function queueItem(g) {
       <div>${c.risks.map((r) => `<span class="pill warn">${esc(RISK_LABEL[r] || r)}</span>`).join(' ')}</div></div>
     ${g.question ? `<details><summary>题目</summary><div class="stem">${esc(g.question.stem)}</div><div class="kv">参考答案：${esc(g.question.reference)}</div></details>` : ''}
     <div class="answer">${esc(g.answer)}</div>
+    ${(g.photos || []).length ? `<details><summary>对照试卷照片（${g.photos.length} 张）</summary>${photoThumbs(g.photos)}</details>` : ''}
     <table><tr><th>要点</th><th>判定与依据</th><th>老师给分</th><th>错误标签</th></tr>
     ${c.points.map((p) => {
       const suggested = p.suggested || {};
@@ -780,6 +815,47 @@ function bindEvents() {
     if (r.created) $('#sub-csv').value = '';
     await refresh();
   }));
+  const pickPhotos = (e) => {
+    const added = [...e.target.files];
+    S.photoFiles = [...(S.photoFiles || []), ...added].slice(0, 8);
+    if (S.photoFiles.length === 8 && added.length) toast('一次最多 8 张照片');
+    e.target.value = '';
+    renderPicked();
+  };
+  $('#ph-camera').addEventListener('change', pickPhotos);
+  $('#ph-files').addEventListener('change', pickPhotos);
+  $('#ph-picked').addEventListener('click', (e) => {
+    const i = e.target.dataset.remove;
+    if (i === undefined) return;
+    S.photoFiles.splice(Number(i), 1);
+    renderPicked();
+  });
+  $('#ph-transcribe').addEventListener('click', (e) => busy(e.target, '识别中…', async () => {
+    const learner = $('#ph-learner').value.trim();
+    if (!learner) throw new Error('请先填写学生代号');
+    if (!(S.photoFiles || []).length) throw new Error('请先拍照或选择照片');
+    const fd = new FormData();
+    fd.append('learner', learner);
+    fd.append('round', String(Number($('#g-round').value || 1)));
+    S.photoFiles.forEach((f) => fd.append('files', f));
+    S.photoDraft = await api('POST', `/api/projects/${S.pid}/photo-answers/transcribe`, fd);
+    showNote(S.photoDraft.context_note);
+    renderPhotoDraft();
+  }));
+  $('#ph-draft').addEventListener('click', (e) => {
+    if (e.target.id === 'ph-discard') { S.photoDraft = null; renderPhotoDraft(); return; }
+    if (e.target.id !== 'ph-import') return;
+    busy(e.target, '导入中…', async () => {
+      const d = S.photoDraft;
+      const answers = $$('#ph-draft textarea[data-no]').map((t) => ({ question_no: Number(t.dataset.no), text: t.value }));
+      const r = await api('POST', `/api/projects/${S.pid}/photo-answers`, {
+        learner: d.learner, round: d.round, answers, photos: d.photos, add_missing: $('#ph-add-missing').checked, generation_id: d.generation_id,
+      });
+      toast(`导入 ${d.learner} 的 ${r.created} 道作答` + (r.problems.length ? `；${r.problems.join('；')}` : ''), r.problems.length > 0);
+      S.photoDraft = null; S.photoFiles = []; $('#ph-learner').value = '';
+      renderPicked(); renderPhotoDraft(); await refresh();
+    });
+  });
   $('#grade-round').addEventListener('click', (e) => busy(e.target, '批改中…', async () => {
     const r = await api('POST', `/api/projects/${S.pid}/grade`, { round: Number($('#g-round').value || 1) });
     const msgs = [`批改 ${r.graded} 份`, `进入复核队列 ${r.review_queue} 份`];

@@ -14,10 +14,11 @@ import tempfile
 from pathlib import Path
 from typing import Any, Literal
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 from edu_core.config import load_settings
 from edu_core.context import ContextViolation
@@ -107,6 +108,20 @@ class SubmissionsBody(BaseModel):
     csv: str = Field(min_length=1, max_length=2_000_000)
     round: int = 1
     add_missing: bool = False
+
+
+class PhotoAnswerIn(BaseModel):
+    question_no: int
+    text: str = Field(default='', max_length=4000)
+
+
+class PhotoAnswersBody(BaseModel):
+    learner: str = Field(min_length=1, max_length=40)
+    round: int = 1
+    answers: list[PhotoAnswerIn] = Field(min_length=1, max_length=200)
+    photos: list[str] = Field(default_factory=list, max_length=8)
+    add_missing: bool = False
+    generation_id: str | None = Field(default=None, max_length=64)
 
 
 class RoundBody(BaseModel):
@@ -356,6 +371,33 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.get('/api/projects/{pid}/submissions')
     def submissions(pid: str, round: int = 1):
         return ws().submissions(pid, round)
+
+    @app.post('/api/projects/{pid}/photo-answers/transcribe')
+    async def transcribe_photos(
+        pid: str,
+        learner: str = Form(...),
+        round: int = Form(1),
+        files: list[UploadFile] = File(...),  # noqa: B008
+    ):
+        photos = [await f.read() for f in files]
+        # The model call takes seconds: run it off the event loop, like the sync routes.
+        return await run_in_threadpool(ws().transcribe_photos, pid, learner, photos, round)
+
+    @app.post('/api/projects/{pid}/photo-answers')
+    def import_photo_answers(pid: str, body: PhotoAnswersBody):
+        return ws().import_photo_answers(
+            pid,
+            body.learner,
+            [a.model_dump() for a in body.answers],
+            photos=body.photos,
+            round_=body.round,
+            add_missing=body.add_missing,
+            generation_id=body.generation_id,
+        )
+
+    @app.get('/api/photos/{name}')
+    def photo(name: str):
+        return FileResponse(ws().photo_path(name), media_type='image/jpeg', headers={'Cache-Control': 'private, max-age=86400'})
 
     @app.post('/api/projects/{pid}/grade')
     def grade(pid: str, body: RoundBody):

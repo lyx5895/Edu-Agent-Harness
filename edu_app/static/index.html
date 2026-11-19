@@ -132,6 +132,19 @@
             </div>
           </div>
         </div>
+        <div class="card" id="photo-card">
+          <div class="card-head"><h3>拍照导入作答</h3><span class="muted">一次导入一名学生的整份试卷，可以多页</span></div>
+          <div class="row">
+            <label>学生代号 <input id="ph-learner" list="ph-learners" placeholder="S01" style="width: 9em"></label>
+            <datalist id="ph-learners"></datalist>
+            <label class="file">拍照<input type="file" id="ph-camera" accept="image/*" capture="environment"></label>
+            <label class="file">从相册选择<input type="file" id="ph-files" accept="image/jpeg,image/png,image/webp" multiple></label>
+            <button id="ph-transcribe">识别</button>
+          </div>
+          <div id="ph-picked"></div>
+          <p class="muted">模型只负责把手写转成文字，批改依据的是你核对后的文字；标“[看不清]”的地方请对照照片改掉。</p>
+          <div id="ph-draft"></div>
+        </div>
         <div class="card">
           <div class="card-head"><h3>依据标准批改</h3>
             <div><button id="grade-round">批改本轮作答</button> <button id="confirm-auto" class="secondary">批量确认（复核队列以外）</button></div></div>

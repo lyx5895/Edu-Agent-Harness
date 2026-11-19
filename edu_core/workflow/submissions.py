@@ -217,7 +217,7 @@ class SubmissionsMixin:
                     continue
                 s = A.get(c, g['content']['submission_id'])
                 q = A.confirmed_in_lineage(c, g['content']['question_lineage'])
-                queue.append({**g, 'answer': s['content']['text'], 'question': q['content'] if q else None})
+                queue.append({**g, 'answer': s['content']['text'], 'photos': s['content'].get('photos', []), 'question': q['content'] if q else None})
             return sorted(queue, key=lambda g: (-len(g['content']['risks']), g['content']['question_no']))
 
     def override(self, grading_id, points, note='', teacher='teacher'):
