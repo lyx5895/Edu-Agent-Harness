@@ -68,7 +68,7 @@ def test_teacher_flow_over_http(client):
 
 def test_error_codes(client):
     assert client.get('/api/projects/nope').status_code == 404
-    assert client.post('/api/projects', json={'title': 'x', 'subject': '美术'}).status_code == 400
+    assert client.post('/api/projects', json={'title': 'x', 'subject': '../math'}).status_code == 400
     pid = client.post('/api/projects', json={'title': 'x', 'subject': 'history'}).json()['id']
     r = client.post(f'/api/projects/{pid}/questions/generate', json={})
     assert r.status_code == 409 and '备课方案' in r.json()['detail']

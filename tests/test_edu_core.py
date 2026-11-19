@@ -99,8 +99,11 @@ def test_ten_subject_packs():
     }
     assert pack('人工智能')['id'] == 'ai' and 'writing' not in pack('ai')['types']
     assert '其他' in error_tags('math')
-    with pytest.raises(ValueError):
-        pack('美术')
+    art = pack('美术')  # no pack: the general flow, with the teacher's own subject name
+    assert art['id'] == '美术' and art['custom'] and 'single_choice' in art['types'] and '其他' in error_tags('美术')
+    for bad in ('', '../math', 'a' * 21):
+        with pytest.raises(ValueError):
+            pack(bad)
 
 
 def test_tools():

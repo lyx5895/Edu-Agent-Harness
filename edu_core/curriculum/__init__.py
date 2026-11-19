@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 
 DIR = Path(__file__).parent
@@ -23,8 +23,10 @@ LEVELS = (
 LEVEL_NAME = {1: '了解', 2: '理解', 3: '掌握'}
 
 
-@lru_cache(maxsize=None)
+@cache
 def load(subject: str) -> dict | None:
+    if not re.fullmatch(r'[a-z]+', subject or ''):
+        return None  # only packaged subjects have standards; custom subject names never become paths
     path = DIR / f'{subject}.json'
     if not path.exists():
         return None
@@ -147,6 +149,8 @@ def plan_checks(subject: str, objectives: list[dict], used: bool) -> None:
         else:
             o.pop('checks', None)
         if cited:  # what the citation says, kept with the plan so the record stays readable
-            o['standard_refs'] = [{'id': it['id'], 'label': short_label(it), 'text': it['text'], 'page': it['page']} for it in cited]
+            o['standard_refs'] = [
+                {'id': it['id'], 'label': short_label(it), 'text': it['text'], 'page': it['page']} for it in cited
+            ]
         else:
             o.pop('standard_refs', None)

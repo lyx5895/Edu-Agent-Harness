@@ -103,12 +103,37 @@ SUBJECTS = {p['id']: {'feedback_language': 'zh', 'writing_dimensions': [], **p} 
 BY_NAME = {p['name']: p for p in SUBJECTS.values()}
 
 
+# A subject without a pack uses the general flow (COURSE_WORKSPACE_DESIGN.md 1.2): common question types, answer-key
+# matching only, the common error tags, and no curriculum standard.
+GENERAL_TYPES = [
+    'single_choice',
+    'multi_choice',
+    'true_false',
+    'fill_blank',
+    'short_answer',
+    'calculation',
+    'material_analysis',
+]
+
+
 def pack(subject: str) -> dict:
-    """Look up a subject pack by id or Chinese name."""
+    """Look up a subject pack by id or Chinese name; any other name gets the general pack."""
     found = SUBJECTS.get(subject) or BY_NAME.get(subject)
-    if found is None:
-        raise ValueError(f'不支持的学科：{subject}（可选：{"、".join(p["name"] for p in SUBJECTS.values())}）')
-    return found
+    if found is not None:
+        return found
+    name = (subject or '').strip()
+    if not name or len(name) > 20 or any(ch in name for ch in '/\\.:<>"|?*') or not name.isprintable():
+        raise ValueError('请选择学科，或填写 20 字以内的学科名称')
+    return {
+        'id': name,
+        'name': name,
+        'types': GENERAL_TYPES,
+        'tools': ['answer_match'],
+        'tags': [],
+        'feedback_language': 'zh',
+        'writing_dimensions': [],
+        'custom': True,
+    }
 
 
 def error_tags(subject: str) -> list[str]:
