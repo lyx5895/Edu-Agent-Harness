@@ -124,13 +124,16 @@ async function refresh() {
 
 const STAGES = ['prep', 'questions', 'grading', 'analysis', 'review'];
 const STAGE_NAME = { prep: '备课设计', questions: '出题改题', grading: '作业批改', analysis: '学情分析', review: '讲题答疑' };
-// "接着做" at the end of each stage (the arrows of the teaching loop).
+// 下一步 = the arrow to the next big stage of the teaching loop, never a step inside the current page.
 const CONTINUE = {
-  prep: { label: '按本课目标出题', tab: 'questions' },
-  questions: { label: '准备批改', tab: 'grading' },
-  grading: { label: '汇总学情', tab: 'analysis' },
-  analysis: { label: '准备针对性讲评', tab: 'review' },
-  review: { label: '讲评后再练', tab: 'review', target: '#practice' },
+  prep: [{ label: '按本课目标出题', tab: 'questions' }],
+  questions: [{ label: '准备批改', tab: 'grading' }],
+  grading: [{ label: '汇总学情', tab: 'analysis' }],
+  analysis: [{ label: '准备针对性讲评，定位讲解重点', tab: 'review' }],
+  review: [
+    { label: '生成对应的巩固练习', tab: 'review', target: '#practice' },
+    { label: '进入下一课时 · 优化后续备课', tab: 'prep' },
+  ],
 };
 
 function currentStage() {
@@ -160,22 +163,18 @@ function renderContinue() {
   const box = $(`#tab-${S.tab} .continue`);
   if (!box) return;
   const o = S.overview;
-  const go = CONTINUE[S.tab];
-  const here = o.next.find((x) => x.tab === S.tab && !x.optional);
-  const optional = o.next.find((x) => x.tab === S.tab && x.optional);
-  const side = optional ? `<div class="side"><span class="muted">可选：</span><button class="link" data-goto="${o.next.indexOf(optional)}">${esc(optional.label)}</button></div>` : '';
-  if (o.stages[S.tab] && !here) {
-    box.innerHTML = `${side}<button class="continue-btn" data-continue="1">下一步：${esc(go.label)} →</button>`;
-    return;
+  const done = !!o.stages[S.tab];
+  const buttons = CONTINUE[S.tab]
+    .map((g, i) => `<button class="continue-btn${i ? ' ghost' : ''}" data-continue="${i}"${done ? '' : ' disabled'}>下一步：${esc(g.label)} →</button>`)
+    .join('');
+  let hint = '';
+  if (!done) {
+    const earlier = STAGES.slice(0, STAGES.indexOf(S.tab)).find((t) => !o.stages[t]);
+    hint = earlier && S.tab !== 'review'
+      ? `先完成「${STAGE_NAME[earlier]}」`
+      : (() => { const here = o.next.find((x) => x.tab === S.tab && !x.optional); return here ? `完成「${here.label}」后可进入` : '本页完成后可进入'; })();
   }
-  if (here) {
-    box.innerHTML = `${here.hint ? `<span class="muted hint">${esc(here.hint)}</span>` : ''}<button class="continue-btn secondary" data-goto="${o.next.indexOf(here)}">下一步：${esc(here.label)} →</button>`;
-    return;
-  }
-  const blocking = o.next.find((x) => STAGES.includes(x.tab) && !x.optional);
-  box.innerHTML = blocking
-    ? `<button class="continue-btn secondary" data-goto="${o.next.indexOf(blocking)}">下一步：先完成${esc(STAGE_NAME[blocking.tab])} · ${esc(blocking.label)} →</button>`
-    : '';
+  box.innerHTML = `<div class="row-btns">${buttons}</div>${hint ? `<span class="muted hint">${esc(hint)}</span>` : ''}`;
 }
 
 async function renderTab() {
@@ -591,7 +590,9 @@ function bindEvents() {
     const go = e.target.closest('[data-goto]');
     if (go) { goNext(S.overview.next[Number(go.dataset.goto)]); return; }
     if (e.target.closest('[data-continue]')) {
-      const c = CONTINUE[S.tab];
+      const btn = e.target.closest('[data-continue]');
+      if (btn.disabled) return;
+      const c = CONTINUE[S.tab][Number(btn.dataset.continue)];
       goNext({ tab: c.tab, target: c.target || `#tab-${c.tab} .stage-head` });
     }
   });
