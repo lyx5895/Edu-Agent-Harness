@@ -693,3 +693,32 @@ def test_analysis_counts_learners_by_evidence_and_reports_objectives(ws):
     [obj] = out['analysis']['content']['objective_stats']
     assert obj['id'] == 'O1' and obj['题号'] == [1, 2]
     assert obj['人数'] == 3 and obj['得分率'] == 0.5 and obj['全部得分人数'] == 1
+
+
+def test_comparison_counts_only_points_written_for_the_pattern(ws):
+    p, _q = setup_round_one(ws)
+    pid = p['id']
+    ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    [pattern] = ws.analyze(pid)['patterns']
+    assert pattern['content']['affected_learners'] == ['乙']
+    ws.confirm(pattern['id'])
+    [pq] = ws.practice(pid)['questions']  # round 2, question 1: written for the pattern
+    ws.confirm(pq['id'])
+    other = ws.create_question(  # round 2, question 2: same skill, not written for the pattern
+        pid,
+        {'type': 'calculation', 'stem': '解不等式 log2(x-1) < 3（另一题）', 'reference': '1<x<9'},
+        {'points': [{'id': 'P1', 'description': '写出定义域 x>1', 'score': 2}, {'id': 'P2', 'description': '结论 1<x<9', 'score': 2}]},
+        round_=2,
+    )
+    ws.confirm(other['id'])
+    ws.import_submissions(pid, '乙,1,x>1 所以 1<x<9\n乙,2,x<9\n丙,2,x<9\n甲,1,由单调性得 x<9', round_=2)
+    ws.grade_round(pid, round_=2)
+    ws.confirm_gradings(pid, round_=2)
+    row = ws.compare(pid, 1, 2)['content']['patterns'][0]
+    assert row['retested'] == ['乙', '甲'] or set(row['retested']) == {'甲', '乙'}
+    assert row['improved'] == ['乙'] and row['persisting'] == []  # 乙 fixed it where it was retested
+    assert row['new'] == ['甲']  # 丙 only lost the tag on a question not written for the pattern
+    assert set(row['same_tag_elsewhere']) == {'乙', '丙'}
+    assert row['not_retested'] == [] and row['enough_evidence']

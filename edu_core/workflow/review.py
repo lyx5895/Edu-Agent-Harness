@@ -229,6 +229,13 @@ class ReviewMixin:
         return {'round': new_round, 'questions': made, 'dropped': dropped, 'context_note': describe(ctx.manifest)}
 
     def compare(self, pid, round_a=1, round_b=2):
+        """两轮对比 of each confirmed problem pattern of ``round_a`` against the confirmed gradings of ``round_b``.
+
+        Retested, improved, persisting and new are all counted on the same basis: rubric points of ``round_b``
+        written for this pattern (``target_pattern``). Losing a point with the same error tag on another question
+        is listed as ``same_tag_elsewhere`` for the teacher to look at, but does not count as the pattern
+        persisting: a tag is broader than a pattern.
+        """
         with self.store.read() as c:
             pats = self._round_patterns(c, pid, round_a)
             gradings_b = [
@@ -244,29 +251,31 @@ class ReviewMixin:
         rows = []
         for pat in pats:
             before = set(pat['content']['affected_learners'])
-            answered, still = set(), set()
+            tags = set(pat['content'].get('tags', []))
+            retested, still, elsewhere = set(), set(), set()
             for g in gradings_b:
+                learner = g['content']['learner_alias']
                 for pt in g['content']['points']:
-                    if pt.get('target_pattern') != pat['lineage_id'] and pt.get('error_tag') not in pat['content'].get(
-                        'tags', []
-                    ):
-                        continue
+                    lost = pt['status'] in ('partial', 'missed')
                     if pt.get('target_pattern') == pat['lineage_id']:
-                        answered.add(g['content']['learner_alias'])
-                    if pt['status'] in ('partial', 'missed'):
-                        still.add(g['content']['learner_alias'])
+                        retested.add(learner)
+                        if lost:
+                            still.add(learner)
+                    elif lost and pt.get('error_tag') in tags:
+                        elsewhere.add(learner)
             rows.append(
                 {
                     'pattern_id': pat['id'],
                     'pattern_lineage': pat['lineage_id'],
                     'name': pat['content']['name'],
                     'before': sorted(before),
-                    'retested': sorted(answered),
-                    'improved': sorted((before & answered) - still),
+                    'retested': sorted(retested),
+                    'improved': sorted((before & retested) - still),
                     'persisting': sorted(before & still),
                     'new': sorted(still - before),
-                    'not_retested': sorted(before - answered),
-                    'enough_evidence': bool(answered),
+                    'not_retested': sorted(before - retested),
+                    'same_tag_elsewhere': sorted(elsewhere),
+                    'enough_evidence': bool(retested),
                 }
             )
         with self.store.tx() as c:

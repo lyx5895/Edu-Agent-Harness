@@ -690,8 +690,10 @@ function comparisonView(a) {
   const list = (xs) => xs.length ? esc(xs.join('、')) : '—';
   return `<p class="muted">第 ${c.round_a} 轮 → 第 ${c.round_b} 轮 ${a.stale ? '<span class="pill bad">依据已变化</span>' : ''}</p>
     <table><tr><th>问题模式</th><th>前一轮涉及</th><th>复测</th><th>已改善</th><th>仍存在</th><th>新出现</th><th>未复测</th></tr>
-    ${c.patterns.map((r) => `<tr><td>${esc(r.name)}${r.enough_evidence ? '' : '<div class="kv">没有针对它的复测题，证据不足</div>'}</td><td>${list(r.before)}</td><td>${list(r.retested)}</td>
-      <td>${list(r.improved)}</td><td>${list(r.persisting)}</td><td>${list(r.new)}</td><td>${list(r.not_retested)}</td></tr>`).join('')}</table>`;
+    ${c.patterns.map((r) => `<tr><td>${esc(r.name)}${r.enough_evidence ? '' : '<div class="kv">没有针对它的复测题，证据不足</div>'}
+        ${(r.same_tag_elsewhere || []).length ? `<div class="kv flag">其他题有同类失分：${list(r.same_tag_elsewhere)}（不计入“仍存在”，请自行判断）</div>` : ''}</td><td>${list(r.before)}</td><td>${list(r.retested)}</td>
+      <td>${list(r.improved)}</td><td>${list(r.persisting)}</td><td>${list(r.new)}</td><td>${list(r.not_retested)}</td></tr>`).join('')}</table>
+    <p class="muted">复测、已改善、仍存在、新出现都只按针对这个问题模式出的再练题统计。</p>`;
 }
 
 // ---------- 记录与导出 ----------
