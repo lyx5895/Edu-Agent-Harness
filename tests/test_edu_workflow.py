@@ -53,6 +53,9 @@ def analyze(role, payload):
 
 HANDLERS = {
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
+    'infer_objectives': lambda r, p: {
+        'objectives': [{'text': f'能用{p.get("主题") or "所学内容"}解决基础问题', 'success_criterion': '写出关键步骤'}]
+    },
     'practice': lambda r, p: {'questions': [question('解不等式 log3(x-2) < 2（巩固）', target=0)]},
     'self_check_solve': lambda r, p: {'answer': '定义域 x>1；单调递增得 x-1<8；所以 1<x<9', 'final_answer': '1<x<9'},
     'review_question': lambda r, p: {

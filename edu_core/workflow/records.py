@@ -6,7 +6,7 @@ import time
 
 from edu_core import artifacts as A
 from edu_core.storage import row
-from edu_core.workflow.steps import next_steps, stage_status
+from edu_core.workflow.steps import blockers, next_steps, stage_status
 
 
 class RecordsMixin:
@@ -15,8 +15,30 @@ class RecordsMixin:
     # ----- staleness, overview, export -----
 
     def stale(self, pid):
+        """Open 依据已变化 marks, each told apart for the teacher: which class, what exactly (部分/完整分析, which
+        pattern, whose answer), and whether a newer result of the same kind already exists in that class and round."""
         with self.store.read() as c:
-            return A.stale(c, pid)
+            marks = A.stale(c, pid)
+            classes = {a['id']: a['class_name'] for a in self._assignment_views(c, project_id=pid)}
+            for m in marks:
+                m['class_name'] = classes.get(m['assignment_id'], '')
+                art = row(c.execute('SELECT content, created_at FROM artifacts WHERE id=?', (m['artifact_id'],)).fetchone())
+                ct = (art or {}).get('content') or {}
+                m['detail'] = ''
+                if m['type'] == 'analysis':
+                    m['detail'] = '部分分析' if ct.get('partial') else ('可能的易错点' if ct.get('mode') == 'pitfalls' else '完整分析')
+                elif m['type'] == 'problem_pattern':
+                    m['detail'] = ct.get('name', '')
+                elif m['type'] == 'grading':
+                    m['detail'] = f'{ct.get("learner_alias", "")} 第 {ct.get("question_no", "")} 题'
+                newer = c.execute(
+                    "SELECT 1 FROM artifacts WHERE project_id=? AND type=? AND assignment_id=? AND round=? "
+                    "AND status!='superseded' AND created_at>? AND lineage_id!=? "
+                    "AND id NOT IN (SELECT artifact_id FROM stale_marks WHERE status='open') LIMIT 1",
+                    (pid, m['type'], m['assignment_id'], m['round'], (art or {}).get('created_at', 0), m['lineage_id']),
+                ).fetchone()
+                m['redone'] = bool(newer)
+            return marks
 
     def resolve_stale(self, mark_id, resolution):
         with self.store.tx() as c:
@@ -49,6 +71,7 @@ class RecordsMixin:
                     for r in c.execute('SELECT id, title FROM units WHERE course_id=? ORDER BY position', (crs['id'],))
                 ]
             task = c.execute('SELECT id, kind, status FROM tasks WHERE project_id=? LIMIT 1', (pid,)).fetchone()
+            plan_pending = not self._plan(c, pid) and self._teacher_draft(self._plan(c, pid, confirmed=False))
 
             def scoped(t, **kw):
                 return scope.current(c, t, **kw)
@@ -83,19 +106,20 @@ class RecordsMixin:
             queue = len(self.review_queue(pid, latest, assignment_id=scope.assignment_id))
         else:
             queue = sum(len(self.review_queue(pid, r)) for r in rounds)
-        nxt = next_steps(
-            {
-                'counts': counts,
-                'round': round_counts,
-                'r': latest,
-                'materials': mats,
-                'has_context': bool(mats or p.get('knowledge_module')),
-                'learners': learners,
-                'queue': len(self.review_queue(pid, latest, assignment_id=aid or None)),
-                'pending_ab': pending_ab,
-                'stale': stale,
-            }
-        )
+        st = {
+            'task_kind': task['kind'] if task else '',
+            'counts': counts,
+            'round': round_counts,
+            'r': latest,
+            'materials': mats,
+            'has_context': bool(mats or p.get('knowledge_module')),
+            'plan_pending': plan_pending,
+            'learners': learners,
+            'queue': len(self.review_queue(pid, latest, assignment_id=aid or None)),
+            'pending_ab': pending_ab,
+            'stale': stale,
+        }
+        nxt = next_steps(st)
         return {
             'project': p,
             'counts': counts,
@@ -109,6 +133,7 @@ class RecordsMixin:
             'latest_round': latest,
             'next_lesson': dict(nxt_row) if nxt_row else None,
             'stages': stage_status(counts, round_counts, latest),
+            'blockers': blockers(st),
             'assignment_id': aid,
             'assignments': assignments,
             'course': course,

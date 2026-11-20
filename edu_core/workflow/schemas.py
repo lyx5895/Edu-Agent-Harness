@@ -39,6 +39,10 @@ class QuestionSet(BaseModel):
     questions: list[QuestionDraft]
 
 
+class InferredGoals(BaseModel):
+    objectives: list[ObjectiveDraft]
+
+
 class ImportedPaper(BaseModel):
     objectives: list[ObjectiveDraft]
     questions: list[QuestionDraft]

@@ -20,7 +20,8 @@ from edu_core.subjects import pack
 from edu_core.workflow.common import Conflict
 
 KINDS = {'prep': '备课', 'practice': '出一份练习', 'grading': '批改作业', 'explain': '准备讲解', 'legacy': '旧课时项目'}
-TAB_OF_KIND = {'prep': 'prep', 'practice': 'questions', 'grading': 'questions', 'explain': 'review', 'legacy': 'prep'}
+TAB_OF_KIND = {'prep': 'prep', 'practice': 'questions', 'grading': 'grading', 'explain': 'review', 'legacy': 'prep'}
+STAGE_NAMES = {'prep': '01 备课设计', 'questions': '02 出题改题', 'grading': '03 作业批改', 'analysis': '04 学情分析', 'review': '05 讲题答疑'}
 SESSION_STATUS = {'planned': '计划中', 'taught': '已授课', 'cancelled': '已取消'}
 
 
@@ -283,7 +284,12 @@ class CoursesMixin:
                 'ORDER BY (offering_id=?) DESC, created_at DESC LIMIT 1',
                 (course_id, offering_id or ''),
             ).fetchone()
-        name = title.strip() or '｜'.join(x for x in (knowledge_module.strip(), lesson.strip()) if x) or KINDS[kind]
+        # A task without a topic still needs a name that tells it apart in the switch list: 高一数学·批改作业.
+        name = (
+            title.strip()
+            or '｜'.join(x for x in (knowledge_module.strip(), lesson.strip()) if x)
+            or f'{course["title"]}·{KINDS[kind]}'
+        )
         project = self.create_project(
             name,
             course['subject'],
@@ -327,7 +333,8 @@ class CoursesMixin:
                 c.execute('UPDATE tasks SET status=?, updated_at=? WHERE id=?', (status, time.time(), tid))
             if title is not None and title.strip():
                 c.execute('UPDATE tasks SET title=?, updated_at=? WHERE id=?', (title.strip(), time.time(), tid))
-            views = self._task_views(c, task_id=tid)
+            # 回查时不能只看"进行中"：刚标记完成的任务状态已经不是 open 了
+            views = self._task_views(c, task_id=tid, status=None)
             if not views:
                 raise KeyError(f'任务不存在：{tid}')
             return views[0]
@@ -352,11 +359,62 @@ class CoursesMixin:
         for t in c.execute(sql + ' ORDER BY updated_at DESC', args).fetchall():
             t = dict(t)
             t['kind_label'] = KINDS.get(t['kind'], t['kind'])
+            if t['title'].strip() in ('', *KINDS.values()):  # older tasks were named just "备课": say which course
+                t['title'] = f'{self._course(c, t["course_id"])["title"]}·{t["kind_label"]}'
             t['class_name'] = self._offering(c, t['offering_id'])['class_name'] if t['offering_id'] else ''
             t['pending'] = self._task_pending(c, t['project_id'])
             t['tab'] = TAB_OF_KIND.get(t['kind'], 'prep')
+            p = self._project(c, t['project_id'])
+            topic = '｜'.join(x for x in (p.get('knowledge_module'), p.get('lesson')) if x)
+            if topic and t['title'] in (
+                KINDS.get(t['kind']),
+                f'{self._course(c, t["course_id"])["title"]}·{t["kind_label"]}',
+            ):
+                t['title'] = topic
+            defaults = {
+                'prep': ('继续编辑教案', '待补充要求或生成教案', '#course-module'),
+                'practice': ('继续准备练习', '待准备题目', '#generate-questions'),
+                'grading': ('继续批改作业', '待导入试卷或学生作答', '#sub-csv'),
+                'explain': ('继续准备讲解', '待填写题目或审阅讲解', '#ex-question'),
+            }
+            t['action_label'], t['progress_label'], t['target'] = defaults.get(t['kind'], defaults['prep'])
+            plans = A.current(c, t['project_id'], 'lesson_plan')
+            questions = A.current(c, t['project_id'], 'question')
+            if t['kind'] == 'prep' and plans:
+                t['target'] = '#lesson-plan'
+                t['progress_label'] = (
+                    '教案已确认，可导出或继续修改' if plans[-1]['status'] == 'confirmed' else '教案待审阅'
+                )
+                t['action_label'] = '查看教案' if plans[-1]['status'] == 'confirmed' else '审阅教案'
+            elif t['kind'] == 'practice' and questions:
+                t['target'] = '#questions'
+                t['action_label'] = '核对题目'
+                t['progress_label'] = f'{len(questions)} 道题，核对后可布置'
+            elif t['kind'] == 'grading' and not questions:
+                t['tab'], t['target'], t['action_label'] = 'questions', '#paper-text', '导入试卷'
+            t['assignment_id'], t['scope_label'] = '', ''
+            # A task is named after how it started, but the work goes on: a 备课 task often ends up holding the
+            # questions, the answers and the second round. Past its own kind, the card follows the loop's next step.
+            if (t['kind'] == 'prep' and questions) or A.current(c, t['project_id'], 'submission'):
+                self._follow_loop(t)
+            if any('待复核' in x for x in t['pending']):
+                t['tab'], t['target'], t['action_label'] = 'grading', '#queue', '处理待复核作答'
             out.append(t)
         return out
+
+    def _follow_loop(self, t):
+        """Point a task card at the project's actual next step, in the scope the workspace opens by default."""
+        ov = self.overview(t['project_id'])
+        step = next((s for s in ov['next'] if not s.get('optional')), None)
+        a = next((x for x in ov['assignments'] if x['id'] == ov['assignment_id']), None)
+        if a:
+            t['assignment_id'] = a['id']
+            t['scope_label'] = f'{a["class_name"]} · 第 {a["round"]} 轮'
+        if step:
+            t['tab'], t['target'], t['action_label'] = step['tab'], step['target'], step['label']
+            t['progress_label'] = f'进行到「{STAGE_NAMES.get(step["tab"], "文件与记录")}」'
+        else:
+            t['progress_label'] = '本轮已完成，可以布置再练或进入下一课时'
 
     def _task_pending(self, c, pid):
         """What waits for the teacher in a task, from the actual records (首页“继续工作”)."""

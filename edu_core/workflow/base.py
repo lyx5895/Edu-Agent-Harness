@@ -275,8 +275,13 @@ class WorkspaceBase:
             return []
         return [{'id': plan['id'], 'lineage_id': o['id'], 'content': o} for o in plan['content']['objectives']]
 
-    def _confirmed_objectives(self, c, pid, objective_ids=None):
-        goals = self._goals(self._plan(c, pid))
+    def _working_plan(self, c, pid):
+        """The plan questions are written against: the confirmed one, else the latest draft (a 出一份练习 task can
+        start without a lesson plan; its objectives are then inferred from the request and marked as such)."""
+        return self._plan(c, pid) or self._plan(c, pid, confirmed=False)
+
+    def _confirmed_objectives(self, c, pid, objective_ids=None, *, plan=None):
+        goals = self._goals(plan or self._plan(c, pid))
         if objective_ids:
             goals = [g for g in goals if g['lineage_id'] in set(objective_ids)]
         return goals

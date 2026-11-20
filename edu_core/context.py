@@ -8,8 +8,11 @@ generation and is also what the UI shows as "已参考", so the note always matc
 from edu_core.artifacts import TYPES
 
 WHITELIST = {
-    'generate_questions': {'project', 'material', 'lesson_plan', 'curriculum', 'carryover', 'class_status'},
+    'generate_questions': {
+        'project', 'material', 'lesson_plan', 'inferred_objectives', 'curriculum', 'carryover', 'class_status',
+    },
     'import_paper': {'project', 'material'},
+    'infer_objectives': {'project', 'material', 'curriculum'},
     'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},
@@ -39,6 +42,7 @@ LABELS = {
     'pasted': '老师粘贴的题目与作答',
     'assignments': '所选的几份作业',
     'curriculum': '课程标准',
+    'inferred_objectives': '由要求反推的教学目标（未确认）',
 }
 
 
@@ -96,7 +100,7 @@ def describe(manifest: list[dict]) -> str:
     parts = []
     for kind, items in groups.items():
         label = LABELS.get(kind, kind)
-        if kind in ('project', 'carryover', 'pasted', 'assignments'):
+        if kind in ('project', 'carryover', 'pasted', 'assignments', 'inferred_objectives'):
             parts.append(label)
         elif kind == 'curriculum':
             parts.append(f'{label} {sum(len(i.get("items", [])) for i in items)} 条')

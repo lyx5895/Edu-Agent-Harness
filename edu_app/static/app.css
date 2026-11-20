@@ -108,7 +108,7 @@ button.link { background: none; color: var(--accent); padding: 0; font-size: 14p
   font-size: 12px; font-weight: 700; background: var(--bg); color: var(--muted); padding: 0 4px; }
 .tabs button.done .mark { background: var(--accent-soft); color: var(--accent); }
 .tabs button.current:not(.active) { color: var(--accent); }
-.tabs button.current:not(.active)::after { content: '下一步'; font-size: 11px; padding: 0 6px; border-radius: 999px;
+.tabs button.current:not(.active)::after { content: '待办'; font-size: 11px; padding: 0 6px; border-radius: 999px;
   background: var(--accent-soft); color: var(--accent); }
 .tabs button.active .mark { background: rgba(255,255,255,.25); color: inherit; }
 .badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; border-radius: 999px; margin-left: 6px;
@@ -255,3 +255,113 @@ label.locked { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .grading-table tr.full-row td { color: var(--muted); }
 .grading-table tr.full-row details { margin: 0; }
 label.locked, .card-head > label { white-space: nowrap; }
+
+/* 跳步: what this page is missing, with the step to take */
+.banner.blocker { display: flex; justify-content: space-between; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
+.banner.blocker .row-btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.banner.blocker button.link { color: inherit; }
+
+/* 卡片标题行里的轮次等下拉框：窄的时候换行，不再伸出卡片右边 */
+.card-head > label { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.card-head > label select { max-width: 9em; min-width: 0; }
+.card { min-width: 0; overflow-wrap: anywhere; }
+/* 键盘操作时看得见焦点 */
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible,
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; animation: none !important; } }
+
+/* 长时间生成：底部状态条；完成时已切走的标签上的小圆点 */
+.working { position: fixed; left: 50%; transform: translateX(-50%); bottom: 64px; z-index: 50; max-width: min(92vw, 640px);
+  background: var(--info-soft); color: var(--info); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font-size: 14px; }
+.tabs button.news::before { content: ''; width: 8px; height: 8px; border-radius: 999px; background: var(--warn); }
+
+/* 首页层次：需要处理最醒目；其他工作区折叠在底部；试用意愿卡不抢眼 */
+.card.attention { border-color: var(--warn); background: var(--warn-soft); }
+.card.attention h3 { color: var(--warn); }
+.other-work > summary { cursor: pointer; font-weight: 600; }
+.feedback-card { padding: 8px 14px; font-size: 13px; color: var(--muted); }
+
+/* 手机：五个阶段标签排成一行横向滚动，不再折成三行占掉半屏 */
+@media (max-width: 760px) {
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { flex: 0 0 auto; white-space: nowrap; padding: 6px 10px; }
+  .tabs .aside { margin-left: 0; }
+  .topbar { flex-wrap: wrap; gap: 6px; padding-top: 8px; padding-bottom: 8px; }
+}
+
+/* 首页：开始工作最醒目；空的主题/班级/资料并排成一行，有内容时占满一行；说明收进 ? 提示 */
+.start-card { border-color: var(--accent); }
+.start-card .row-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.start-btn { padding: 10px 18px; font-size: 15px; }
+.course-setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 14px; }
+.course-setup .card.full { grid-column: 1 / -1; }
+.card.mini h3 { display: flex; align-items: center; gap: 6px; }
+.card.mini:not(.full) { padding: 12px 16px; }
+.card.mini:not(.full) .empty { padding: 0 0 4px; font-size: 13px; }
+.card.mini details summary { font-size: 13px; color: var(--accent); cursor: pointer; }
+.help { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 999px; background: var(--bg);
+  border: 1px solid var(--line); color: var(--muted); font-size: 11px; font-weight: 400; cursor: help; }
+#home .card { margin-bottom: 12px; }
+
+/* 首页：每块标题下一句用途说明；内容分组收进“按内容查看” */
+.card-desc { margin: -4px 0 8px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.setup-intro { margin: 6px 2px 8px; }
+.by-content > summary { cursor: pointer; font-weight: 600; }
+.by-content[open] > summary { margin-bottom: 8px; }
+.by-content .add-unit { margin-top: 8px; }
+.by-content .add-unit > summary { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 400; }
+
+/* ? 提示：悬停或点按（获得焦点）时显示说明，平时不占地方 */
+.help { position: relative; }
+.help:hover::after, .help:focus::after {
+  content: attr(data-tip); position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); z-index: 40;
+  width: max-content; max-width: min(320px, 80vw); white-space: normal; text-align: left;
+  background: var(--text); color: var(--bg); font-size: 13px; font-weight: 400; line-height: 1.5;
+  padding: 8px 10px; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.help:focus { outline: none; border-color: var(--accent); color: var(--accent); }
+summary .help { vertical-align: middle; }
+
+/* Current task first: distinguish work, prerequisites, and review actions. */
+.stage-head { border-left: 4px solid var(--accent); }
+.task-pending { margin-top: 6px; font-size: 13px; color: var(--muted); }
+.task-row { padding: 14px 0; }
+.task-row > div:last-child { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.result-first > .blocker { order: -2; }
+.review-actions { position: sticky; bottom: 12px; background: var(--card, #fff); border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-top: 16px; box-shadow: 0 3px 12px #0000000a; }
+#tab-questions.import-first, #tab-review.direct-explain { display: flex; flex-direction: column; }
+#tab-questions.import-first > .stage-head, #tab-review.direct-explain > .stage-head { order: -4; }
+#tab-questions.import-first > .blocker { order: -3; }
+#tab-questions.import-first > #paper-import-card, #tab-review.direct-explain > #explain-card { order: -2; border-color: var(--accent); }
+@media (max-width: 600px) {
+  #tabs { flex-wrap: wrap; overflow: visible; }
+  #tabs button { flex: 1 1 28%; justify-content: center; padding: 9px 6px; }
+  #tabs button.aside { margin-left: 0; }
+  .stage-head .continue { width: 100%; }
+  .continue-btn { width: 100%; }
+  .review-actions { bottom: 6px; }
+}
+
+/* Activities become readable cards on phones instead of four narrow columns. */
+@media (max-width: 600px) {
+  .activity-table, .activity-table tbody, .activity-table tr, .activity-table td { display: block; width: 100%; }
+  .activity-table tr:first-child { display: none; }
+  .activity-table tr { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .activity-table td { padding: 4px 0; border: 0; }
+  .activity-table td:first-child { font-weight: 600; }
+  .activity-table td:nth-child(2)::before { content: '用时：'; color: var(--muted); }
+  .activity-table td:nth-child(4)::before { content: '对应目标：'; color: var(--muted); }
+}
+
+/* Folded extras under a lesson plan: one line each until opened. */
+.plan-more { margin-top: 10px; }
+.plan-more > summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 0; }
+.plan-more[open] > summary { color: var(--text); }
+.plan-more > .row { margin-top: 6px; }
+/* Which class and round a home task card points at. */
+.scope-tag { display: inline-block; margin-right: 8px; padding: 0 6px; border-radius: 4px; background: var(--line); color: var(--text); font-size: 12px; }
+#scope-info b { color: var(--text); font-weight: 600; }
+/* Stage heading: what to do on this page, and the next stage one click away. */
+.head-now { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.head-now .hint { text-align: right; }
+@media (max-width: 640px) { .head-now { align-items: stretch; } .head-now .hint { text-align: left; } }

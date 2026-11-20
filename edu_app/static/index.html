@@ -13,8 +13,6 @@
       <span id="user-box" class="muted hidden"><span id="user-name"></span> <button id="logout-btn" class="link small">退出</button></span>
       <button id="home-btn" class="secondary">我的教学</button>
       <button id="admin-btn" class="secondary hidden">后台管理</button>
-      <select id="project-select" aria-label="所有工作区"></select>
-      <button id="new-project-btn" class="link">新建单独项目</button>
     </div>
   </header>
 
@@ -29,7 +27,7 @@
       <div class="home-head">
         <h1>我的教学</h1>
         <label>当前课程 <select id="home-course"></select></label>
-        <label>当前班级 <select id="home-class"></select></label>
+        <label>新任务默认班级 <select id="home-class"></select></label>
         <button id="new-course-btn" class="secondary small">新建课程</button>
       </div>
       <div id="new-course" class="card hidden">
@@ -48,32 +46,25 @@
         <p class="muted">课程是长期使用的工作空间：教材、课标和资料只填一次；班级各自有名单、进度和学情。</p>
       </div>
       <div id="home-body">
-        <div class="card"><h3>需要处理</h3><div id="home-attention"></div></div>
-        <div class="card"><h3>继续工作</h3><div id="home-tasks"></div></div>
-        <div class="card">
+        <div class="card attention hidden" id="attention-card"><h3>需要处理</h3><div id="home-attention"></div></div>
+        <div class="card start-card">
           <h3>开始工作</h3>
           <div class="row-btns" id="home-start"></div>
           <div id="start-form" class="hidden">
             <div id="start-hint" class="banner info hidden"></div>
             <div class="grid-form">
-              <label>知识模块或主题<input id="sf-module" placeholder="对数函数"></label>
+              <label>知识模块或主题<input id="sf-module" placeholder="这次要教或练习的主题"></label>
               <label>课时（可选）<input id="sf-lesson" placeholder="第 2 课时"></label>
-              <label class="wide">要求（可选）<input id="sf-request" placeholder="例如：基础薄弱，多一些定义域练习"></label>
+              <label class="wide">要求（可选）<input id="sf-request" placeholder="例如：基础薄弱，多安排基础练习"></label>
               <div class="wide"><button id="sf-go">开始</button> <button id="sf-cancel" class="link">取消</button></div>
             </div>
           </div>
         </div>
-        <div class="card">
-          <h3>主题</h3>
-          <p class="muted">开始工作时填的知识模块会自动归到同名主题下。点开一个主题，可以看到教过什么、测过什么、各班有哪些证据。</p>
-          <div id="home-units"></div>
-          <div id="unit-view"></div>
-          <details><summary>添加主题</summary>
-            <div class="row"><input id="unit-title" placeholder="例如：对数函数"><button id="unit-add" class="small">添加</button></div>
-          </details>
-        </div>
-        <div class="card">
-          <h3>班级与课时安排</h3>
+        <div class="card"><h3>继续工作</h3><div id="home-tasks"></div></div>
+        <p class="setup-intro muted">课程信息 <span class="muted">只填一次</span></p>
+        <div class="course-setup">
+        <div class="card mini" id="classes-card">
+          <h3>班级 <span class="help" tabindex="0" role="note" aria-label="上课的对象。名单、课时是否已上、每次作业的作答和学情都按班记录；备课方案确认后，这节课会自动出现在对应班级下。" title="上课的对象。名单、课时是否已上、每次作业的作答和学情都按班记录；备课方案确认后，这节课会自动出现在对应班级下。">?</span></h3>
           <div id="home-classes"></div>
           <details>
             <summary>添加班级</summary>
@@ -85,21 +76,34 @@
             </div>
           </details>
         </div>
-        <div class="card">
-          <h3>课程资料</h3>
-          <p class="muted">本课程所有工作都会参考这里的资料（各班共用，不含学生作答）。</p>
+        <div class="card mini" id="materials-card-home">
+          <h3>课程资料 <span class="help" tabindex="0" role="note" aria-label="这门课每次备课、出题、批改都会读到的背景材料，如课程纲要、教材目录、评分规范。所有班共用，不含学生作答；只放通用的，太长会被截断。" title="这门课每次备课、出题、批改都会读到的背景材料，如课程纲要、教材目录、评分规范。所有班共用，不含学生作答；只放通用的，太长会被截断。">?</span></h3>
           <div id="course-materials"></div>
           <details><summary>添加资料</summary>
             <textarea id="cm-text" rows="4" placeholder="粘贴教材目录、课程纲要等"></textarea>
             <div class="row"><input id="cm-name" placeholder="资料名称"><button id="cm-add">添加</button></div>
           </details>
         </div>
+        </div>
+        <details class="card by-content" id="units-card">
+          <summary>按内容查看 <span id="units-count" class="pill"></span> <span class="help" tabindex="0" role="note" aria-label="开始工作时填的知识模块会自动成为一个内容分组。点开一个分组，看这块内容教过哪些课、考过哪些题、各班学得怎样。" title="开始工作时填的知识模块会自动成为一个内容分组。点开一个分组，看这块内容教过哪些课、考过哪些题、各班学得怎样。">?</span></summary>          <div id="home-units"></div>
+          <div id="unit-view"></div>
+          <details class="add-unit"><summary>手动添加一个分组</summary>
+            <div class="row"><input id="unit-title" placeholder="例如：对数函数"><button id="unit-add" class="small">添加</button></div>
+          </details>
+        </details>
       </div>
       <div class="card feedback-card" id="trial-feedback">
         <span>用了一段时间后，你愿意继续用这个工作台吗？</span>
         <span class="feedback-btns"><button class="small secondary" id="trial-willing">愿意继续用</button>
           <button class="small link" id="trial-unwilling">暂不愿意</button></span>
       </div>
+      <details class="card other-work">
+        <summary>其他工作区</summary>
+        <p class="muted">不属于课程的单独项目，以及所有工作区的列表。日常工作建议从上面的课程开始。</p>
+        <div class="row"><select id="project-select" aria-label="所有工作区"></select>
+          <button id="new-project-btn" class="secondary small">新建单独项目</button></div>
+      </details>
       <div class="card hidden" id="legacy-card">
         <h3>待整理的旧项目 <span id="legacy-count" class="pill"></span></h3>
         <p class="muted">以前一节课一个项目。系统只按“进入下一课时”的前后关系分组提出候选，不会按相同标题或学生代号自动合并；你确认后才整理，整理前会备份数据库。</p>
@@ -128,7 +132,7 @@
       </div>
       <div id="project-edit" class="card hidden"></div>
 
-      <nav class="tabs" id="tabs">
+      <nav class="tabs" id="tabs" role="tablist" aria-label="教学工作导航，可按需要切换">
         <button data-tab="prep" class="active"><span class="mark">01</span>备课设计</button>
         <button data-tab="questions"><span class="mark">02</span>出题改题</button>
         <button data-tab="grading"><span class="mark">03</span>作业批改</button>
@@ -162,7 +166,7 @@
               <div class="cur-tools"><input id="curriculum-q" placeholder="搜索其他课标条目，例如：基本不等式"><button class="small secondary" id="curriculum-search">搜索</button>
                 <label class="inline"><input type="checkbox" id="curriculum-off"> 不参考课标</label></div>
             </div>
-            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button></div>
+            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换任务可继续编辑</span></div>
           </div>
         </div>
         <div class="card setup" id="materials-card">
@@ -180,9 +184,11 @@
         <div class="card result">
           <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
-          <div class="row hidden" id="revise-row"><span class="muted">只改一部分：</span><select id="revise-target"></select>
-            <input id="revise-instruction" placeholder="例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">修改这一部分</button></div>
-          <div class="row hidden" id="use-plan-row"><span class="muted">用于其他班：</span><select id="use-plan-class"></select><button class="small secondary" id="use-plan">直接使用（加入该班课时安排）</button><button class="small secondary" id="derive-btn">做一份本班调整版</button></div>
+          <details class="plan-more hidden" id="revise-row"><summary>只改其中一部分（让模型改）</summary>
+            <div class="row"><select id="revise-target"></select>
+            <input id="revise-instruction" placeholder="例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">修改这一部分</button></div></details>
+          <details class="plan-more hidden" id="use-plan-row"><summary>用于其他班</summary>
+            <div class="row"><select id="use-plan-class"></select><button class="small secondary" id="use-plan">直接使用（加入该班课时安排）</button><button class="small secondary" id="derive-btn">做一份本班调整版</button></div></details>
         </div>
       </div>
 
@@ -191,15 +197,18 @@
         <div class="card setup-bar hidden" id="questions-setup-bar"></div>
         <div class="card setup" id="generate-card">
           <h3>按目标出题</h3>
+          <div class="banner info hidden" id="q-direct-note"></div>
           <div class="grid-form">
+            <label class="wide hidden" id="q-topic-wrap">这次练习的主题或范围<input id="q-topic" placeholder="例如：《沁园春·长沙》的意象与情感"></label>
             <div class="wide"><span class="label">题型</span><div id="type-boxes" class="checks"></div></div>
             <label>每个目标出题数<input type="number" id="q-count" min="1" max="5" value="2"></label>
             <label>练习用途<select id="q-purpose"><option>课堂练习</option><option>课后作业</option><option>单元检测</option></select></label>
             <label>难度<select id="q-difficulty"><option>基础</option><option selected>中等</option><option>较难</option></select></label>
             <label class="wide">出题说明（可选）<input id="q-notes" placeholder="例如：结合生活情境"></label>
-            <label class="inline"><input type="checkbox" id="q-ab"> 这次出 A/B 两版供选择</label>
             <div class="wide"><button id="generate-questions">生成题目</button></div>
           </div>
+        </div>
+        <div class="card setup" id="paper-import-card">
           <details>
             <summary>导入现成试卷</summary>
             <p class="muted">粘贴试卷文字，可附答案。导入后请核对。</p>
@@ -225,8 +234,9 @@
 
       <div id="tab-grading" class="tab hidden">
         <div class="stage-head"><div><h2>作业批改</h2><p>对照标准批改实际作答，保留错误位置与教师修订</p></div><div class="continue" data-stage="grading"></div></div>
-        <div class="card">
-          <div class="card-head"><h3>学生名单与作答</h3><label>轮次 <select id="g-round"></select></label></div>
+        <div class="card setup-bar hidden" id="grading-setup-bar"></div>
+        <div class="card setup">
+          <div class="card-head"><h3>学生名单与作答</h3></div>
           <div class="two">
             <div id="roster-box">
               <span class="label">学生名单（每行一个代号，不要写真实姓名）</span>
@@ -243,7 +253,7 @@
             </div>
           </div>
         </div>
-        <div class="card" id="photo-card">
+        <div class="card setup" id="photo-card">
           <div class="card-head"><h3>拍照导入作答</h3><span class="muted">一次导入一名学生的整份试卷，可以多页</span></div>
           <div class="row">
             <label>学生代号 <input id="ph-learner" list="ph-learners" placeholder="S01" style="width: 9em"></label>
@@ -256,9 +266,10 @@
           <p class="muted">模型只负责把手写转成文字，批改依据的是你核对后的文字；标“[看不清]”的地方请对照照片改掉。</p>
           <div id="ph-draft"></div>
         </div>
-        <div class="card">
+        <div class="card result">
           <div class="card-head"><h3>依据标准批改</h3>
-            <div><button id="grade-round">批改本轮作答</button> <button id="confirm-auto" class="secondary">批量确认（复核队列以外）</button></div></div>
+            <div class="head-actions"><label class="inline">轮次 <select id="g-round"></select></label>
+              <button id="grade-round">批改本轮作答</button> <button id="confirm-auto" class="secondary">批量确认（复核队列以外）</button></div></div>
           <p class="muted">没把握或两个模型意见不同的，会进入复核队列由你判定。</p>
           <div id="correction-box"></div>
           <h4>复核队列 <span id="queue-count" class="pill"></span></h4>
@@ -383,7 +394,8 @@
           </div>
     </section>
   </main>
-  <div id="toast" class="toast hidden"></div>
+  <div id="working" class="working hidden" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
   <script src="/static/app.js"></script>
 </body>
 </html>

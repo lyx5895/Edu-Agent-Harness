@@ -24,6 +24,7 @@ from edu_core.workflow.common import (
 from edu_core.workflow.prompts import (
     GENERATE_SYSTEM,
     IMPORT_SYSTEM,
+    INFER_GOALS_SYSTEM,
     QUALITY_SYSTEM,
     SOLVE_SYSTEM,
     VARIANTS,
@@ -31,6 +32,7 @@ from edu_core.workflow.prompts import (
 from edu_core.workflow.runs import artifact_project, operation
 from edu_core.workflow.schemas import (
     ImportedPaper,
+    InferredGoals,
     QualityOutput,
     QuestionDraft,
     QuestionSet,
@@ -74,16 +76,21 @@ class QuestionsMixin:
     ):
         llm = self._model()
         with self.store.read() as c:
-            p = self._project(c, pid)
             plan = self._plan(c, pid)
-            if plan is None:
-                raise Conflict('请先确认备课方案，再按目标出题')
-            objs = self._confirmed_objectives(c, pid, objective_ids)
+            draft = None if plan else self._plan(c, pid, confirmed=False)
+        if plan is None:
+            if self._teacher_draft(draft):
+                raise Conflict('备课方案还是草稿：先在“01 备课设计”确认，再按目标出题')
+            # 出一份练习 without a lesson plan: objectives inferred from a paper or from the request
+            plan = draft if draft and draft['content'].get('objectives') else self._infer_goals(pid, llm, notes)
+        with self.store.read() as c:
+            p = self._project(c, pid)
+            objs = self._confirmed_objectives(c, pid, objective_ids, plan=plan)
             if not objs:
                 raise Conflict('备课方案里没有选中的教学目标')
             ctx = Context('generate_questions')
             ctx.add_other('project', pid)
-            ctx.add_artifact(plan)
+            self._add_plan(ctx, plan)
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
             hints, standards = [], []
             if cited:
@@ -217,6 +224,80 @@ class QuestionsMixin:
                     ),
                 )
         return result
+
+    @staticmethod
+    def _add_plan(ctx, plan):
+        """A confirmed plan goes into the context as such. Objectives inferred from a request or a paper are not
+        confirmed: they are listed as what they are, never passed off as a confirmed plan."""
+        if plan['status'] == 'confirmed':
+            ctx.add_artifact(plan)
+        else:
+            ctx.add_other(
+                'inferred_objectives', plan['id'], plan['content_sha'], lineage_id=plan['lineage_id'], version=plan['version']
+            )
+
+    @staticmethod
+    def _teacher_draft(plan):
+        """An unconfirmed plan drafted in 01 (not objectives inferred from a paper or a request): it must be confirmed
+        before questions are written against it."""
+        objs = (plan or {}).get('content', {}).get('objectives') or []
+        return bool(objs) and not all(o.get('inferred') for o in objs)
+
+    def _infer_goals(self, pid, llm, notes=''):
+        """Practice straight from the request: infer the objectives the questions will test, saved as a draft plan
+        whose objectives are marked 由出题要求反推. The teacher checks them with the questions; nothing is confirmed
+        on their behalf."""
+        with self.store.read() as c:
+            p = self._project(c, pid)
+            ctx = Context('infer_objectives')
+            ctx.add_other('project', pid)
+            materials = self._material_context(c, ctx, pid, limit=6000)
+            if not (p.get('knowledge_module') or p.get('lesson_scope') or materials or notes.strip()):
+                raise Conflict('请先写下这次练习的主题或范围，或添加参考材料')
+            current = self._plan(c, pid, confirmed=False)
+        with self.store.tx() as c:
+            std = self._curriculum_for_plan(c, p)
+        if std:
+            ids = [it['id'] for it in std['content']]
+            ctx.add_other('curriculum', p['subject'], sha(_json(ids)), items=ids)
+        out, meta = llm.complete(
+            'generator',
+            'infer_objectives',
+            INFER_GOALS_SYSTEM.format(subject=p['pack']['name']),
+            _json(
+                {
+                    '学科': p['pack']['name'],
+                    '年级': p['grade'],
+                    '主题': p.get('knowledge_module', ''),
+                    '课时': p.get('lesson', ''),
+                    '本课时内容': p.get('lesson_scope', ''),
+                    '学生基础': p.get('learner_profile', ''),
+                    '老师说明': notes or p.get('notes', ''),
+                    '课标条目': [{'位置': it['label'], '原文': it['text']} for it in (std or {}).get('content', [])],
+                    '材料摘录': materials,
+                }
+            ),
+            InferredGoals,
+        )
+        goals = [
+            {'text': o.text, 'success_criterion': o.success_criterion, 'inferred': True}
+            for o in out.objectives[:4]
+            if o.text.strip()
+        ]
+        if not goals:
+            raise ModelUnavailable('没有得到可用的教学目标，请补充主题或范围后重试')
+        base = current['content'] if current else {'key_points': [], 'difficulties': [], 'activities': [], 'notes': ''}
+        with self.store.tx() as c:
+            gid = record_generation(c, pid, meta, ctx.manifest, 'infer-goals-v1')
+            return A.create(
+                c,
+                pid,
+                'lesson_plan',
+                normalize_plan({**base, 'objectives': goals}),
+                origin='generated',
+                generation_id=gid,
+                lineage_id=current['lineage_id'] if current else None,
+            )
 
     def _ab_under_cap(self):
         """Sampled comparisons stay under the daily cap; teacher-requested ones are not counted against it."""
@@ -625,7 +706,8 @@ class QuestionsMixin:
     def coverage(self, pid, round_=1):
         """目标覆盖: how many questions each confirmed objective has in a round, and how many need a look."""
         with self.store.read() as c:
-            goals = self._goals(self._plan(c, pid))
+            plan = self._working_plan(c, pid)
+            goals = self._goals(plan)
         qs = self.questions(pid, round_=round_)
         rows = []
         for g in goals:
@@ -647,7 +729,9 @@ class QuestionsMixin:
                 }
             )
         loose = [q['content']['no'] for q in qs if not q['content'].get('objective_ids') and q['status'] != 'candidate']
-        return {'round': round_, 'objectives': rows, 'unassigned': loose}
+        # Objectives not yet confirmed (inferred from the request or a paper, or a plan draft) are shown as such.
+        unconfirmed = bool(plan) and not plan.get('confirmed_version') and plan['status'] != 'confirmed'
+        return {'round': round_, 'objectives': rows, 'unassigned': loose, 'unconfirmed': unconfirmed}
 
     def adopt_solver_answer(self, qid, teacher='teacher'):
         """答案存疑 → take the independent solver's answer as a new draft version for the teacher to confirm."""
@@ -676,8 +760,8 @@ class QuestionsMixin:
                 raise ValueError('只能对题目操作')
             pid = q['project_id']
             p = self._project(c, pid)
-            plan = self._plan(c, pid)
-            objs = self._confirmed_objectives(c, pid, q['content'].get('objective_ids') or None) if plan else []
+            plan = self._working_plan(c, pid)
+            objs = self._confirmed_objectives(c, pid, q['content'].get('objective_ids') or None, plan=plan) if plan else []
             objs = objs[:1]
             pattern = None
             for lineage in q['content'].get('target_patterns', []):
@@ -691,7 +775,7 @@ class QuestionsMixin:
             ctx = Context('generate_questions')
             ctx.add_other('project', pid)
             if plan:
-                ctx.add_artifact(plan)
+                self._add_plan(ctx, plan)
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
             standards = []
             if cited:

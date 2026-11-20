@@ -26,7 +26,20 @@ def next_steps(st):
         )
     c, rc, r = st['counts'], st['round'], st['r']
     label_r = f'（第 {r} 轮）' if r > 1 else ''
-    if not c['lesson_plan']['confirmed']:
+    if st.get('task_kind') == 'grading' and not rc['question']['total']:
+        steps.append(_step('导入现成试卷', 'questions', '#paper-text', '核对题目与评分标准后，即可导入作答'))
+        return steps
+    if st.get('task_kind') == 'explain' and not rc['problem_pattern']['confirmed']:
+        steps.append(_step('准备题目讲解', 'review', '#ex-question'))
+        return steps
+    if st.get('task_kind') == 'practice' and not rc['question']['total'] and not st.get('plan_pending'):
+        # 出一份练习 starts on 02: without a lesson plan the objectives are inferred from the request.
+        if st['has_context']:
+            steps.append(_step('按要求出题', 'questions', '#generate-questions', '没有备课方案时，会先从要求反推教学目标'))
+        else:
+            steps.append(_step('写下练习的主题', 'questions', '#q-topic', '也可以导入现成试卷'))
+        return steps
+    if not c['lesson_plan']['confirmed'] and not rc['question']['total']:
         if c['lesson_plan']['total']:
             steps.append(
                 _step('确认备课方案', 'prep', '#lesson-plan', '核对目标、重点难点和课堂活动，整体确认后用于出题')
@@ -86,3 +99,73 @@ def stage_status(counts, rc, r):
         'review': bool(rc['review_plan']['confirmed']),
         'round': r,
     }
+
+
+PAPER_ALT = {'label': '导入现成试卷', 'tab': 'questions', 'target': '#paper-text'}
+
+
+def _blocker(reason, action, alt=None):
+    out = {'blocked': True, 'reason': reason, 'action': action}
+    if alt:
+        out['alt'] = alt
+    return out
+
+
+def _open():
+    return {'blocked': False}
+
+
+def blockers(st):
+    """Per stage: is the page usable yet, and if not, why and what to click.
+
+    Tasks started from the home page (出一份练习、批改作业) land on a later stage; instead of a greyed-out page the
+    teacher sees the one missing step and, where it exists, the way round the lesson plan (importing a paper).
+    """
+    c, rc = st['counts'], st['round']
+    out = {'prep': _open(), 'review': _open()}  # 直接准备讲解 needs no earlier stage
+
+    # 出题 does not wait for a lesson plan: without one, the objectives are inferred from the request (marked so).
+    # Only a plan drafted in 01 and not yet confirmed has to be confirmed first.
+    if st.get('plan_pending') and not c['question']['total']:
+        out['questions'] = _blocker(
+            '备课方案还是草稿：确认后再按目标出题。', _step('确认备课方案', 'prep', '#lesson-plan'), PAPER_ALT
+        )
+    else:
+        out['questions'] = _open()
+
+    if rc['question']['confirmed']:
+        out['grading'] = _open()
+    elif rc['question']['total']:
+        out['grading'] = _blocker(
+            '本轮的题目还没有确认：批改依据已确认的题目和评分标准。', _step('确认题目', 'questions', '#questions')
+        )
+    elif out['questions']['blocked']:
+        out['grading'] = _blocker('还没有题目：批改需要题目和评分标准。', PAPER_ALT, out['questions']['action'])
+    else:
+        out['grading'] = _blocker(
+            '本轮还没有题目：批改需要题目和评分标准。',
+            PAPER_ALT,
+            _step('按目标出题', 'questions', '#generate-questions'),
+        )
+
+    graded = rc['grading']['total'] and rc['grading']['confirmed'] == rc['grading']['total']
+    if rc['submission']['total'] and graded and rc['grading']['total'] >= rc['submission']['total']:
+        out['analysis'] = _open()
+    elif out['grading']['blocked']:
+        out['analysis'] = _blocker('还没有可以分析的批改结果。', out['grading']['action'], out['grading'].get('alt'))
+    elif not rc['submission']['total']:
+        act = (
+            _step('导入学生作答', 'grading', '#sub-csv')
+            if st['learners']
+            else _step('添加学生名单', 'grading', '#roster')
+        )
+        out['analysis'] = _blocker('本轮还没有学生作答。', act)
+    elif rc['grading']['total'] < rc['submission']['total']:
+        out['analysis'] = _blocker('还有作答没有批改。', _step('批改本轮作答', 'grading', '#grade-round'))
+    elif st['queue']:
+        out['analysis'] = _blocker(f'{st["queue"]} 份批改需要你判定。', _step('处理复核队列', 'grading', '#queue'))
+    else:
+        out['analysis'] = _blocker(
+            '批改还没有确认：学情只用已确认的批改。', _step('确认批改', 'grading', '#confirm-auto')
+        )
+    return out

@@ -396,3 +396,179 @@ def test_missing_question_is_not_a_completed_assignment(ws):
     ws.confirm_gradings(pid, assignment_id=aid)
     assert ws.assignment(aid)['status'] == 'done'
     assert not ws.analyze(pid, assignment_id=aid)['analysis']['content']['partial']
+
+
+# --- 跳步：从首页直接开始的任务，落到对应页面，并把"为什么进不去、怎么进"说清楚 ---
+
+
+def test_grading_task_opens_the_grading_page(ws):
+    crs = ws.create_course('高一数学', '数学')
+    started = ws.start_task(crs['id'], 'grading')
+    assert started['tab'] == 'grading' and started['task']['kind_label'] == '批改作业'
+
+
+def test_new_grading_task_says_what_is_missing_and_how_to_get_there(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'grading')['project']['id']
+    b = ws.overview(pid)['blockers']
+    # 出题不必先备课；批改任务缺题目时，优先导入现成试卷。
+    assert not b['questions']['blocked'] and b['grading']['blocked']
+    assert b['grading']['action']['label'] == '导入现成试卷' and b['grading']['action']['target'] == '#paper-text'
+    assert b['grading']['reason']
+    assert b['prep']['blocked'] is False and b['review']['blocked'] is False
+
+
+def test_importing_a_paper_unblocks_the_questions_page_without_a_plan(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'grading')['project']['id']
+    from test_edu_workflow import question
+
+    ws.llm.handlers['import_paper'] = lambda r, payload: {
+        'objectives': [{'text': '能在解对数不等式时检查定义域', 'success_criterion': '写出 x>1'}],
+        'questions': [question('解不等式 log2(x-1) < 3')],
+    }
+    ws.import_paper(pid, '1. 解不等式 log2(x-1) < 3')
+    ov = ws.overview(pid)
+    assert ov['counts']['question']['total'] == 1
+    assert ov['blockers']['questions']['blocked'] is False
+    # 题目还是草稿：批改仍被挡住，但下一步是"确认题目"
+    assert ov['blockers']['grading']['blocked'] and ov['blockers']['grading']['action']['target'] == '#questions'
+    [q] = ws.questions(pid)
+    ws.confirm(q['id'])
+    assert ws.overview(pid)['blockers']['grading']['blocked'] is False
+
+
+def test_blocker_for_analysis_points_at_confirming_gradings(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, _q = prep_and_practice(ws, crs, o3)
+    aid = ws.assign(pid, o3['id'])['id']
+    ws.import_submissions(pid, f'甲,1,{GOOD}', assignment_id=aid)
+    ws.grade_round(pid, assignment_id=aid)
+    b = ws.overview(pid)['blockers']
+    assert b['analysis']['blocked'] and b['analysis']['action']['target'] == '#confirm-auto'
+
+
+def test_task_without_a_topic_is_named_so_it_can_be_told_apart(ws):
+    crs = ws.create_course('高一数学', '数学')
+    t = ws.start_task(crs['id'], 'grading')
+    assert t['task']['title'] == '高一数学·批改作业'
+    named = ws.start_task(crs['id'], 'prep', knowledge_module='对数函数', lesson='第2课时')
+    assert named['task']['title'] == '对数函数｜第2课时'
+
+
+def test_marking_a_task_done_returns_the_task(ws):
+    """标记完成后回查任务时不能只查"进行中"，否则刚改完的任务自己找不到。"""
+    crs = ws.create_course('高一数学', '数学')
+    t = ws.start_task(crs['id'], 'prep', knowledge_module='对数函数')
+    done = ws.update_task(t['task']['id'], status='done')
+    assert done['status'] == 'done' and done['title'] == '对数函数'
+    assert ws.tasks(crs['id']) == []  # 不再出现在"继续工作"里
+    assert ws.tasks(crs['id'], status=None)[0]['status'] == 'done'
+    # 再改一次（比如改回进行中）同样要能查到
+    reopened = ws.update_task(t['task']['id'], status='open')
+    assert reopened['status'] == 'open' and ws.tasks(crs['id'])[0]['id'] == t['task']['id']
+
+
+def test_task_navigation_matches_intent_and_existing_work(ws):
+    crs = ws.create_course('高一数学', '数学')
+    task = ws.start_task(crs['id'], 'grading', knowledge_module='对数函数')
+    pid = task['project']['id']
+    overview = ws.overview(pid)
+    assert overview['next'][0]['target'] == '#paper-text'
+    assert overview['blockers']['grading']['action']['target'] == '#paper-text'
+    card = ws.tasks(crs['id'])[0]
+    assert card['action_label'] == '导入试卷' and card['tab'] == 'questions'
+    from test_edu_workflow import question
+
+    ws.llm.handlers['import_paper'] = lambda r, payload: {
+        'objectives': [{'text': '能解对数不等式', 'success_criterion': '写出定义域'}],
+        'questions': [question('解不等式 log2(x-1) < 3')],
+    }
+    ws.import_paper(pid, '1. 解不等式 log2(x-1) < 3')
+    assert ws.overview(pid)['next'][0]['target'] == '#questions'
+    ws.confirm(ws.questions(pid)[0]['id'])
+    assert ws.overview(pid)['next'][0]['tab'] == 'grading'
+
+
+def test_task_cards_distinguish_empty_draft_and_confirmed_plan(ws):
+    crs = ws.create_course('高一数学', '数学')
+    task = ws.start_task(crs['id'], 'prep', knowledge_module='对数函数', title='周三公开课')
+    pid = task['project']['id']
+    card = ws.tasks(crs['id'])[0]
+    assert card['title'] == '周三公开课' and card['progress_label']
+    plan = ws.draft_lesson_plan(pid)['lesson_plan']
+    card = ws.tasks(crs['id'])[0]
+    assert card['action_label'] == '审阅教案' and card['target'] == '#lesson-plan'
+    ws.confirm(plan['id'])
+    assert ws.tasks(crs['id'])[0]['action_label'] == '查看教案'
+
+
+def test_direct_explanation_does_not_require_a_lesson_plan(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'explain')['project']['id']
+    action = ws.overview(pid)['next'][0]
+    assert action['tab'] == 'review' and action['target'] == '#ex-question'
+
+
+def test_task_card_follows_the_loop_and_stale_items_say_what_they_are(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, q = prep_and_practice(ws, crs, o3)
+    assert ws.tasks(crs['id'])[0]['action_label'] != '查看教案'  # a 备课 task that has questions moved on
+    a3 = ws.assign(pid, o3['id'])
+    graded(ws, pid, a3['id'], f'甲,1,{GOOD}\n乙,1,{MISSED}')
+    card = ws.tasks(crs['id'])[0]
+    assert (card['tab'], card['target']) == ('grading', '#confirm-auto')
+    assert card['assignment_id'] == a3['id'] and card['scope_label'] == '高一（3）班 · 第 1 轮'
+    ws.confirm_gradings(pid, assignment_id=a3['id'])
+    ws.analyze(pid, assignment_id=a3['id'])
+    assert ws.tasks(crs['id'])[0]['tab'] == 'analysis'
+
+    rubric = ws.correction_impact(a3['id'], q['lineage_id'])['rubric']['content']
+    ws.correct_rubric(a3['id'], q['lineage_id'], {'points': [{**rubric['points'][0], 'score': 3}, rubric['points'][1]]})
+    card = ws.tasks(crs['id'])[0]
+    assert card['tab'] == 'records' and card['action_label'] == '处理依据已变化的产物'
+    [old] = [m for m in ws.stale(pid) if m['type'] == 'analysis']
+    assert old['class_name'] == '高一（3）班' and old['detail'] == '完整分析' and not old['redone']
+    assert {m['detail'] for m in ws.stale(pid) if m['type'] == 'grading'} == {'甲 第 1 题', '乙 第 1 题'}
+
+    ws.grade_round(pid, assignment_id=a3['id'])
+    ws.confirm_gradings(pid, assignment_id=a3['id'])
+    ws.analyze(pid, assignment_id=a3['id'])
+    [old] = [m for m in ws.stale(pid) if m['type'] == 'analysis']
+    assert old['redone']  # a newer analysis of the same class and round exists: one click resolves it
+
+
+def test_practice_task_writes_questions_without_a_lesson_plan(ws):
+    crs = ws.create_course('高一语文', '语文')
+    pid = ws.start_task(crs['id'], 'practice')['project']['id']
+    step = ws.overview(pid)['next'][0]
+    assert (step['tab'], step['target']) == ('questions', '#q-topic')  # not back to 01
+    with pytest.raises(Conflict):
+        ws.generate_questions(pid)  # nothing to work from yet
+    from test_edu_workflow import question
+
+    ws.llm.handlers['generate_questions'] = lambda r, p: {
+        'questions': [{**question('词中“粪土当年万户侯”表达了怎样的情怀？'), 'type': 'short_answer'}]
+    }
+    ws.update_project(pid, knowledge_module='《沁园春·长沙》')
+    assert ws.overview(pid)['next'][0]['target'] == '#generate-questions'
+    out = ws.generate_questions(pid, types=['short_answer'], count=1, ab=False)
+    [q] = out['candidates'][0]['questions']
+    plan = ws.lesson_plans(pid)[0]
+    assert plan['status'] == 'draft' and all(o['inferred'] for o in plan['content']['objectives'])
+    assert '《沁园春·长沙》' in plan['content']['objectives'][0]['text']
+    cov = ws.coverage(pid)
+    assert cov['unconfirmed'] and cov['objectives'][0]['total'] == 1
+    assert q['content']['objective_ids'] == [cov['objectives'][0]['id']]
+    ws.generate_questions(pid, types=['short_answer'], count=1, ab=False)  # reuses the inferred objectives
+    assert sum(1 for x in ws.llm.calls if x['task'] == 'infer_objectives') == 1
+
+
+def test_a_plan_drafted_in_prep_is_confirmed_before_questions(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    ws.draft_lesson_plan(pid)
+    assert ws.overview(pid)['blockers']['questions']['action']['target'] == '#lesson-plan'
+    with pytest.raises(Conflict) as err:
+        ws.generate_questions(pid)
+    assert '01' in str(err.value)

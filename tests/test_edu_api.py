@@ -71,7 +71,7 @@ def test_error_codes(client):
     assert client.post('/api/projects', json={'title': 'x', 'subject': '../math'}).status_code == 400
     pid = client.post('/api/projects', json={'title': 'x', 'subject': 'history'}).json()['id']
     r = client.post(f'/api/projects/{pid}/questions/generate', json={})
-    assert r.status_code == 409 and '备课方案' in r.json()['detail']
+    assert r.status_code == 409 and '主题' in r.json()['detail']  # nothing to infer objectives from yet
     upd = client.patch(f'/api/projects/{pid}', json={'knowledge_module': '辛亥革命', 'lesson': '第1课时'}).json()
     assert upd['knowledge_module'] == '辛亥革命' and upd['lesson'] == '第1课时'
     assert client.get('/api/nothing').status_code == 404
