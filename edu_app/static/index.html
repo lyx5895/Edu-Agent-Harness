@@ -95,6 +95,11 @@
           </details>
         </div>
       </div>
+      <div class="card feedback-card" id="trial-feedback">
+        <span>用了一段时间后，你愿意继续用这个工作台吗？</span>
+        <span class="feedback-btns"><button class="small secondary" id="trial-willing">愿意继续用</button>
+          <button class="small link" id="trial-unwilling">暂不愿意</button></span>
+      </div>
       <div class="card hidden" id="legacy-card">
         <h3>待整理的旧项目 <span id="legacy-count" class="pill"></span></h3>
         <p class="muted">以前一节课一个项目。系统只按“进入下一课时”的前后关系分组提出候选，不会按相同标题或学生代号自动合并；你确认后才整理，整理前会备份数据库。</p>
@@ -265,7 +270,7 @@
         <div class="stage-head"><div><h2>学情分析</h2><p>汇总薄弱点与共性问题，确定需要重点讲解的内容</p></div><div class="continue" data-stage="analysis"></div></div>
         <div class="card">
           <div class="card-head"><h3>汇总批改结果</h3>
-            <div><label>轮次 <select id="a-round"></select></label>
+            <div class="head-actions"><label class="inline">轮次 <select id="a-round"></select></label>
               <label class="inline"><input type="checkbox" id="a-partial"> 只分析已确认的部分</label>
               <button id="analyze">汇总学情</button></div></div>
           <div id="analysis"></div>
@@ -275,7 +280,7 @@
           <p class="muted">确认后用于讲评和再练。</p>
           <div id="patterns"></div>
         </div>
-        <div class="card">
+        <div class="card" id="compare-card">
           <h3>两轮对比</h3>
           <p class="muted">再练的一轮批改确认后，看这些问题是否还在。</p>
           <div class="row"><label>前一轮 <input type="number" id="cmp-a" value="1" min="1"></label>
@@ -298,7 +303,7 @@
         </div>
         <div class="card">
           <div class="card-head"><h3>讲评稿</h3>
-            <div><label>依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>
+            <div class="head-actions"><label class="inline">依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>
           <div id="review-patterns" class="checks"></div>
           <div id="review-plans"></div>
         </div>
@@ -334,8 +339,8 @@
         </div>
         <div class="card">
           <h3>送去制作课件（coursemaker）</h3>
-          <p class="muted">把已确认的教案和题目打包（含版本和校验值，不含学生名单和作答），交给 coursemaker 生成讲义、课件和视频。</p>
-          <button class="secondary" id="package-btn">生成交换包</button>
+          <p class="muted">把已确认的教案和题目交给 coursemaker 生成讲义、课件和视频；不含学生名单和作答。</p>
+          <button class="secondary" id="package-btn">打包给 coursemaker</button>
           <div id="courseware-list"></div>
         </div>
       </div>
@@ -353,9 +358,7 @@
             <h3>试用记录</h3>
             <p class="muted">按设计文档 13.2 的成功标准，从系统已有记录计算：从建立任务到第一份可用成果的耗时（含等待和修改）、
               修改和换题次数、教案和题目实际用于教学的比例、串班错误、重复录入提示。只统计当前课程。</p>
-            <div class="row"><button class="small secondary" id="trial-refresh">生成试用记录</button>
-              <button class="small secondary" id="trial-willing">我愿意继续使用</button>
-              <button class="small link" id="trial-unwilling">暂不愿意</button></div>
+            <div class="row"><button class="small secondary" id="trial-refresh">生成试用记录</button></div>
             <div id="trial-report"></div>
           </div>
           <div class="card" id="research-card">
