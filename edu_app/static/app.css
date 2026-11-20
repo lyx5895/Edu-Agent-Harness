@@ -254,3 +254,4 @@ label.locked { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .grading-table td.score-lost { color: var(--bad); font-weight: 600; }
 .grading-table tr.full-row td { color: var(--muted); }
 .grading-table tr.full-row details { margin: 0; }
+label.locked, .card-head > label { white-space: nowrap; }
