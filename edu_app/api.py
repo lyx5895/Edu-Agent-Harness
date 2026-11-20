@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 
-from edu_core.access import CURRENT_USER, is_admin
+from edu_core.access import CURRENT_USER, Forbidden, is_admin
 from edu_core.config import load_settings
 from edu_core.context import ContextViolation
 from edu_core.llm import Gateway, ModelUnavailable
@@ -360,7 +360,8 @@ class MergeBody(BaseModel):
 
 
 class CaseReview(BaseModel):
-    reviewer: str = Field(min_length=1, max_length=60)
+    case_version: int = Field(ge=1)
+    reviewer: str = Field(default='', max_length=60)
     verdict: Literal['approve', 'reject']
     standard: str = Field(min_length=1, max_length=500)
     note: str = Field(default='', max_length=1000)
@@ -497,7 +498,13 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     def once(request: Request, scope: str, fn):
         """Idempotency-Key header (design doc 8): a retried request returns the first result instead of redoing it."""
+        actor = CURRENT_USER.get()
+        scope = f'{actor["id"] if actor else "local"}:{scope}'
         return ws().once(request.headers.get('Idempotency-Key', '').strip()[:120], scope, fn)
+
+    @app.exception_handler(Forbidden)
+    async def forbidden(_request: Request, exc: Forbidden):
+        return JSONResponse(status_code=403, content={'detail': str(exc)})
 
     @app.exception_handler(KeyError)
     async def not_found(_: Request, e: KeyError):
@@ -1076,7 +1083,15 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.post('/api/research/cases/{case_id}/review')
     def review_case(case_id: str, body: CaseReview):
-        return ws().review_case(case_id, body.reviewer, body.verdict, body.standard, body.note, body.role)
+        return ws().review_case(
+            case_id,
+            body.reviewer,
+            body.verdict,
+            body.standard,
+            body.note,
+            body.role,
+            expected_version=body.case_version,
+        )
 
     @app.post('/api/research/split')
     def freeze_split(body: SplitBody):
@@ -1103,8 +1118,8 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         return ws().revoke_consent(consent_id)
 
     @app.post('/api/datasets/export')
-    def export_dataset(course_id: str | None = None):
-        data = ws().export_dataset(course_id)
+    def export_dataset(request: Request, course_id: str | None = None):
+        data = once(request, f'dataset:{course_id}', lambda: ws().export_dataset(course_id))
         body = json.dumps(data, ensure_ascii=False, indent=1, default=str)
         return Response(
             body,

@@ -16,17 +16,48 @@ const RISK_LABEL = {
 };
 const STATUS_LABEL = { earned: '得分', partial: '部分得分', missed: '失分', undetermined: '待判定' };
 
+// Only request digests and random keys survive reloads, never student text or tokens.
+const pendingPosts = new Map();
+async function requestDigest(method, path, body) {
+  const digest = async (bytes) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) => b.toString(16).padStart(2, '0')).join('');
+  let content = body;
+  if (body instanceof FormData) {
+    content = [];
+    for (const [name, value] of body.entries()) {
+      content.push([name, value instanceof Blob ? { name: value.name, hash: await digest(await value.arrayBuffer()) } : value]);
+    }
+  }
+  return 'edu-pending:' + await digest(new TextEncoder().encode(JSON.stringify([S.userId || '', method, path, content ?? null])));
+}
+function pendingPost(id, value) {
+  if (value === undefined) {
+    try { return sessionStorage.getItem(id) || pendingPosts.get(id); } catch { return pendingPosts.get(id); }
+  }
+  if (value === null) pendingPosts.delete(id); else pendingPosts.set(id, value);
+  try { if (value === null) sessionStorage.removeItem(id); else sessionStorage.setItem(id, value); } catch { /* memory fallback */ }
+}
 async function api(method, path, body) {
   const opts = { method, headers: {} };
-  // A retried POST with the same key returns the first result instead of doing the work twice.
-  if (method === 'POST') opts.headers['Idempotency-Key'] = newKey();
+  const pendingId = method === 'POST' ? await requestDigest(method, path, body) : null;
+  if (pendingId) {
+    const key = pendingPost(pendingId) || newKey();
+    pendingPost(pendingId, key);
+    opts.headers['Idempotency-Key'] = key;
+  }
   if (body instanceof FormData) opts.body = body;
   else if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  // A network error, interrupted response or server error leaves the key available for retry.
   const res = await fetch(path, opts);
   const text = await res.text();
-  let data = null;
-  try { data = text ? JSON.parse(text) : null; } catch { data = { detail: text }; }
-  if (!res.ok) throw new Error((data && data.detail) ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : `请求失败（${res.status}）`);
+  let data;
+  try { data = text ? JSON.parse(text) : null; } catch { throw new Error('响应未完整收到，请重试以获取本次操作的结果'); }
+  if (!res.ok) {
+    const detail = data?.detail;
+    const running = res.status === 409 && typeof detail === 'string' && detail.includes('同一操作正在进行');
+    if (pendingId && res.status < 500 && !running) pendingPost(pendingId, null);
+    throw new Error(detail ? (typeof detail === 'string' ? detail : JSON.stringify(detail)) : `请求失败（${res.status}）`);
+  }
+  if (pendingId) pendingPost(pendingId, null); // A later intentional generation is a new operation.
   return data;
 }
 
@@ -102,6 +133,7 @@ async function init() {
   bindLogin();
   bindExtras();
   const me = await api('GET', '/api/me');
+  S.userId = me.user?.id || '';
   if (me.auth && !me.user) { showLogin(); return; }
   if (me.user) { $('#user-name').textContent = `${me.user.name}${me.user.role === 'admin' ? '（管理员）' : ''}`; $('#user-box').classList.remove('hidden'); }
   const pid = store.get('edu.pid');
@@ -1491,10 +1523,10 @@ async function renderResearch() {
     .map(([k, l]) => `<span class="pill" title="${esc((sum.definitions || {})[k] || '')}">${l} ${c[k] == null ? '未统计' : c[k]}</span>`).join(' ');
   const stageName = { lesson_plan: '备课', questions: '出题', grading: '批改', analysis: '学情', review: '讲评', explanation: '讲解' };
   const stateName = { pending: '待审定', approved: '已通过', rejected: '未通过', disputed: '有分歧', changed: '内容有变化，需重审' };
-  $('#research-cases').innerHTML = cases.length ? cases.map((x) => `<div class="task-row" data-case="${x.id}"><div class="task-main">${esc(stageName[x.stage] || x.stage)}
+  $('#research-cases').innerHTML = cases.length ? cases.map((x) => `<div class="task-row" data-case="${x.id}" data-case-version="${x.version}"><div class="task-main">${esc(stageName[x.stage] || x.stage)}
       <span class="pill">${esc(stateName[x.status] || x.status)}</span>${x.split ? ` <span class="pill">${x.split === 'test' ? '测试集' : '开发集'}</span>` : ''}
       <span class="muted">${x.artifact_ids.length} 个产物 · 来源组 ${esc(x.source_group.slice(-6))} · 审定 ${x.reviews.length} 次</span></div>
-      <div class="row"><input class="cr-reviewer" placeholder="审定人" style="width:7em"><input class="cr-standard" placeholder="审定标准">
+      <div class="row"><input class="cr-reviewer" ${S.userId ? 'disabled placeholder="当前登录用户"' : 'placeholder="审定人"'} style="width:7em"><input class="cr-standard" placeholder="审定标准">
       <button class="small secondary" data-case-verdict="approve">通过</button><button class="small link" data-case-verdict="reject">不通过</button></div></div>`).join('')
     : '<div class="kv muted">点“整理研究案例”按任务阶段生成；重试和内部调用不会增加案例。</div>';
   $('#consent-list').innerHTML = consents.map((x) => `<div class="kv">${esc(x.purposes.join('、'))} · 版本 ${esc(x.version)} · ${esc(x.granted_by)}
@@ -1547,9 +1579,7 @@ function bindExtras() {
     toast(`新增 ${r.created} 个研究案例`); await renderResearch();
   }));
   $('#dataset-export').addEventListener('click', (e) => busy(e.target, '导出中…', async () => {
-    const res = await fetch(`/api/datasets/export?course_id=${encodeURIComponent(S.course)}`, { method: 'POST', headers: { 'Idempotency-Key': newKey() } });
-    if (!res.ok) throw new Error((await res.json()).detail || '导出失败');
-    const data = await res.json();
+    const data = await api('POST', `/api/datasets/export?course_id=${encodeURIComponent(S.course)}`);
     downloadJson(data, `${data.manifest.version}.json`);
     const ex = Object.entries(data.manifest.excluded).map(([k, n]) => `${k} ${n}`).join('，');
     toast(`导出 ${data.records.length} 条；排除：${ex || '无'}`);
@@ -1589,7 +1619,7 @@ function bindExtras() {
     if (cv) {
       const row = cv.closest('[data-case]');
       await busy(cv, '…', async () => {
-        const r = await api('POST', `/api/research/cases/${row.dataset.case}/review`, { reviewer: $('.cr-reviewer', row).value.trim(), standard: $('.cr-standard', row).value.trim(), verdict: cv.dataset.caseVerdict });
+        const r = await api('POST', `/api/research/cases/${row.dataset.case}/review?course_id=${encodeURIComponent(S.course)}`, { case_version: Number(row.dataset.caseVersion), reviewer: $('.cr-reviewer', row).value.trim(), standard: $('.cr-standard', row).value.trim(), verdict: cv.dataset.caseVerdict });
         toast(`已记录审定：${r.status}`); await renderResearch();
       });
       return;

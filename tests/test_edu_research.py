@@ -324,3 +324,131 @@ def test_training_export_needs_consent_and_keeps_student_text_out(ws):
     marked = ws.revoke_consent(consent['id'])['datasets_marked']
     assert len(marked) == 1
     assert ws.export_dataset(crs['id'])['records'] == []
+
+
+def test_reviews_are_bound_to_case_version(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, _ = prep_and_practice(ws, crs, o3)
+    ws.build_research_cases(crs['id'])
+    case = next(c for c in ws.research_cases(crs['id']) if c['stage'] == 'lesson_plan')
+    ws.review_case(case['id'], '复议人', 'approve', '旧标准', role='adjudicator')
+    plan = ws.lesson_plans(pid)[0]
+    ws.confirm(ws.revise_plan_part(plan['id'], 'activity:1', '缩短导入')['lesson_plan']['id'])
+    ws.build_research_cases(crs['id'])
+    updated = next(c for c in ws.research_cases(crs['id']) if c['id'] == case['id'])
+    assert updated['version'] == case['version'] + 1 and updated['status'] == 'changed'
+    with pytest.raises(Conflict, match='内容已变化'):
+        ws.review_case(case['id'], '新审定人', 'approve', '标准', expected_version=case['version'])
+    assert ws.review_case(case['id'], '新审定人', 'reject', '新版不合格')['status'] == 'rejected'
+    assert ws.review_case(case['id'], '复议人', 'reject', '新版标准', role='adjudicator')['status'] == 'rejected'
+    ws.build_research_cases(crs['id'])
+    assert next(c for c in ws.research_cases(crs['id']) if c['id'] == case['id'])['version'] == updated['version']
+
+
+def test_edit_export_waits_for_adoption_and_uses_final_teacher_version(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, _ = prep_and_practice(ws, crs, o3)
+    ws.grant_consent(crs['id'], ['training'], 'v1', '老师')
+    plan = ws.lesson_plans(pid)[0]
+    revision = ws.revise_plan_part(plan['id'], 'activity:1', '缩短导入')['lesson_plan']
+    assert not [r for r in ws.export_dataset(crs['id'])['records'] if r['type'] == 'edit']
+    final = ws.edit(revision['id'], {'notes': '老师核对后的最终稿'})
+    ws.confirm(final['id'])
+    [record] = [r for r in ws.export_dataset(crs['id'])['records'] if r['type'] == 'edit']
+    assert record['target']['notes'] == '老师核对后的最终稿' and final['id'] in record['origin_ids']
+
+
+def test_tuning_before_freeze_and_new_descendants_stay_in_dev(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, _ = prep_and_practice(ws, crs, o3)
+    ws.build_research_cases(crs['id'])
+    case = ws.research_cases(crs['id'])[0]
+    ws.use_for_tuning([case['id']], '调提示词')
+    ws.freeze_split(crs['id'], test_ratio=0.999999, seed='would-be-test')
+    assert {c['split'] for c in ws.research_cases(crs['id'])} == {'dev'}
+    ws.grant_consent(crs['id'], ['training'], 'v1', '老师')
+    plan = ws.lesson_plans(pid)[0]
+    ws.confirm(ws.revise_plan_part(plan['id'], 'activity:1', '缩短导入')['lesson_plan']['id'])
+    ws.build_research_cases(crs['id'])
+    data = ws.export_dataset(crs['id'], test_ratio=0.999999, seed='another')
+    assert {r['split'] for r in data['records']} == {'dev'}
+
+
+def test_frozen_exports_ignore_new_seed_and_version_changes_with_consent(ws):
+    crs, o3, _ = two_classes(ws)
+    prep_and_practice(ws, crs, o3)
+    ws.grant_consent(crs['id'], ['training'], 'v1', '老师')
+    first = ws.export_dataset(crs['id'], test_ratio=0.999999)
+    second = ws.export_dataset(crs['id'], seed='new', test_ratio=0.000001)
+    assert first['records'] == second['records']
+    assert first['manifest']['version'] == second['manifest']['version']
+    ws.build_research_cases(crs['id'])
+    with pytest.raises(Conflict, match='调优'):
+        ws.use_for_tuning([ws.research_cases(crs['id'])[0]['id']], '调提示词')
+    ws.grant_consent(crs['id'], ['training'], 'v2', '老师')
+    assert ws.export_dataset(crs['id'])['manifest']['version'] != first['manifest']['version']
+
+
+def test_source_family_partition_conflicts_fail_closed(ws):
+    from edu_core import artifacts as A
+
+    crs, o3, _ = two_classes(ws)
+    _pid, q = prep_and_practice(ws, crs, o3)
+    other = ws.create_course('另一门课', '数学')
+    pid2 = ws.start_task(other['id'], 'prep', knowledge_module='另一主题')['project']['id']
+    plan2 = ws.draft_lesson_plan(pid2)['lesson_plan']
+    ws.confirm(plan2['id'])
+    for course in (crs, other):
+        ws.grant_consent(course['id'], ['training'], 'v1', '老师')
+    ws.export_dataset(crs['id'], test_ratio=0.999999)
+    ws.export_dataset(other['id'], test_ratio=0.000001)
+    # A new derived artifact joins two previously separated source families.
+    with ws.store.tx() as c:
+        A.create(
+            c,
+            pid2,
+            'lesson_plan',
+            plan2['content'],
+            origin='merged',
+            refs=[(q['id'], 'derived_from'), (plan2['id'], 'derived_from')],
+        )
+    all_groups = ws.source_groups()['artifacts']
+    assert ws.source_groups(other['id'])['artifacts'][plan2['id']] == all_groups[q['id']]
+    with pytest.raises(Conflict, match='历史冲突'):
+        ws.export_dataset(other['id'])
+
+
+def test_legacy_tuning_history_is_honored_before_freezing(ws):
+    from edu_core.storage import event
+
+    crs, o3, _ = two_classes(ws)
+    prep_and_practice(ws, crs, o3)
+    ws.build_research_cases(crs['id'])
+    case = ws.research_cases(crs['id'])[0]
+    with ws.store.tx() as c:
+        event(c, 'research', 'case_used_for_tuning', {'case': case['id'], 'purpose': '旧版本调优记录'})
+    ws.freeze_split(crs['id'], test_ratio=1)
+    assert {c['split'] for c in ws.research_cases(crs['id'])} == {'dev'}
+
+
+def test_old_reviews_are_retained_but_need_revalidation(tmp_path, monkeypatch):
+    from edu_core import storage
+
+    db = str(tmp_path / 'old.sqlite')
+    with monkeypatch.context() as m:
+        m.setattr(storage, 'SCHEMA_VERSION', 8)
+        old = storage.Store(db)
+    with old.tx() as c:
+        c.execute(
+            "INSERT INTO research_cases(id,project_id,stage,artifact_ids,source_group,status,created_at) VALUES('case1','p','lesson_plan','[]','g','approved',0)"
+        )
+        c.execute(
+            "INSERT INTO case_reviews(id,case_id,reviewer,role,verdict,standard,created_at) VALUES('review1','case1','reviewer','adjudicator','approve','standard',0)"
+        )
+    upgraded = storage.Store(db)
+    storage.Store(db)  # Reopening is safe and does not invalidate newly versioned data again.
+    with upgraded.read() as c:
+        case = dict(c.execute('SELECT * FROM research_cases').fetchone())
+        review = dict(c.execute('SELECT * FROM case_reviews').fetchone())
+    assert case['status'] == 'changed' and case['version'] == 1
+    assert review['case_version'] == 0 and review['verdict'] == 'approve'

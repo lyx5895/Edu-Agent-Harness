@@ -180,6 +180,15 @@ ALTER TABLE projects ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';
 ALTER TABLE class_groups ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';
 """,
 }
+# Old reviews did not record which artifact snapshot they approved. Keep them for audit,
+# but require a fresh review instead of assigning them to the current version by guesswork.
+MIGRATIONS[9] = """
+ALTER TABLE research_cases ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE case_reviews ADD COLUMN case_version INTEGER NOT NULL DEFAULT 0;
+UPDATE research_cases SET status='changed' WHERE status IN ('approved','rejected','disputed');
+CREATE TABLE IF NOT EXISTS research_partitions(
+  artifact_id TEXT PRIMARY KEY, split TEXT NOT NULL, tuned INTEGER NOT NULL DEFAULT 0);
+"""
 SCHEMA_VERSION = max(MIGRATIONS)
 
 

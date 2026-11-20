@@ -17,6 +17,7 @@ import json
 import time
 
 from edu_core import artifacts as A
+from edu_core.access import CURRENT_USER, Forbidden, is_admin
 from edu_core.storage import event, new_id, row
 from edu_core.text import dump, sha
 from edu_core.workflow.common import Conflict
@@ -60,11 +61,14 @@ class ResearchMixin:
 
         if not pids:
             return {}
+        requested = set(pids)
+        pids = self._project_ids(c)
         marks = ','.join('?' * len(pids))
         arts = [
             dict(r)
             for r in c.execute(
-                f'SELECT id, lineage_id, edit_of, generation_id FROM artifacts WHERE project_id IN ({marks})', pids
+                f'SELECT id, project_id, lineage_id, edit_of, generation_id FROM artifacts WHERE project_id IN ({marks})',
+                pids,
             )
         ]
         for a in arts:
@@ -88,6 +92,8 @@ class ResearchMixin:
         groups = {}
         for a in arts:
             root = find('a:' + a['id'])
+            if a['project_id'] not in requested:
+                continue
             groups[a['id']] = 'sg_' + hashlib.sha256(root.encode()).hexdigest()[:12]
         return groups
 
@@ -162,7 +168,7 @@ class ResearchMixin:
                         made += 1
                     elif json.loads(old['artifact_ids']) != sorted(ids):
                         c.execute(
-                            "UPDATE research_cases SET artifact_ids=?, source_group=?, status=CASE WHEN status='pending' THEN 'pending' ELSE 'changed' END WHERE id=?",
+                            "UPDATE research_cases SET artifact_ids=?, source_group=?, version=version+1, status=CASE WHEN status='pending' THEN 'pending' ELSE 'changed' END WHERE id=?",
                             (dump(sorted(ids)), group, old['id']),
                         )
         return {'created': made, **self.research_summary(course_id)}
@@ -225,9 +231,16 @@ class ResearchMixin:
                 out.append(r)
             return out
 
-    def review_case(self, case_id, reviewer, verdict, standard, note='', role='reviewer'):
+    def review_case(self, case_id, reviewer, verdict, standard, note='', role='reviewer', expected_version=None):
         """独立审定: a reviewer who did not produce any of the case's artifacts records a verdict against a stated
         standard. Two reviewers who disagree make the case ``disputed`` until an ``adjudicator`` decides."""
+        actor = CURRENT_USER.get()
+        if self.settings.auth:
+            if actor is None:
+                raise Forbidden('请先登录再审定')
+            if role == 'adjudicator' and not is_admin(actor):
+                raise Forbidden('只有管理员可以复议')
+            reviewer = actor['id']
         reviewer, standard = (reviewer or '').strip(), (standard or '').strip()
         if not reviewer or not standard:
             raise ValueError('请填写审定人和审定标准')
@@ -239,22 +252,41 @@ class ResearchMixin:
             case = c.execute('SELECT * FROM research_cases WHERE id=?', (case_id,)).fetchone()
             if case is None:
                 raise KeyError('研究案例不存在')
-            producers = {A.get(c, aid)['created_by'] for aid in json.loads(case['artifact_ids'])}
+            if expected_version is not None and expected_version != case['version']:
+                raise Conflict('案例内容已变化，请刷新后审定最新版本')
+            producers = set()
+            for aid in json.loads(case['artifact_ids']):
+                artifact = A.get(c, aid)
+                producers.update(
+                    r[0]
+                    for r in c.execute(
+                        'SELECT DISTINCT created_by FROM artifacts WHERE lineage_id=?', (artifact['lineage_id'],)
+                    )
+                )
             producers |= {
                 r[0]
                 for r in c.execute(
                     "SELECT DISTINCT user_id FROM runs WHERE project_id=? AND user_id!=''", (case['project_id'],)
                 )
             }
+            owner = c.execute('SELECT owner_id FROM projects WHERE id=?', (case['project_id'],)).fetchone()
+            if owner and owner[0]:
+                producers.add(owner[0])
             if reviewer in producers or reviewer == 'teacher':
                 raise Conflict('审定人不能是产出这些内容的人（独立审定）')
-            if c.execute('SELECT 1 FROM case_reviews WHERE case_id=? AND reviewer=?', (case_id, reviewer)).fetchone():
+            if c.execute(
+                'SELECT 1 FROM case_reviews WHERE case_id=? AND reviewer=? AND case_version=?',
+                (case_id, reviewer, case['version']),
+            ).fetchone():
                 raise Conflict('这位审定人已经审定过这个案例')
             c.execute(
-                'INSERT INTO case_reviews(id,case_id,reviewer,role,verdict,standard,note,created_at) VALUES(?,?,?,?,?,?,?,?)',
-                (new_id('rev'), case_id, reviewer, role, verdict, standard, note, time.time()),
+                'INSERT INTO case_reviews(id,case_id,reviewer,role,verdict,standard,note,created_at,case_version) VALUES(?,?,?,?,?,?,?,?,?)',
+                (new_id('rev'), case_id, reviewer, role, verdict, standard, note, time.time(), case['version']),
             )
-            reviews = c.execute('SELECT role, verdict FROM case_reviews WHERE case_id=?', (case_id,)).fetchall()
+            reviews = c.execute(
+                'SELECT role, verdict FROM case_reviews WHERE case_id=? AND case_version=? ORDER BY created_at, rowid',
+                (case_id, case['version']),
+            ).fetchall()
             final = [r['verdict'] for r in reviews if r['role'] == 'adjudicator']
             verdicts = {r['verdict'] for r in reviews if r['role'] == 'reviewer'}
             if final:
@@ -272,31 +304,88 @@ class ResearchMixin:
             )
             return {'status': status}
 
-    def freeze_split(self, course_id=None, test_ratio=0.2, seed='v1'):
-        """Assign dev/test by source group (never by case), once: frozen cases keep their split."""
-        with self.store.tx() as c:
-            sql, args = "SELECT id, source_group FROM research_cases WHERE split=''", []
-            if course_id:
-                sql, args = sql + ' AND course_id=?', [course_id]
-            n = 0
-            for r in c.execute(sql, args).fetchall():
+    def _freeze_sources(self, c, artifact_ids, seed='v1', test_ratio=0.2, *, tuning=False):
+        """Persist partitions on artifact identities, not a recomputed union-find root.
+
+        Growing/merging source families inherits their previous partition. Conflicting
+        historical partitions fail closed, including exports from before this registry.
+        """
+        groups = self._source_groups(c, self._project_ids(c))
+        selected = {groups[aid] for aid in artifact_ids if aid in groups}
+        members = {}
+        for aid, group in groups.items():
+            members.setdefault(group, []).append(aid)
+        splits = {g: set() for g in selected}
+        tuned = set()
+
+        def remember(ids, split='', used=False):
+            for aid in ids:
+                group = groups.get(aid)
+                if group not in selected:
+                    continue
+                if split:
+                    splits[group].add(split)
+                if used:
+                    tuned.add(group)
+
+        for r in c.execute('SELECT * FROM research_partitions'):
+            remember([r['artifact_id']], r['split'], bool(r['tuned']))
+        cases = [dict(r) for r in c.execute('SELECT * FROM research_cases')]
+        case_ids = {r['id']: json.loads(r['artifact_ids']) for r in cases}
+        for r in cases:
+            remember(case_ids[r['id']], r['split'])
+        # Preserve history made by the previous implementation during migration.
+        for r in c.execute("SELECT payload FROM events WHERE kind='case_used_for_tuning'"):
+            remember(case_ids.get(json.loads(r[0]).get('case'), []), used=True)
+        for r in c.execute('SELECT manifest FROM dataset_exports'):
+            for record in json.loads(r[0]).get('records', []):
+                remember(record.get('origin_ids', []), record.get('split', ''))
+        if tuning:
+            tuned |= selected
+        result = {}
+        for group in selected:
+            previous = splits[group]
+            if len(previous) > 1 or ('test' in previous and group in tuned):
+                raise Conflict('同源材料存在测试集与开发/调优历史冲突，请先整理历史划分；不能继续导出或调优')
+            split = (
+                next(iter(previous)) if previous else ('dev' if group in tuned else _split_of(group, seed, test_ratio))
+            )
+            for aid in members[group]:
                 c.execute(
-                    'UPDATE research_cases SET split=? WHERE id=?',
-                    (_split_of(r['source_group'], seed, test_ratio), r['id']),
+                    'INSERT OR REPLACE INTO research_partitions(artifact_id,split,tuned) VALUES(?,?,?)',
+                    (aid, split, int(group in tuned)),
                 )
-                n += 1
+                result[aid] = split
+        for case in cases:
+            ids = case_ids[case['id']]
+            values = {result[aid] for aid in ids if aid in result}
+            if len(values) > 1:
+                raise Conflict('案例包含不同分区的来源，请拆分案例后再冻结')
+            if values:
+                c.execute('UPDATE research_cases SET split=? WHERE id=?', (next(iter(values)), case['id']))
+        return result
+
+    def freeze_split(self, course_id=None, test_ratio=0.2, seed='v1'):
+        """Freeze once for the whole source family, including existing tuning history."""
+        with self.store.tx() as c:
+            sql, args = 'SELECT artifact_ids, split FROM research_cases', []
+            if course_id:
+                sql, args = sql + ' WHERE course_id=?', [course_id]
+            cases = c.execute(sql, args).fetchall()
+            self._freeze_sources(c, [aid for r in cases for aid in json.loads(r['artifact_ids'])], seed, test_ratio)
+            n = sum(not r['split'] for r in cases)
         return {'frozen': n}
 
     def use_for_tuning(self, case_ids, purpose):
-        """Record cases used to tune prompts, judges or models. Test-split cases are refused: material used for
-        tuning cannot also be the independent final test (design doc 11.8)."""
+        """Reserve every connected source as dev before recording tuning use."""
         with self.store.tx() as c:
+            ids = []
             for cid in case_ids:
-                r = c.execute('SELECT split, project_id FROM research_cases WHERE id=?', (cid,)).fetchone()
+                r = c.execute('SELECT artifact_ids FROM research_cases WHERE id=?', (cid,)).fetchone()
                 if r is None:
                     raise KeyError(f'研究案例不存在：{cid}')
-                if r['split'] == 'test':
-                    raise Conflict('测试集的案例不能用于调整提示词、裁判或模型')
+                ids.extend(json.loads(r['artifact_ids']))
+            self._freeze_sources(c, ids, tuning=True)
             for cid in case_ids:
                 event(c, 'research', 'case_used_for_tuning', {'case': cid, 'purpose': purpose})
         return {'ok': True}
@@ -465,6 +554,10 @@ class ResearchMixin:
                         or (not a['edit_of'] and not a['content'].get('regenerated_from'))
                     ):
                         continue
+                    final = A.confirmed_in_lineage(c, a['lineage_id'])
+                    if final is None or final['version'] < a['version'] or A.is_stale(c, final['id']):
+                        skip('not_adopted')
+                        continue
                     src = A.get(c, a['edit_of'] or a['content']['regenerated_from'])
                     if consent is None:
                         skip('no_training_consent')
@@ -478,9 +571,9 @@ class ResearchMixin:
                                 consent,
                                 groups,
                                 cid,
-                                target=a['content'],
+                                target=final['content'],
                                 label='teacher_instruction',
-                                final_id=a['id'],
+                                final_id=final['id'],
                             ),
                             'input': {'original': src['content'], 'instruction': instr},
                         }
@@ -542,9 +635,11 @@ class ResearchMixin:
             )
             if skip_student:
                 excluded['verification_student_text'] = skip_student
+            partitions = self._freeze_sources(c, [r['origin_ids'][0] for r in records], seed, test_ratio)
             for r in records:
-                r['split'] = _split_of(r['source_group'], seed, test_ratio)
-            version = 'ds_' + sha(dump(sorted(r['record_id'] for r in records)))[:12]
+                r['split'] = partitions[r['origin_ids'][0]]
+            records.sort(key=lambda r: r['record_id'])
+            version = 'ds_' + sha(dump(records))[:12]
             manifest = {
                 'version': version,
                 'created_at': time.time(),

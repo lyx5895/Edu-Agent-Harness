@@ -16,6 +16,7 @@ Rules:
 import json
 import time
 
+from edu_core.access import CURRENT_USER
 from edu_core.storage import event, new_id, row
 from edu_core.text import dump, sha
 
@@ -99,6 +100,9 @@ def create(
     task_id='',
     assignment_id='',
 ):
+    actor = CURRENT_USER.get()
+    if actor and created_by == 'teacher':
+        created_by = actor['id']
     if type_ not in TYPES:
         raise ValueError(f'未知产物类型：{type_}')
     if status not in STATUSES:
