@@ -8,7 +8,9 @@ import time
 
 from edu_core import artifacts as A
 from edu_core import curriculum as CUR
-from edu_core.storage import event, new_id
+from edu_core.context import Context
+from edu_core.llm import ModelUnavailable
+from edu_core.storage import event, new_id, record_generation
 from edu_core.subjects import pack
 from edu_core.text import sha
 from edu_core.workflow.common import (
@@ -89,6 +91,7 @@ class ProjectsMixin:
             'selected': selected,
             'off': bool(chosen and chosen.get('off')),
             'chosen_by': chosen.get('chosen_by') if chosen else None,
+            'note': chosen.get('note', '') if chosen else '',
             'weak': not chosen and not auto and bool(found),
         }
 
@@ -99,6 +102,55 @@ class ProjectsMixin:
         top = found[0]['score']
         # 选学 items (not examined) are offered but never picked automatically
         return [it for it in found if it['score'] >= 0.75 * top and not it.get('optional')][:4]
+
+    def _confirm_standards(self, pid, llm):
+        """Before a plan or practice is drafted from an automatic pick, a model confirms which standards this lesson
+        actually rests on, from the lexical candidates and their units (characters alone matched 对数的运算性质 to
+        向量 and 复数). A teacher's pick or 不参考课标 is never touched; a model failure keeps the automatic pick."""
+        from edu_core.workflow.prompts import PICK_STANDARDS_SYSTEM
+        from edu_core.workflow.schemas import StandardPick
+
+        with self.store.read() as c:
+            p = self._project(c, pid)
+        chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
+        if not CUR.load(p['subject']) or (chosen and chosen.get('chosen_by') in ('teacher', 'model')):
+            return
+        query = self._curriculum_query(p)
+        cands = CUR.candidates(p['subject'], query)
+        if not cands:
+            return
+        ctx = Context('pick_standards')
+        ctx.add_other('project', pid)
+        ctx.add_other('curriculum', p['subject'], sha(_json([it['id'] for it in cands])), items=[it['id'] for it in cands])
+        try:
+            out, meta = llm.complete(
+                'generator',
+                'pick_standards',
+                PICK_STANDARDS_SYSTEM.format(subject=p['pack']['name']),
+                _json(
+                    {
+                        '课时信息': {
+                            '知识模块': p.get('knowledge_module', ''),
+                            '课时': p.get('lesson', ''),
+                            '本课时内容': p.get('lesson_scope', ''),
+                            '年级': p['grade'],
+                        },
+                        '候选条目': [{'编号': it['id'], '位置': it['label'], '原文': it['text']} for it in cands],
+                    }
+                ),
+                StandardPick,
+            )
+        except ModelUnavailable:
+            return
+        allowed = {it['id'] for it in cands}
+        ids = [i for i in dict.fromkeys(out.ids) if i in allowed][:3]
+        with self.store.tx() as c:
+            record_generation(c, pid, meta, ctx.manifest, 'pick-standards-v1')
+            note = '' if ids else out.note.strip()[:200]
+            c.execute(
+                'UPDATE projects SET curriculum=? WHERE id=?',
+                (_json({'ids': ids, 'off': False, 'chosen_by': 'model', 'note': note}), pid),
+            )
 
     def _curriculum_for_plan(self, c, p):
         """Resolve the standard items for drafting: the teacher's pick, else an automatic pick saved for review."""
@@ -286,8 +338,9 @@ class ProjectsMixin:
                 changes['curriculum'] = _json({'ids': ids, 'off': off, 'chosen_by': 'teacher'})
             if 'knowledge_module' in changes or 'lesson_scope' in changes:
                 prev = json.loads(p['curriculum']) if p.get('curriculum') else {}
-                if prev.get('chosen_by') == 'auto' and 'curriculum' not in changes:
-                    changes['curriculum'] = ''  # the automatic pick follows the course info; a teacher's pick stays
+                moved = any(k in changes and changes[k] != (p.get(k) or '') for k in ('knowledge_module', 'lesson_scope'))
+                if prev.get('chosen_by') in ('auto', 'model') and moved and 'curriculum' not in changes:
+                    changes['curriculum'] = ''  # an automatic or model pick follows the course info; a teacher's stays
             if subject is not None and pack(subject)['id'] != p['subject']:
                 has_questions = c.execute(
                     "SELECT 1 FROM artifacts WHERE project_id=? AND type='question' LIMIT 1", (pid,)

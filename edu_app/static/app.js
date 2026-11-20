@@ -806,7 +806,10 @@ async function renderCurriculum(q) {
     ? `“${q}”的搜索结果，勾选后保存课时信息。`
     : r.weak ? '没有找到明确对应的课标条目：请从下面勾选或换个说法搜索；都不勾选时，备课方案不受课标约束。'
     : r.chosen_by === 'teacher' ? '按你勾选的条目生成。目标会标出依据哪一条，要求不能高于课标用词。'
-      : '按课时信息自动匹配，生成备课方案时使用勾选的条目；可以增减，保存课时信息后生效。';
+      : r.chosen_by === 'model'
+        ? (r.selected.length ? '已按课时信息核对过对应条目，生成时使用勾选的条目；可以增减，保存后以你的选择为准。'
+          : `课标里没有直接对应本课时的条目${r.note ? `（${r.note}）` : ''}。可以从下面勾选，或勾选“不参考课标”。`)
+        : '按课时信息初步匹配；生成备课方案前会再核对一遍。你也可以直接增减，保存后以你的选择为准。';
   const selected = new Set(dirty ? keep.map((k) => k.id) : r.selected);
   const row = (it) => `<label class="cur-item">
       <input type="checkbox" value="${esc(it.id)}" ${selected.has(it.id) ? 'checked' : ''}>
@@ -946,7 +949,10 @@ function questionBody(q) {
   if (checks.answer_suspect) warn.push('<span class="pill bad">答案存疑</span>');
   if ((checks.flags || []).length) warn.push('<span class="pill warn">需核对</span>');
   if (checks.solver === 'agree' && !(checks.flags || []).length) warn.push('<span class="pill ok">自检通过</span>');
-  if (checks.difficulty) warn.push(`<span class="pill">难度 ${esc(checks.difficulty)}</span>`);
+  // A difficulty off the asked one is shown on the difficulty pill itself, not as a 需核对 reason.
+  if (checks.difficulty) warn.push(checks.difficulty_asked
+    ? `<span class="pill warn" title="审核模型评估的难度与要求不同">难度 ${esc(checks.difficulty)}（要求${esc(checks.difficulty_asked)}）</span>`
+    : `<span class="pill">难度 ${esc(checks.difficulty)}</span>`);
   const notes = [...(checks.flags || []), ...(checks.notes || [])].map((n) => `<div class="kv flag">⚠ ${esc(n)}</div>`).join('');
   const goal = (c.objective_ids || []).map((id) => S.goals && S.goals[id]).filter(Boolean)[0];
   const options = (c.options || []).map((o, i) => `<div>${'ABCDEFGH'[i]}. ${esc(o)}</div>`).join('');
@@ -956,6 +962,7 @@ function questionBody(q) {
     <div class="stem">${esc(c.stem)}</div>${options}
     ${c.answer_key ? `<div class="kv">答案：${esc(c.answer_key)}${(c.accepted || []).length ? '（也接受：' + esc(c.accepted.join('、')) + '）' : ''}</div>` : ''}
     <div class="kv">参考答案：${esc(c.reference)}</div>${notes}
+    ${(checks.suggestions || []).length ? `<details class="suggest"><summary>改进建议（${checks.suggestions.length}）</summary>${checks.suggestions.map((x) => `<div class="kv">${esc(x)}</div>`).join('')}</details>` : ''}
     ${checks.solver_answer ? `<details><summary>查看独立解题的过程（${esc(checks.solver_score || '')}）</summary><div class="answer">${esc(checks.solver_answer)}</div></details>` : ''}
     ${rubricTable(r.points)}`;
 }
@@ -1228,8 +1235,10 @@ function lessonPlanItem(a) {
   const goalNo = Object.fromEntries((c.objectives || []).map((o, i) => [o.id, i + 1]));
   return `<div class="item" data-id="${a.id}">
     <div class="item-head"><div>${statusPill(a)}</div></div>
+    ${(c.objectives || []).length && c.objectives.every((o) => (o.checks || []).includes('未对应课标'))
+    ? '<div class="banner warn">所有目标都没有对应到课标条目：课时信息里勾选的课标可能不对，请在“修改要求与材料”里检查后重新生成。</div>' : ''}
     <h4>教学目标</h4>
-    <ol class="lines">${(c.objectives || []).map((o) => `<li><b>${esc(o.text)}</b> ${o.inferred ? '<span class="pill">由导入试卷反推</span>' : ''}
+    <ol class="lines">${(c.objectives || []).map((o) => `<li><b>${esc(o.text)}</b> ${o.inferred ? '<span class="pill" title="由导入试卷或出题要求反推，还没有确认">反推的目标</span>' : ''}
       ${(o.checks || []).map((x) => `<span class="pill warn">${esc(x)}</span>`).join(' ')}
       ${o.beyond_reason ? `<span class="pill warn" title="${esc(o.beyond_reason)}">超出课标：${esc(o.beyond_reason)}</span>` : ''}
       <div class="kv">达成标准：${esc(o.success_criterion || '（未填写）')}</div>

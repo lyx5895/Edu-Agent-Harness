@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 
 from edu_core import artifacts as A
@@ -42,6 +43,24 @@ from edu_core.workflow.schemas import (
 AB_RULE_VERSION = 'ab-v1'
 AB_UI_VERSION = 'ui-2026-11'
 REASON_TAGS = ('更贴合目标', '难度更合适', '更清楚', '有事实错误', '依据不足', '其他')
+
+
+def _bigrams(text):
+    text = re.sub(r'\s+', '', text)
+    return {text[i : i + 2] for i in range(len(text) - 1)}
+
+
+def _mark_similar(items, threshold=0.6):
+    """Parts are written without seeing each other: a question much like an earlier one gets a suggestion that says
+    so (never a 需核对 flag). Similarity is the overlap of character pairs of the stems, options included."""
+    seen = []
+    for k, (d, checks) in enumerate(items):
+        grams = _bigrams(d.stem + ''.join(d.options))
+        for j, other in seen:
+            if grams and other and len(grams & other) / min(len(grams), len(other)) >= threshold:
+                checks.setdefault('suggestions', []).append(f'与本次生成的第 {j + 1} 道题内容相近，可以换个角度')
+                break
+        seen.append((k, grams))
 
 
 class QuestionsMixin:
@@ -99,36 +118,48 @@ class QuestionsMixin:
                 standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
                 ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
             carry = self._carryover_for_prompt(c, ctx, p)
-            goal_list = [
-                {'index': i, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
-                for i, o in enumerate(objs)
-            ]
             materials = self._material_context(c, ctx, pid, limit=6000)
         allowed = [t for t in (types or p['pack']['types']) if t in p['pack']['types']]
         if not allowed:
             raise ValueError('所选题型不属于该学科')
-        user = _json(
-            {
+        carry_part = {carry.pop('label'): carry} if carry else {}
+
+        def request(part):
+            """The generation input for some of the objectives (``part``: indexes into ``objs``). One part per
+            objective keeps each reply short (a whole set used to run past max_tokens) and lets parts run side by
+            side; the suggested types rotate per objective so the merged set does not repeat one question type."""
+            sub = [objs[i] for i in part]
+            lead = part[0] % len(allowed)
+            return {
                 '学科': p['pack']['name'],
                 '年级': p['grade'],
-                '教学目标': goal_list,
+                '教学目标': [
+                    {'index': k, '目标': o['content']['text'], '达成标准': o['content'].get('success_criterion', '')}
+                    for k, o in enumerate(sub)
+                ],
                 '本课重点': plan['content'].get('key_points', []),
                 '本课难点': plan['content'].get('difficulties', []),
                 '本课时内容': p.get('lesson_scope', ''),
                 '课标条目': standards,
                 '课标教学提示': hints,
-                '课堂活动': self._activities_for_prompt(plan, objs),
+                # the other objectives are another part's: named so this part stays inside its own
+                '其他目标': [objs[i]['content']['text'] for i in range(len(objs)) if i not in part],
+                '课堂活动': [a for a in self._activities_for_prompt(plan, sub) if a['对应目标序号']],
                 '备课备注': plan['content'].get('notes', ''),
-                **({carry.pop('label'): carry} if carry else {}),
+                # one 巩固题 for the whole set, not one per part
+                **(carry_part if part[0] == 0 else {}),
                 '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
+                '建议优先题型': [QUESTION_TYPES[t] for t in (allowed[lead:] + allowed[:lead])[:2]],
                 '每个目标出题数': max(1, min(int(count), 5)),
                 '练习用途': purpose,
                 '难度': difficulty,
                 '老师说明': notes or p['notes'],
             }
-        )
+
+        parts = [[i] for i in range(len(objs))]
+        user = _json(request(list(range(len(objs)))))  # the whole request: the comparison's shared input
         trigger, sample_rate = 'requested', 1.0
         if ab is None:
             trigger, sample_rate = 'sampled', self.settings.ab_rate
@@ -139,14 +170,16 @@ class QuestionsMixin:
         if use_ab:
             self.rng.shuffle(variants)  # randomize which variant is shown as A; fixed for this comparison
 
-        def run(variant):
+        def run_part(variant, part):
             system = GENERATE_SYSTEM.format(
                 subject=p['pack']['name'],
                 types='、'.join(f'{t}（{QUESTION_TYPES[t]}）' for t in allowed),
                 variant=VARIANTS[variant],
             )
-            out, meta = llm.complete('generator', 'generate_questions', system, user, QuestionSet)
+            out, meta = llm.complete('generator', 'generate_questions', system, _json(request(part)), QuestionSet)
             drafts, dropped = usable_drafts(out.questions, allowed)
+            for d in drafts:  # the part numbered its objectives from 0: back to the plan's numbering
+                d.objective_index = part[d.objective_index] if 0 <= d.objective_index < len(part) else part[0]
             progress.grow('独立解题与审核', len(drafts))
 
             def check(d):
@@ -154,8 +187,27 @@ class QuestionsMixin:
                 progress.tick()
                 return result
 
-            checks = self._parallel(check, drafts)
-            return variant, meta, list(zip(drafts, checks)), dropped
+            # each part's questions are checked as soon as that part is written, not after the slowest part
+            return meta, list(zip(drafts, self._parallel(check, drafts))), dropped
+
+        def run(variant):
+            """All parts of one version side by side. A failed part costs its own questions only (reported with the
+            dropped ones); the version fails only when every part failed."""
+
+            def attempt_part(part):
+                try:
+                    return run_part(variant, part), None
+                except Exception as e:  # noqa: BLE001 - reported per part, raised below when nothing came back
+                    return None, f'第 {part[0] + 1} 条目标的题没有生成成功（{type(e).__name__}: {e}）'[:200]
+
+            done = self._parallel(attempt_part, parts)
+            pieces = [r for r, _ in done if r is not None]
+            errors = [err for _, err in done if err]
+            if not pieces:
+                raise ModelUnavailable('；'.join(errors))
+            _mark_similar([pair for _, items, _ in pieces for pair in items])
+            dropped = [x for _, _, dr in pieces for x in dr] + errors
+            return variant, [(meta, items) for meta, items, _ in pieces], dropped
 
         def attempt(variant):
             try:
@@ -170,12 +222,16 @@ class QuestionsMixin:
         outcomes = self._parallel(attempt, variants)
         runs = [r for r, _ in outcomes if r is not None]
         failures = [err for _, err in outcomes if err]
+
+        def stems(version):
+            return {d.stem.strip() for _, items in version[1] for d, _ in items}
+
         if not runs:
             raise ModelUnavailable('两份候选都没有生成成功：' + '；'.join(failures))
         status = 'shown'
         if use_ab and failures:
             status = 'one_side_failed'
-        elif use_ab and {d.stem.strip() for d, _ in runs[0][2]} == {d.stem.strip() for d, _ in runs[1][2]}:
+        elif use_ab and stems(runs[0]) == stems(runs[1]):
             status = 'duplicate'  # no meaningful comparison: deliver A, record why nothing was shown
         shown = use_ab and status == 'shown'
         group = new_id('ab') if use_ab else None
@@ -184,33 +240,38 @@ class QuestionsMixin:
             result['ab_note'] = '一份候选生成失败，先给出成功的一份' if failures else '两份候选几乎相同，没有展示比较'
         with self.store.tx() as c:
             display = {}
-            for position, (variant, meta, items, dropped) in zip('AB', runs if shown else runs[:1]):
-                gid = record_generation(
-                    c,
-                    pid,
-                    meta,
-                    ctx.manifest,
-                    'generate-v3',
-                    group=group if shown else None,
-                    position=position if shown else None,
-                    variant=variant,
-                )
-                made = self._save_questions(
-                    c,
-                    pid,
-                    items,
-                    objs,
-                    gid,
-                    status='candidate' if shown else 'draft',
-                    round_=1,
-                    extra={'difficulty_requested': difficulty, 'purpose': purpose},
-                )
-                display[position] = {'generation': gid, 'variant': variant, 'candidates': [q['id'] for q in made]}
+            for position, (variant, pieces, dropped) in zip('AB', runs if shown else runs[:1]):
+                # one generation record per part, all carrying the version's group and position
+                gids, made = [], []
+                for meta, items in pieces:
+                    gid = record_generation(
+                        c,
+                        pid,
+                        meta,
+                        ctx.manifest,
+                        'generate-v4',
+                        group=group if shown else None,
+                        position=position if shown else None,
+                        variant=variant,
+                    )
+                    gids.append(gid)
+                    made += self._save_questions(
+                        c,
+                        pid,
+                        items,
+                        objs,
+                        gid,
+                        status='candidate' if shown else 'draft',
+                        round_=1,
+                        extra={'difficulty_requested': difficulty, 'purpose': purpose},
+                    )
+                display[position] = {'generations': gids, 'variant': variant, 'candidates': [q['id'] for q in made]}
                 result['candidates'].append(
                     {
                         'position': position,
                         'variant': variant,
-                        'generation_id': gid,
+                        'generation_id': gids[0],
+                        'generation_ids': gids,
                         'questions': made,
                         'dropped': dropped,
                     }
@@ -259,6 +320,7 @@ class QuestionsMixin:
         """Practice straight from the request: infer the objectives the questions will test, saved as a draft plan
         whose objectives are marked 由出题要求反推. The teacher checks them with the questions; nothing is confirmed
         on their behalf."""
+        self._confirm_standards(pid, llm)
         with self.store.read() as c:
             p = self._project(c, pid)
             ctx = Context('infer_objectives')
@@ -363,14 +425,17 @@ class QuestionsMixin:
             flags.append(f'与目标不符：{out.objective_note or "没有考到这条目标"}')
         if not out.in_scope:
             flags.append(f'超出范围：{out.scope_note or "用到了本课时或课标以外的内容"}')
-        asked = review.get('要求难度')
-        levels = {'基础': 0, '中等': 1, '较难': 2}
-        if asked in levels and out.difficulty != asked:
-            flags.append(
-                f'难度偏{"高" if levels[out.difficulty] > levels[asked] else "低"}：要求{asked}，评估为{out.difficulty}'
-            )
         flags += [f'题目问题：{x}' for x in out.issues if x.strip()][:4]
-        return {'difficulty': out.difficulty, 'flags': flags}, meta
+        # A difficulty off the asked one and improvement ideas are worth seeing, but they are not reasons to call a
+        # question 需核对: every question used to carry ~4 flags, and the real errors drowned among them.
+        asked = review.get('要求难度')
+        off = asked in ('基础', '中等', '较难') and out.difficulty != asked
+        return {
+            'difficulty': out.difficulty,
+            'difficulty_asked': asked if off else '',
+            'flags': flags,
+            'suggestions': [x for x in out.suggestions if x.strip()][:2],
+        }, meta
 
     def _self_check(self, p, d: QuestionDraft, review=None):
         """Another model solves the question without the key; the grader checks that answer (design doc 4 ②).
@@ -537,12 +602,12 @@ class QuestionsMixin:
         acceptable = {'A': 'A', 'B': 'B', 'both_ok': 'both', 'neither': 'none', 'skip': ''}[verdict]
         tags = [t for t in (reason_tags or []) if t in REASON_TAGS]
         with self.store.tx() as c:
-            gens = {
-                r['position']: r['id']
-                for r in c.execute(
-                    'SELECT id, position FROM generations WHERE project_id=? AND candidate_group=?', (pid, group)
-                )
-            }
+            gens = {}  # position -> its generations, one per part (objective), in the order they were written
+            for r in c.execute(
+                'SELECT id, position FROM generations WHERE project_id=? AND candidate_group=? ORDER BY created_at, rowid',
+                (pid, group),
+            ):
+                gens.setdefault(r['position'], []).append(r['id'])
             if not gens:
                 raise KeyError('候选组不存在')
             if c.execute('SELECT 1 FROM choices WHERE candidate_group=? AND revoked_at IS NULL', (group,)).fetchone():
@@ -566,7 +631,7 @@ class QuestionsMixin:
                     dump(tags),
                 ),
             )
-            promoted = self._promote(c, pid, gens[chosen]) if chosen else []
+            promoted = [x for gid in gens[chosen] for x in self._promote(c, pid, gid)] if chosen else []
             event(
                 c,
                 pid,

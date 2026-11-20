@@ -176,11 +176,11 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 ### 5.1 01 备课设计
 
-- `update_project(pid, knowledge_module=, lesson=, lesson_scope=, learner_profile=, notes=, curriculum_ids=, curriculum_off=)`：课时信息。改学科只在还没有题目时允许。知识模块或本课时内容变化时，自动选择的课标会清空重选；老师的选择不受影响。
+- `update_project(pid, knowledge_module=, lesson=, lesson_scope=, learner_profile=, notes=, curriculum_ids=, curriculum_off=)`：课时信息。改学科只在还没有题目时允许。知识模块或本课时内容确实变化时，自动选择或模型核对的课标会清空重选；老师的选择不受影响。
 - `curriculum(pid, q=None)`：对应课标的候选和当前选择（见第 6 节）。
 - `draft_lesson_plan(pid)`：
   1. 前提：有知识模块或材料，否则 409。
-  2. 解析课标：老师选择 → 自动选择（并保存为 `auto`）→ 无；勾选“不参考课标”时不用。
+  2. 解析课标：老师选择 → **模型核对**（`_confirm_standards`，提示词 `PICK_STANDARDS_SYSTEM`，上下文 `pick_standards`）→ 无；勾选“不参考课标”时不用。没有老师选择时，`CUR.candidates()` 取字面匹配的前几名及其所在单元的全部条目，由 generator 选 0–3 条直接对应的（编号限于候选），保存为 `chosen_by='model'`；没有直接对应时 `ids` 为空并保存原因 `note`；模型调用失败时退回字面自动选择（`auto`）。练习任务反推目标前也做这一步。
   3. 输入：学科、年级、知识模块、本课时内容、课时、学生基础、老师说明、材料（≤8000 字）、课程标准（内容要求原文及编号、同主题的学业要求和教学提示）、上一课时学情（如有）。
   4. 提示词 `LESSON_PLAN_SYSTEM`：2–4 条可检验目标，重点 2–4、难点 1–3、活动 3–6 且总时长不超过课时；有课标时每条目标填 `standard_ids`，要求不高于课标用词，超出须 `beyond_standard` + 理由；有本课时内容时只围绕它；有上一课时学情时安排简短回顾。
   5. 服务器：丢弃不在提供范围内的课标编号；活动的目标序号越界则去掉；`normalize_plan` 编号；`CUR.plan_checks()` 写入 `checks`（未对应课标、要求高于课标）和 `standard_refs`。
@@ -189,12 +189,13 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 ### 5.2 02 出题改题
 
 - `generate_questions(pid, types=, count=, difficulty=, purpose=, notes=, objective_ids=, ab=)`：
-  1. 前提：备课方案已确认。`objective_ids` 只为指定目标出题（“补 1 道”）。
-  2. 输入：已确认目标与达成标准、重点、难点、本课时内容、目标所引课标条目原文与教学提示、课堂活动（目标序号换算成本次列表的序号）、备课备注、上一课时学情、学生基础、材料（≤6000 字）、允许题型、每目标题数、用途、难度、出题说明。
-  3. A/B：勾选或按 `EDU_AB_RATE` 随机，出两版（第二版提示偏真实情境），位置随机，存为 `candidate`。`choose(pid, group, verdict)` 记录 A/B/差不多/都不合适，采用的一版转草稿并编号。
-  4. `usable_drafts`：题型不在允许范围的丢弃；没有评分要点的，选择/判断题补一个“答案正确”，其他丢弃；丢弃原因返回给界面。
-  5. 每道题并发 `_self_check(p, d, review)`，结果写入 `checks`：
-     - **题目审核** `_quality`（reviewer）：是否考查目标、是否超范围（前置知识可用）、估计难度、题目问题 → `checks.difficulty`、`checks.flags`；
+  1. 前提：备课方案已确认；没有备课方案时，先从主题和要求反推目标（存为未确认草稿，标 `inferred`）。01 生成但未确认的方案要先确认。`objective_ids` 只为指定目标出题（“补 1 道”）。
+  2. **按目标拆分**（`generate-v4`）：每条目标一次调用，并发进行；每部分写完立刻开始它自己的自检。单个部分失败只丢掉它自己的题（原因并入 `dropped`），全部失败才报错。每部分各记一条 `generations`，A/B 时共用同一 `candidate_group` 和 `position`。合并后按题干与选项的字符二元组重叠度标出相近的题（`checks.suggestions`，不算需核对）。
+  3. 每部分的输入：这一条目标与达成标准、**其他目标**（由别的部分负责，本部分不考）、重点、难点、本课时内容、所引课标原文与教学提示、与这条目标相关的课堂活动、备课备注、上一课时学情（只给第一部分，整套只出一道巩固题）、学生基础、材料（≤6000 字）、允许题型、**建议优先题型**（按目标轮换）、每目标题数、用途、难度、出题说明。提示词里的难度定义与审核共用 `DIFFICULTY_LEVELS`；评分要点规则（多选题的漏选错选、每项作答要求对应要点、填空不考过程）；题目数据须自洽。
+  4. A/B：勾选或按 `EDU_AB_RATE` 随机，出两版（第二版提示偏真实情境），两版并发，位置随机，存为 `candidate`。`choose(pid, group, verdict)` 记录 A/B/差不多/都不合适，采用的一版（它的全部部分）转草稿并编号。
+  5. `usable_drafts`：题型不在允许范围的丢弃；没有评分要点的，选择/判断题补一个“答案正确”，其他丢弃；丢弃原因返回给界面。
+  6. 每道题并发 `_self_check(p, d, review)`（审核与独立解题同时进行），结果写入 `checks`：
+     - **题目审核** `_quality`（reviewer）：是否考查目标、是否超范围（前置知识可用）、估计难度、**必须修改的问题**（知识性错误、数据不自洽、条件不足或歧义、评分要点不可用）→ `checks.flags`（界面显示“需核对”）；可改进处 ≤2 条 → `checks.suggestions`（折叠显示）；难度与要求不同 → `checks.difficulty_asked`（只在难度标签上提示，不算需核对）；
      - **数值核对**：要点的 `check_expected` 与参考答案最终数值不一致 → `reference_mismatch`；
      - **独立解题**（reviewer，看不到答案；选项带字母；输出 `final_answer`），再用 `grading.grade` 按评分要点评这份解答，满分为 `agree`，否则 `disagree`；写作题跳过；
      - `answer_suspect = disagree 或 reference_mismatch`。

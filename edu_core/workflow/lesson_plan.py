@@ -35,6 +35,7 @@ class LessonPlanMixin:
     def draft_lesson_plan(self, pid):
         """备课方案: objectives with success criteria, key points, difficulties and timed activities, confirmed as one."""
         llm = self._model()
+        self._confirm_standards(pid, llm)  # before reading the project: the plan uses the confirmed pick
         with self.store.read() as c:
             p = self._project(c, pid)
             ctx = Context('draft_lesson_plan')

@@ -53,6 +53,8 @@ def analyze(role, payload):
 
 HANDLERS = {
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
+    # the best lexical candidates, like the automatic pick
+    'pick_standards': lambda r, p: {'ids': [c['编号'] for c in p['候选条目'][:3]], 'note': ''},
     'infer_objectives': lambda r, p: {
         'objectives': [{'text': f'能用{p.get("主题") or "所学内容"}解决基础问题', 'success_criterion': '写出关键步骤'}]
     },
@@ -65,6 +67,7 @@ HANDLERS = {
         'scope_note': '',
         'difficulty': p.get('要求难度') or '中等',
         'issues': [],
+        'suggestions': [],
     },
     'grade': judge_points(RULES),
     'review': judge_points(RULES),
@@ -475,15 +478,19 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     assert sug['available'] and sug['selected'][0] == 'math.B2.2.3.2'  # 对数函数②: 图象与单调性
     assert sug['chosen_by'] is None  # nothing chosen yet: the automatic pick is used and saved at drafting
 
+    # Before drafting, a model confirms the pick from the candidates (here: only 对数函数②, plus a made-up id).
+    ws.llm.handlers['pick_standards'] = lambda r, p: {'ids': ['math.B2.2.3.2', 'math.X9.9.9'], 'note': ''}
     plan = ws.draft_lesson_plan(pid)['lesson_plan']['content']
+    picked = next(x for x in ws.llm.calls if x['task'] == 'pick_standards')['user']
+    assert 'math.B2.2.3.1' in [x['编号'] for x in picked['候选条目']]  # the unit's other items are offered too
     sent = ws.llm.calls[-1]['user']
     assert sent['本课时内容'] == '对数函数的图像与性质'
     offered = [x['编号'] for x in sent['课程标准']['内容要求']]
-    assert offered == sug['selected'] and sent['课程标准']['教学提示']
+    assert offered == ['math.B2.2.3.2'] and sent['课程标准']['教学提示']  # the made-up id never reaches the plan
     [o] = plan['objectives']
     assert o['standard_ids'] == [offered[0]]  # the made-up id is dropped
     assert 'checks' not in o and plan['curriculum'] == {'ids': sorted(offered)}
-    assert ws.curriculum(pid)['chosen_by'] == 'auto'
+    assert ws.curriculum(pid)['chosen_by'] == 'model'
 
     # A requirement above the standard's wording is flagged; the citation survives the edit.
     with ws.store.read() as c:
@@ -537,15 +544,17 @@ def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
         'scope_note': '用到了换底公式',
         'difficulty': '较难',
         'issues': ['条件不足'],
+        'suggestions': ['干扰项可以更有迷惑性', '可以结合生活情境', '第三条会被截掉'],
     }
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False, difficulty='基础')
-    flags = gen['candidates'][0]['questions'][0]['content']['checks']['flags']
-    assert flags == [
+    checks = gen['candidates'][0]['questions'][0]['content']['checks']
+    assert checks['flags'] == [  # only what must be fixed makes a question 需核对
         '与目标不符：只考了单调性',
         '超出范围：用到了换底公式',
-        '难度偏高：要求基础，评估为较难',
         '题目问题：条件不足',
     ]
+    assert (checks['difficulty'], checks['difficulty_asked']) == ('较难', '基础')  # shown, not a flag
+    assert checks['suggestions'] == ['干扰项可以更有迷惑性', '可以结合生活情境']
 
     cov = ws.coverage(p['id'])
     [row] = cov['objectives']

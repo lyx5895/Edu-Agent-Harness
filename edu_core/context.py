@@ -13,6 +13,7 @@ WHITELIST = {
     },
     'import_paper': {'project', 'material'},
     'infer_objectives': {'project', 'material', 'curriculum'},
+    'pick_standards': {'project', 'curriculum'},
     'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},

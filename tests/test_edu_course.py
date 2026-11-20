@@ -658,3 +658,114 @@ def test_two_ab_versions_are_generated_side_by_side(ws):
     ws.llm.handlers['generate_questions'] = _meet(gen, threading.Barrier(2, timeout=5))
     out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
     assert [c['position'] for c in out['candidates']] == ['A', 'B'] and out['candidate_group']
+
+
+def _two_goal_task(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    ws.llm.handlers['infer_objectives'] = lambda r, p: {
+        'objectives': [
+            {'text': '能解简单对数不等式', 'success_criterion': '写出定义域'},
+            {'text': '能比较对数值大小', 'success_criterion': '说明单调性'},
+        ]
+    }
+    return pid
+
+
+def test_questions_are_written_one_objective_per_call(ws):
+    from test_edu_workflow import question
+
+    pid = _two_goal_task(ws)
+    seen = []
+
+    def gen(r, p):
+        seen.append(([g['目标'] for g in p['教学目标']], p['建议优先题型']))
+        return {'questions': [question(f'第 {len(seen)} 组：{p["教学目标"][0]["目标"]}')]}
+
+    ws.llm.handlers['generate_questions'] = gen
+    out = ws.generate_questions(pid, types=['calculation', 'fill_blank'], count=1, ab=False)
+    assert sorted(g for g, _ in seen) == [['能比较对数值大小'], ['能解简单对数不等式']]  # one call each
+    assert {tuple(t) for _, t in seen} == {('计算与推导', '填空题'), ('填空题', '计算与推导')}  # rotated suggestions
+    qs = out['candidates'][0]['questions']
+    cov = {o['text']: o['id'] for o in ws.coverage(pid)['objectives']}
+    by_goal = {q['content']['objective_ids'][0]: q['content']['stem'] for q in qs}
+    assert by_goal[cov['能解简单对数不等式']].endswith('能解简单对数不等式')  # mapped back to the plan's own ids
+    assert by_goal[cov['能比较对数值大小']].endswith('能比较对数值大小')
+    assert sorted(q['content']['no'] for q in qs) == [1, 2] and len(out['candidates'][0]['generation_ids']) == 2
+
+
+def test_a_failed_part_costs_only_its_own_questions(ws):
+    from test_edu_workflow import question
+
+    pid = _two_goal_task(ws)
+
+    def gen(r, p):
+        if p['教学目标'][0]['目标'] == '能比较对数值大小':
+            raise RuntimeError('输出达到长度上限被截断')
+        return {'questions': [question('解不等式 log2(x-1) < 3')]}
+
+    ws.llm.handlers['generate_questions'] = gen
+    out = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+    [cand] = out['candidates']
+    assert len(cand['questions']) == 1 and any('第 2 条目标' in d for d in cand['dropped'])
+
+
+def test_choosing_an_ab_version_promotes_all_its_parts(ws):
+    import itertools
+
+    from test_edu_workflow import question
+
+    pid = _two_goal_task(ws)
+    n = itertools.count(1)
+    ws.llm.handlers['generate_questions'] = lambda r, p: {'questions': [question(f'解不等式 log2(x-{next(n)}) < 3')]}
+    out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
+    assert [len(c['questions']) for c in out['candidates']] == [2, 2]
+    res = ws.choose(pid, out['candidate_group'], 'B')
+    assert len(res['promoted']) == 4  # two questions and their two rubrics
+    drafts = [q for q in ws.questions(pid) if q['status'] == 'draft']
+    assert sorted(q['content']['no'] for q in drafts) == [1, 2]
+
+
+def test_standards_confirmation_respects_the_teacher_and_follows_the_course_info(ws):
+    from edu_core.llm import ModelUnavailable
+
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'prep', knowledge_module='对数', lesson='第2课时')['project']['id']
+    ws.update_project(pid, lesson_scope='对数的运算性质及其简单应用')
+
+    def down(r, p):
+        raise ModelUnavailable('网关超时')
+
+    ws.llm.handlers['pick_standards'] = down
+    ws.draft_lesson_plan(pid)
+    assert ws.curriculum(pid)['chosen_by'] == 'auto'  # a failed confirmation keeps the automatic pick
+
+    ws.update_project(pid, lesson_scope='对数的运算性质')  # the course info moved: the pick follows it
+    ws.llm.handlers['pick_standards'] = lambda r, p: {'ids': [], 'note': '课标未单列这一内容'}
+    ws.draft_lesson_plan(pid)
+    cur = ws.curriculum(pid)
+    assert cur['chosen_by'] == 'model' and cur['selected'] == [] and cur['note'] == '课标未单列这一内容'
+    assert '课程标准' not in ws.llm.calls[-1]['user']  # no standard reaches the plan
+
+    ws.update_project(pid, curriculum_ids=['math.B2.2.3.1'])
+    calls = len(ws.llm.calls)
+    ws.draft_lesson_plan(pid)
+    assert not [x for x in ws.llm.calls[calls:] if x['task'] == 'pick_standards']  # the teacher's pick is final
+
+
+def test_parts_see_the_other_objectives_and_near_duplicates_get_a_suggestion(ws):
+    from test_edu_workflow import question
+
+    pid = _two_goal_task(ws)
+    seen = []
+
+    def gen(r, p):
+        seen.append(p['其他目标'])
+        return {'questions': [question('已知 lg2=a，lg3=b，用 a、b 表示 lg12 的值')]}  # both parts write the same
+
+    ws.llm.handlers['generate_questions'] = gen
+    qs = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
+    assert sorted(seen) == [['能比较对数值大小'], ['能解简单对数不等式']]
+    checks = [q['content']['checks'] for q in qs]
+    assert not checks[0].get('suggestions') and '第 1 道题内容相近' in checks[1]['suggestions'][-1]
+    assert not checks[1]['flags']  # a near duplicate is a suggestion, never 需核对

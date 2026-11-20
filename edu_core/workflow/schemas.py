@@ -39,6 +39,11 @@ class QuestionSet(BaseModel):
     questions: list[QuestionDraft]
 
 
+class StandardPick(BaseModel):
+    ids: list[str]
+    note: str = Field(max_length=200)
+
+
 class InferredGoals(BaseModel):
     objectives: list[ObjectiveDraft]
 
@@ -54,7 +59,8 @@ class QualityOutput(BaseModel):
     in_scope: bool
     scope_note: str = Field(max_length=200)
     difficulty: Literal['基础', '中等', '较难']
-    issues: list[str]
+    issues: list[str]  # must be fixed before use: these make a question 需核对
+    suggestions: list[str]  # could be better; shown folded, never a flag
 
 
 class SolveOutput(BaseModel):

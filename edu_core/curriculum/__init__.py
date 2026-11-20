@@ -45,6 +45,30 @@ def short_label(item: dict) -> str:
     return item.get('short') or item['label'].split('·')[-1]
 
 
+_PARTICLES = re.compile('[的之与和及、]')
+
+
+def unit_of(item: dict) -> str:
+    """The heading path above an item (必修·函数·幂函数、指数函数、对数函数), i.e. its unit or module."""
+    return item['label'].rsplit('·', 1)[0]
+
+
+def candidates(subject: str, query: str, n: int = 24) -> list[dict]:
+    """What a model may choose the standards from: the best lexical matches plus every item of the units they are
+    in. Characters alone cannot tell that k 近邻 is one of the 核心算法 of 人工智能初步, but its unit is found."""
+    data = load(subject)
+    found = search(subject, query, k=8)
+    if not data or not found:
+        return []
+    units = list(dict.fromkeys(unit_of(it) for it in found[:3]))
+    out = {it['id']: it for it in found}
+    for u in units:
+        for it in data['items']:
+            if it['kind'] == 'content' and unit_of(it) == u:
+                out.setdefault(it['id'], it)
+    return list(out.values())[:n]
+
+
 def _norm(text: str) -> str:
     return text.replace('图像', '图象')  # the standards write 图象
 
@@ -89,12 +113,14 @@ def search(subject: str, query: str, k: int = 6, kinds=('content',)) -> list[dic
     if not data or not query.strip():
         return []
     q = _grams(query)
-    # A whole term the teacher typed (e.g. 相互作用与运动定律) that names an item's heading path is strong evidence.
-    terms = [t for t in re.split(r'[\s,，、;；]+', _norm(query)) if len(t) >= 3]
+    # A whole term the teacher typed (e.g. 相互作用与运动定律, 对数) that names an item's heading path is strong
+    # evidence. Particles are dropped on both sides: 函数的概念与性质 is the heading 函数概念与性质.
+    terms = [_PARTICLES.sub('', t) for t in re.split(r'[\s,，;；:：()（）]+', _norm(query))]
+    terms = [t for t in terms if len(t) >= 2]
 
     def total(it):
         base = _score(data, q, it)
-        path = _norm(it['label'])
+        path = _PARTICLES.sub('', _norm(it['label']))
         bonus = sum(sum(data['idf'].get(g, 0.0) for g in _grams(t)) * 0.5 for t in terms if t in path)
         return base + bonus if base > 0 else 0.0
 

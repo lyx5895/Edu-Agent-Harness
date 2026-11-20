@@ -587,12 +587,12 @@ class ResearchMixin:
                     if consent is None:
                         skip('no_training_consent')
                         continue
-                    gens = {
-                        r['position']: row(r)
-                        for r in c.execute(
-                            'SELECT * FROM generations WHERE candidate_group=?', (ch['candidate_group'],)
-                        )
-                    }
+                    gens = {}  # position -> its generations (one per objective since generate-v4)
+                    for r in c.execute(
+                        'SELECT * FROM generations WHERE candidate_group=? ORDER BY created_at, rowid',
+                        (ch['candidate_group'],),
+                    ):
+                        gens.setdefault(r['position'], []).append(row(r))
                     other = 'B' if ch['chosen_position'] == 'A' else 'A'
                     if ch['chosen_position'] not in gens or other not in gens:
                         skip('incomplete_comparison')
@@ -602,7 +602,11 @@ class ResearchMixin:
                     for x in A.listing(c, pid, 'question'):
                         if x['version'] == 1:  # the original candidates, never a later edit
                             by_gen.setdefault(x['generation_id'], []).append(x)
-                    chosen_qs = by_gen.get(gens[ch['chosen_position']]['id'], [])
+
+                    def side(pos):
+                        return [x for g in gens[pos] for x in by_gen.get(g['id'], [])]
+
+                    chosen_qs = side(ch['chosen_position'])
                     if not chosen_qs:
                         skip('incomplete_comparison')
                         continue
@@ -612,7 +616,7 @@ class ResearchMixin:
                             **self._record(
                                 'preference',
                                 first,
-                                gens[ch['chosen_position']],
+                                gens[ch['chosen_position']][0],
                                 consent,
                                 groups,
                                 cid,
@@ -621,7 +625,7 @@ class ResearchMixin:
                                 final_id='',
                             ),
                             'chosen': [x['content'] for x in chosen_qs],
-                            'rejected': [x['content'] for x in by_gen.get(gens[other]['id'], [])],
+                            'rejected': [x['content'] for x in side(other)],
                             'comparison': ch['candidate_group'],
                         }
                     )
