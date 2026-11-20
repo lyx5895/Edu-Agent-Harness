@@ -893,6 +893,7 @@ async function renderRecords() {
     : '<div class="empty">没有依据已变化的产物。</div>')
     + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
   $('#export-link').href = `/api/projects/${S.pid}/export`;
+  await renderTrial();
   const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
   $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
     .map(([k, label]) => `<div class="row"><span class="s-title">${label}</span>
@@ -1458,7 +1459,6 @@ async function renderHome() {
       : '<div class="empty">还没有课程资料。</div>';
   }
   await renderResearch();
-  await renderTrial();
   $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
   if (h.legacy_projects) await renderLegacy();
 }
@@ -1512,14 +1512,22 @@ async function renderUnitReview(oid, box) {
 }
 
 async function renderTrial() {
-  if (!S.course) return;
-  const r = await api('GET', `/api/trial/report?course_id=${encodeURIComponent(S.course)}`);
+  const box = $('#trial-report');
+  const course = S.overview?.course?.id || S.course;
+  if (!course) { box.innerHTML = '<div class="kv muted">这个工作区不属于任何课程，没有试用记录。</div>'; return; }
+  let r;
+  try {
+    r = await api('GET', `/api/trial/report?course_id=${encodeURIComponent(course)}`);
+  } catch (e) {
+    box.innerHTML = `<div class="kv muted">试用记录暂时无法读取：${esc(e.message)}</div>`;
+    return;
+  }
   const s = r.summary;
   const secs = (v) => (v == null ? '—' : `${Math.round(v)} 秒`);
   const pill = (k, v) => `<span class="pill">${esc(k)} ${esc(String(v))}</span>`;
   const ad = s.adoption;
   const re = s.repeated_entry;
-  $('#trial-report').innerHTML = [
+  box.innerHTML = [
     `<div class="kv">` + [
       pill('任务', s.tasks), pill('有可用成果', s.usable),
       pill('总耗时', secs(s.time.total_seconds)), pill('中位耗时', secs(s.time.median_seconds)),
