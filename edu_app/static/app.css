@@ -365,3 +365,14 @@ summary .help { vertical-align: middle; }
 .head-now { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .head-now .hint { text-align: right; }
 @media (max-width: 640px) { .head-now { align-items: stretch; } .head-now .hint { text-align: left; } }
+/* Waiting bar: the server's current step, a progress bar (items done, else time against the usual), a hint. */
+.working .w-line { line-height: 1.5; }
+.working .w-bar { height: 4px; border-radius: 2px; background: var(--line); margin: 4px 0 6px; overflow: hidden; }
+.working .w-bar i { display: block; height: 100%; background: var(--info); transition: width .8s ease; }
+.working .w-hint { font-size: 12px; opacity: .8; }
+/* Correcting inferred objectives on the questions page. */
+.goal-form { margin: 8px 0 10px; display: flex; flex-direction: column; gap: 6px; }
+.goal-row { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; align-items: center; }
+@media (max-width: 640px) { .goal-row { grid-template-columns: 1fr; } }
+/* Rubric table: the id and score columns stay narrow so the requirement text gets the width. */
+.rubric-table td:first-child, .rubric-table th:first-child, .rubric-table td:nth-child(3), .rubric-table th:nth-child(3) { white-space: nowrap; width: 1%; }

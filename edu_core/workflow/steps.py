@@ -152,7 +152,13 @@ def blockers(st):
     if rc['submission']['total'] and graded and rc['grading']['total'] >= rc['submission']['total']:
         out['analysis'] = _open()
     elif out['grading']['blocked']:
-        out['analysis'] = _blocker('还没有可以分析的批改结果。', out['grading']['action'], out['grading'].get('alt'))
+        # Seen from 04, the missing piece is two stages back: say where it is instead of "导入现成试卷".
+        out['analysis'] = _blocker(
+            '还没有可以分析的批改结果：先要有确认过的题目，再导入作答并批改。',
+            _step('先到 02 确认题目', 'questions', '#questions')
+            if rc['question']['total']
+            else _step('先到 02 准备题目', 'questions', '#generate-questions'),
+        )
     elif not rc['submission']['total']:
         act = (
             _step('导入学生作答', 'grading', '#sub-csv')

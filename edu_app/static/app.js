@@ -77,19 +77,48 @@ function startJob(label) {
   const job = { label: label.replace(/[…(（].*$/, ''), tab: S.tab, pid: S.pid, view: S.view, t0: Date.now() };
   jobs.add(job);
   job.timer = setInterval(showJobs, 1000);
+  if (S.view === 'project' && S.overview) renderContinue();
   return job;
+}
+// What the server says each running operation is doing (step, items done, how long it usually takes), polled
+// while a slow job is open; without it the bar still shows how long the teacher has waited.
+const liveSteps = new Map();
+let livePolling = false;
+async function pollLive() {
+  if (livePolling) return;
+  livePolling = true;
+  try {
+    const pids = new Set([...jobs].filter((j) => j.pid && Date.now() - j.t0 > 2000).map((j) => j.pid));
+    for (const pid of pids) {
+      try { liveSteps.set(pid, await api('GET', `/api/projects/${pid}/progress`)); } catch { /* the bar falls back to the wait time */ }
+    }
+  } finally { livePolling = false; }
 }
 function showJobs() {
   const bar = $('#working');
   const slow = [...jobs].filter((j) => Date.now() - j.t0 > 2000);
   bar.classList.toggle('hidden', !slow.length);
-  bar.textContent = slow.map((j) => `${j.label}… 已等 ${Math.round((Date.now() - j.t0) / 1000)} 秒`).join('；')
-    + (slow.length ? '。可以先看别的页面，完成后会提示。' : '');
+  if (!slow.length) { bar.innerHTML = ''; return; }
+  if (Math.round((Date.now() - slow[0].t0) / 1000) % 2 === 0) pollLive();
+  const shown = new Set();
+  const rows = slow.map((j) => {
+    const waited = Math.round((Date.now() - j.t0) / 1000);
+    const live = (liveSteps.get(j.pid) || []).find((x) => !shown.has(x));
+    if (live) shown.add(live);
+    if (!live) return `<div class="w-line"><b>${esc(j.label)}</b>… 已等 ${waited} 秒</div>`;
+    const count = live.total ? ` ${live.done}/${live.total}` : '';
+    const pct = live.total ? live.done / live.total : live.typical ? Math.min(waited / live.typical, 0.95) : null;
+    return `<div class="w-line"><b>${esc(live.label)}</b>：${esc(live.step)}${count} · 已等 ${waited} 秒${live.typical ? `（以往约 ${live.typical} 秒）` : ''}</div>
+      ${pct == null ? '' : `<div class="w-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>`}`;
+  });
+  bar.innerHTML = rows.join('') + '<div class="w-hint">可以先看别的页面，完成后会提示。</div>';
 }
 function endJob(job, failed) {
   if (!job) return;
   clearInterval(job.timer);
   jobs.delete(job);
+  if (![...jobs].some((j) => j.pid === job.pid)) liveSteps.delete(job.pid);
+  if (S.view === 'project' && S.overview) renderContinue();  // the page re-rendered while the job was still listed
   showJobs();
   const slow = Date.now() - job.t0 > 2000;
   const away = S.view !== job.view || S.pid !== job.pid || S.tab !== job.tab;
@@ -517,7 +546,10 @@ function renderContinue() {
     // One form on every unfinished page: a green button for what this page needs (on a blocked page, the way to
     // unblock it; the banner below then only gives the reason and the alternative), and the 下一步 link.
     const action = currentAction();
-    const here = action ? `<button class="continue-btn" data-current-action>${esc(action.label)} →</button>` : '';
+    // While this page's own model call runs, the heading says so instead of asking for the step being done.
+    const running = [...jobs].find((j) => j.pid === S.pid && j.tab === S.tab && j.view === 'project');
+    const here = running ? `<button class="continue-btn" disabled>${esc(running.label)}…</button>`
+      : action ? `<button class="continue-btn" data-current-action>${esc(action.label)} →</button>` : '';
     // The next stage stays one click away even before this one is done: the stages can be taken in any order.
     const next = S.tab !== 'review' && CONTINUE[S.tab]
       ? `<button class="link small" data-continue="0">下一步：${esc(CONTINUE[S.tab][0].label)} →</button>` : '';
@@ -813,6 +845,8 @@ async function renderQuestions() {
   $('#q-topic-wrap').classList.toggle('hidden', !!(ov.counts.lesson_plan.total || pj.knowledge_module || pj.lesson_scope || ov.materials));
   $('#q-direct-note').classList.toggle('hidden', !(noPlan && !ov.counts.question.total && !ov.counts.lesson_plan.total));
   $('#q-direct-note').textContent = '还没有备课方案也可以出题：会先根据主题和要求反推教学目标，和题目一起交给你核对。';
+  // With a confirmed plan the questions follow its objectives; without one the title stays plain.
+  $('#generate-card h3').textContent = ov.counts.lesson_plan.confirmed ? '按目标出题' : '出题';
   $('#generate-questions').disabled = !!qBlock.blocked;
   $('#generate-questions').dataset.blocked = qBlock.blocked ? '1' : '';
   $('#generate-questions').title = qBlock.blocked ? qBlock.reason : '';
@@ -863,12 +897,40 @@ async function renderQuestions() {
     + `<div class="row"><button class="secondary" data-act="new-question">手工添加题目</button></div><div class="new-question-area"></div>`;
 }
 
+// 修改这些目标 (inferred objectives, on the questions page): saved as a new draft of the plan. They stay marked as
+// inferred until the plan is confirmed in 01, so questions can still be written against them.
+async function onGoalEdit(btn) {
+  const cov = S.cov;
+  const act = btn.dataset.goals;
+  if (act !== 'save') { S.editGoals = act === 'edit' ? cov.plan_id : null; renderCoverage(cov); return; }
+  const edited = Object.fromEntries($$('.goal-row', $('#coverage')).map((r) => [r.dataset.goal,
+    { text: $('.g-text', r).value.trim(), success_criterion: $('.g-crit', r).value.trim() }]));
+  if (Object.values(edited).some((x) => !x.text)) { toast('目标不能为空', true); return; }
+  await busy(btn, '保存中…', async () => {
+    const plan = await api('GET', `/api/artifacts/${cov.plan_id}`);
+    const objectives = plan.content.objectives.map((o) => (edited[o.id] ? { ...o, ...edited[o.id], inferred: true } : o));
+    await api('PUT', `/api/artifacts/${cov.plan_id}`, { content: { ...plan.content, objectives } });
+    S.editGoals = null;
+    toast('目标已保存');
+    await refresh();
+  });
+}
+
 // 目标覆盖: one line per objective; an objective without questions gets a one-click 补题.
 function renderCoverage(cov) {
   const box = $('#coverage');
+  S.cov = cov;
   if (!cov.objectives.length) { box.innerHTML = ''; return; }
+  // Objectives inferred from the request or a paper can be corrected right here, next to the questions they drive.
+  const editing = cov.unconfirmed && S.editGoals === cov.plan_id;
+  const goalForm = editing ? `<div class="goal-form">${cov.objectives.map((o, i) => `<div class="goal-row" data-goal="${esc(o.id)}">
+      <span class="cov-no">目标 ${i + 1}</span><input class="g-text" value="${esc(o.text)}" aria-label="目标 ${i + 1}">
+      <input class="g-crit" value="${esc(o.success_criterion || '')}" placeholder="达成标准：怎样从作答判断达成" aria-label="目标 ${i + 1} 的达成标准"></div>`).join('')}
+      <div class="row-btns"><button class="small" data-goals="save">保存目标</button><button class="small link" data-goals="cancel">取消</button></div>
+      <div class="muted">保存后，之后出的题按改过的目标；已经出的题不会自动改，需要时对那道题点“换一道”。</div></div>` : '';
   box.innerHTML = `<div class="coverage"><div class="label">目标覆盖（第 ${cov.round} 轮）</div>
-    ${cov.unconfirmed ? '<div class="kv flag">这些目标是从出题要求或导入试卷反推的，还没有确认。核对题目时一并看看；要改目标，到“01 备课设计”修改后确认。</div>' : ''}${cov.objectives.map((o, i) => `<div class="cov-row${o.total ? '' : ' none'}">
+    ${cov.unconfirmed ? `<div class="kv flag">这些目标是从出题要求或导入试卷反推的，还没有确认，核对题目时一并看看。
+      ${editing ? '' : '<button class="small secondary" data-goals="edit">修改这些目标</button>'}</div>${goalForm}` : ''}${cov.objectives.map((o, i) => `<div class="cov-row${o.total ? '' : ' none'}">
       <span class="cov-no">目标 ${i + 1}</span><span class="cov-text">${esc(o.text)}</span>
       <span class="cov-count">${o.total ? `${o.total} 道 · 已确认 ${o.confirmed}` : '<span class="pill bad">还没有题</span>'}</span>
       ${o.flagged.length ? `<span class="pill warn">第 ${o.flagged.join('、')} 题待核对</span>` : ''}
@@ -895,8 +957,14 @@ function questionBody(q) {
     ${c.answer_key ? `<div class="kv">答案：${esc(c.answer_key)}${(c.accepted || []).length ? '（也接受：' + esc(c.accepted.join('、')) + '）' : ''}</div>` : ''}
     <div class="kv">参考答案：${esc(c.reference)}</div>${notes}
     ${checks.solver_answer ? `<details><summary>查看独立解题的过程（${esc(checks.solver_score || '')}）</summary><div class="answer">${esc(checks.solver_answer)}</div></details>` : ''}
-    <table><tr><th>要点</th><th>评分要求</th><th>分值</th><th>自动核对</th></tr>
-    ${r.points.map((p) => `<tr><td>${esc(p.id)}</td><td>${esc(p.description)}</td><td>${p.score}</td><td>${p.check ? esc(p.check.kind + '：' + p.check.expected) : ''}</td></tr>`).join('')}</table>`;
+    ${rubricTable(r.points)}`;
+}
+
+// The 自动核对 column only appears when some point has a tool check; empty, it squeezed the table on phones.
+function rubricTable(points) {
+  const auto = points.some((p) => p.check);
+  return `<table class="rubric-table"><tr><th>要点</th><th>评分要求</th><th>分值</th>${auto ? '<th>自动核对</th>' : ''}</tr>
+    ${points.map((p) => `<tr><td>${esc(p.id)}</td><td>${esc(p.description)}</td><td>${p.score}</td>${auto ? `<td>${p.check ? esc(p.check.kind + '：' + p.check.expected) : ''}</td>` : ''}</tr>`).join('')}</table>`;
 }
 
 function questionItem(q) {
@@ -1466,7 +1534,14 @@ function bindEvents() {
   });
   const generateQuestions = (btn) => busy(btn, '出题与自检中…（约 1 分钟）', async () => {
     const topic = $('#q-topic-wrap').classList.contains('hidden') ? '' : $('#q-topic').value.trim();
-    if (topic) { await api('PATCH', `/api/projects/${S.pid}`, { knowledge_module: topic }); $('#q-topic').value = ''; }
+    if (topic) {
+      await api('PATCH', `/api/projects/${S.pid}`, { knowledge_module: topic });
+      // The topic is saved now: the heading and the form say so during the minute of generating, not after it.
+      S.overview.project.knowledge_module = topic;
+      $('#q-topic').value = '';
+      $('#q-topic-wrap').classList.add('hidden');
+      renderContinue();
+    }
     const types = $$('#type-boxes input:checked').map((i) => i.value);
     const r = await api('POST', `/api/projects/${S.pid}/questions/generate`, {
       types, count: Number($('#q-count').value), difficulty: $('#q-difficulty').value, purpose: $('#q-purpose').value, notes: $('#q-notes').value, ab: null,  // A/B is a research comparison the server samples (EDU_AB_RATE, daily cap); never a teacher's choice
@@ -1476,7 +1551,9 @@ function bindEvents() {
     toast((r.candidate_group ? '这次出了两版，请先在上面选一版' : `生成了 ${r.candidates[0].questions.length} 道题，请核对后确认`) + (dropped.length ? `；丢弃 ${dropped.length} 道不完整的题：${dropped.join('；')}` : ''), dropped.length > 0);
     S.showRound = 1; await refresh();
   });
-  $('#coverage').addEventListener('click', (e) => {
+  $('#coverage').addEventListener('click', async (e) => {
+    const g = e.target.closest('[data-goals]');
+    if (g) { await onGoalEdit(g); return; }
     const b = e.target.closest('[data-fill]');
     if (!b) return;
     busy(b, '出题中…', async () => {

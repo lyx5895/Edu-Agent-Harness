@@ -12,6 +12,7 @@ import json
 import time
 
 from edu_core import artifacts as A
+from edu_core import progress
 from edu_core import grading
 from edu_core.context import Context
 from edu_core.llm import ModelUnavailable
@@ -209,7 +210,14 @@ class SubmissionsMixin:
             except Exception as e:  # noqa: BLE001 - one bad submission must not lose the rest of the round
                 return None, f'批改出错：{type(e).__name__}: {e}'
 
-        outcomes = self._parallel(run, jobs)
+        progress.step('批改作答', 0, len(jobs))
+
+        def run_counted(job):
+            out = run(job)
+            progress.tick()
+            return out
+
+        outcomes = self._parallel(run_counted, jobs)
         made, failed = [], []
         for job, (gid, error) in zip(jobs, outcomes):
             sub = job[3]

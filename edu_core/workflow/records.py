@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 
 from edu_core import artifacts as A
+from edu_core import progress as live
 from edu_core.storage import row
 from edu_core.workflow.steps import blockers, next_steps, stage_status
 
@@ -39,6 +40,35 @@ class RecordsMixin:
                 ).fetchone()
                 m['redone'] = bool(newer)
             return marks
+
+    def progress(self, pid):
+        """Model operations running in this project right now: their current step, items done, seconds so far, and
+        how long this kind of operation took recently (the median of the last 10 that succeeded)."""
+        with self.store.read() as c:
+            self._project(c, pid)
+            out = []
+            for x in live.running(pid):
+                past = [
+                    r[0]
+                    for r in c.execute(
+                        "SELECT finished_at-started_at FROM runs WHERE kind=? AND status='succeeded' "
+                        'AND finished_at IS NOT NULL ORDER BY started_at DESC LIMIT 10',
+                        (x['kind'],),
+                    )
+                ]
+                typical = sorted(past)[len(past) // 2] if past else None
+                out.append(
+                    {
+                        'kind': x['kind'],
+                        'label': x['label'],
+                        'step': x['step'],
+                        'done': x['done'],
+                        'total': x['total'],
+                        'elapsed': round(time.time() - x['started_at']),
+                        'typical': round(typical) if typical else None,
+                    }
+                )
+            return out
 
     def resolve_stale(self, mark_id, resolution):
         with self.store.tx() as c:

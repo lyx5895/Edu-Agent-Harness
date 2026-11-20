@@ -7,7 +7,7 @@ import time
 
 from edu_core import artifacts as A
 from edu_core import curriculum as CUR
-from edu_core import grading
+from edu_core import grading, progress
 from edu_core.context import Context, describe
 from edu_core.llm import ModelUnavailable
 from edu_core.storage import event, new_id, record_generation
@@ -147,17 +147,29 @@ class QuestionsMixin:
             )
             out, meta = llm.complete('generator', 'generate_questions', system, user, QuestionSet)
             drafts, dropped = usable_drafts(out.questions, allowed)
-            checks = self._parallel(lambda d: self._self_check(p, d, self._review_ctx(p, objs, d, difficulty)), drafts)
+            progress.grow('独立解题与审核', len(drafts))
+
+            def check(d):
+                result = self._self_check(p, d, self._review_ctx(p, objs, d, difficulty))
+                progress.tick()
+                return result
+
+            checks = self._parallel(check, drafts)
             return variant, meta, list(zip(drafts, checks)), dropped
 
-        runs, failures = [], []
-        for v in variants:
+        def attempt(variant):
             try:
-                runs.append(run(v))
+                return run(variant), None
             except Exception as e:
                 if not use_ab:
                     raise
-                failures.append(f'{type(e).__name__}: {e}'[:200])
+                return None, f'{type(e).__name__}: {e}'[:200]
+
+        # The two A/B versions share the same input and do not depend on each other: generate them side by side.
+        progress.step('出题' if len(variants) == 1 else '出两版候选题')
+        outcomes = self._parallel(attempt, variants)
+        runs = [r for r, _ in outcomes if r is not None]
+        failures = [err for _, err in outcomes if err]
         if not runs:
             raise ModelUnavailable('两份候选都没有生成成功：' + '；'.join(failures))
         status = 'shown'
@@ -255,6 +267,7 @@ class QuestionsMixin:
             if not (p.get('knowledge_module') or p.get('lesson_scope') or materials or notes.strip()):
                 raise Conflict('请先写下这次练习的主题或范围，或添加参考材料')
             current = self._plan(c, pid, confirmed=False)
+        progress.step('反推教学目标')
         with self.store.tx() as c:
             std = self._curriculum_for_plan(c, p)
         if std:
@@ -364,13 +377,33 @@ class QuestionsMixin:
         With ``review``, a reviewer also checks objective, scope and difficulty."""
         subject = p['subject']
         checks = {'notes': [], '_metas': []}
-        if review is not None and self.llm is not None:
+        solvable = d.type not in SUGGESTED_ONLY_TYPES and self.llm is not None
+
+        def review_part():
+            if review is None or self.llm is None:
+                return None
             try:
-                quality, qmeta = self._quality(p, d, review)
-                checks.update(quality)
-                checks['_metas'].append(qmeta)
+                return self._quality(p, d, review)
             except ModelUnavailable as e:
-                checks['notes'].append(f'题目审核失败：{e}')
+                return e
+
+        def solve_part():
+            if not solvable:
+                return None
+            try:
+                return self._solve_and_grade(p, d, subject)
+            except ModelUnavailable as e:
+                return e
+
+        # The review and the independent solution do not depend on each other: run them side by side, then merge
+        # in the original order (review, numeric check, solution) so the notes read the same as before.
+        reviewed, solved = self._parallel(lambda part: part(), [review_part, solve_part])
+        if isinstance(reviewed, ModelUnavailable):
+            checks['notes'].append(f'题目审核失败：{reviewed}')
+        elif reviewed is not None:
+            quality, qmeta = reviewed
+            checks.update(quality)
+            checks['_metas'].append(qmeta)
         for x in d.points:
             if x.check_kind == 'numeric' and x.check_expected.strip():
                 from edu_core.tools import check_numeric
@@ -379,47 +412,53 @@ class QuestionsMixin:
                 if ok is False:
                     checks['notes'].append(f'参考答案的最终数值与核对值 {x.check_expected} 不一致')
                     checks['reference_mismatch'] = True
-        if d.type in SUGGESTED_ONLY_TYPES or self.llm is None:
+        if not solvable:
             checks['solver'] = 'skipped'
             return checks
-        try:
-            solve_ctx = Context('self_check_solve')
-            solve_ctx.add_other('question_stem', sha(d.stem))
-            solved, meta = self.llm.complete(
-                'reviewer',
-                'self_check_solve',
-                SOLVE_SYSTEM.format(subject=p['pack']['name']),
-                _json(
-                    {
-                        '题型': QUESTION_TYPES[d.type],
-                        '题目': d.stem,
-                        '选项': [f'{"ABCDEFGH"[i]}. {o}' for i, o in enumerate(d.options[:8])],
-                    }
-                ),
-                SolveOutput,
-            )
-            question = _question_content(d, 0, 1, [])
-            rubric = _rubric_from(d.points, 'self-check')
-            # Keyed and fill-blank questions compare the final answer; other types grade the full solution.
-            answer = solved.final_answer if d.type in KEYED_TYPES or d.type == 'fill_blank' else solved.answer
-            res, grade_metas = grading.grade(
-                self.llm, subject=subject, question=question, rubric=rubric, answer=answer, review=False
-            )
-            checks['_metas'] = [*checks['_metas'], meta, *grade_metas]
+        if isinstance(solved, ModelUnavailable):
+            checks.update(solver='error', notes=[*checks['notes'], f'自检失败：{solved}'])
+        else:
+            res, solution, metas = solved
+            checks['_metas'] = [*checks['_metas'], *metas]
             agree = res['undetermined'] == 0 and res['total'] >= res['max_total'] - 1e-9
             checks.update(
                 solver='agree' if agree else 'disagree',
-                solver_answer=solved.answer[:2000],
-                solver_final=solved.final_answer,
+                solver_answer=solution.answer[:2000],
+                solver_final=solution.final_answer,
                 solver_score=f'{res["total"]}/{res["max_total"]}',
-                solver_model=meta.get('model_returned'),
+                solver_model=metas[0].get('model_returned'),
             )
             if not agree:
                 checks['notes'].append('另一个模型独立解题的结果与参考答案不一致，请核对答案')
-        except ModelUnavailable as e:
-            checks.update(solver='error', notes=[*checks['notes'], f'自检失败：{e}'])
         checks['answer_suspect'] = checks.get('solver') == 'disagree' or bool(checks.get('reference_mismatch'))
         return checks
+
+    def _solve_and_grade(self, p, d: QuestionDraft, subject):
+        """Another model solves the question without the key, then the grader marks that solution against the
+        rubric. Returns (grading result, the solution, model metas: the solve call first)."""
+        solve_ctx = Context('self_check_solve')
+        solve_ctx.add_other('question_stem', sha(d.stem))
+        solution, meta = self.llm.complete(
+            'reviewer',
+            'self_check_solve',
+            SOLVE_SYSTEM.format(subject=p['pack']['name']),
+            _json(
+                {
+                    '题型': QUESTION_TYPES[d.type],
+                    '题目': d.stem,
+                    '选项': [f'{"ABCDEFGH"[i]}. {o}' for i, o in enumerate(d.options[:8])],
+                }
+            ),
+            SolveOutput,
+        )
+        question = _question_content(d, 0, 1, [])
+        rubric = _rubric_from(d.points, 'self-check')
+        # Keyed and fill-blank questions compare the final answer; other types grade the full solution.
+        answer = solution.final_answer if d.type in KEYED_TYPES or d.type == 'fill_blank' else solution.answer
+        res, grade_metas = grading.grade(
+            self.llm, subject=subject, question=question, rubric=rubric, answer=answer, review=False
+        )
+        return res, solution, [meta, *grade_metas]
 
     def _save_questions(self, c, pid, items, objs, gid, *, status, round_, patterns=(), origin='generated', extra=None):
         made = []
@@ -723,6 +762,7 @@ class QuestionsMixin:
                 {
                     'id': g['lineage_id'],
                     'text': g['content']['text'],
+                    'success_criterion': g['content'].get('success_criterion', ''),
                     'total': len(mine),
                     'confirmed': sum(1 for q in mine if q['confirmed_version']),
                     'flagged': flagged,
@@ -731,7 +771,13 @@ class QuestionsMixin:
         loose = [q['content']['no'] for q in qs if not q['content'].get('objective_ids') and q['status'] != 'candidate']
         # Objectives not yet confirmed (inferred from the request or a paper, or a plan draft) are shown as such.
         unconfirmed = bool(plan) and not plan.get('confirmed_version') and plan['status'] != 'confirmed'
-        return {'round': round_, 'objectives': rows, 'unassigned': loose, 'unconfirmed': unconfirmed}
+        return {
+            'round': round_,
+            'objectives': rows,
+            'unassigned': loose,
+            'unconfirmed': unconfirmed,
+            'plan_id': plan['id'] if plan else None,
+        }
 
     def adopt_solver_answer(self, qid, teacher='teacher'):
         """答案存疑 → take the independent solver's answer as a new draft version for the teacher to confirm."""

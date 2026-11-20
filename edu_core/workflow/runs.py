@@ -8,6 +8,7 @@ from __future__ import annotations
 import functools
 import time
 
+from edu_core import progress
 from edu_core.access import CURRENT_USER
 from edu_core.storage import CURRENT_RUN, new_id
 
@@ -31,6 +32,7 @@ def operation(kind, project_of=None):
                     (rid, pid or '', task[0] if task else '', kind, 'running', user['id'] if user else '', time.time()),
                 )
             token = CURRENT_RUN.set(rid)
+            progress.begin(rid, pid, kind)
             status, error = 'succeeded', ''
             try:
                 return fn(self, *args, **kwargs)
@@ -38,6 +40,7 @@ def operation(kind, project_of=None):
                 status, error = 'failed', f'{type(e).__name__}: {e}'[:500]
                 raise
             finally:
+                progress.end(rid)
                 CURRENT_RUN.reset(token)
                 with self.store.tx() as c:
                     c.execute(

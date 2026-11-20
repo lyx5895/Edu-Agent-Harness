@@ -572,3 +572,89 @@ def test_a_plan_drafted_in_prep_is_confirmed_before_questions(ws):
     with pytest.raises(Conflict) as err:
         ws.generate_questions(pid)
     assert '01' in str(err.value)
+
+
+def test_progress_reports_the_current_step_while_generating(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    seen = {}
+    gen, solve = ws.llm.handlers['generate_questions'], ws.llm.handlers['self_check_solve']
+
+    def watch(name, inner):
+        def handler(r, p):
+            seen.setdefault(name, ws.progress(pid))
+            return inner(r, p)
+
+        return handler
+
+    ws.llm.handlers['generate_questions'] = watch('generate', gen)
+    ws.llm.handlers['self_check_solve'] = watch('solve', solve)
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+    [g] = seen['generate']
+    assert (g['label'], g['step']) == ('出题', '出题') and g['elapsed'] >= 0
+    [s] = seen['solve']
+    assert s['step'] == '独立解题与审核' and (s['done'], s['total']) == (0, 1)
+    assert ws.progress(pid) == []  # nothing left once the run ended
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+    assert ws.progress(pid) == [] and seen['generate'][0]['typical'] is None  # first run had no history yet
+
+
+def test_analysis_blocked_by_missing_questions_points_to_the_questions_page(ws):
+    crs = ws.create_course('高一语文', '语文')
+    pid = ws.start_task(crs['id'], 'practice')['project']['id']
+    action = ws.overview(pid)['blockers']['analysis']['action']
+    assert (action['label'], action['tab']) == ('先到 02 准备题目', 'questions')
+
+
+def test_inferred_objectives_edited_on_the_questions_page_still_allow_questions(ws):
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+    cov = ws.coverage(pid)
+    plan = ws.artifact(cov['plan_id'])
+    objectives = [{**o, 'text': '能解简单的对数不等式'} for o in plan['content']['objectives']]
+    ws.edit(cov['plan_id'], {**plan['content'], 'objectives': objectives})
+    cov = ws.coverage(pid)
+    assert cov['unconfirmed'] and cov['objectives'][0]['text'] == '能解简单的对数不等式'
+    assert not ws.overview(pid)['blockers']['questions']['blocked']
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+
+
+def _meet(handler, barrier):
+    """A fake model call that only returns once its partner call has started too (fails if they run in turn)."""
+
+    def call(r, p):
+        barrier.wait()
+        return handler(r, p)
+
+    return call
+
+
+def test_review_and_independent_solution_run_side_by_side(ws):
+    import threading
+
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    both = threading.Barrier(2, timeout=5)
+    for task in ('review_question', 'self_check_solve'):
+        ws.llm.handlers[task] = _meet(ws.llm.handlers[task], both)
+    [q] = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
+    checks = q['content']['checks']
+    assert checks['solver'] == 'agree' and checks['difficulty'] == '中等'  # both results merged into the question
+
+
+def test_two_ab_versions_are_generated_side_by_side(ws):
+    import threading
+
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)  # objectives first, outside the race
+    import itertools
+
+    from test_edu_workflow import question
+
+    n = itertools.count(1)  # two different versions, or the comparison is dropped as a duplicate
+    gen = lambda r, p: {'questions': [question(f'解不等式 log2(x-{next(n)}) < 3')]}  # noqa: E731
+    ws.llm.handlers['generate_questions'] = _meet(gen, threading.Barrier(2, timeout=5))
+    out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
+    assert [c['position'] for c in out['candidates']] == ['A', 'B'] and out['candidate_group']

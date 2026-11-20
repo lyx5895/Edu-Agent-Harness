@@ -573,6 +573,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     def overview(pid: str, assignment_id: str | None = None):
         return ws().overview(pid, assignment_id or None)
 
+    @app.get('/api/projects/{pid}/progress')
+    def progress(pid: str):
+        return ws().progress(pid)
+
     @app.patch('/api/projects/{pid}')
     def update_project(pid: str, body: ProjectUpdate):
         return ws().update_project(pid, **body.model_dump())
