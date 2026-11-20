@@ -62,7 +62,7 @@ ssh -N -L 7870:127.0.0.1:7870 <服务器>
 | `EDU_LLM_API_KEY` | 无 | 网关密钥 |
 | `EDU_LLM_BASE_URL` | `https://lightingtheword.com/v1` | OpenAI 兼容网关 |
 | `EDU_MODEL_GENERATOR` / `_GRADER` / `_ANALYST` | `DeepSeek-V4.1-Flash` | 备课与出题、批改、学情分析 |
-| `EDU_MODEL_REVIEWER` | `qwen3.8-flash` | 失分判定盲审、出题独立解题与题目审核、满分抽检 |
+| `EDU_MODEL_REVIEWER` | `claude-sonnet-5-5` | 失分判定盲审、出题独立解题与题目审核、满分抽检 |
 | `EDU_MODEL_READER` | `gemini-3.8-flash` | 拍照导入时把手写作答转成文字（需能看图；网关上的 DeepSeek-V4.1-Flash 看图加结构化输出会报 `bad_alloc`） |
 | `EDU_AUDIT_RATE` | `0.05` | 判满分的作答被抽检的比例 |
 | `EDU_AB_RATE` | `0.2` | 没勾选 A/B 时自动出两版的比例 |

@@ -11,7 +11,9 @@ DEFAULT_MODELS = {
     'generator': 'DeepSeek-V4.1-Flash',
     'grader': 'DeepSeek-V4.1-Flash',
     'analyst': 'DeepSeek-V4.1-Flash',
-    'reviewer': 'qwen3.8-flash',
+    # Another provider than the generator (blind review). Sonnet replaced qwen3.8-flash on 2026-11-20: median 14 s
+    # against 30 s on the same reviews, no 100 s+ tail, and closer to the reference reviewer (TEACHER_AGENT_DESIGN.md).
+    'reviewer': 'claude-sonnet-5-5',
     # Transcribes photos of student work; must accept image input. DeepSeek-V4.1-Flash fails here on the
     # gateway (image + system prompt + json_schema -> bad_alloc; without a schema it thinks past max_tokens).
     'reader': 'gemini-3.8-flash',

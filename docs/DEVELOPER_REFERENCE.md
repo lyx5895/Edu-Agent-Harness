@@ -147,7 +147,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `generator` | DeepSeek-V4.1-Flash | 备课方案、出题、换题、导入试卷、再练题、讲评稿 |
 | `grader` | DeepSeek-V4.1-Flash | 批改 |
 | `analyst` | DeepSeek-V4.1-Flash | 学情分析、易错点预判 |
-| `reviewer` | qwen3.8-flash | 失分判定盲审、满分抽检、出题独立解题、题目审核 |
+| `reviewer` | claude-sonnet-5-5（2026-11-20 起，之前是 qwen3.8-flash） | 失分判定盲审、满分抽检、出题独立解题、题目审核 |
 
 主判与复核用不同厂商的模型，降低同源偏差。
 
