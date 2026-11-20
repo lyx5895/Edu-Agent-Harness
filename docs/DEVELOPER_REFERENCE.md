@@ -2,7 +2,7 @@
 
 本文描述 `teacher-agent` 分支上教师工作台（`edu_core/` + `edu_app/`）的**当前实现**，供接手开发、排查问题或对接其他系统（如 coursemaker）时查阅。设计背景和决策过程见 [TEACHER_AGENT_DESIGN.md](TEACHER_AGENT_DESIGN.md)，页面使用见 [TEACHER_AGENT_GUIDE.md](TEACHER_AGENT_GUIDE.md)。代码和本文不一致时以代码为准，并请更新本文。
 
-最后更新：2026-11-19。
+最后更新：2026-11-20。
 
 ## 目录
 
@@ -34,26 +34,26 @@
 
 | 文件 | 行数（约） | 职责 |
 |---|---|---|
-| `edu_core/workflow/` | 2750 | `Workspace`：由各阶段模块组合而成。`base`（存储、模型、产物操作、`_plan`）、`projects`（项目、材料、课标、进入下一课时）、`lesson_plan`（01）、`questions`（02）、`submissions`（03）、`analysis`（04）、`review`（05）、`records`（依据已变化、概览、导出）；`schemas`（模型输出结构）、`prompts`（系统提示词）、`common`（`normalize_plan`、`usable_drafts` 等）、`steps`（`next_steps`、`stage_status`） |
-| `edu_core/workflow/courses.py` | 650 | 课程工作台：课程、班级与成员、授课关系、任务、课时安排、本班学情、首页、旧项目整理进课程 |
+| `edu_core/workflow/` | 4200 | `Workspace`：由各阶段模块组合而成。`base`（存储、模型、产物操作、`_plan`）、`projects`（项目、材料、课标、进入下一课时）、`lesson_plan`（01）、`questions`（02）、`submissions`（03）、`analysis`（04）、`review`（05）、`records`（依据已变化、概览、导出）；`schemas`（模型输出结构）、`prompts`（系统提示词）、`common`（`normalize_plan`、`usable_drafts` 等）、`steps`（`next_steps`、`stage_status`） |
+| `edu_core/workflow/courses.py` | 1190 | 课程工作台：课程、班级与成员、授课关系、任务、课时安排、本班学情、首页、旧项目整理进课程 |
 | `edu_core/workflow/assignments.py` | 330 | 布置记录：布置给班级（固定版本、名单快照）、状态、更正本次评分依据、改用新版本 |
 | `edu_core/workflow/objectives.py` | 270 | 课程目标：备课方案目标与课程目标的对应、描述版本、按目标查看 |
-| `edu_core/workflow/delivery.py` | 300 | 教师文件（教案、学生练习、答案与评分标准、讲评提纲）；coursemaker 交换包与回传课件 |
-| `edu_core/workflow/research.py` | 560 | 来源分组、研究案例与独立审定、切分、研究计数、训练授权与数据集导出 |
+| `edu_core/workflow/delivery.py` | 360 | 教师文件（教案、学生练习、答案与评分标准、讲评提纲）；coursemaker 交换包与回传课件 |
+| `edu_core/workflow/research.py` | 700 | 来源分组、研究案例与独立审定、切分、研究计数、训练授权与数据集导出 |
 | `edu_core/workflow/accounts.py` | 230 | 账号、课程成员、逐条记录的权限判断 |
 | `edu_core/workflow/runs.py` | 70 | `@operation`：把一次老师发起的模型操作记为一次运行 |
 | `edu_core/docx.py`、`edu_core/access.py` | 150、30 | 无依赖的 .docx 与打印版 HTML；当前用户上下文 |
-| `edu_core/artifacts.py` | 290 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询；按布置记录过滤学生作答类产物 |
-| `edu_core/context.py` | 95 | 上下文白名单 `WHITELIST`、`Context`、`describe()`（“已参考”文字） |
+| `edu_core/artifacts.py` | 330 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询；按布置记录过滤学生作答类产物 |
+| `edu_core/context.py` | 125 | 上下文白名单 `WHITELIST`、`Context`、`describe()`（“已参考”文字） |
 | `edu_core/grading.py` | 340 | 无会话批改 `grade()` |
-| `edu_core/tools.py` | 310 | 确定性核对：`match_choice`、`match_true_false`、`check_numeric`、`algebra_equal`、`chem_balanced` |
+| `edu_core/tools.py` | 360 | 确定性核对：`match_choice`、`match_true_false`、`check_numeric`、`algebra_equal`、`chem_balanced` |
 | `edu_core/subjects.py` | 115 | 学科包：名称、允许题型、错误标签、写作维度；`QUESTION_TYPES`、`KEYED_TYPES`、`SUGGESTED_ONLY_TYPES` |
 | `edu_core/curriculum/` | 150 + JSON | 课标条目加载、匹配、上下文、等级检查；`<subject>.json` 共 10 个 |
 | `edu_core/llm.py` | 160 | 网关客户端 `Gateway`、`strict_schema`、`parse_json`、`ModelUnavailable` |
-| `edu_core/storage.py` | 140 | 表结构、迁移（启动时补列）、`Store.tx()` / `read()`、`record_generation`、`event` |
+| `edu_core/storage.py` | 340 | 表结构、迁移（启动时补列）、`Store.tx()` / `read()`、`record_generation`、`event` |
 | `edu_core/text.py` | 75 | `verbatim_quote`、`loose_match`、`normalize_answer`、`sha`、`dump` |
-| `edu_app/api.py` | 460 | FastAPI 路由、错误码映射、静态资源版本化 |
-| `edu_app/static/` | 1400 | 单页前端：`index.html`、`app.js`、`app.css` |
+| `edu_app/api.py` | 1220 | FastAPI 路由、错误码映射、静态资源版本化 |
+| `edu_app/static/` | 2340 | 单页前端：`index.html`、`app.js`、`app.css` |
 | `scripts/edu_build_curriculum.py` | 525 | 从课标 PDF 构建条目 JSON |
 | `scripts/edu_smoke.py`、`edu_eval_grading.py` | | 真实模型冒烟测试、批改评测 |
 
@@ -363,6 +363,14 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 - 课标匹配靠关键词，等级检查只覆盖部分用词；课标只收必修和选择性必修。
 - 题目审核与独立解题依赖另一个模型，画图、多问类题目容易误报“答案存疑”。
 - 作答以文字 CSV 或单名学生的拍照转写导入；没有整班试卷自动切题。
-- 课程工作台尚未实现的部分（单元与目标实体、按目标查看、不经学情直接讲解、跨布置的单元讲评等）见 [COURSE_WORKSPACE_DESIGN.md](COURSE_WORKSPACE_DESIGN.md) 第 13.3 节。
-- 单人本地使用，没有账号和权限；SQLite 只适合单机单进程。
-- 与 coursemaker 的对接未做：可以把课时信息与对方的逐课目录互相映射，把确认后的备课方案作为对方讲义和课件的依据，见设计文档第 12 节。
+- 课程工作台已实现和仍有限制的部分见 [COURSE_WORKSPACE_DESIGN.md](COURSE_WORKSPACE_DESIGN.md) 第 13.3 节。
+- 账号默认关闭（`EDU_AUTH=1` 启用），关闭时没有权限检查；账号为访问码登录，没有密码找回和单点登录。SQLite 只适合单机单进程。
+- coursemaker 一侧尚未接入：本系统只生成交换包（`edu-harness/coursemaker-package@1`）和接收回传课件，见第 3 节“教师文件与 coursemaker”。
+
+### 2026-11-20：完成度、审定、训练导出与重试
+
+- 作业完成度与分析覆盖按名单快照 × 本次固定题目检查。`expected`、`submitted`、`missing`、`blank` 和 `missing_answers` 区分应收、收到、缺少记录和明确空白；缺少记录不自动计零分。尚有缺少记录时只能生成标明覆盖范围的部分分析。当前没有免做/缺交原因登记界面，缺少记录统一标为“未收到或未导入”。
+- 启用账号后，审定人由登录身份确定，复议仅限管理员；产出者不能审定自己的内容。审定接口必须提交 `case_version`，服务端拒绝过期版本。内容变化后递增版本，旧审定只保留追溯，不参与新版结论。迁移 9 保留旧记录，但旧审定没有内容版本依据，相关案例需重审。
+- 修改训练样本只导出已采用的修改及其最终确认稿。来源分区保存在 `research_partitions`，新增派生内容继承同源材料的分区；调优先将来源保留在开发集，测试集不可用于调优。冻结与导出会读取旧案例、调优事件和历史导出；发现同源跨分区或测试/调优冲突时拒绝操作。变更 seed 不重新划分已冻结来源。数据集版本依据规范化的完整记录计算，包含目标内容、标签、分区和授权。
+- 浏览器在同一标签页的 `sessionStorage` 保存未完成 POST 的请求摘要及幂等键，不保存请求原文。网络中断、不完整响应、服务端错误和仍在运行的请求重试复用键；成功后释放，下一次主动生成使用新键。键按用户、路径和请求内容隔离。后端幂等缓存同样按用户隔离；训练导出也使用缓存。
+- 回归覆盖在 `tests/test_edu_course.py`、`tests/test_edu_accounts.py` 和 `tests/test_edu_research.py`；前端请求恢复检查可运行 `node tests/edu_retry_checks.js`（不需要浏览器或网络）。
