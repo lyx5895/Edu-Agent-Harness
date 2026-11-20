@@ -48,8 +48,10 @@ class AnalysisMixin:
                 valid.append(g)
         roster = len(self._roster(c, pid, aid))
         received = len({s['content']['learner_id'] for s in subs})
-        complete = bool(subs) and not (pending or ungraded or stale)
+        collection = self._submission_coverage(c, pid, round_, aid, subs)
+        complete = bool(subs) and not (pending or ungraded or stale or collection['missing'])
         label = f'名单 {roster} 人，收到 {received} 人的作答，有效批改 {len(valid)}/{len(subs)} 份'
+        label += f'；应收 {collection["expected"]} 份，缺少 {collection["missing"]} 份（未收到或未导入）'
         if pending or ungraded or stale:
             label += f'（未批改 {ungraded}，待复核或待确认 {pending}，依据已变化 {stale}）'
         return valid, {
@@ -60,6 +62,7 @@ class AnalysisMixin:
             'pending': pending,
             'ungraded': ungraded,
             'stale': stale,
+            **collection,
             'complete': complete,
             'label': label,
         }

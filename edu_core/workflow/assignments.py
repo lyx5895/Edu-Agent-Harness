@@ -109,6 +109,7 @@ class AssignmentsMixin:
                 g['content']['submission_lineage']: g
                 for g in A.current(c, a['project_id'], 'grading', assignment=a['id'])
             }
+            collection = self._submission_coverage(c, a['project_id'], a['round'], a['id'], subs)
             received = len({s['content']['learner_id'] for s in subs})
             ungraded = sum(1 for s in subs if s['lineage_id'] not in gradings)
             queue = sum(1 for g in gradings.values() if g['status'] == 'draft' and g['content'].get('needs_teacher'))
@@ -119,7 +120,7 @@ class AssignmentsMixin:
                 status = 'grading'
             elif queue or unconfirmed:
                 status = 'review'
-            elif a['roster'] and received < len(a['roster']):
+            elif collection['missing']:
                 status = 'partial'
             else:
                 status = 'done'
@@ -137,6 +138,7 @@ class AssignmentsMixin:
                     'questions': len(a['pinned']),
                     'received': received,
                     'submissions': len(subs),
+                    **collection,
                     'ungraded': ungraded,
                     'review_queue': queue,
                     'status': status,

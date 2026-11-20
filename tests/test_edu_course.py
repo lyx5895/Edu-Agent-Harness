@@ -370,3 +370,29 @@ def test_teacher_removes_class_status_items_from_what_the_model_reads(ws):
     plan = ws.draft_lesson_plan(nxt)
     sent = ws.llm.calls[-1]['user']['本班学情']
     assert '本班学情' in plan['context_note'] and sent['问题模式'] and not sent['学情概述']
+
+
+def test_missing_question_is_not_a_completed_assignment(ws):
+    crs, o3, _ = two_classes(ws)
+    pid, _ = prep_and_practice(ws, crs, o3)
+    original = ws.questions(pid)[0]
+    second = ws.create_question(pid, {**original['content'], 'no': 2, 'stem': '第二题'}, original['rubric']['content'])
+    ws.confirm(second['id'])
+    assignment = ws.assign(pid, o3['id'])
+    aid = assignment['id']
+    graded(ws, pid, aid, f'甲,1,{GOOD}\n乙,1,{GOOD}')
+    ws.confirm_gradings(pid, assignment_id=aid)
+    view = ws.assignment(aid)
+    assert view['status'] == 'partial' and view['expected'] == 4 and view['missing'] == 2
+    with pytest.raises(Conflict, match='缺少 2 份'):
+        ws.analyze(pid, assignment_id=aid)
+    partial = ws.analyze(pid, assignment_id=aid, partial=True)['analysis']['content']
+    assert partial['partial'] and partial['coverage']['missing'] == 2
+    # An explicitly imported blank answer is different from an absent record.
+    ws.import_submissions(pid, '甲,2,\n乙,2,', assignment_id=aid)
+    view = ws.assignment(aid)
+    assert view['missing'] == 0 and view['blank'] == 2 and view['status'] == 'grading'
+    ws.grade_round(pid, assignment_id=aid)
+    ws.confirm_gradings(pid, assignment_id=aid)
+    assert ws.assignment(aid)['status'] == 'done'
+    assert not ws.analyze(pid, assignment_id=aid)['analysis']['content']['partial']

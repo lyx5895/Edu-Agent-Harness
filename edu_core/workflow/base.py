@@ -152,6 +152,26 @@ class WorkspaceBase:
             return {m['alias']: m['id'] for m in self._assignment_row(c, aid)['roster']}
         return {r['alias']: r['id'] for r in c.execute('SELECT id, alias FROM learners WHERE project_id=?', (pid,))}
 
+    def _submission_coverage(self, c, pid, round_, aid, subs):
+        """Missing records are unknown, not blank answers or zero scores."""
+        roster = self._roster(c, pid, aid)
+        questions = self._scoped_questions(c, pid, round_, aid)
+        expected = {(lid, q['lineage_id']) for lid in roster.values() for q in questions.values()}
+        actual = {(s['content']['learner_id'], s['content']['question_lineage']) for s in subs}
+        missing = expected - actual
+        return {
+            'expected': len(expected),
+            'submitted': len(expected & actual),
+            'missing': len(missing),
+            'blank': sum(not s['content'].get('text', '').strip() for s in subs),
+            'missing_answers': [
+                {'learner_id': lid, 'learner_alias': alias, 'question_lineage': q['lineage_id'], 'question_no': no}
+                for alias, lid in roster.items()
+                for no, q in questions.items()
+                if (lid, q['lineage_id']) in missing
+            ],
+        }
+
     def _add_to_roster(self, c, pid, aid, alias):
         """A learner outside the roster: added to the class (and this assignment's snapshot) or to the project."""
         from edu_core.storage import new_id

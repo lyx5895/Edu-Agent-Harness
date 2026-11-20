@@ -72,7 +72,7 @@ HANDLERS = {
                 'text': '能在解对数不等式时检查定义域',
                 'success_criterion': '写出真数大于零',
                 # cite the first standard item offered, plus one the model made up
-                'standard_ids': [x['编号'] for x in p.get('课程标准', {}).get('内容要求', [])][:1] + ['math.X9.9.9'],
+                'standard_ids': [*[x['编号'] for x in p.get('课程标准', {}).get('内容要求', [])][:1], 'math.X9.9.9'],
                 'beyond_standard': False,
                 'beyond_reason': '',
             }
@@ -158,10 +158,11 @@ def test_full_loop(ws):
     assert ws.grade_round(pid)['graded'] == 0  # nothing changed: no regrade
 
     with pytest.raises(Conflict):
-        ws.analyze(pid)  # gradings must be confirmed first
+        ws.analyze(pid, partial=True)  # gradings must be confirmed first
     assert ws.confirm_gradings(pid) == {'confirmed': 2, 'held': 0}
 
-    out = ws.analyze(pid)
+    out = ws.analyze(pid, partial=True)
+    assert out['analysis']['content']['partial']
     [pattern] = out['patterns']  # the evidence-free pattern is dropped
     assert [e['learner'] for e in pattern['content']['evidence']] == ['乙']  # fabricated eid dropped
     assert pattern['content']['affected_learners'] == ['乙'] and pattern['content']['total_learners'] == 2
@@ -339,7 +340,8 @@ def test_lesson_plan_review_and_second_round(ws):
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    out = ws.analyze(pid)
+    # Some roster/question entries are absent: analyze the received portion explicitly.
+    out = ws.analyze(pid, partial=True)
     assert ws.overview(pid)['next'][0]['label'] == '确认问题模式'
     with pytest.raises(Conflict):
         ws.draft_review(pid)  # patterns must be confirmed first
@@ -374,7 +376,7 @@ def test_lesson_plan_review_and_second_round(ws):
     ws.grade_round(pid, round_=2)
     ws.confirm_gradings(pid, round_=2)
     assert ws.overview(pid)['next'][0]['label'] == '汇总批改结果（第 2 轮）'
-    ws.analyze(pid, round_=2)  # round 2 reuses or adds patterns
+    ws.analyze(pid, round_=2, partial=True)  # round 2 still contains only part of the roster
     labels = [x['label'] for x in ws.overview(pid)['next']]
     assert labels[0] == '对比第 1、2 轮'
     cmp = ws.compare(pid, 1, 2)  # still finds round-1 pattern versions after round 2 analysis
@@ -432,7 +434,8 @@ def test_next_lesson_carries_learning_status_into_the_plan(ws):
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    out = ws.analyze(pid)
+    # Some roster/question entries are absent: analyze the received portion explicitly.
+    out = ws.analyze(pid, partial=True)
     [pattern] = out['patterns']
     ws.confirm(pattern['id'])
     # One pattern failed the evidence check, so the model summary is replaced by what the evidence shows.
@@ -581,7 +584,7 @@ def test_adopt_solver_answer_and_regenerate_one_question(ws):
 
 
 def test_generation_sees_activities_standards_and_carried_over_status(ws):
-    p, q = setup_round_one(ws)
+    p, _q = setup_round_one(ws)
     sent = [c for c in ws.llm.calls if c['task'] == 'generate_questions'][-1]
     user = sent['user']
     assert user['课堂活动'][0] == {'活动': '复习定义域', '用时': '5 分钟', '做法': '口答', '对应目标序号': [0]}
@@ -593,7 +596,8 @@ def test_generation_sees_activities_standards_and_carried_over_status(ws):
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    ws.confirm(ws.analyze(pid)['patterns'][0]['id'])
+    # Some roster/question entries are absent: analyze the received portion explicitly.
+    ws.confirm(ws.analyze(pid, partial=True)['patterns'][0]['id'])
     nxt = ws.next_lesson(pid)
     ws.confirm(ws.draft_lesson_plan(nxt['id'])['lesson_plan']['id'])
     gen = ws.generate_questions(nxt['id'], types=['calculation'], count=1, ab=False)
@@ -723,7 +727,8 @@ def test_analysis_counts_learners_by_evidence_and_reports_objectives(ws):
     )
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    out = ws.analyze(pid)
+    # Some roster/question entries are absent: analyze the received portion explicitly.
+    out = ws.analyze(pid, partial=True)
     [pattern] = out['patterns']
     # 丙 lost the same tag on question 2 only: no longer counted for a question-1 pattern
     assert pattern['content']['affected_learners'] == ['乙']
@@ -738,7 +743,8 @@ def test_comparison_counts_only_points_written_for_the_pattern(ws):
     ws.import_submissions(pid, '甲,1,定义域 x>1，又 x-1<8，所以 1<x<9\n乙,1,由单调性 x-1<8，所以 x<9')
     ws.grade_round(pid)
     ws.confirm_gradings(pid)
-    [pattern] = ws.analyze(pid)['patterns']
+    # Some roster/question entries are absent: analyze the received portion explicitly.
+    [pattern] = ws.analyze(pid, partial=True)['patterns']
     assert pattern['content']['affected_learners'] == ['乙']
     ws.confirm(pattern['id'])
     [pq] = ws.practice(pid)['questions']  # round 2, question 1: written for the pattern
