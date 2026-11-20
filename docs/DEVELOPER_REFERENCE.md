@@ -113,9 +113,9 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 **研究记录**（`research.py`）：`_source_groups` 以引用、`edit_of`、谱系、生成时读取的材料家族做并查集；`build_research_cases` 每个任务阶段一个案例（备课、出题按轮、批改 / 学情 / 讲评按布置或轮次、讲解），产物变化后已审案例回到 `changed`；`review_case` 拒绝产出者审定，审定人意见不一致时为 `disputed`，`adjudicator` 复议定案；`freeze_split` 按来源组哈希分配，`use_for_tuning` 拒绝测试集案例；`export_dataset` 需要课程的 training 授权，输出示范、明确偏好、带指令修改三类记录，含学生原文的任务（批改、复核、抽检、分析、拍照、讲评、再练、单元讲评、附作答的讲解）一律排除并计数；`revoke_consent` 在已导出数据集的清单里记录撤回。
 
-**账号与权限**（`accounts.py`，`EDU_AUTH=1`）：访问码只存 SHA-256；`identify` 中间件按 `Authorization: Bearer` 或 `edu_token` Cookie 设置当前用户；全局依赖 `authorize` 对路径参数（`PATH_KINDS`）、查询参数和 JSON 请求体中的记录 id（`FIELD_KINDS`、`LIST_KINDS`）逐一调用 `can_access`，未声明的路径参数直接报错（`test_every_route_parameter_has_an_access_rule` 检查）。课程成员可访问课程内一切；不在课程里的项目、班级归创建人；旧数据（无所有者）只有管理员可见；`/api/migration`、`/api/users`、`/api/datasets`、切分与调整登记只给管理员。
+**账号与权限**（`accounts.py`，`EDU_AUTH=1`）：访问码只存 SHA-256；`identify` 中间件按 `Authorization: Bearer` 或 `edu_token` Cookie 设置当前用户；全局依赖 `authorize` 对路径参数（`PATH_KINDS`）、查询参数和 JSON 请求体中的记录 id（`FIELD_KINDS`、`LIST_KINDS`）逐一调用 `can_access`，未声明的路径参数直接报错（`test_every_route_parameter_has_an_access_rule` 检查）。课程成员可访问课程内一切；不在课程里的项目、班级归创建人；旧数据（无所有者）只有管理员可见；`/api/migration`、`/api/users`、`/api/datasets`、切分与调整登记只给管理员。研究记录（`/api/research/*`）、试用记录（`/api/trial/report`）、训练授权（`/api/courses/{cid}/consents`、`/api/consents/*`）和项目完整记录导出（`/api/projects/{pid}/export`）是后台功能，同样只给管理员（`test_research_trial_and_consent_are_back_office`）；研究案例的审定人因此也只能是管理员，产出者（含编辑过任一版本的人）仍不能审定。
 
-**统一的确认规则**（`Workspace.confirm`、`confirm_gradings`）：有未处理“依据已变化”标记的结果不能确认，要先在“记录与导出”里选择保留或重做；有未判定要点或待复核疑点的批改只能逐项改判，不能走通用确认；批量确认跳过这两类并返回 `held` 数量。
+**统一的确认规则**（`Workspace.confirm`、`confirm_gradings`）：有未处理“依据已变化”标记的结果不能确认，要先在“文件与记录”里选择保留或重做；有未判定要点或待复核疑点的批改只能逐项改判，不能走通用确认；批量确认跳过这两类并返回 `held` 数量。
 
 **写回前复验**（`_guard_basis`）：模型调用在事务外进行。写回时检查调用期间读过的产物是否出现了更新的已确认版本（对布置记录，检查固定的版本是否被换掉）；如果有，结果照样保存，但立即打上“依据已变化”，不会成为有效结果。批改、学情分析、问题模式、讲评稿、出题、换题都经过这一步。
 
@@ -131,7 +131,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
   - `submission` 永不标记；
   - `lesson_plan`、`question`、`rubric`、`review_plan`（老师确认的内容）会被标记，但标记不再往下传；
   - `grading`、`analysis`、`problem_pattern`、`comparison`（计算结果）继续往下传。
-  标记在“记录与导出”里处理：保留原结果，或重新批改（批改类）。
+  标记在“文件与记录”里处理：保留原结果，或重新批改（批改类）。
 - **轮次**：`round` 字段。第 1 轮是首次练习；“讲评后再练”产生第 2、3…轮，各轮的题目、作答、批改、分析独立。
 - **备课方案的内容**（`normalize_plan`）：`objectives`（`id` 为稳定编号 O1、O2…，编辑时保留，新目标顺延；`text`、`success_criterion`；可选 `standard_ids`、`standard_refs`、`checks`、`beyond_reason`、`inferred`）、`key_points`、`difficulties`、`activities`（`name`、`minutes`、`description`、`objective_ids`）、`notes`、`curriculum`（起草时提供的课标条目编号）。
 - **题目的内容**：`no`（题号，轮内唯一，修改和换题不变）、`type`、`stem`、`options`、`answer_key`、`accepted`、`reference`、`objective_ids`（备课方案目标编号）、`target_patterns`（再练题针对的问题模式谱系）、`round`、`difficulty_requested`、`purpose`、`checks`（见 5.2），换题版本另有 `regenerated_from`、`instruction`。评分标准单独成谱系，`question_lineage` 指向题目谱系，`points` 每项有 `id`、`description`、`score`、可选 `check`（`kind` + `expected`）和 `target_pattern`。
@@ -336,7 +336,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 - **我的教学**（`#home`）：当前课程和当前班级、需要处理的事项、继续工作、开始工作（准备下一节课 / 出一份练习 / 批改作业 / 准备讲解）、班级与课时安排、课程资料、待整理的旧项目。默认打开首页；“所有工作区”下拉仍可直接打开任意项目。
 - **布置记录**：作业批改、学情分析、讲题答疑页顶部的 `#scope-bar` 选择当前布置，所有请求带上 `assignment_id`，轮次跟随布置并锁定；出题页可把本轮已确认的题目布置给班级；批改页可以展开“本次评分依据”更正评分标准。
-- `index.html`：顶部项目行；五个阶段标签（01–05）加“记录与导出”；每个阶段一个 `#tab-*`，顶部是 `.stage-head`（标题 + `.continue` 下一步）。
+- `index.html`：顶部项目行；五个阶段标签（01–05）加“文件与记录”（依据已变化、教师文件、coursemaker 交换包）；顶部“后台管理”（`#admin`，只对管理员或未启用账号时的本机用户显示）放研究记录与训练授权、试用记录和完整记录导出，按“我的教学”当前课程统计；每个阶段一个 `#tab-*`，顶部是 `.stage-head`（标题 + `.continue` 下一步）。
 - `app.js`：全局状态 `S`（项目、概况、当前标签、课标勾选是否改动等）；`refresh()` 拉概况后渲染；每个阶段一个 `render*()`；按钮通过 `data-act` / `data-goto` / `data-continue` / `data-fill` 在少数委托监听器里处理；`busy()` 包装异步按钮；`api()` 统一请求和错误提示。
 - 静态资源按内容哈希加 `?v=`，并返回 `Cache-Control: no-cache`，避免浏览器运行旧脚本。
 - 页面上的文字面向老师，避免技术名词；每个阶段只放本阶段的内容，候选和次要信息折叠。
@@ -350,7 +350,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 - **假模型** `tests/edu_fake.py` 的 `FakeLLM(handlers)`：按任务名找处理函数，返回值经同样的 pydantic 校验；`calls` 记录每次调用的角色、任务、输入，测试可以检查模型实际收到了什么。新增模型任务时要在 `tests/test_edu_workflow.py` 的 `HANDLERS` 里加处理函数。务必用 `FakeLLM(dict(HANDLERS))`，测试会改处理函数。
 - `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_scope.py`：作用域（布置记录与项目作答的版本、名单快照、覆盖范围）；`test_edu_trial.py`：试用记录（可用成果时间、等待与老师时间、修改与换题、教案与题目的采用定义、串班、重复录入、意愿）；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
-- **浏览器走查**：用假模型起一个服务（`create_app(Workspace(Store(db), FakeLLM(handlers), settings))`），再用 Playwright 走完 01–05、下一课时、记录与导出，检查页面没有脚本错误。脚本目前在开发者本地，没有入库。
+- **浏览器走查**：用假模型起一个服务（`create_app(Workspace(Store(db), FakeLLM(handlers), settings))`），再用 Playwright 走完 01–05、下一课时、文件与记录，检查页面没有脚本错误。脚本目前在开发者本地，没有入库。
 - **真实模型**：`scripts/edu_smoke.py` 用临时库走一遍闭环（约 5 分钟、8 万 token）；`scripts/edu_eval_grading.py` 评测批改准确性。只用临时数据库，不要指向 `data/edu.sqlite`。
 
 ## 12. 开发约定

@@ -480,10 +480,16 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         for key, value in request.query_params.items():
             if key in FIELD_KINDS and value:
                 checks.append((FIELD_KINDS[key], value))
-        if template.startswith('/api/research') and not is_admin(user) and not request.query_params.get('course_id'):
-            raise HTTPException(403, '请指定课程')
-        if template == '/api/trial/report' and not is_admin(user) and not request.query_params.get('course_id'):
-            raise HTTPException(403, '请指定课程')
+        # Research records, trial measurements and the full-record export are back-office functions
+        # (COURSE_WORKSPACE_DESIGN.md 11): teachers never see them, so they are refused here as well as hidden.
+        if template.startswith('/api/research') and not is_admin(user):
+            raise HTTPException(403, '研究记录只对管理员开放')
+        if template == '/api/trial/report' and not is_admin(user):
+            raise HTTPException(403, '试用记录只对管理员开放')
+        if template.startswith('/api/projects/') and template.endswith('/export') and not is_admin(user):
+            raise HTTPException(403, '完整记录导出只对管理员开放')
+        if (template.endswith('/consents') or template.startswith('/api/consents/')) and not is_admin(user):
+            raise HTTPException(403, '训练授权由管理员登记')
         if request.method in ('POST', 'PUT', 'PATCH') and request.headers.get('content-type', '').startswith(
             'application/json'
         ):

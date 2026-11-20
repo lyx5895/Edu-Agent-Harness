@@ -12,6 +12,7 @@
     <div class="topbar-right">
       <span id="user-box" class="muted hidden"><span id="user-name"></span> <button id="logout-btn" class="link small">退出</button></span>
       <button id="home-btn" class="secondary">我的教学</button>
+      <button id="admin-btn" class="secondary hidden">后台管理</button>
       <select id="project-select" aria-label="所有工作区"></select>
       <button id="new-project-btn" class="link">新建单独项目</button>
     </div>
@@ -128,7 +129,7 @@
         <button data-tab="grading"><span class="mark">03</span>作业批改</button>
         <button data-tab="analysis"><span class="mark">04</span>学情分析</button>
         <button data-tab="review"><span class="mark">05</span>讲题答疑</button>
-        <button data-tab="records" class="aside">记录与导出<span id="records-badge" class="badge hidden"></span></button>
+        <button data-tab="records" class="aside">文件与记录<span id="records-badge" class="badge hidden"></span></button>
       </nav>
       <div id="context-note" class="banner info hidden"></div>
       <div id="scope-bar" class="scope-bar hidden">
@@ -337,34 +338,44 @@
           <button class="secondary" id="package-btn">生成交换包</button>
           <div id="courseware-list"></div>
         </div>
-        <div class="card">
-          <h3>试用记录</h3>
-          <p class="muted">按设计文档 13.2 的成功标准，从系统已有记录计算：从建立任务到第一份可用成果的耗时（含等待和修改）、
-            修改和换题次数、教案和题目实际用于教学的比例、串班错误、重复录入提示。只统计当前课程。</p>
-          <div class="row"><button class="small secondary" id="trial-refresh">生成试用记录</button>
-            <button class="small secondary" id="trial-willing">我愿意继续使用</button>
-            <button class="small link" id="trial-unwilling">暂不愿意</button></div>
-          <div id="trial-report"></div>
-        </div>
-        <div class="card" id="research-card">
-          <h3>研究记录与训练授权</h3>
-          <p class="muted">研究记录分别统计老师任务、运行、模型调用和研究案例；训练数据只来自已授权的课程，学生作答一律不进入。</p>
-          <div id="research-summary"></div>
-          <div class="row"><button class="small secondary" id="cases-build">整理研究案例</button>
-            <button class="small secondary" id="dataset-export">导出训练数据</button></div>
-          <div id="research-cases"></div>
-          <details><summary>训练数据授权</summary>
-            <div id="consent-list"></div>
-            <div class="row"><input id="consent-version" placeholder="授权版本，例如 2026-11 v1"><input id="consent-by" placeholder="授权人">
-              <button class="small" id="consent-grant">授权本课程内容用于训练</button></div>
-          </details>
-        </div>
-        <div class="card">
-          <h3>研究记录导出</h3>
-          <p id="model-status" class="muted"></p>
-          <a id="export-link" class="button" href="#">导出 JSON</a>
-        </div>
       </div>
+    </section>
+
+    <section id="admin" class="hidden">
+      <div class="card">
+        <h3>后台管理</h3>
+        <p class="muted">研究记录、试用记录和完整记录导出只对管理员开放，老师端不显示这些内容，接口也会拒绝。
+          这里按当前课程统计；在工作区里打开一个项目后，可以导出这个项目的完整记录。</p>
+        <div id="admin-course"></div>
+        <div id="admin-export"></div>
+      </div>
+          <div class="card">
+            <h3>试用记录</h3>
+            <p class="muted">按设计文档 13.2 的成功标准，从系统已有记录计算：从建立任务到第一份可用成果的耗时（含等待和修改）、
+              修改和换题次数、教案和题目实际用于教学的比例、串班错误、重复录入提示。只统计当前课程。</p>
+            <div class="row"><button class="small secondary" id="trial-refresh">生成试用记录</button>
+              <button class="small secondary" id="trial-willing">我愿意继续使用</button>
+              <button class="small link" id="trial-unwilling">暂不愿意</button></div>
+            <div id="trial-report"></div>
+          </div>
+          <div class="card" id="research-card">
+            <h3>研究记录与训练授权</h3>
+            <p class="muted">研究记录分别统计老师任务、运行、模型调用和研究案例；训练数据只来自已授权的课程，学生作答一律不进入。</p>
+            <div id="research-summary"></div>
+            <div class="row"><button class="small secondary" id="cases-build">整理研究案例</button>
+              <button class="small secondary" id="dataset-export">导出训练数据</button></div>
+            <div id="research-cases"></div>
+            <details><summary>训练数据授权</summary>
+              <div id="consent-list"></div>
+              <div class="row"><input id="consent-version" placeholder="授权版本，例如 2026-11 v1"><input id="consent-by" placeholder="授权人">
+                <button class="small" id="consent-grant">授权本课程内容用于训练</button></div>
+            </details>
+          </div>
+          <div class="card">
+            <h3>研究记录导出</h3>
+            <p id="model-status" class="muted"></p>
+            <a id="export-link" class="button" href="#">导出 JSON</a>
+          </div>
     </section>
   </main>
   <div id="toast" class="toast hidden"></div>

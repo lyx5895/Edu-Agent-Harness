@@ -106,36 +106,60 @@ def test_without_accounts_nothing_changes(tmp_path):
     assert c.post('/api/courses', json={'title': 'x', 'subject': '数学'}).status_code == 200
 
 
-def test_case_review_uses_logged_in_identity_and_server_role(setup):
+def test_research_trial_and_consent_are_back_office(setup):
     _ws, client, _ = setup
-    a, b, admin = client('甲老师'), client('乙老师'), client('管理员')
+    a, admin = client('甲老师'), client('管理员')
+    crs = a.post('/api/courses', json={'title': '后台测试', 'subject': '数学'}).json()
+    pid = a.post(f'/api/courses/{crs["id"]}/tasks', json={'kind': 'prep', 'knowledge_module': '对数函数'}).json()[
+        'project'
+    ]['id']
+    q = {'course_id': crs['id']}
+    for method, path in (
+        ('get', '/api/research/summary'),
+        ('get', '/api/research/cases'),
+        ('post', '/api/research/cases/build'),
+        ('get', '/api/trial/report'),
+        ('get', f'/api/courses/{crs["id"]}/consents'),
+        ('get', f'/api/projects/{pid}/export'),
+    ):
+        assert getattr(a, method)(path, params=q).status_code == 403, path
+        assert getattr(admin, method)(path, params=q).status_code == 200, path
+    # The teacher's own work in the same course stays open to them.
+    assert a.get(f'/api/projects/{pid}').status_code == 200
+    assert a.get(f'/api/projects/{pid}/stale').status_code == 200
+
+
+def test_case_review_uses_logged_in_identity_and_stays_independent(setup):
+    ws, client, _ = setup
+    a, admin = client('甲老师'), client('管理员')
+    researcher = client()
+    researcher.headers['Authorization'] = f'Bearer {ws.create_user("研究员", "admin")["token"]}'
     crs = a.post('/api/courses', json={'title': '审定测试', 'subject': '数学'}).json()
     pid = a.post(f'/api/courses/{crs["id"]}/tasks', json={'kind': 'prep', 'knowledge_module': '对数函数'}).json()[
         'project'
     ]['id']
     plan = a.post(f'/api/projects/{pid}/lesson-plan/draft').json()['lesson_plan']
     a.post(f'/api/artifacts/{plan["id"]}/confirm', json={})
-    a.post('/api/research/cases/build', params={'course_id': crs['id']})
-    case = a.get('/api/research/cases', params={'course_id': crs['id']}).json()[0]
+    q = {'course_id': crs['id']}
+    admin.post('/api/research/cases/build', params=q)
+    case = admin.get('/api/research/cases', params=q).json()[0]
     url = f'/api/research/cases/{case["id"]}/review?course_id={crs["id"]}'
     body = {'case_version': case['version'], 'reviewer': '虚构审定人', 'verdict': 'approve', 'standard': '标准'}
-    assert a.post(url, json={**body, 'role': 'adjudicator'}).status_code == 403
-    assert a.post(url, json=body).status_code == 409
-    a.post(f'/api/courses/{crs["id"]}/members', json={'name': '乙老师'})
-    assert b.post(url, json=body).status_code == 200
-    assert b.post(url, json={**body, 'reviewer': '另一个假名'}).status_code == 409
-    stored = b.get('/api/research/cases', params={'course_id': crs['id']}).json()[0]['reviews'][0]
-    assert stored['reviewer'] == b.get('/api/me').json()['user']['id']
-    assert admin.post(url, json={**body, 'role': 'adjudicator'}).status_code == 200
+    assert a.post(url, json=body).status_code == 403  # teachers do not review research cases
+    assert admin.post(url, json=body).status_code == 200
+    stored = admin.get('/api/research/cases', params=q).json()[0]['reviews'][0]
+    assert stored['reviewer'] == admin.get('/api/me').json()['user']['id']  # the name in the body is ignored
+    assert admin.post(url, json=body).status_code == 409  # once per reviewer and version
 
-    # A contributor to an earlier version is still not an independent reviewer.
-    edit_b = b.put(f'/api/artifacts/{plan["id"]}', json={'content': {'notes': '乙修改'}}).json()
-    edit_a = a.put(f'/api/artifacts/{edit_b["id"]}', json={'content': {'notes': '甲再修改'}}).json()
-    a.post(f'/api/artifacts/{edit_a["id"]}/confirm', json={})
-    a.post('/api/research/cases/build', params={'course_id': crs['id']})
-    latest = a.get('/api/research/cases', params={'course_id': crs['id']}).json()[0]
+    # Someone who edited the content is not an independent reviewer of the new version, even as an admin.
+    edited = researcher.put(f'/api/artifacts/{plan["id"]}', json={'content': {'notes': '研究员修改'}}).json()
+    researcher.post(f'/api/artifacts/{edited["id"]}/confirm', json={})
+    admin.post('/api/research/cases/build', params=q)
+    latest = admin.get('/api/research/cases', params=q).json()[0]
     assert latest['version'] == case['version'] + 1
-    assert b.post(url, json={**body, 'case_version': latest['version']}).status_code == 409
+    assert researcher.post(url, json={**body, 'case_version': latest['version']}).status_code == 409
+    assert admin.post(url, json=body).status_code == 409  # the old version is refused
+    assert admin.post(url, json={**body, 'case_version': latest['version']}).status_code == 200
 
 
 def test_dataset_export_retry_returns_same_export(setup):

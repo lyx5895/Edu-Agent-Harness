@@ -185,7 +185,7 @@ class WorkspaceBase:
         with self.store.tx() as c:
             a = A.get(c, aid)
             if a['status'] != 'confirmed' and A.is_stale(c, aid):
-                raise Conflict('它的依据已经变化：请先在“记录与导出”中选择保留原结果或重新生成')
+                raise Conflict('它的依据已经变化：请先在“文件与记录”中选择保留原结果或重新生成')
             if a['type'] == 'grading' and (a['content'].get('undetermined') or a['content'].get('needs_teacher')):
                 raise Conflict('这条批改还有未判定的要点或待复核的疑点，请用“改判”逐项给分')
             if a['type'] == 'question':

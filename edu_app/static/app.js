@@ -131,10 +131,13 @@ async function init() {
   bindEvents();
   bindHomeEvents();
   bindLogin();
+  bindAdmin();
   bindExtras();
   const me = await api('GET', '/api/me');
   S.userId = me.user?.id || '';
   if (me.auth && !me.user) { showLogin(); return; }
+  S.isAdmin = !me.auth || me.user?.role === 'admin';
+  $('#admin-btn').classList.toggle('hidden', !S.isAdmin);
   if (me.user) { $('#user-name').textContent = `${me.user.name}${me.user.role === 'admin' ? '（管理员）' : ''}`; $('#user-box').classList.remove('hidden'); }
   const pid = store.get('edu.pid');
   const projects = await loadProjects(pid, false);
@@ -154,6 +157,7 @@ async function loadProjects(selectId, open = true) {
 }
 
 function showWelcome(on) {
+  $('#admin').classList.add('hidden');
   $('#welcome').classList.toggle('hidden', !on);
   $('#home').classList.add('hidden');
   $('#workspace').classList.toggle('hidden', on || !S.pid || S.view !== 'project');
@@ -171,6 +175,7 @@ async function selectProject(pid, opts = {}) {
   $('#project-select').value = pid;
   $('#home').classList.add('hidden');
   $('#welcome').classList.add('hidden');
+  $('#admin').classList.add('hidden');
   $('#workspace').classList.remove('hidden');
   showNote('');
   await refresh();
@@ -881,7 +886,7 @@ function comparisonView(a) {
     <p class="muted">复测、已改善、仍存在、新出现都只按针对这个问题模式出的再练题统计。</p>`;
 }
 
-// ---------- 记录与导出 ----------
+// ---------- 文件与记录（老师） ----------
 
 async function renderRecords() {
   const stale = await api('GET', `/api/projects/${S.pid}/stale`);
@@ -892,9 +897,6 @@ async function renderRecords() {
       <div class="item-actions"><button class="small secondary" data-resolve="kept">保留原结果</button><button class="small secondary" data-resolve="redone">已重新处理</button></div></div>`).join('')
     : '<div class="empty">没有依据已变化的产物。</div>')
     + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
-  $('#export-link').href = `/api/projects/${S.pid}/export`;
-  await renderResearch();
-  await renderTrial();
   const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
   $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
     .map(([k, label]) => `<div class="row"><span class="s-title">${label}</span>
@@ -1401,6 +1403,7 @@ async function showHome() {
   await renderHome();  // fill first, so the page never shows stale lists
   $('#workspace').classList.add('hidden');
   $('#welcome').classList.add('hidden');
+  $('#admin').classList.add('hidden');
   $('#home').classList.remove('hidden');
   window.scrollTo({ top: 0 });
 }
@@ -1513,7 +1516,11 @@ async function renderUnitReview(oid, box) {
 
 // The records tab belongs to the open workspace, so its research and trial cards follow that workspace's course,
 // not whichever course the home page last showed.
-function recordsCourse() { return S.overview?.course?.id || S.course || ''; }
+function recordsCourse() {
+  // The back office reports on the course picked on "我的教学"; a workspace's tab follows that workspace.
+  if (S.view === 'admin') return S.course || S.home?.course?.id || '';
+  return S.overview?.course?.id || S.course || '';
+}
 
 async function renderTrial() {
   const box = $('#trial-report');
@@ -1573,10 +1580,32 @@ async function renderResearch() {
     ${x.revoked_at ? '<span class="pill">已撤回</span>' : `<button class="small link" data-consent-revoke="${x.id}">撤回</button>`}</div>`).join('') || '<div class="kv muted">还没有授权：训练数据导出不会包含本课程的内容。</div>';
 }
 
+async function showAdmin() {
+  if (!S.isAdmin) return;
+  S.view = 'admin';
+  ['#home', '#workspace', '#welcome'].forEach((x) => $(x).classList.add('hidden'));
+  $('#admin').classList.remove('hidden');
+  const course = recordsCourse();
+  const title = S.overview?.course?.title || S.home?.course?.title || '';
+  $('#admin-course').innerHTML = course
+    ? `<div class="kv">当前课程：<b>${esc(title || course)}</b>（在“我的教学”切换课程）</div>`
+    : '<div class="kv muted">还没有选择课程：先在“我的教学”选一门课程。</div>';
+  $('#export-link').classList.toggle('hidden', !S.pid);
+  if (S.pid) $('#export-link').href = `/api/projects/${S.pid}/export`;
+  $('#admin-export').innerHTML = S.pid ? '' : '<div class="kv muted">打开一个工作区后可以导出它的完整记录。</div>';
+  await renderResearch();
+  await renderTrial();
+  window.scrollTo({ top: 0 });
+}
+
 function showLogin() {
   S.view = 'login';
-  ['#home', '#workspace', '#welcome'].forEach((x) => $(x).classList.add('hidden'));
+  ['#home', '#workspace', '#welcome', '#admin'].forEach((x) => $(x).classList.add('hidden'));
   $('#login').classList.remove('hidden');
+}
+
+function bindAdmin() {
+  $('#admin-btn').addEventListener('click', (e) => busy(e.target, '…', showAdmin));
 }
 
 function bindLogin() {
