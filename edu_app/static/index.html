@@ -145,8 +145,9 @@
 
       <div id="tab-prep" class="tab">
         <div class="stage-head"><div><h2>备课设计</h2><p>明确教学目标，安排重点与课堂活动</p></div><div class="continue" data-stage="prep"></div></div>
-        <div class="card carry hidden" id="carryover-card"></div>
-        <div class="card" id="course-info">
+        <div class="card setup-bar hidden" id="prep-setup-bar"></div>
+        <div class="card carry hidden setup" id="carryover-card"></div>
+        <div class="card setup" id="course-info">
           <h3>课时信息</h3>
           <div class="grid-form">
             <label>知识模块<input id="course-module" placeholder="例如：对数函数"></label>
@@ -164,7 +165,7 @@
             <div class="wide"><button id="save-course" class="secondary">保存课时信息</button></div>
           </div>
         </div>
-        <div class="card">
+        <div class="card setup" id="materials-card">
           <h3>参考材料 <span class="muted">（可选）</span></h3>
           <div id="materials"></div>
           <div class="row hidden" id="material-prefs-row"><button class="small secondary" id="material-prefs-save">保存材料选择</button>
@@ -176,7 +177,7 @@
               <label class="file">上传 .txt/.md/.pdf<input type="file" id="material-file" accept=".txt,.md,.pdf"></label></div>
           </details>
         </div>
-        <div class="card">
+        <div class="card result">
           <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
           <div class="row hidden" id="revise-row"><span class="muted">只改一部分：</span><select id="revise-target"></select>
@@ -187,7 +188,8 @@
 
       <div id="tab-questions" class="tab hidden">
         <div class="stage-head"><div><h2>出题改题</h2><p>依据本课目标生成练习，同步答案与评分要点</p></div><div class="continue" data-stage="questions"></div></div>
-        <div class="card">
+        <div class="card setup-bar hidden" id="questions-setup-bar"></div>
+        <div class="card setup" id="generate-card">
           <h3>按目标出题</h3>
           <div class="grid-form">
             <div class="wide"><span class="label">题型</span><div id="type-boxes" class="checks"></div></div>
@@ -205,8 +207,8 @@
             <button id="import-paper">导入试卷</button>
           </details>
         </div>
-        <div id="ab-panel"></div>
-        <div class="card">
+        <div id="ab-panel" class="result"></div>
+        <div class="card result">
           <div class="card-head"><h3>题目与评分标准</h3>
             <label>轮次 <select id="q-round"></select></label></div>
           <div id="coverage"></div>

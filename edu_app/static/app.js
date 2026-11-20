@@ -132,6 +132,7 @@ async function init() {
   bindHomeEvents();
   bindLogin();
   bindAdmin();
+  bindResultFirst();
   bindExtras();
   const me = await api('GET', '/api/me');
   S.userId = me.user?.id || '';
@@ -302,8 +303,10 @@ async function goNext(step) {
   S.tab = step.tab;
   showNote('');
   await renderTab();
-  const el = $(step.target);
+  let el = $(step.target);
   if (!el) return;
+  const setup = el.closest('.setup.folded');
+  if (setup) { S.setupOpen[S.tab] = true; await renderTab(); el = $(step.target); }
   const details = el.closest('details');
   if (details) details.open = true;
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -325,6 +328,22 @@ function renderProjectEdit() {
     <label class="wide">老师说明<textarea class="pe-notes" rows="2">${esc(p.notes)}</textarea></label>
     ${locked ? '<div class="wide muted">项目里已经有题目，学科不能再改；需要换学科请新建项目。</div>' : ''}
     <div class="wide"><button data-act="save-project">保存</button> <button class="secondary" data-act="close-project-edit">取消</button></div></div>`;
+}
+
+// ---------- 做完的阶段先看结果 ----------
+// Once a stage is done, its result comes first and the inputs fold into one summary line. The teacher can
+// open them again to change something; "下一步" jumps that point into the inputs open them automatically.
+S.setupOpen = {};
+function applyResultFirst(tab, summary) {
+  const pane = $(`#tab-${tab}`);
+  const done = !!S.overview.stages[tab];
+  const open = !done || !!S.setupOpen[tab];
+  pane.classList.toggle('result-first', done && !open);
+  $$('.setup', pane).forEach((el) => el.classList.toggle('folded', !open));
+  const bar = $(`#${tab}-setup-bar`);
+  bar.classList.toggle('hidden', !done);
+  bar.innerHTML = `<div class="setup-summary">${summary}</div>
+    <button class="small ${open ? 'link' : 'secondary'}" data-setup-toggle="${tab}">${open ? '收起' : '修改'}</button>`;
 }
 
 // ---------- 01 备课设计 ----------
@@ -366,6 +385,15 @@ async function renderPrep() {
       '<option value="key_points">重点</option>', '<option value="difficulties">难点</option>', '<option value="notes">备注</option>',
     ].join('');
   }
+  const cur = (p.curriculum && !p.curriculum.off && p.curriculum.ids) ? p.curriculum.ids.length : 0;
+  const used = mats.filter((m) => !off.has(m.id)).length;
+  applyResultFirst('prep', [
+    `<b>课时信息</b>　${esc([p.knowledge_module, p.lesson].filter(Boolean).join(' · ') || '未填写')}`,
+    p.lesson_scope ? esc(p.lesson_scope) : '',
+    p.has_curriculum ? (cur ? `课标 ${cur} 条` : '不参考课标') : '',
+    mats.length ? `材料 ${used}/${mats.length} 份` : '没有材料',
+    p.offering_id ? '参考本班学情' : (p.carryover ? '参考上一课时学情' : ''),
+  ].filter(Boolean).join('<span class="sep">·</span>'));
   const others = S.overview.offerings.filter((o) => o.id !== p.offering_id);
   const adopted = plans.length && plans[0].confirmed_version;
   $('#use-plan-row').classList.toggle('hidden', !(p.course_id && others.length && adopted));
@@ -486,6 +514,8 @@ async function renderQuestions() {
   ]);
   S.goals = Object.fromEntries(cov.objectives.map((o, i) => [o.id, { no: i + 1, text: o.text }]));
   renderCoverage(cov);
+  const confirmedQs = qs.filter((q) => q.confirmed_version).length;
+  applyResultFirst('questions', `<b>需要再出题？</b>　本轮已确认 ${confirmedQs} 道题。可以按目标再出一批、导入现成试卷，或在下面单题“换一道”。`);
   const candidates = qs.filter((q) => q.status === 'candidate' && q.candidate && S.overview.pending_ab.includes(q.candidate.candidate_group));
   const groups = {};
   candidates.forEach((q) => { (groups[q.candidate.candidate_group] ||= { A: [], B: [] })[q.candidate.position].push(q); });
@@ -626,17 +656,36 @@ async function renderGrading() {
       <button class="small secondary" data-act="correct-open">更正本次评分依据</button></div><div class="correction-area" data-for="${x.question_lineage}"></div>`).join('')}</details>` : '';
   $('#queue-count').textContent = queue.length;
   $('#queue').innerHTML = queue.length ? queue.map(queueItem).join('') : '<div class="empty">复核队列为空。</div>';
-  $('#gradings').innerHTML = gradings.length ? `<table><tr><th>学生</th><th>题号</th><th>得分</th><th>状态</th><th>说明</th></tr>
-    ${gradings.sort((a, b) => a.content.question_no - b.content.question_no || a.content.learner_alias.localeCompare(b.content.learner_alias)).map(gradingRow).join('')}</table>` : '<div class="empty">这一轮还没有批改。</div>';
+  $('#gradings').innerHTML = gradings.length ? gradingTable(gradings) : '<div class="empty">这一轮还没有批改。</div>';
+}
+
+// What needs attention first: unconfirmed, flagged and lost points; full marks fold into one line per question.
+function gradingTable(gradings) {
+  const needsLook = (g) => g.status !== 'confirmed' || g.stale || g.content.needs_teacher || g.content.undetermined;
+  const full = (g) => g.content.total >= g.content.max_total && !needsLook(g);
+  const order = (a, b) => (needsLook(b) - needsLook(a)) || (a.content.total / a.content.max_total - b.content.total / b.content.max_total)
+    || a.content.question_no - b.content.question_no || a.content.learner_alias.localeCompare(b.content.learner_alias);
+  const shown = gradings.filter((g) => !full(g)).sort(order);
+  const byQuestion = {};
+  gradings.filter(full).forEach((g) => (byQuestion[g.content.question_no] ||= []).push(g.content.learner_alias));
+  const fullRows = Object.entries(byQuestion).sort((a, b) => a[0] - b[0]).map(([no, names]) => `<tr class="full-row"><td colspan="5">
+    <details><summary>第 ${no} 题 · ${names.length} 人满分</summary><div class="kv">${names.sort().map(esc).join('、')}</div></details></td></tr>`).join('');
+  const total = gradings.length;
+  const lost = shown.length;
+  return `<div class="kv">共 ${total} 份：需要看的 ${lost} 份排在前面，满分的按题折叠。点一行看逐要点的判定依据。</div>
+    <table class="grading-table"><tr><th>学生</th><th>题号</th><th>得分</th><th>状态</th><th>失分</th></tr>
+    ${shown.map(gradingRow).join('')}${fullRows}</table>`;
 }
 
 function gradingRow(g) {
   const c = g.content;
   const state = g.status === 'confirmed' ? '<span class="pill ok">已确认</span>' : (c.needs_teacher ? '<span class="pill warn">需复核</span>' : '<span class="pill">待确认</span>');
   const lost = c.points.filter((p) => p.status !== 'earned').map((p) => `${p.id}${p.error_tag ? '：' + p.error_tag : ''}`).join('；');
-  return `<tr><td>${esc(c.learner_alias)}</td><td>${c.question_no}</td><td>${c.total}/${c.max_total}${c.undetermined ? '（' + c.undetermined + ' 个要点待判）' : ''}</td>
+  return `<tr class="grading-row" data-expand="${g.id}"><td>${esc(c.learner_alias)}</td><td>${c.question_no}</td>
+    <td class="${c.total < c.max_total ? 'score-lost' : ''}">${c.total}/${c.max_total}${c.undetermined ? '（' + c.undetermined + ' 个要点待判）' : ''}</td>
     <td>${state} ${g.stale ? '<span class="pill bad">依据已变化</span>' : ''} ${g.origin === 'teacher' ? '<span class="pill">老师改判</span>' : ''}</td>
-    <td>${esc(lost)}<details><summary>详情</summary>${pointsDetail(c.points)}</details></td></tr>`;
+    <td>${esc(lost) || '<span class="muted">—</span>'}</td></tr>
+    <tr class="grading-detail hidden" data-detail="${g.id}"><td colspan="5">${pointsDetail(c.points)}</td></tr>`;
 }
 
 function pointsDetail(points) {
@@ -1608,6 +1657,18 @@ function showLogin() {
   S.view = 'login';
   ['#home', '#workspace', '#welcome', '#admin'].forEach((x) => $(x).classList.add('hidden'));
   $('#login').classList.remove('hidden');
+}
+
+function bindResultFirst() {
+  document.addEventListener('click', async (e) => {
+    const t = e.target.closest('[data-setup-toggle]');
+    if (t) { const tab = t.dataset.setupToggle; S.setupOpen[tab] = !S.setupOpen[tab]; await renderTab(); return; }
+    const row = e.target.closest('tr.grading-row');
+    if (row && !e.target.closest('a, button, input, select, textarea')) {
+      const detail = $(`tr[data-detail="${row.dataset.expand}"]`);
+      if (detail) { detail.classList.toggle('hidden'); row.classList.toggle('open', !detail.classList.contains('hidden')); }
+    }
+  });
 }
 
 function bindAdmin() {

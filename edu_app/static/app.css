@@ -234,3 +234,23 @@ a.textlink { color: var(--accent); font-size: 14px; margin-left: 12px; text-unde
 label.locked select { appearance: none; -webkit-appearance: none; background: none; border-color: transparent; padding: 0 2px;
   color: var(--text); cursor: default; opacity: 1; }
 label.locked { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+
+/* ---- done stages: result first, inputs folded into one line ---- */
+.tab.result-first { display: flex; flex-direction: column; }
+.tab.result-first > .stage-head { order: -4; }
+.tab.result-first > #scope-bar { order: -3; }
+.tab.result-first > .setup-bar { order: -2; }
+.tab.result-first > .result { order: -1; }
+.setup.folded { display: none !important; }
+.setup-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px; flex-wrap: wrap; }
+.setup-summary { font-size: 14px; color: var(--muted); flex: 1; min-width: 240px; }
+.setup-summary b { color: var(--text); font-weight: 600; }
+.setup-summary .sep { margin: 0 8px; opacity: .5; }
+
+/* ---- grading table ---- */
+.grading-table tr.grading-row { cursor: pointer; }
+.grading-table tr.grading-row:hover td, .grading-table tr.grading-row.open td { background: var(--bg); }
+.grading-table tr.grading-detail td { background: var(--bg); padding: 4px 12px 12px; }
+.grading-table td.score-lost { color: var(--bad); font-weight: 600; }
+.grading-table tr.full-row td { color: var(--muted); }
+.grading-table tr.full-row details { margin: 0; }
