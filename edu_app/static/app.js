@@ -893,6 +893,7 @@ async function renderRecords() {
     : '<div class="empty">没有依据已变化的产物。</div>')
     + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
   $('#export-link').href = `/api/projects/${S.pid}/export`;
+  await renderResearch();
   await renderTrial();
   const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
   $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
@@ -1458,7 +1459,6 @@ async function renderHome() {
       ? detail.materials.map((m) => `<div class="kv">${esc(m.filename)} <span class="pill">${m.chars} 字</span></div>`).join('')
       : '<div class="empty">还没有课程资料。</div>';
   }
-  await renderResearch();
   $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
   if (h.legacy_projects) await renderLegacy();
 }
@@ -1511,9 +1511,13 @@ async function renderUnitReview(oid, box) {
     <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
 }
 
+// The records tab belongs to the open workspace, so its research and trial cards follow that workspace's course,
+// not whichever course the home page last showed.
+function recordsCourse() { return S.overview?.course?.id || S.course || ''; }
+
 async function renderTrial() {
   const box = $('#trial-report');
-  const course = S.overview?.course?.id || S.course;
+  const course = recordsCourse();
   if (!course) { box.innerHTML = '<div class="kv muted">这个工作区不属于任何课程，没有试用记录。</div>'; return; }
   let r;
   try {
@@ -1545,11 +1549,13 @@ async function renderTrial() {
 }
 
 async function renderResearch() {
-  if (!S.course) return;
+  const course = recordsCourse();
+  $('#research-card').classList.toggle('hidden', !course);
+  if (!course) return;
   const [sum, cases, consents] = await Promise.all([
-    api('GET', `/api/research/summary?course_id=${encodeURIComponent(S.course)}`),
-    api('GET', `/api/research/cases?course_id=${encodeURIComponent(S.course)}`),
-    api('GET', `/api/courses/${S.course}/consents`),
+    api('GET', `/api/research/summary?course_id=${encodeURIComponent(course)}`),
+    api('GET', `/api/research/cases?course_id=${encodeURIComponent(course)}`),
+    api('GET', `/api/courses/${course}/consents`),
   ]);
   const c = sum.counts || {};
   const label = { teacher_tasks: '老师任务', runs: '运行', model_calls: '模型调用', research_cases: '研究案例', reviewed_cases: '已审定案例', source_groups: '来源组', contributors: '贡献者' };
@@ -1609,7 +1615,7 @@ function bindExtras() {
     toast('交换包已生成并下载；课件做好后可回传，系统会记录它依据的版本');
   }));
   $('#cases-build').addEventListener('click', (e) => busy(e.target, '整理中…', async () => {
-    const r = await api('POST', `/api/research/cases/build?course_id=${encodeURIComponent(S.course)}`);
+    const r = await api('POST', `/api/research/cases/build?course_id=${encodeURIComponent(recordsCourse())}`);
     toast(`新增 ${r.created} 个研究案例`); await renderResearch();
   }));
   $('#trial-refresh').addEventListener('click', (e) => busy(e.target, '…', renderTrial));
@@ -1621,13 +1627,13 @@ function bindExtras() {
     }));
   }
   $('#dataset-export').addEventListener('click', (e) => busy(e.target, '导出中…', async () => {
-    const data = await api('POST', `/api/datasets/export?course_id=${encodeURIComponent(S.course)}`);
+    const data = await api('POST', `/api/datasets/export?course_id=${encodeURIComponent(recordsCourse())}`);
     downloadJson(data, `${data.manifest.version}.json`);
     const ex = Object.entries(data.manifest.excluded).map(([k, n]) => `${k} ${n}`).join('，');
     toast(`导出 ${data.records.length} 条；排除：${ex || '无'}`);
   }));
   $('#consent-grant').addEventListener('click', (e) => busy(e.target, '记录中…', async () => {
-    await api('POST', `/api/courses/${S.course}/consents`, { purposes: ['training'], version: $('#consent-version').value.trim(), granted_by: $('#consent-by').value.trim() });
+    await api('POST', `/api/courses/${recordsCourse()}/consents`, { purposes: ['training'], version: $('#consent-version').value.trim(), granted_by: $('#consent-by').value.trim() });
     toast('已记录授权'); await renderResearch();
   }));
   $('#home').addEventListener('click', async (e) => {
@@ -1661,7 +1667,7 @@ function bindExtras() {
     if (cv) {
       const row = cv.closest('[data-case]');
       await busy(cv, '…', async () => {
-        const r = await api('POST', `/api/research/cases/${row.dataset.case}/review?course_id=${encodeURIComponent(S.course)}`, { case_version: Number(row.dataset.caseVersion), reviewer: $('.cr-reviewer', row).value.trim(), standard: $('.cr-standard', row).value.trim(), verdict: cv.dataset.caseVerdict });
+        const r = await api('POST', `/api/research/cases/${row.dataset.case}/review?course_id=${encodeURIComponent(recordsCourse())}`, { case_version: Number(row.dataset.caseVersion), reviewer: $('.cr-reviewer', row).value.trim(), standard: $('.cr-standard', row).value.trim(), verdict: cv.dataset.caseVerdict });
         toast(`已记录审定：${r.status}`); await renderResearch();
       });
       return;
