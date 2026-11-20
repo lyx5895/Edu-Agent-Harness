@@ -42,6 +42,7 @@
 | `edu_core/workflow/research.py` | 700 | 来源分组、研究案例与独立审定、切分、研究计数、训练授权与数据集导出 |
 | `edu_core/workflow/accounts.py` | 230 | 账号、课程成员、逐条记录的权限判断 |
 | `edu_core/workflow/runs.py` | 70 | `@operation`：把一次老师发起的模型操作记为一次运行 |
+| `edu_core/workflow/trial.py` | 230 | 试用记录（设计文档 13.2）：从任务、产物确认事件、运行、布置和课时的记录推导耗时、修改、采用、串班和重复录入；意愿单独记录 |
 | `edu_core/workflow/scope.py` | 200 | `Scope`：一次调用属于哪个作用域（布置记录或项目自己的作答），统一回答版本、名单、覆盖范围和写回依据 |
 | `edu_core/docx.py`、`edu_core/access.py` | 150、30 | 无依赖的 .docx 与打印版 HTML；当前用户上下文 |
 | `edu_core/artifacts.py` | 330 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询；按布置记录过滤学生作答类产物 |
@@ -319,6 +320,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `POST /api/artifacts/{aid}/revise`、`PUT /api/projects/{pid}/material-prefs` | 局部修改；资料选择 |
 | `GET /api/projects/{pid}/deliverables/{kind}?fmt=html\|docx`、`POST .../coursemaker-package`、`POST .../courseware` | 教师文件；交换包；回传课件 |
 | `POST /api/choices/{id}/revoke`、`POST /api/projects/{pid}/choices/{group}/merge` | 撤回选择；结合两份修改 |
+| `GET /api/trial/report?course_id=&since=&until=`、`POST /api/trial/feedback` | 试用记录（指标、口径与逐任务明细）；记录老师是否愿意继续使用 |
 | `GET /api/research/summary`、`POST /api/research/cases/build`、`GET /api/research/cases`、`POST .../cases/{id}/review`、`POST /api/research/split`、`POST /api/research/tuning`、`GET /api/research/source-groups` | 研究计数、研究案例与审定、切分、调整登记、来源组 |
 | `GET/POST /api/courses/{cid}/consents`、`POST /api/consents/{id}/revoke`、`POST /api/datasets/export` | 训练授权；数据集导出（管理员） |
 | `GET/POST /api/courses/{cid}/units`、`GET/PATCH /api/units/{id}`、`PUT /api/projects/{pid}/unit` | 主题列表、新建；按主题查看、改名；调整任务所属主题 |
@@ -347,7 +349,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 ```
 
 - **假模型** `tests/edu_fake.py` 的 `FakeLLM(handlers)`：按任务名找处理函数，返回值经同样的 pydantic 校验；`calls` 记录每次调用的角色、任务、输入，测试可以检查模型实际收到了什么。新增模型任务时要在 `tests/test_edu_workflow.py` 的 `HANDLERS` 里加处理函数。务必用 `FakeLLM(dict(HANDLERS))`，测试会改处理函数。
-- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_scope.py`：作用域（布置记录与项目作答的版本、名单快照、覆盖范围）；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
+- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_scope.py`：作用域（布置记录与项目作答的版本、名单快照、覆盖范围）；`test_edu_trial.py`：试用记录（可用成果时间、等待与老师时间、修改与换题、教案与题目的采用定义、串班、重复录入、意愿）；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
 - **浏览器走查**：用假模型起一个服务（`create_app(Workspace(Store(db), FakeLLM(handlers), settings))`），再用 Playwright 走完 01–05、下一课时、记录与导出，检查页面没有脚本错误。脚本目前在开发者本地，没有入库。
 - **真实模型**：`scripts/edu_smoke.py` 用临时库走一遍闭环（约 5 分钟、8 万 token）；`scripts/edu_eval_grading.py` 评测批改准确性。只用临时数据库，不要指向 `data/edu.sqlite`。
 

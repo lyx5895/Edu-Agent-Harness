@@ -223,3 +223,12 @@ def test_topics_explain_derive_and_status_prefs_over_http(client):
     assert client.post(f'/api/projects/{t["project"]["id"]}/explain', json={'question': ''}).status_code == 422
     r = client.post(f'/api/projects/{t["project"]["id"]}/derive', json={'offering_id': 'off_missing'})
     assert r.status_code == 404
+
+
+def test_trial_report_and_feedback_over_http(client):
+    cid = client.post('/api/courses', json={'title': '高一数学·上学期', 'subject': '数学'}).json()['id']
+    report = client.get('/api/trial/report', params={'course_id': cid}).json()
+    assert report['summary']['tasks'] == 0 and report['targets']['cross_class_errors']
+    assert client.post('/api/trial/feedback', json={'willing': True, 'note': 'ok'}).json()['willing'] is True
+    again = client.get('/api/trial/report', params={'course_id': cid}).json()
+    assert again['summary']['willingness']['willing'] == 1

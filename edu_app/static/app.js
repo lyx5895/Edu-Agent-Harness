@@ -1458,6 +1458,7 @@ async function renderHome() {
       : '<div class="empty">还没有课程资料。</div>';
   }
   await renderResearch();
+  await renderTrial();
   $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
   if (h.legacy_projects) await renderLegacy();
 }
@@ -1508,6 +1509,31 @@ async function renderUnitReview(oid, box) {
   if (list.length < 2) { box.innerHTML = '<div class="kv">这个班至少要有两份作业才能做单元讲评；只有一份时在那份作业里准备讲评。</div>'; return; }
   box.innerHTML = `<div class="kv">选择要合在一起讲评的作业：</div>${list.map((a) => `<label class="inline"><input type="checkbox" class="ur-pick" value="${a.id}" checked> ${esc(a.title)}（${esc(a.status_label)}）</label>`).join('')}
     <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
+}
+
+async function renderTrial() {
+  if (!S.course) return;
+  const r = await api('GET', `/api/trial/report?course_id=${encodeURIComponent(S.course)}`);
+  const s = r.summary;
+  const secs = (v) => (v == null ? '—' : `${Math.round(v)} 秒`);
+  const pill = (k, v) => `<span class="pill">${esc(k)} ${esc(String(v))}</span>`;
+  const ad = s.adoption;
+  const re = s.repeated_entry;
+  $('#trial-report').innerHTML = [
+    `<div class="kv">` + [
+      pill('任务', s.tasks), pill('有可用成果', s.usable),
+      pill('总耗时', secs(s.time.total_seconds)), pill('中位耗时', secs(s.time.median_seconds)),
+      pill('其中模型等待', secs(s.time.wait_seconds)),
+      pill('教案采用', `${ad.plans_used}/${ad.plans}`), pill('题目采用', `${ad.questions_used}/${ad.questions}`),
+      pill('串班错误', s.cross_class_errors),
+      pill('重复录入', `课时 ${re.project_updates} · 名单 ${re.roster_entry_calls} · 课标 ${re.manual_curriculum}`),
+      pill('意愿', `愿意 ${s.willingness.willing} · 不愿意 ${s.willingness.unwilling} · 未回答 ${s.willingness.unanswered}`),
+    ].join(' ') + `</div>`,
+    r.tasks.length ? r.tasks.map((t) => `<div class="task-row"><div class="task-main">${esc(t.title)}
+      <span class="pill">${esc(t.kind)}</span>
+      <span class="muted">建立 → 可用 ${secs(t.total_seconds)}（等待 ${secs(t.wait_seconds)}）· 版本 ${t.versions} · 修改 ${t.edits + t.overrides} · 换题 ${t.regenerations} · 教案${t.plan_used ? '已授课' : '未授课'} · 题目采用 ${t.questions_used}/${t.questions_total}</span>
+    </div></div>`).join('') : '<div class="kv muted">这门课程还没有任务。</div>',
+  ].join('');
 }
 
 async function renderResearch() {
@@ -1578,6 +1604,14 @@ function bindExtras() {
     const r = await api('POST', `/api/research/cases/build?course_id=${encodeURIComponent(S.course)}`);
     toast(`新增 ${r.created} 个研究案例`); await renderResearch();
   }));
+  $('#trial-refresh').addEventListener('click', (e) => busy(e.target, '…', renderTrial));
+  for (const [id, willing] of [['trial-willing', true], ['trial-unwilling', false]]) {
+    $('#' + id).addEventListener('click', (e) => busy(e.target, '…', async () => {
+      const r = await api('POST', '/api/trial/feedback', { willing, note: '' });
+      toast(r.willing ? '已记录：愿意继续使用' : '已记录：暂不愿意');
+      await renderTrial();
+    }));
+  }
   $('#dataset-export').addEventListener('click', (e) => busy(e.target, '导出中…', async () => {
     const data = await api('POST', `/api/datasets/export?course_id=${encodeURIComponent(S.course)}`);
     downloadJson(data, `${data.manifest.version}.json`);

@@ -61,6 +61,7 @@ from edu_core.workflow.schemas import (
 )
 from edu_core.workflow.steps import next_steps, stage_status
 from edu_core.workflow.submissions import SubmissionsMixin
+from edu_core.workflow.trial import TrialMixin
 
 
 class Workspace(
@@ -78,6 +79,7 @@ class Workspace(
     AnalysisMixin,
     ReviewMixin,
     RecordsMixin,
+    TrialMixin,
     WorkspaceBase,
 ):
     """One teacher workspace over a store and a model; each stage keeps its methods in its own module."""

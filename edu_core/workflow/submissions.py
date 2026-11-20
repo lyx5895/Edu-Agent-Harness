@@ -43,6 +43,9 @@ class SubmissionsMixin:
                 )
                 if cur.rowcount:
                     added.append(alias)
+            if added:
+                # Trial metric (COURSE_WORKSPACE_DESIGN.md 13.2): entering a roster by hand again.
+                event(c, pid, 'learners_added', {'count': len(added)})
         return {'added': added, 'learners': self.learners(pid)}
 
     def learners(self, pid):

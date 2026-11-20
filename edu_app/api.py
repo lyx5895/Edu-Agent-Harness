@@ -359,6 +359,11 @@ class MergeBody(BaseModel):
     sources: list[str] = Field(min_length=2, max_length=10)
 
 
+class TrialFeedback(BaseModel):
+    willing: bool
+    note: str = Field(default='', max_length=500)
+
+
 class CaseReview(BaseModel):
     case_version: int = Field(ge=1)
     reviewer: str = Field(default='', max_length=60)
@@ -476,6 +481,8 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             if key in FIELD_KINDS and value:
                 checks.append((FIELD_KINDS[key], value))
         if template.startswith('/api/research') and not is_admin(user) and not request.query_params.get('course_id'):
+            raise HTTPException(403, '请指定课程')
+        if template == '/api/trial/report' and not is_admin(user) and not request.query_params.get('course_id'):
             raise HTTPException(403, '请指定课程')
         if request.method in ('POST', 'PUT', 'PATCH') and request.headers.get('content-type', '').startswith(
             'application/json'
@@ -1066,6 +1073,16 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.post('/api/projects/{pid}/courseware')
     def import_courseware(pid: str, body: CoursewareBody):
         return ws().import_courseware(pid, body.package_id, body.kind, body.files, body.external_run_id, body.note)
+
+    # ----- teacher trial (COURSE_WORKSPACE_DESIGN.md 13.2) -----
+
+    @app.get('/api/trial/report')
+    def trial_report(course_id: str | None = None, since: str | None = None, until: str | None = None):
+        return ws().trial_report(course_id, since, until)
+
+    @app.post('/api/trial/feedback')
+    def trial_feedback(body: TrialFeedback):
+        return ws().record_trial_feedback(body.willing, body.note)
 
     # ----- research records -----
 

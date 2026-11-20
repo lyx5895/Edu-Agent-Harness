@@ -351,6 +351,15 @@
           <div id="courseware-list"></div>
         </div>
         <div class="card">
+          <h3>试用记录</h3>
+          <p class="muted">按设计文档 13.2 的成功标准，从系统已有记录计算：从建立任务到第一份可用成果的耗时（含等待和修改）、
+            修改和换题次数、教案和题目实际用于教学的比例、串班错误、重复录入提示。只统计当前课程。</p>
+          <div class="row"><button class="small secondary" id="trial-refresh">生成试用记录</button>
+            <button class="small secondary" id="trial-willing">我愿意继续使用</button>
+            <button class="small link" id="trial-unwilling">暂不愿意</button></div>
+          <div id="trial-report"></div>
+        </div>
+        <div class="card">
           <h3>研究记录导出</h3>
           <p id="model-status" class="muted"></p>
           <a id="export-link" class="button" href="#">导出 JSON</a>
