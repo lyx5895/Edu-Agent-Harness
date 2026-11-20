@@ -26,15 +26,13 @@ class AnalysisMixin:
 
     # ----- analysis -----
 
-    def _coverage(self, c, pid, round_, aid):
+    def _coverage(self, c, scope):
         """Who is in this analysis (design doc 7.3): roster, learners who answered, valid gradings and what is pending.
 
         A grading is valid when its latest version is confirmed and its basis has not changed.
         """
-        subs = A.current(c, pid, 'submission', round_=round_, assignment=aid)
-        by_sub = {
-            g['content']['submission_lineage']: g for g in A.current(c, pid, 'grading', round_=round_, assignment=aid)
-        }
+        subs = scope.current(c, 'submission', round_=scope.round)
+        by_sub = {g['content']['submission_lineage']: g for g in scope.current(c, 'grading', round_=scope.round)}
         valid, pending, ungraded, stale = [], 0, 0, 0
         for s in subs:
             g = by_sub.get(s['lineage_id'])
@@ -46,9 +44,9 @@ class AnalysisMixin:
                 pending += 1
             else:
                 valid.append(g)
-        roster = len(self._roster(c, pid, aid))
+        roster = len(scope.roster(c))
         received = len({s['content']['learner_id'] for s in subs})
-        collection = self._submission_coverage(c, pid, round_, aid, subs)
+        collection = scope.coverage(c, subs)
         complete = bool(subs) and not (pending or ungraded or stale or collection['missing'])
         label = f'名单 {roster} 人，收到 {received} 人的作答，有效批改 {len(valid)}/{len(subs)} 份'
         label += f'；应收 {collection["expected"]} 份，缺少 {collection["missing"]} 份（未收到或未导入）'
@@ -76,11 +74,12 @@ class AnalysisMixin:
         """
         llm = self._model()
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             p = self._project(c, pid)
-            subs = A.current(c, pid, 'submission', round_=round_, assignment=aid)
-            confirmed, coverage = self._coverage(c, pid, round_, aid)
-            questions = list(self._scoped_questions(c, pid, round_, aid).values())
+            subs = scope.current(c, 'submission', round_=round_)
+            confirmed, coverage = self._coverage(c, scope)
+            questions = list(scope.questions(c).values())
             if subs and not coverage['complete'] and not partial:
                 raise Conflict(f'{coverage["label"]}。处理完复核和确认后再生成完整分析，或选择“只分析已确认的部分”')
             if subs and not confirmed:
@@ -95,7 +94,7 @@ class AnalysisMixin:
             q_view = []
             for q in questions:
                 ctx.add_artifact(q)
-                rubric = self._scoped_rubric(c, q['lineage_id'], aid)
+                rubric = scope.rubric(c, q['lineage_id'])
                 if rubric:
                     ctx.add_artifact(rubric)
                 q_view.append(
@@ -109,7 +108,7 @@ class AnalysisMixin:
                 )
             existing = []
             if subs:
-                for pat in A.current(c, pid, 'problem_pattern', assignment=aid):
+                for pat in scope.current(c, 'problem_pattern'):
                     if pat['confirmed_version']:
                         conf = A.confirmed_in_lineage(c, pat['lineage_id'])
                         ctx.add_artifact(conf)
@@ -152,7 +151,7 @@ class AnalysisMixin:
                     round_=round_,
                     assignment_id=aid,
                 )
-                self._guard_basis(c, pid, a['id'], ctx.manifest, aid)
+                self._guard_basis(c, pid, a['id'], ctx.manifest, scope)
             return {'analysis': a, 'patterns': [], 'context_note': describe(ctx.manifest)}
 
         evidence, by_tag, learners_all = {}, {}, set()
@@ -238,7 +237,7 @@ class AnalysisMixin:
                     created_by='server',
                     assignment_id=aid,
                 )
-                self._guard_basis(c, pid, a['id'], ctx.manifest, aid)
+                self._guard_basis(c, pid, a['id'], ctx.manifest, scope)
             return {'analysis': a, 'patterns': [], 'context_note': describe(ctx.manifest)}
         user = _json(
             {
@@ -347,7 +346,7 @@ class AnalysisMixin:
                 round_=round_,
                 assignment_id=aid,
             )
-            based_on_old = self._guard_basis(c, pid, analysis['id'], ctx.manifest, aid)
+            based_on_old = self._guard_basis(c, pid, analysis['id'], ctx.manifest, scope)
             made = []
             for pat in patterns:
                 lineage = pat.pop('lineage')
@@ -369,18 +368,16 @@ class AnalysisMixin:
                     )
                 )
                 if based_on_old:
-                    self._guard_basis(c, pid, made[-1]['id'], ctx.manifest, aid)
+                    self._guard_basis(c, pid, made[-1]['id'], ctx.manifest, scope)
         return {'analysis': analysis, 'patterns': made, 'context_note': describe(ctx.manifest)}
 
     def analyses(self, pid, assignment_id=None):
         with self.store.read() as c:
-            pid, _, aid = self._scope(c, pid, None, assignment_id)
-            return A.current(c, pid, 'analysis', assignment=aid)
+            return self.scope(c, pid, None, assignment_id).current(c, 'analysis')
 
     def patterns(self, pid, assignment_id=None):
         with self.store.read() as c:
-            pid, _, aid = self._scope(c, pid, None, assignment_id)
-            return A.current(c, pid, 'problem_pattern', assignment=aid)
+            return self.scope(c, pid, None, assignment_id).current(c, 'problem_pattern')
 
 
 def _objective_stats(goals, questions, gradings):

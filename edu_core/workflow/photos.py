@@ -72,9 +72,10 @@ class PhotosMixin:
             raise ValueError(f'一次最多上传 {MAX_PHOTOS} 张照片')
         prepared = [images.prepare(data) for data in photos]
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_ = scope.project_id, scope.round
             p = self._project(c, pid)
-            questions = self._scoped_questions(c, pid, round_, aid)
+            questions = scope.questions(c)
         if not questions:
             raise Conflict(f'第 {round_} 轮还没有已确认的题目，请先确认题目再导入作答')
         ctx = Context('transcribe')
@@ -169,14 +170,15 @@ class PhotosMixin:
         if not rows:
             raise ValueError('没有可导入的作答（全部为空）')
         with self.store.tx() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             self._project(c, pid)
-            questions = self._scoped_questions(c, pid, round_, aid)
-            known = self._roster(c, pid, aid).get(learner)
+            questions = scope.questions(c)
+            known = scope.roster(c).get(learner)
             if known:
                 learner_id = known
             elif add_missing:
-                learner_id = self._add_to_roster(c, pid, aid, learner)
+                learner_id = scope.add_learner(c, learner)
             else:
                 raise Conflict(f'名单中没有 {learner}：先加入学生名单，或勾选“名单外的学生自动加入”')
             created, problems = [], []
@@ -196,7 +198,7 @@ class PhotosMixin:
                 }
                 if generation_id:
                     content['transcription_generation'] = generation_id
-                lineage = self._submission_lineage(c, pid, learner_id, q['lineage_id'], round_, aid)
+                lineage = scope.submission_lineage(c, learner_id, q['lineage_id'])
                 created.append(
                     A.create(
                         c,

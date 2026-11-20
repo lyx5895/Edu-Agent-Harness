@@ -36,7 +36,8 @@ class RecordsMixin:
                 ).fetchone()
                 if not unbound:
                     assignment_id = assignments[-1]['id']
-            _, a_round, aid = self._scope(c, pid, None, assignment_id)
+            scope = self.scope(c, pid, None, assignment_id)
+            aid = scope.assignment_id
             course, offerings, class_name, units = None, [], '', []
             if p.get('course_id'):
                 crs = self._course(c, p['course_id'])
@@ -50,7 +51,7 @@ class RecordsMixin:
             task = c.execute('SELECT id, kind, status FROM tasks WHERE project_id=? LIMIT 1', (pid,)).fetchone()
 
             def scoped(t, **kw):
-                return A.current(c, pid, t, assignment=aid if t in A.ASSIGNMENT_TYPES else None, **kw)
+                return scope.current(c, t, **kw)
 
             counts = {}
             for t in A.TYPES:
@@ -60,7 +61,7 @@ class RecordsMixin:
                 {r[0] for r in c.execute('SELECT DISTINCT round FROM artifacts WHERE project_id=?', (pid,))}
             ) or [1]
             mats = c.execute('SELECT COUNT(*) FROM materials WHERE project_id=?', (pid,)).fetchone()[0]
-            learners = len(self._roster(c, pid, aid))
+            learners = len(scope.roster(c))
             pending_ab = [
                 r[0]
                 for r in c.execute(
@@ -69,7 +70,7 @@ class RecordsMixin:
                     (pid,),
                 )
             ]
-            latest = a_round if aid else max(rounds)
+            latest = scope.round if scope.is_assignment else max(rounds)
             nxt_row = c.execute(
                 'SELECT id, title FROM projects WHERE prev_project_id=? ORDER BY created_at DESC LIMIT 1', (pid,)
             ).fetchone()
@@ -78,8 +79,8 @@ class RecordsMixin:
                 items = scoped(t, round_=latest)
                 round_counts[t] = {'total': len(items), 'confirmed': sum(1 for a in items if a['confirmed_version'])}
         stale = self.stale(pid)
-        if aid:
-            queue = len(self.review_queue(pid, latest, assignment_id=aid))
+        if scope.is_assignment:
+            queue = len(self.review_queue(pid, latest, assignment_id=scope.assignment_id))
         else:
             queue = sum(len(self.review_queue(pid, r)) for r in rounds)
         nxt = next_steps(

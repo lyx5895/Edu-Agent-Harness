@@ -104,18 +104,13 @@ class DeliveryMixin:
         return blocks
 
     def _paper_questions(self, c, p, round_, aid):
-        if aid:
-            a = self._assignment_row(c, aid)
-            if a['project_id'] != p['id']:
-                raise Conflict('这次布置不属于当前任务')
-            pairs = [(A.get(c, pin['question']), A.get(c, pin['rubric'])) for pin in a['pinned'].values()]
-        else:
-            pairs = []
-            for q in A.current(c, p['id'], 'question', round_=round_):
-                conf = A.confirmed_in_lineage(c, q['lineage_id'])
-                rubric = self._rubric_for(c, q['lineage_id']) if conf else None
-                if conf and rubric:
-                    pairs.append((conf, rubric))
+        """(question, rubric) pairs to print: the versions this assignment pinned, or the confirmed ones."""
+        try:
+            scope = self.scope(c, p['id'], round_, aid)
+        except Conflict:
+            raise Conflict('这次布置不属于当前任务') from None
+        pairs = [(q, scope.rubric(c, q['lineage_id'])) for q in scope.questions(c).values()]
+        pairs = [(q, r) for q, r in pairs if q and r]
         if not pairs:
             raise Conflict('这一轮还没有已确认的题目和评分标准，不能导出')
         return sorted(pairs, key=lambda x: x[0]['content']['no'])

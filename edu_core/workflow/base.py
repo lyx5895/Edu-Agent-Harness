@@ -20,6 +20,7 @@ from edu_core.workflow.common import (
     Conflict,
     normalize_plan,
 )
+from edu_core.workflow.scope import Scope
 
 
 class WorkspaceBase:
@@ -114,119 +115,20 @@ class WorkspaceBase:
         a['pinned'] = json.loads(a['pinned'] or '{}')
         return a
 
-    def _scope(self, c, pid, round_, assignment_id):
-        """(project, round, assignment) of student work: a class assignment, or the project's own unbound work ('')."""
-        if not assignment_id:
-            if pid is None:
-                raise ValueError('缺少项目')
-            return pid, round_ or 1, ''
-        a = self._assignment_row(c, assignment_id)
-        if pid and a['project_id'] != pid:
-            raise Conflict('这次布置不属于当前项目')
-        return a['project_id'], a['round'], a['id']
-
-    def _scoped_questions(self, c, pid, round_, aid):
-        """题号 -> question version used by this work: the pinned version of a class assignment, else the confirmed one."""
-        if aid:
-            a = self._assignment_row(c, aid)
-            out = {}
-            for pin in a['pinned'].values():
-                q = A.get(c, pin['question'])
-                out[q['content']['no']] = q
-            return out
-        return {
-            q['content']['no']: A.confirmed_in_lineage(c, q['lineage_id'])
-            for q in A.current(c, pid, 'question', round_=round_)
-            if q['confirmed_version']
-        }
-
-    def _scoped_rubric(self, c, question_lineage, aid):
-        if aid:
-            pin = self._assignment_row(c, aid)['pinned'].get(question_lineage)
-            return A.get(c, pin['rubric']) if pin else None
-        return self._rubric_for(c, question_lineage)
-
-    def _roster(self, c, pid, aid):
-        """alias -> learner id: the assignment's roster snapshot, or the project's learners."""
-        if aid:
-            return {m['alias']: m['id'] for m in self._assignment_row(c, aid)['roster']}
-        return {r['alias']: r['id'] for r in c.execute('SELECT id, alias FROM learners WHERE project_id=?', (pid,))}
-
-    def _submission_coverage(self, c, pid, round_, aid, subs):
-        """Missing records are unknown, not blank answers or zero scores."""
-        roster = self._roster(c, pid, aid)
-        questions = self._scoped_questions(c, pid, round_, aid)
-        expected = {(lid, q['lineage_id']) for lid in roster.values() for q in questions.values()}
-        actual = {(s['content']['learner_id'], s['content']['question_lineage']) for s in subs}
-        missing = expected - actual
-        return {
-            'expected': len(expected),
-            'submitted': len(expected & actual),
-            'missing': len(missing),
-            'blank': sum(not s['content'].get('text', '').strip() for s in subs),
-            'missing_answers': [
-                {'learner_id': lid, 'learner_alias': alias, 'question_lineage': q['lineage_id'], 'question_no': no}
-                for alias, lid in roster.items()
-                for no, q in questions.items()
-                if (lid, q['lineage_id']) in missing
-            ],
-        }
-
-    def _add_to_roster(self, c, pid, aid, alias):
-        """A learner outside the roster: added to the class (and this assignment's snapshot) or to the project."""
-        from edu_core.storage import new_id
-
-        if not aid:
-            lid = new_id('lrn')
-            c.execute('INSERT INTO learners VALUES(?,?,?,?)', (lid, pid, alias, time.time()))
-            return lid
-        a = self._assignment_row(c, aid)
-        class_id = c.execute('SELECT class_id FROM offerings WHERE id=?', (a['offering_id'],)).fetchone()[0]
-        m = c.execute('SELECT id FROM class_members WHERE class_id=? AND alias=?', (class_id, alias)).fetchone()
-        mid = m[0] if m else new_id('mem')
-        if not m:
-            c.execute(
-                'INSERT INTO class_members(id,class_id,alias,source,joined_at) VALUES(?,?,?,?,?)',
-                (mid, class_id, alias, 'import', time.time()),
-            )
-        roster = a['roster'] + [{'id': mid, 'alias': alias}]
-        c.execute('UPDATE assignments SET roster=? WHERE id=?', (dump(roster), aid))
-        return mid
+    def scope(self, c, pid, round_, assignment_id=None):
+        """The scope of one call: a class assignment (its pinned versions and roster snapshot) or the project's
+        own unbound work. Stages resolve it once instead of branching on an empty assignment id."""
+        return Scope.resolve(self, c, pid, round_, assignment_id)
 
     # ----- write-back check (design doc 8) -----
 
-    def _basis_changed(self, c, manifest, assignment_id=''):
-        """Artifacts that replaced what a model call read while it ran: ids of the newer versions.
-
-        For a class assignment the pinned version is the basis, so a newer content version alone is not a change;
-        re-pinning or correcting it is.
-        """
-        pins = self._assignment_row(c, assignment_id)['pinned'] if assignment_id else {}
-        pinned_ids = {}
-        for q_lin, pin in pins.items():
-            pinned_ids[q_lin] = pin['question']
-            pinned_ids[pin.get('rubric_lineage')] = pin['rubric']
-        changed = []
-        for m in manifest:
-            if m.get('kind') not in A.TYPES or 'lineage_id' not in m:
-                continue
-            if m['lineage_id'] in pinned_ids:
-                if pinned_ids[m['lineage_id']] != m['id']:
-                    changed.append(pinned_ids[m['lineage_id']])
-                continue
-            newer = c.execute(
-                "SELECT id FROM artifacts WHERE lineage_id=? AND status='confirmed' AND version>? "
-                'ORDER BY version DESC LIMIT 1',
-                (m['lineage_id'], m['version']),
-            ).fetchone()
-            if newer:
-                changed.append(newer[0])
-        return changed
-
-    def _guard_basis(self, c, pid, artifact_id, manifest, assignment_id=''):
+    def _guard_basis(self, c, pid, artifact_id, manifest, scope=None):
         """A result computed from inputs that changed meanwhile is saved as "based on an old basis": it gets an open
-        stale mark and cannot be confirmed until the teacher keeps it or reruns it."""
-        changed = self._basis_changed(c, manifest, assignment_id)
+        stale mark and cannot be confirmed until the teacher keeps it or reruns it.
+
+        ``scope`` is the :class:`Scope` the result belongs to; content (plans, questions) passes none.
+        """
+        changed = (scope or Scope(self, pid)).basis_changed(c, manifest)
         if changed:
             A.open_stale(c, pid, artifact_id, changed[0])
         return bool(changed)

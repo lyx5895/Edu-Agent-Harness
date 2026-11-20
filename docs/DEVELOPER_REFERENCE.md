@@ -42,6 +42,7 @@
 | `edu_core/workflow/research.py` | 700 | 来源分组、研究案例与独立审定、切分、研究计数、训练授权与数据集导出 |
 | `edu_core/workflow/accounts.py` | 230 | 账号、课程成员、逐条记录的权限判断 |
 | `edu_core/workflow/runs.py` | 70 | `@operation`：把一次老师发起的模型操作记为一次运行 |
+| `edu_core/workflow/scope.py` | 200 | `Scope`：一次调用属于哪个作用域（布置记录或项目自己的作答），统一回答版本、名单、覆盖范围和写回依据 |
 | `edu_core/docx.py`、`edu_core/access.py` | 150、30 | 无依赖的 .docx 与打印版 HTML；当前用户上下文 |
 | `edu_core/artifacts.py` | 330 | 产物的创建、编辑、确认、引用、过期标记与解除、按谱系查询；按布置记录过滤学生作答类产物 |
 | `edu_core/context.py` | 125 | 上下文白名单 `WHITELIST`、`Context`、`describe()`（“已参考”文字） |
@@ -82,6 +83,8 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `units` | 主题：所属课程、名称（课程内唯一）、顺序。`projects.unit_id` 记录任务属于哪个主题 |
 
 第 4–8 版迁移依次新增：运行（`runs`、`generations.run_id`）；课程目标（`objectives`、`objective_versions`、`objective_links`）；阶段 C（`comparisons`，`choices` 加 `work_choice`、`preference`、`acceptable`、`reason_tags`、`revoked_at`，`projects.material_prefs`，`packages`）；研究记录（`research_cases`、`case_reviews`、`consents`、`dataset_exports`）；账号（`users`、`course_members`、`projects.owner_id`、`class_groups.owner_id`）。第 3 版迁移新增 `units` 和 `projects.unit_id`、`projects.status_prefs`（任务对本班学情的取舍）。第 2 版迁移新增以上其余 6 张表，并给 `projects`（`course_id`、`offering_id`）、`artifacts`（`course_id`、`task_id`、`assignment_id`）、`materials`（`course_id`）加列。空字符串表示“未关联”。设计依据见 [COURSE_WORKSPACE_DESIGN.md](COURSE_WORKSPACE_DESIGN.md)。
+
+**作用域（`scope.py`）**：学生作答只有两种归属——某个班的布置记录，或项目自己的作答（`assignment_id` 为空）。两者的区别集中在 `Scope`：布置记录用固定的题目和评分标准版本、布置时的名单快照；项目自己的作答用最新已确认版本、项目的学生名单。各阶段方法先用 `self.scope(c, pid, round_, assignment_id)` 解析一次，再调 `questions()`、`rubric()`、`roster()`、`coverage()`、`current()`、`add_learner()`、`basis_changed()`，不再自己判断 `assignment_id` 是否为空。
 
 **课程工作台的数据边界**：
 
@@ -344,7 +347,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 ```
 
 - **假模型** `tests/edu_fake.py` 的 `FakeLLM(handlers)`：按任务名找处理函数，返回值经同样的 pydantic 校验；`calls` 记录每次调用的角色、任务、输入，测试可以检查模型实际收到了什么。新增模型任务时要在 `tests/test_edu_workflow.py` 的 `HANDLERS` 里加处理函数。务必用 `FakeLLM(dict(HANDLERS))`，测试会改处理函数。
-- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
+- `test_edu_core.py`：工具、文本、批改、课标（每科条目与检索）；`test_edu_workflow.py`：完整闭环与各功能；`test_edu_api.py`：接口与错误码；`test_edu_research.py`：运行与研究计数、课程目标、单元讲评、A/B 留痕、局部修改、资料选择、教师文件、coursemaker、研究案例与审定、训练导出；`test_edu_scope.py`：作用域（布置记录与项目作答的版本、名单快照、覆盖范围）；`test_edu_accounts.py`：账号与逐条权限；`test_edu_course.py`：课程工作台（首次使用、课时安排、两个班共用内容、更正评分依据、部分分析、本班学情、写回前复验、幂等、课程资料截断提示、旧项目整理）。
 - **浏览器走查**：用假模型起一个服务（`create_app(Workspace(Store(db), FakeLLM(handlers), settings))`），再用 Playwright 走完 01–05、下一课时、记录与导出，检查页面没有脚本错误。脚本目前在开发者本地，没有入库。
 - **真实模型**：`scripts/edu_smoke.py` 用临时库走一遍闭环（约 5 分钟、8 万 token）；`scripts/edu_eval_grading.py` 评测批改准确性。只用临时数据库，不要指向 `data/edu.sqlite`。
 
@@ -352,6 +355,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 - **不要在事务里调用模型。** 先在只读快照里收集输入，事务外调用模型，最后开 `store.tx()`（BEGIN IMMEDIATE）一次写完。
 - **密钥只从环境变量读取**（`EDU_LLM_API_KEY`），不写进代码、配置文件、文档或提交记录。
+- **新增阶段方法**：先 `scope = self.scope(c, pid, round_, assignment_id)`，再通过它读题目、评分标准、名单、覆盖范围和写回依据；不要把 `assignment_id` 为空的分支再写一遍。
 - **新增模型任务**：在 `WHITELIST` 声明可读内容 → 用 `Context` 收集并 `record_generation` 记录 → 输出定义 pydantic 模型 → 服务器校验模型给出的编号、引文、范围 → 在 `HANDLERS` 加假模型处理函数并写测试。
 - **改提示词就升版本号**（`prompt_version`），研究导出靠它区分。
 - **新增产物字段**要考虑：编辑时是否继承、是否影响过期传递、导出是否需要。

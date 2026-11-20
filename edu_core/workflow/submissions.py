@@ -61,10 +61,11 @@ class SubmissionsMixin:
         if not rows:
             raise ValueError('没有可导入的作答（每行：学生代号,题号,作答）')
         with self.store.tx() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             self._project(c, pid)
-            questions = self._scoped_questions(c, pid, round_, aid)
-            roster = self._roster(c, pid, aid)
+            questions = scope.questions(c)
+            roster = scope.roster(c)
             created, unmatched, problems = [], set(), []
             for i, r in enumerate(rows, 1):
                 if len(r) < 3:
@@ -75,7 +76,7 @@ class SubmissionsMixin:
                     if not add_missing:
                         unmatched.add(alias)
                         continue
-                    roster[alias] = self._add_to_roster(c, pid, aid, alias)
+                    roster[alias] = scope.add_learner(c, alias)
                 q = questions.get(int(no)) if no.isdigit() else None
                 if q is None:
                     problems.append(f'第 {i} 行：第 {no} 题不存在或尚未确认')
@@ -87,7 +88,7 @@ class SubmissionsMixin:
                     'question_no': int(no),
                     'text': text,
                 }
-                lineage = self._submission_lineage(c, pid, roster[alias], q['lineage_id'], round_, aid)
+                lineage = scope.submission_lineage(c, roster[alias], q['lineage_id'])
                 created.append(
                     A.create(
                         c,
@@ -107,16 +108,10 @@ class SubmissionsMixin:
             event(c, pid, 'submissions_imported', {'count': len(created), 'round': round_, 'assignment_id': aid})
         return {'created': len(created), 'unmatched_learners': sorted(unmatched), 'problems': problems}
 
-    def _submission_lineage(self, c, pid, learner_id, question_lineage, round_, aid=''):
-        for a in A.listing(c, pid, 'submission', round_=round_, assignment=aid or ''):
-            if a['content']['learner_id'] == learner_id and a['content']['question_lineage'] == question_lineage:
-                return a['lineage_id']
-        return None
-
     def submissions(self, pid, round_=1, assignment_id=None):
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
-            return A.current(c, pid, 'submission', round_=round_, assignment=aid)
+            scope = self.scope(c, pid, round_, assignment_id)
+            return scope.current(c, 'submission', round_=scope.round)
 
     # ----- grading -----
 
@@ -131,19 +126,17 @@ class SubmissionsMixin:
         llm = self._model()
         jobs, skipped = [], []
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             p = self._project(c, pid)
             graded = {}
-            for g in A.current(c, pid, 'grading', round_=round_, assignment=aid):
+            for g in scope.current(c, 'grading', round_=round_):
                 graded[g['content']['submission_lineage']] = g
-            for s in A.current(c, pid, 'submission', round_=round_, assignment=aid):
+            for s in scope.current(c, 'submission', round_=round_):
                 q_lin = s['content']['question_lineage']
-                if aid:
-                    pin = self._assignment_row(c, aid)['pinned'].get(q_lin)
-                    q = A.get(c, pin['question']) if pin else None
-                else:
-                    q = A.confirmed_in_lineage(c, q_lin)
-                rubric = self._scoped_rubric(c, q_lin, aid)
+                pin = scope.pins(c).get(q_lin)
+                q = A.get(c, pin['question']) if pin else A.confirmed_in_lineage(c, q_lin)
+                rubric = scope.rubric(c, q_lin)
                 if q is None or rubric is None:
                     skipped.append({'submission': s['id'], 'why': '题目或评分标准尚未确认'})
                     continue
@@ -171,7 +164,7 @@ class SubmissionsMixin:
                     'generation_ids': gids,
                     **result,
                 }
-                current = A.current(c, pid, 'grading', round_=round_, assignment=aid)
+                current = scope.current(c, 'grading', round_=round_)
                 latest = next((g for g in current if g['content']['submission_lineage'] == s['lineage_id']), None)
                 g = A.create(
                     c,
@@ -191,7 +184,7 @@ class SubmissionsMixin:
                         "UPDATE stale_marks SET status='resolved', resolution='redone', resolved_at=? WHERE artifact_id=? AND status='open'",
                         (time.time(), prior['id']),
                     )
-                self._guard_basis(c, pid, g['id'], ctx.manifest, aid)
+                self._guard_basis(c, pid, g['id'], ctx.manifest, scope)
                 return g['id']
 
         def run(job):
@@ -230,14 +223,15 @@ class SubmissionsMixin:
 
     def gradings(self, pid, round_=1, assignment_id=None):
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
-            return A.current(c, pid, 'grading', round_=round_, assignment=aid)
+            scope = self.scope(c, pid, round_, assignment_id)
+            return scope.current(c, 'grading', round_=scope.round)
 
     def review_queue(self, pid, round_=1, assignment_id=None):
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_ = scope.project_id, scope.round
             queue = []
-            for g in A.current(c, pid, 'grading', round_=round_, assignment=aid):
+            for g in scope.current(c, 'grading', round_=round_):
                 if g['status'] != 'draft' or not g['content'].get('needs_teacher'):
                     continue
                 s = A.get(c, g['content']['submission_id'])
@@ -316,8 +310,9 @@ class SubmissionsMixin:
         """
         done, held = [], 0
         with self.store.tx() as c:
-            pid, round_, aid = self._scope(c, pid, round_, assignment_id)
-            for g in A.current(c, pid, 'grading', round_=round_, assignment=aid):
+            scope = self.scope(c, pid, round_, assignment_id)
+            pid, round_ = scope.project_id, scope.round
+            for g in scope.current(c, 'grading', round_=round_):
                 if g['status'] != 'draft':
                     continue
                 if ids is not None and g['id'] not in ids:

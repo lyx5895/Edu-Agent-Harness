@@ -14,6 +14,7 @@ from edu_core import artifacts as A
 from edu_core.storage import event, new_id
 from edu_core.text import dump
 from edu_core.workflow.common import Conflict
+from edu_core.workflow.scope import Scope
 
 STATUS_LABEL = {
     'waiting': '待收集',
@@ -109,7 +110,7 @@ class AssignmentsMixin:
                 g['content']['submission_lineage']: g
                 for g in A.current(c, a['project_id'], 'grading', assignment=a['id'])
             }
-            collection = self._submission_coverage(c, a['project_id'], a['round'], a['id'], subs)
+            collection = Scope.from_row(self, a).coverage(c, subs)
             received = len({s['content']['learner_id'] for s in subs})
             ungraded = sum(1 for s in subs if s['lineage_id'] not in gradings)
             queue = sum(1 for g in gradings.values() if g['status'] == 'draft' and g['content'].get('needs_teacher'))

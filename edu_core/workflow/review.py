@@ -23,6 +23,7 @@ from edu_core.workflow.schemas import (
     QuestionSet,
     ReviewOutput,
 )
+from edu_core.workflow.scope import Scope
 
 
 class ReviewMixin:
@@ -30,12 +31,10 @@ class ReviewMixin:
 
     # ----- 05 讲题答疑 -----
 
-    def _round_patterns(self, c, pid, round_, aid=''):
-        """Confirmed problem patterns as they were in ``round_`` (a later round may add a newer version)."""
+    def _round_patterns(self, c, scope, round_=None):
+        """Confirmed problem patterns as they were in ``round_`` (default: the scope's round)."""
         best = {}
-        for a in A.listing(
-            c, pid, 'problem_pattern', statuses=('confirmed', 'superseded'), round_=round_, assignment=aid
-        ):
+        for a in scope.listing(c, 'problem_pattern', statuses=('confirmed', 'superseded'), round_=round_):
             if a['status'] == 'superseded' and not a['change_kind']:
                 continue  # a superseded draft was never adopted
             if a['lineage_id'] not in best or a['version'] > best[a['lineage_id']]['version']:
@@ -47,9 +46,10 @@ class ReviewMixin:
         """讲评稿: focus, key steps, typical errors quoted from students, and follow-up questions per pattern."""
         llm = self._model()
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_ or self.max_round(pid) if pid else None, assignment_id)
+            scope = self.scope(c, pid, round_ or self.max_round(pid) if pid else None, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             p = self._project(c, pid)
-            pats = self._round_patterns(c, pid, round_, aid)
+            pats = self._round_patterns(c, scope)
             if pattern_ids:
                 pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
             if not pats:
@@ -61,7 +61,7 @@ class ReviewMixin:
                 ctx.add_artifact(plan)
             goals = [g['content']['text'] for g in self._goals(plan)]
             key_points = plan['content'].get('key_points', []) if plan else []
-            analyses = [a for a in A.current(c, pid, 'analysis', round_=round_, assignment=aid)]
+            analyses = [a for a in scope.current(c, 'analysis', round_=round_)]
             summary = ''
             if analyses:
                 ctx.add_artifact(analyses[-1], require_confirmed=False)
@@ -70,9 +70,9 @@ class ReviewMixin:
                     summary += f'（部分分析：{analyses[-1]["content"]["coverage"]["label"]}）'
             nos = sorted({e['question_no'] for x in pats for e in x['content']['evidence']})
             originals = []
-            for conf in self._scoped_questions(c, pid, round_, aid).values():
+            for conf in scope.questions(c).values():
                 if conf and conf['content']['no'] in nos:
-                    rubric = self._scoped_rubric(c, conf['lineage_id'], aid)
+                    rubric = scope.rubric(c, conf['lineage_id'])
                     originals.append(
                         {
                             '题号': conf['content']['no'],
@@ -93,7 +93,7 @@ class ReviewMixin:
                 }
                 for i, x in enumerate(pats)
             ]
-            prior = next(iter(A.current(c, pid, 'review_plan', round_=round_, assignment=aid)), None)
+            prior = next(iter(scope.current(c, 'review_plan', round_=round_)), None)
         user = _json(
             {
                 '学科': p['pack']['name'],
@@ -129,7 +129,7 @@ class ReviewMixin:
                 lineage_id=prior['lineage_id'] if prior else None,
                 assignment_id=aid,
             )
-            self._guard_basis(c, pid, plan['id'], ctx.manifest, aid)
+            self._guard_basis(c, pid, plan['id'], ctx.manifest, scope)
         return {'review_plan': plan, 'context_note': describe(ctx.manifest)}
 
     @operation('explain')
@@ -220,8 +220,8 @@ class ReviewMixin:
         if a['offering_id'] != offering_id:
             raise Conflict('单元讲评只能合并同一个班的布置')
         view = self._assignment_views(c, assignment_id=aid)[0]
-        _valid, cov = self._coverage(c, a['project_id'], a['round'], aid)
-        pats = [x for x in self._round_patterns(c, a['project_id'], a['round'], aid) if x['status'] == 'confirmed']
+        _valid, cov = self._coverage(c, Scope.from_row(self, a))
+        pats = [x for x in self._round_patterns(c, Scope.from_row(self, a)) if x['status'] == 'confirmed']
         return {
             'assignment_id': aid,
             'title': a['title'],
@@ -256,7 +256,7 @@ class ReviewMixin:
             pats, originals, summaries, refs = [], [], [], []
             for aid in assignment_ids:
                 a = self._assignment_row(c, aid)
-                for x in self._round_patterns(c, a['project_id'], a['round'], aid):
+                for x in self._round_patterns(c, Scope.from_row(self, a)):
                     if x['status'] == 'confirmed' and (not pattern_ids or x['lineage_id'] in pattern_ids):
                         pats.append((a, x))
                 for pin in sorted(a['pinned'].values(), key=lambda x: x.get('no') or 0):
@@ -350,10 +350,7 @@ class ReviewMixin:
 
     def review_plans(self, pid, round_=None, assignment_id=None):
         with self.store.read() as c:
-            if assignment_id:
-                pid, round_, aid = self._scope(c, pid, round_, assignment_id)
-                return A.current(c, pid, 'review_plan', round_=round_, assignment=aid)
-            return A.current(c, pid, 'review_plan', round_=round_, assignment='')
+            return self.scope(c, pid, round_, assignment_id).current(c, 'review_plan', round_=round_)
 
     # ----- 讲评后再练 and comparison -----
 
@@ -370,19 +367,17 @@ class ReviewMixin:
         """
         llm = self._model()
         with self.store.read() as c:
-            pid, round_, aid = self._scope(c, pid, round_ or self.max_round(pid) if pid else None, assignment_id)
+            scope = self.scope(c, pid, round_ or self.max_round(pid) if pid else None, assignment_id)
+            pid, round_, aid = scope.project_id, scope.round, scope.assignment_id
             p = self._project(c, pid)
-            pats = self._round_patterns(c, pid, round_, aid)
+            pats = self._round_patterns(c, scope)
             if pattern_ids:
                 pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
             if not pats:
                 raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
             ctx = Context('practice')
             ctx.add_other('project', pid)
-            review = next(
-                (r for r in A.current(c, pid, 'review_plan', round_=round_, assignment=aid) if r['confirmed_version']),
-                None,
-            )
+            review = next((r for r in scope.current(c, 'review_plan', round_=round_) if r['confirmed_version']), None)
             review_focus = []
             if review:
                 review = A.confirmed_in_lineage(c, review['lineage_id'])
@@ -403,7 +398,7 @@ class ReviewMixin:
             ]
             nos = sorted({e['question_no'] for x in pats for e in x['content']['evidence']})
             originals = []
-            for conf in self._scoped_questions(c, pid, round_, aid).values():
+            for conf in scope.questions(c).values():
                 if conf['content']['no'] in nos:
                     originals.append({'题号': conf['content']['no'], '题目': ctx.add_artifact(conf)['stem'][:500]})
             new_round = self.max_round(pid) + 1
@@ -452,19 +447,22 @@ class ReviewMixin:
         is listed as ``same_tag_elsewhere`` for the teacher to look at, but does not count as the pattern
         persisting: a tag is broader than a pattern.
         """
-        aid_a = aid_b = ''
         with self.store.read() as c:
             if assignment_id:
                 # A class follow-up assignment is compared with the assignment it follows.
-                pid, round_b, aid_b = self._scope(c, pid, None, assignment_id)
-                parent = self._assignment_row(c, aid_b)['parent_id']
+                scope_b = self.scope(c, pid, None, assignment_id)
+                pid, round_b = scope_b.project_id, scope_b.round
+                parent = scope_b.assignment(c)['parent_id']
                 if not parent:
                     raise Conflict('这次布置不是讲评后再练，没有可对比的上一轮')
-                _, round_a, aid_a = self._scope(c, pid, None, parent)
-            pats = self._round_patterns(c, pid, round_a, aid_a)
+                scope_a = self.scope(c, pid, None, parent)
+                round_a = scope_a.round
+            else:
+                scope_a = scope_b = self.scope(c, pid, None, None)
+            pats = self._round_patterns(c, scope_a, round_a)
             gradings_b = [
                 A.confirmed_in_lineage(c, g['lineage_id'])
-                for g in A.current(c, pid, 'grading', round_=round_b, assignment=aid_b)
+                for g in scope_b.current(c, 'grading', round_=round_b)
                 if g['confirmed_version']
             ]
             gradings_b = [g for g in gradings_b if g]
@@ -514,7 +512,7 @@ class ReviewMixin:
                 refs=refs,
                 round_=round_b,
                 created_by='server',
-                assignment_id=aid_b,
+                assignment_id=scope_b.assignment_id,
             )
         return a
 
