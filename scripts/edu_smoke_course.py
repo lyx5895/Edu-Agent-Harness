@@ -164,15 +164,24 @@ def main():
     a3 = ws.assign(pid, o3['id'])
     a5 = ws.assign(pid, o5['id'])
     check('两个班各有一条布置记录', a3['id'] != a5['id'] and a3['questions'] == a5['questions'] == 1 + len(made))
-    imp3 = ws.import_submissions(
-        pid, '\n'.join(f'{k},1,{v}' for k, v in CLASS3.items()) + '\nT01,1,串班的作答', assignment_id=a3['id']
-    )
-    imp5 = ws.import_submissions(pid, '\n'.join(f'{k},1,{v}' for k, v in CLASS5.items()), assignment_id=a5['id'])
+    # Every pinned question needs a record, or the assignment is incomplete (a missing record is not a zero).
+    # Generated questions get their reference answer, so the analysis evidence stays on question 1.
+    others = [(q['content']['no'], ' '.join(q['content']['reference'].split())) for q in made]
+
+    def rows(answers):
+        lines = [f'{k},1,{v}' for k, v in answers.items()]
+        lines += [f'{k},{no},"{ref.replace(chr(34), chr(39))}"' for k in answers for no, ref in others]
+        return '\n'.join(lines)
+
+    imp3 = ws.import_submissions(pid, rows(CLASS3) + '\nT01,1,串班的作答', assignment_id=a3['id'])
+    imp5 = ws.import_submissions(pid, rows(CLASS5), assignment_id=a5['id'])
+    per = 1 + len(made)
     check(
         '别班学生的作答不会导入本班',
-        imp3['unmatched_learners'] == ['T01'] and imp3['created'] == 4 and imp5['created'] == 3,
+        imp3['unmatched_learners'] == ['T01'] and imp3['created'] == 4 * per and imp5['created'] == 3 * per,
         str(imp3),
     )
+    check('作答记录完整', ws.assignment(a3['id'])['missing'] == 0, str(ws.assignment(a3['id'])['missing_answers'][:3]))
 
     for name, aid in (('3班', a3['id']), ('5班', a5['id'])):
         r = ws.grade_round(pid, assignment_id=aid)
