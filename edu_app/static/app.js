@@ -9,7 +9,7 @@ const newKey = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-$
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const TYPE_LABEL = { objective: '教学目标', question: '题目', rubric: '评分标准', submission: '学生作答', grading: '批改', analysis: '学情分析', problem_pattern: '问题模式', comparison: '两轮对比', lesson_plan: '教学安排', review_plan: '讲评稿' };
+const TYPE_LABEL = { objective: '教学目标', question: '题目', rubric: '评分标准', submission: '学生作答', grading: '批改', analysis: '学情分析', problem_pattern: '共性问题', comparison: '两轮对比', lesson_plan: '教学安排', review_plan: '讲评稿' };
 const RISK_LABEL = {
   undetermined_point: '有未判定要点', review_disagreement: '复核模型意见不同', audit_disagreement: '抽检发现分歧',
   writing_needs_confirmation: '写作建议分待确认', ungrounded_quote: '引用无法核对', low_confidence: '模型没把握',
@@ -126,7 +126,7 @@ function endJob(job, failed) {
   const away = S.view !== job.view || S.pid !== job.pid || S.tab !== job.tab;
   if (!slow || !away || failed || job.view !== 'project') return;
   if (S.pid === job.pid) { const b = $(`#tabs button[data-tab="${job.tab}"]`); if (b) b.classList.add('news'); }
-  toast(`「${job.label}」已完成，回到「${STAGE_NAME[job.tab] || '文件与记录'}」查看`);
+  toast(`「${job.label}」已完成，回到「${STAGE_NAME[job.tab] || '文件'}」查看`);
 }
 
 async function busy(btn, label, fn) {
@@ -182,8 +182,21 @@ function fillRoundSelect(sel, keep = true) {
   el.innerHTML = rounds().map((r) => `<option value="${r}">第 ${r} 轮</option>`).join('');
   const latest = String(S.overview?.latest_round || 1);
   el.value = S.showRound && rounds().includes(S.showRound) ? String(S.showRound)  // a jump asked for this round
-    : keep && prev && rounds().includes(Number(prev)) ? prev : latest;
+    : S.round && rounds().includes(S.round) ? String(S.round)  // the round picked in the round switch
+      : keep && prev && rounds().includes(Number(prev)) ? prev : latest;
   if (!el.value && el.options.length) el.value = el.options[el.options.length - 1].value;
+  if (!S.aid) S.round = Number(el.value);  // every page of a lesson shows the same round
+}
+
+// 第 1 轮 / 第 2 轮（再练）: one switch above 02-05, only once a lesson has a second round (LESSON_LOOP_DESIGN.md 4.3).
+function renderRoundBar() {
+  const rs = rounds();
+  const bar = $('#round-bar');
+  const show = rs.length > 1 && ['questions', 'grading', 'analysis', 'review'].includes(S.tab) && !S.aid;
+  bar.classList.toggle('hidden', !show);
+  if (!show) return;
+  const cur = S.round || S.overview.latest_round || 1;
+  bar.innerHTML = '<span class="label">轮次</span>' + rs.map((r) => `<button class="small ${r === cur ? '' : 'secondary'}" data-round-pick="${r}" aria-pressed="${r === cur}">第 ${r} 轮${r > 1 ? '（再练）' : ''}</button>`).join('');
 }
 
 // ---------- startup ----------
@@ -219,7 +232,6 @@ async function init() {
     + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('')
     + '<option value="__custom">其他（自己填写）</option>';
   S.course = store.get('edu.course');
-  S.offering = store.get('edu.offering');
   $('#model-status').textContent = S.meta.model_ready
     ? `当前模型：出题与批改 ${S.meta.models.grader}，复核 ${S.meta.models.reviewer}`
     : '未配置模型：只能查看已有内容（设置 EDU_LLM_API_KEY 后重启服务）';
@@ -308,7 +320,7 @@ function showWelcome(on) {
 async function selectProject(pid, opts = {}) {
   if (pid !== S.pid) {
     rememberDraft();
-    S.aid = null; S.pendingParent = null; S.matDraft = null; S.curTouched = false;
+    S.aid = null; S.pendingParent = null; S.matDraft = null; S.curTouched = false; S.round = null;
     S.dirty.clear(); S.setupOpen = {};
     $$('.edit-area, .new-question-area').forEach((el) => { el.innerHTML = ''; });
     const draft = taskDrafts.get(pid);
@@ -416,32 +428,16 @@ const scoped = (body) => (S.aid ? { ...body, assignment_id: S.aid } : body);
 const currentAssignment = () => (S.overview?.assignments || []).find((a) => a.id === S.aid) || null;
 
 function renderScope() {
-  const o = S.overview;
-  const show = ['grading', 'analysis', 'review'].includes(S.tab) && (o.assignments.length > 0);
-  $('#scope-bar').classList.toggle('hidden', !show);
+  // 一节课的闭环 has no class or assignment picker (LESSON_LOOP_DESIGN.md 4.3). A lesson made before this version
+  // that holds only class assignments opens on its latest one; the picker and the version notices stay hidden.
+  $('#scope-bar').classList.add('hidden');
+  $('#scope-updates').classList.add('hidden');
+  renderCrumbs(currentAssignment());
   const a = currentAssignment();
-  if (show) {
-    $('#scope-assignment').innerHTML = '<option value="">本项目（未关联班级）</option>'
-      + o.assignments.map((x) => `<option value="${x.id}">${esc(assignmentLabel(x))}</option>`).join('');
-    $('#scope-assignment').value = S.aid || '';
-    $('#scope-info').innerHTML = a
-      ? `<b>正在看：${esc(a.class_name)} · 第 ${a.round} 轮</b> · ${esc(a.status_label)} · 名单 ${a.roster} 人，收到 ${a.received} 人 · ${a.questions} 道题（版本已固定）`
-      : '不属于任何班级的作答';
-  }
-  renderCrumbs(show ? a : null);
-  const updates = show && a ? a.updates : [];
-  $('#scope-updates').classList.toggle('hidden', !updates.length);
-  $('#scope-updates').innerHTML = updates.map((u) => `<div>第 ${u.no} 题的${u.changed.map((k) => (k === 'rubric' ? '评分标准' : '题目')).join('和')}有新版本，这次布置仍使用原版本。
-    <button class="small secondary" data-repin="${u.question_lineage}">本班改用新版本并重新批改</button>
-    <button class="small link" data-keep="${u.question_lineage}">保持原版本，不再提醒</button></div>`).join('');
-  // A class assignment fixes its round.
   ['#g-round', '#a-round', '#r-round'].forEach((sel) => {
     const el = $(sel);
     if (a) { if (![...el.options].some((x) => x.value === String(a.round))) el.insertAdjacentHTML('beforeend', `<option value="${a.round}">第 ${a.round} 轮</option>`); el.value = String(a.round); }
     el.disabled = !!a;
-    // The assignment decides the round: say so instead of showing a dropdown that cannot be changed.
-    const label = el.closest('label');
-    if (label) label.classList.toggle('locked', !!a);
   });
 }
 
@@ -469,11 +465,9 @@ function currentStage() {
 function renderCrumbs(a) {
   const o = S.overview;
   const cls = a ? a.class_name : o.class_name;
-  $('#project-crumbs').innerHTML = o.course
-    ? `<a data-home="1">我的教学</a> › ${esc(o.course.title)}${cls ? ' · ' + esc(cls) : ''}${o.task && o.task.kind === 'legacy' ? ' · 旧课时项目' : ''}`
-    : '<a data-home="1">我的教学</a> › 单独项目（不属于课程）';
-  // An assignment fixes its round and the scope bar says it; otherwise the latest round is named here.
-  $('#project-meta').textContent = `${o.project.subject_name}${o.project.grade ? ' · ' + o.project.grade : ''}${!a && o.latest_round > 1 ? ` · 第 ${o.latest_round} 轮` : ''}`;
+  $('#project-crumbs').innerHTML = `<a data-home="1">我的教学</a>${o.course ? ` › ${esc(o.course.title)}` : ''}`;
+  // The lesson line: subject, grade and the class; the round has its own switch.
+  $('#project-meta').textContent = [o.project.subject_name, o.project.grade, cls].filter(Boolean).join(' · ');
 }
 
 // "对数函数｜第 2 课时｜第 2 轮" already names its round: don't add "（第 2 轮）" again.
@@ -518,7 +512,7 @@ function currentAction() {
       : !(o.counts.lesson_plan.total || o.project.knowledge_module || o.project.lesson_scope || o.materials)
         ? step('写下练习的主题', '#q-topic') : step('设置出题要求，生成题目', '#generate-questions');
   if (tab === 'grading') return step(o.review_queue ? `处理 ${o.review_queue} 份复核` : '导入作答并批改', o.review_queue ? '#queue' : '#sub-csv');
-  if (tab === 'analysis') return step('查看学情与问题模式', '#analysis');
+  if (tab === 'analysis') return step('查看学情与共性问题', '#analysis');
   if (tab === 'review') {
     if (o.counts.review_plan.total) return step('审阅讲评稿', '#review-plans');
     if (o.counts.problem_pattern.confirmed) return step('准备针对性讲评', '#draft-review');
@@ -527,7 +521,7 @@ function currentAction() {
     if (loopActive()) {
       const missing = o.next.find((x) => ['grading', 'analysis'].includes(x.tab) && !x.optional);
       return missing ? { ...missing, label: `先到 ${String(STAGES.indexOf(missing.tab) + 1).padStart(2, '0')} ${STAGE_NAME[missing.tab]}：${missing.label}` }
-        : step('先到 04 学情分析：确认问题模式', '#patterns', 'analysis');
+        : step('先到 04 学情分析：确认共性问题', '#patterns', 'analysis');
     }
     return step('输入题目，准备讲解', '#ex-question');
   }
@@ -592,6 +586,7 @@ async function renderTab() {
 
   showDirty();
   renderScope();
+  renderRoundBar();
   renderBlocker();
   renderContinue();
   syncRoute();
@@ -616,6 +611,17 @@ function renderBlocker() {
   const soft = S.tab === 'analysis';  // 汇总 still works without gradings: it lists likely pitfalls
   box.classList.toggle('warn', !soft);
   box.classList.toggle('info', soft);
+  // 缺什么就在当前页补: on 03 a missing paper is imported right here; what it yields shows in 02.
+  const here = [b.action, b.alt].filter(Boolean).find((w) => w.target === '#g-paper-text');
+  box.classList.toggle('stack', !!here);
+  if (here) {
+    const other = [b.action, b.alt].filter((w) => w && w !== here);
+    box.innerHTML = `<div>${esc(b.reason)}可以在这里导入现成试卷${other.length ? '，或者' + other.map((w) => esc(whereTo(w))).join('、') : ''}。</div>
+      <textarea id="g-paper-text" rows="5" placeholder="粘贴试卷文字，可附答案和评分标准；导入后核对题目和评分要点"></textarea>
+      <div class="row-btns"><button class="small" id="g-import-paper">导入试卷</button>
+      ${other.map((w) => `<button class="small secondary" data-block="${w === b.action ? 'action' : 'alt'}">${esc(whereTo(w))} →</button>`).join('')}</div>`;
+    return;
+  }
   // Two ways out (e.g. 出题 or 导入现成试卷) are a real choice: two buttons of the same weight, each going straight to
   // its own place, even when both are on the same page.
   const ways = [b.action, b.alt].filter(Boolean);
@@ -644,13 +650,12 @@ async function goNext(step) {
 function renderProjectEdit() {
   const p = S.overview.project;
   const locked = S.overview.counts.question.total > 0;
-  $('#project-edit').innerHTML = `<h3>编辑项目</h3><div class="grid-form">
-    <label>项目名称<input class="pe-title" value="${esc(p.title)}"></label>
+  $('#project-edit').innerHTML = `<h3>编辑这节课</h3><div class="grid-form">
+    <label>名称<input class="pe-title" value="${esc(p.title)}"></label>
     <label>学科<select class="pe-subject" ${locked ? 'disabled' : ''}>${S.meta.subjects.some((s) => s.id === p.subject) ? '' : `<option value="${esc(p.subject)}" selected>${esc(p.subject_name)}</option>`}${S.meta.subjects.map((s) => `<option value="${s.id}" ${s.id === p.subject ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
-    ${p.course_id ? `<label>内容分组<select class="pe-unit"><option value="">（不归入分组）</option>${S.overview.units.map((u) => `<option value="${u.id}" ${u.id === p.unit_id ? 'selected' : ''}>${esc(u.title)}</option>`).join('')}</select></label>` : ''}
     <label>年级<input class="pe-grade" value="${esc(p.grade)}"></label>
     <label class="wide">老师说明<textarea class="pe-notes" rows="2">${esc(p.notes)}</textarea></label>
-    ${locked ? '<div class="wide muted">项目里已经有题目，学科不能再改；需要换学科请新建项目。</div>' : ''}
+    ${locked ? '<div class="wide muted">这节课已经有题目，学科不能再改。</div>' : ''}
     <div class="wide"><button data-act="save-project">保存</button> <button class="secondary" data-act="close-project-edit">取消</button></div></div>`;
 }
 
@@ -735,11 +740,12 @@ async function renderPrep() {
     p.lesson_scope ? esc(p.lesson_scope) : '',
     p.has_curriculum ? (cur ? `课标 ${cur} 条` : '不参考课标') : '',
     mats.length ? `材料 ${used}/${mats.length} 份` : '没有材料',
-    p.offering_id ? '参考本班学情' : (p.carryover ? '参考上一课时学情' : ''),
+    p.carryover ? '参考上一课时学情' : '',
   ].filter(Boolean).join('<span class="sep">·</span>'));
   const others = S.overview.offerings.filter((o) => o.id !== p.offering_id);
   const adopted = plans.length && plans[0].confirmed_version;
-  $('#use-plan-row').classList.toggle('hidden', !(p.course_id && others.length && adopted));
+  // 用于其他班 belongs to the multi-class design; this version has one class (LESSON_LOOP_DESIGN.md 2.2).
+  $('#use-plan-row').classList.toggle('hidden', true || !(p.course_id && others.length && adopted));
   $('#use-plan-class').innerHTML = others.map((o) => `<option value="${o.id}">${esc(o.class_name)}</option>`).join('');
 }
 
@@ -764,7 +770,7 @@ function renderClassStatus(st) {
     <b>${esc(x.name)}</b></label> <span class="pill">${esc(x.affected)} 人</span> <span class="pill ${x.after_practice.includes('仍有') ? 'warn' : ''}">${esc(x.after_practice)}</span>
     <div class="muted">${esc(x.description)}</div></li>`).join('');
   box.innerHTML = `<div class="card-head"><h3>本班学情（${esc(st.from_title)}）</h3></div>
-    <p class="muted">备课和出题时会参考勾选的内容；取消勾选的不会发给模型，可以随时勾回来。只来自本班已确认的分析和问题模式。</p>
+    <p class="muted">备课和出题时会参考勾选的内容；取消勾选的不会发给模型，可以随时勾回来。只来自本班已确认的分析和共性问题。</p>
     ${st.summary ? `<label class="inline"><input type="checkbox" id="cs-summary" ${st.summary_excluded ? '' : 'checked'}> 学情概述：${esc(st.summary)}</label>` : ''}
     ${st.note ? `<p class="kv flag">${esc(st.note)}</p>` : ''}
     ${pats ? `<ul class="carry-list">${pats}</ul>` : ''}`;
@@ -782,7 +788,7 @@ async function openNextLesson() {
   $('#nl-module').value = o.project.knowledge_module || '';
   $('#nl-lesson').value = nextLessonName(o.project.lesson);
   const pats = (await api('GET', `/api/projects/${S.pid}/patterns`)).filter((x) => x.confirmed_version);
-  $('#nl-carry').innerHTML = `<div class="muted">将带入：已确认的问题模式 ${pats.length} 个${pats.length ? `（${pats.map((x) => esc(x.content.name)).join('、')}）` : ''}、学情概述、讲评重点和本课目标。</div>`;
+  $('#nl-carry').innerHTML = `<div class="muted">将带入：已确认的共性问题 ${pats.length} 个${pats.length ? `（${pats.map((x) => esc(x.content.name)).join('、')}）` : ''}、学情概述、讲评重点和本课目标。</div>`;
   card.classList.remove('hidden');
   card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -877,7 +883,7 @@ async function renderQuestions() {
   S.goals = Object.fromEntries(cov.objectives.map((o, i) => [o.id, { no: i + 1, text: o.text }]));
   renderCoverage(cov);
   const confirmedQs = qs.filter((q) => q.confirmed_version).length;
-  applyResultFirst('questions', `<b>需要再出题？</b>　本轮 ${qs.length} 道题，已确认 ${confirmedQs} 道。核对后可布置给班级，也可以继续出题。`, qs.length > 0);
+  applyResultFirst('questions', `<b>需要再出题？</b>　本轮 ${qs.length} 道题，已确认 ${confirmedQs} 道。确认后就可以到 03 导入作答批改，也可以继续出题。`, qs.length > 0);
   const candidates = qs.filter((q) => q.status === 'candidate' && q.candidate && S.overview.pending_ab.includes(q.candidate.candidate_group));
   const groups = {};
   candidates.forEach((q) => { (groups[q.candidate.candidate_group] ||= { A: [], B: [] })[q.candidate.position].push(q); });
@@ -888,14 +894,15 @@ async function renderQuestions() {
       <button class="secondary" data-verdict="both_ok" data-work="A">差不多，用 A 版</button><button class="secondary" data-verdict="both_ok" data-work="B">差不多，用 B 版</button>
       <button class="secondary" data-verdict="neither">都不合适</button><button class="link" data-verdict="skip">跳过</button></div>
     <details><summary>补充一句（选填）</summary>
-      <div class="row"><select class="ab-pref"><option value="none">不评价</option><option value="better">采用的这份更适合本次任务</option><option value="work_only">只是选它继续修改</option></select>
+      <div class="row"><select class="ab-pref"><option value="none">不评价</option><option value="better">采用的这份更适合这节课</option><option value="work_only">只是选它继续修改</option></select>
         <input class="ab-reason" placeholder="理由（选填）"></div>
       <div class="checks">${['更贴合目标', '难度更合适', '更清楚', '有事实错误', '依据不足', '其他'].map((t) => `<label><input type="checkbox" class="ab-tag" value="${t}"> ${t}</label>`).join('')}</div>
     </details>
   </div>`).join('');
   const offerings = S.overview.offerings;
   const confirmedHere = qs.some((q) => q.confirmed_version);
-  $('#assign-row').classList.toggle('hidden', !(S.overview.project.course_id && offerings.length && confirmedHere));
+  // 布置给班级 is not part of this version: confirmed questions are graded directly (LESSON_LOOP_DESIGN.md 7).
+  $('#assign-row').classList.toggle('hidden', true || !(S.overview.project.course_id && offerings.length && confirmedHere));
   const prevClass = $('#assign-class').value;
   $('#assign-class').innerHTML = offerings.map((o) => `<option value="${o.id}">${esc(o.class_name)}</option>`).join('');
   const parent = S.pendingParent && S.pendingParent.round === round ? S.pendingParent : null;
@@ -952,7 +959,7 @@ function renderCoverage(cov) {
       <button class="small secondary" data-goals="prep">去 01 审阅教案 →</button></div>` : '';
   const rows = later ? cov.objectives.filter((o) => o.total) : cov.objectives;
   box.innerHTML = `<div class="coverage"><div class="label">目标覆盖（第 ${cov.round} 轮）</div>
-    ${flag}${later ? '<div class="muted">讲评后再练按问题模式出题，这里只列出这一轮涉及的目标。</div>' : ''}${rows.map((o) => {
+    ${flag}${later ? '<div class="muted">讲评后再练按共性问题出题，这里只列出这一轮涉及的目标。</div>' : ''}${rows.map((o) => {
       const i = cov.objectives.indexOf(o);
       return `<div class="cov-row${o.total || draft ? '' : ' none'}">
       <span class="cov-no">目标 ${i + 1}</span><span class="cov-text">${esc(o.text)}</span>
@@ -1198,7 +1205,7 @@ async function renderAnalysis() {
     const detail = await api('GET', `/api/artifacts/${latest.id}`);
     $('#analysis').innerHTML = analysisView(latest, detail.context_note);
   }
-  $('#patterns').innerHTML = patterns.length ? patterns.map(patternItem).join('') : '<div class="empty">还没有问题模式。</div>';
+  $('#patterns').innerHTML = patterns.length ? patterns.map(patternItem).join('') : '<div class="empty">还没有共性问题。</div>';
   const comps = await api('GET', `/api/projects/${S.pid}/comparisons${qs}`);
   const latestCmp = comps[comps.length - 1];
   $('#comparison').innerHTML = latestCmp ? comparisonView(latestCmp) : '<div class="empty">还没有对比结果。需要先有“讲评后再练”的一轮批改。</div>';
@@ -1372,10 +1379,10 @@ async function renderReview() {
   ]);
   const confirmed = patterns.filter((p) => p.confirmed_version && (p.content.round || 1) === round);
   $('#draft-review').disabled = !confirmed.length;  // a 讲评稿 is built on this round's confirmed patterns
-  $('#draft-review').title = confirmed.length ? '' : '这一轮还没有已确认的问题模式';
+  $('#draft-review').title = confirmed.length ? '' : '这一轮还没有已确认的共性问题';
   $('#review-patterns').innerHTML = confirmed.length
-    ? '<span class="label">针对这些问题模式：</span>' + confirmed.map((p) => `<label><input type="checkbox" value="${p.lineage_id}" checked> ${esc(p.content.name)}（${p.content.affected_learners.length}/${p.content.total_learners} 人）</label>`).join('')
-    : `<div class="empty">这一轮还没有已确认的问题模式。${loopActive() ? '<button class="small secondary" data-current-action>去 04 学情分析处理 →</button>' : '（在“04 学情分析”中确认）'}</div>`;
+    ? '<span class="label">针对这些共性问题：</span>' + confirmed.map((p) => `<label><input type="checkbox" value="${p.lineage_id}" checked> ${esc(p.content.name)}（${p.content.affected_learners.length}/${p.content.total_learners} 人）</label>`).join('')
+    : `<div class="empty">这一轮还没有已确认的共性问题。${loopActive() ? '<button class="small secondary" data-current-action>去 04 学情分析处理 →</button>' : '（在“04 学情分析”中确认）'}</div>`;
   $('#review-plans').innerHTML = plans.length ? plans.map(reviewItem).join('') : '<div class="empty">这一轮还没有讲评稿。</div>';
   const exps = await api('GET', `/api/projects/${S.pid}/explanations`);
   $('#explanations').innerHTML = exps.map(explanationItem).join('');
@@ -1429,14 +1436,14 @@ function comparisonView(a) {
   const c = a.content;
   const list = (xs) => xs.length ? esc(xs.join('、')) : '—';
   return `<p class="muted">第 ${c.round_a} 轮 → 第 ${c.round_b} 轮 ${a.stale ? '<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : ''}</p>
-    <table><tr><th>问题模式</th><th>前一轮涉及</th><th>复测</th><th>已改善</th><th>仍存在</th><th>新出现</th><th>未复测</th></tr>
+    <table><tr><th>共性问题</th><th>前一轮涉及</th><th>复测</th><th>已改善</th><th>仍存在</th><th>新出现</th><th>未复测</th></tr>
     ${c.patterns.map((r) => `<tr><td>${esc(r.name)}${r.enough_evidence ? '' : '<div class="kv">没有针对它的复测题，证据不足</div>'}
         ${(r.same_tag_elsewhere || []).length ? `<div class="kv flag">其他题有同类失分：${list(r.same_tag_elsewhere)}（不计入“仍存在”，请自行判断）</div>` : ''}</td><td>${list(r.before)}</td><td>${list(r.retested)}</td>
       <td>${list(r.improved)}</td><td>${list(r.persisting)}</td><td>${list(r.new)}</td><td>${list(r.not_retested)}</td></tr>`).join('')}</table>
-    <p class="muted">复测、已改善、仍存在、新出现都只按针对这个问题模式出的再练题统计。</p>`;
+    <p class="muted">复测、已改善、仍存在、新出现都只按针对这个共性问题出的再练题统计。</p>`;
 }
 
-// ---------- 文件与记录（老师） ----------
+// ---------- 文件（老师） ----------
 
 // Where each kind of stale result is redone. Gradings are redone in bulk by the button under the list.
 const STALE_REDO = {
@@ -1480,9 +1487,6 @@ async function renderRecords() {
       <a class="textlink" target="_blank" href="/api/projects/${S.pid}/deliverables/${k}?fmt=html&${q}">打印 / PDF</a>
       <a class="textlink" href="/api/projects/${S.pid}/deliverables/${k}?fmt=docx&${q}">Word</a></div>`).join('')
     + (S.aid ? '<p class="muted">学生练习和答案按当前布置记录固定的版本导出。</p>' : '');
-  const cws = await api('GET', `/api/projects/${S.pid}/artifacts?type=courseware`);
-  $('#courseware-list').innerHTML = cws.map((x) => `<div class="kv">${esc(x.content.kind)} · 来自打包 ${esc(x.content.package_id.slice(-6))} ${x.stale ? '<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : ''}
-    ${x.content.files.map((f) => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>`).join(' ')}</div>`).join('');
 }
 
 // ---------- events ----------
@@ -1601,6 +1605,18 @@ function bindEvents() {
   }));
   document.querySelector('#workspace').addEventListener('click', (e) => {
     if (e.target.closest('[data-home]')) { showHome(); return; }
+    const rpick = e.target.closest('[data-round-pick]');
+    if (rpick) { S.round = Number(rpick.dataset.roundPick); renderTab(); return; }
+    if (e.target.closest('#g-import-paper')) {
+      busy(e.target.closest('#g-import-paper'), '整理中…', async () => {
+        const r = await api('POST', `/api/projects/${S.pid}/import-paper`, { text: $('#g-paper-text').value, filename: '导入试卷' });
+        showNote(r.context_note);
+        toast('试卷已导入：在 02 核对题目和评分标准，确认后回到这里导入作答');
+        await refresh();
+        await goNext({ tab: 'questions', target: '#questions' });
+      });
+      return;
+    }
     const rp = e.target.closest('[data-repin]');
     if (rp) {
       busy(rp, '处理中…', async () => {
@@ -1740,7 +1756,7 @@ function bindEvents() {
   }));
   $('#analyze').addEventListener('click', (e) => busy(e.target, '分析中…', async () => {
     const r = await api('POST', `/api/projects/${S.pid}/analyze`, scoped({ round: Number($('#a-round').value || 1), partial: $('#a-partial').checked }));
-    showNote(r.context_note); toast(r.patterns.length ? `归纳出 ${r.patterns.length} 个问题模式，请核对确认` : '分析完成'); await refresh();
+    showNote(r.context_note); toast(r.patterns.length ? `归纳出 ${r.patterns.length} 个共性问题，请核对确认` : '分析完成'); await refresh();
   }));
   $('#practice').addEventListener('click', (e) => busy(e.target, '出题与自检中…', async () => {
     const ids = $$('#review-patterns input:checked').map((i) => i.value);
@@ -2019,7 +2035,7 @@ async function onAction(e) {
         const unit = $('.pe-unit', box);
         if (unit && unit.value !== (S.overview.project.unit_id || '')) await api('PUT', `/api/projects/${S.pid}/unit`, { unit_id: unit.value });
         box.classList.add('hidden');
-        toast('项目已更新');
+        toast('已保存');
         await loadProjects(S.pid);
       });
       break;
@@ -2073,61 +2089,6 @@ function pick(obj, keys) { const o = {}; keys.forEach((k) => { o[k] = obj[k] ?? 
 
 // ---------- 我的教学 (home: courses, classes, tasks) ----------
 
-const START_LABEL = { prep: '准备下一节课', practice: '出一份练习', grading: '批改作业', explain: '准备讲解' };
-// Each way in asks for what that job starts from: a lesson needs its topic, homework to grade needs its class,
-// an explanation needs the question. Fields a job doesn't need are not shown.
-const START_FORM = {
-  prep: { module: '知识模块或主题', ph: '这次要教的内容，例如：对数函数', lesson: true, request: true },
-  practice: { module: '练习的主题', ph: '例如：对数不等式', lesson: true, request: true, needTopic: true },
-  grading: { module: '作业名称（可选）', ph: '例如：对数函数第 2 课时作业', titleField: true, needClass: true },
-  explain: { module: '主题（可选）', ph: '例如：对数函数', question: true, noClass: true },
-};
-
-async function openStartForm(kind) {
-  S.startKind = kind;
-  const f = START_FORM[kind];
-  $$('#home-start [data-start]').forEach((b) => b.classList.toggle('chosen', b.dataset.start === kind));
-  $('#start-form').classList.remove('hidden');
-  $('#sf-go').textContent = `开始：${START_LABEL[kind]}`;
-  $('#sf-module-label').textContent = f.module;
-  $('#sf-module').placeholder = f.ph;
-  $('#sf-lesson-wrap').classList.toggle('hidden', !f.lesson);
-  $('#sf-request-wrap').classList.toggle('hidden', !f.request);
-  $('#sf-question-wrap').classList.toggle('hidden', !f.question);
-  const offs = S.home.offerings;
-  $('#sf-class-wrap').classList.toggle('hidden', !!f.noClass || !offs.length);
-  $('#sf-class').innerHTML = (f.needClass ? '<option value="">（请选择班级）</option>' : '<option value="">（先不指定班级）</option>')
-    + offs.map((o) => `<option value="${o.id}">${esc(o.class_name)}</option>`).join('');
-  $('#sf-class').value = !f.noClass && offs.some((o) => o.id === S.offering) ? S.offering : '';
-  if (!f.noClass) S.offering = $('#sf-class').value || null;
-  await startHint();
-  (f.question ? $('#sf-question') : f.needClass && !S.offering && offs.length ? $('#sf-class') : $('#sf-module')).focus();
-}
-
-async function startHint() {
-  const hint = $('#start-hint');
-  const kind = S.startKind;
-  hint.classList.add('hidden');
-  const say = (text) => { hint.textContent = text; hint.classList.remove('hidden'); };
-  if (kind === 'grading') {
-    say('下一步导入试卷（题目和评分标准），核对确认后导入学生作答。已经在这里出过题的作业，直接从“继续工作”打开它。');
-  } else if (kind === 'explain') {
-    say('粘贴一道题就能开始；学生的疑问和作答可以到下一页再补。');
-  } else if (kind === 'prep' && S.offering) {
-    const sug = await api('GET', `/api/offerings/${S.offering}/next-lesson`);
-    // A suggestion fills empty fields only: it never overwrites what the teacher already typed.
-    if (!$('#sf-module').value.trim() && sug.knowledge_module) $('#sf-module').value = sug.knowledge_module;
-    if (!$('#sf-lesson').value.trim() && sug.lesson) $('#sf-lesson').value = sug.lesson;
-    const parts = [`${sug.class_name}${sug.progress ? `已上到：${sug.progress}` : ''}`];
-    if (sug.unfinished.length) parts.push(`${sug.unfinished.length} 节计划课还没标记是否已上`);
-    if (sug.class_status) parts.push(`将参考本班已确认的学情：${sug.class_status.patterns.map((x) => x.name).join('、') || sug.class_status.summary}`);
-    parts.push(sug.note);
-    say(parts.join('；'));
-  } else if (!S.offering && S.home.offerings.length) {
-    say('没有指定班级也可以开始；布置给班级时再选。');
-  }
-}
-// 任务建立时间（秒级时间戳）→ "11月20日 09:30"：同名任务靠它区分。
 function dayOf(ts) {
   if (!ts) return '';
   const d = new Date(ts * 1000);
@@ -2149,118 +2110,61 @@ async function showHome() {
 }
 
 async function renderHome() {
-  const h = await api('GET', `/api/home${S.course ? `?course_id=${encodeURIComponent(S.course)}` : ''}`);
-  S.home = h;
-  S.course = h.course ? h.course.id : null;
+  const courses = await api('GET', '/api/courses');
+  const setup = !courses.length || !!S.newCourse;
+  $('#setup-card').classList.toggle('hidden', !setup);
+  $('#nc-cancel').classList.toggle('hidden', !courses.length);
+  $('#home-body').classList.toggle('hidden', setup);
+  if (setup) { S.home = null; return; }
+  if (!courses.some((c) => c.id === S.course)) S.course = courses[0].id;
   store.set('edu.course', S.course);
-  $('#home-course').innerHTML = h.courses.map((c) => `<option value="${c.id}">${esc(c.title)}（${esc(c.subject_name)}）</option>`).join('') || '<option value="">（还没有课程）</option>';
-  $('#home-course').value = S.course || '';
-  if (!h.offerings.some((o) => o.id === S.offering)) S.offering = h.offerings.length === 1 ? h.offerings[0].id : null;
-  store.set('edu.offering', S.offering);
-  $('#home-body').classList.toggle('hidden', !h.course);
-  if (!h.courses.length) $('#new-course').classList.remove('hidden');
-  syncEmptyCard();
-
-  $('#attention-card').classList.toggle('hidden', !h.attention.length);  // nothing to do: no card at all
-  $('#home-attention').innerHTML = h.attention.length
-    ? h.attention.map((a, i) => `<div class="task-row"><div class="task-main">${esc(a.text)}</div>
-        <div>${a.project_id ? `<button class="small secondary" data-attn="${i}">去处理</button>` : ''}
-        ${a.kind === 'update' ? `<button class="small link" data-attn-keep="${i}">保持原版本</button>` : ''}</div></div>`).join('')
-    : '<div class="empty">没有需要马上处理的事项。</div>';
-  $('#home-tasks').innerHTML = h.tasks.length
-    ? h.tasks.map((t) => `<div class="task-row"><div class="task-main"><b>${esc(t.title)}</b>
-        ${t.title.endsWith(t.kind_label) ? '' : `<span class="pill">${esc(t.kind_label)}</span>`}${t.class_name ? ` <span class="pill info">${esc(t.class_name)}</span>` : ''}
-        <span class="muted">${esc(dayOf(t.created_at))} 建立</span>
-        <div class="task-pending">${t.scope_label ? `<span class="scope-tag">${esc(t.scope_label)}</span>` : ''}${esc(t.pending.join('；') || t.progress_label || '待开始')}</div></div>
-        <div><button class="small" data-open-task="${t.project_id}" data-tab="${t.tab}" data-target="${esc(t.target || '')}" data-aid="${esc(t.assignment_id || '')}">${esc(t.action_label || '继续工作')}</button>
-        <button class="small link" data-done-task="${t.id}">标记完成</button></div></div>`).join('')
-    : '<div class="empty">还没有进行中的工作。从上面“开始工作”选一项。</div>';
-  $('#home-start').innerHTML = Object.entries(START_LABEL).map(([k, v]) => `<button class="start-btn" data-start="${k}">${esc(v)}</button>`).join('');
-
-  $('#home-units').innerHTML = h.units.length
-    ? h.units.map((u) => `<button class="secondary small" data-unit="${u.id}">${esc(u.title)} · ${u.tasks} 项工作${u.assignments ? ` · ${u.assignments} 次布置` : ''}</button>`).join(' ')
-    : '<div class="empty">还没有内容分组</div>';
-  $('#units-count').textContent = h.units.length ? `${h.units.length} 组` : '还没有';
-  // Empty sections sit side by side as one compact row; a section with content takes the full width.
-  $('#classes-card').classList.toggle('full', !!h.offerings.length);
-  if (S.unit && h.units.some((u) => u.id === S.unit)) await renderUnit(S.unit); else { S.unit = null; $('#unit-view').innerHTML = ''; }
-  $('#home-classes').innerHTML = h.offerings.length
-    ? h.offerings.map((o) => `<div class="offering" data-offering="${o.id}"><h4>${esc(o.class_name)} <span class="pill">${o.members} 人</span>
-        ${o.progress ? `<span class="pill ok">已上到：${esc(o.progress)}</span>` : ''}</h4>
-        ${o.sessions.length ? o.sessions.map((s) => `<div class="session-row${s.overdue ? ' overdue' : ''}" data-session="${s.id}">
-          <span class="s-title">${esc(s.title)}${s.plan_version ? `（教案第 ${s.plan_version} 版）` : ''}</span>
-          <span class="pill ${s.status === 'taught' ? 'ok' : s.status === 'cancelled' ? '' : 'warn'}">${esc(s.status_label)}</span>
-          ${s.status === 'planned' ? `<input type="date" class="s-date" value="${esc(s.planned_date)}">
-            <button class="small secondary" data-session-status="taught">标记已上课</button><button class="small link" data-session-status="cancelled">取消</button>` : ''}
-          ${s.project_id ? `<button class="small link" data-open-task="${s.project_id}" data-tab="prep">打开</button>` : ''}</div>`).join('')
-          : '<div class="kv">还没有课时安排。备课方案确认后会自动出现在这里。</div>'}
-        <div class="row"><button class="small link" data-unit-review="${o.id}">单元讲评（合并几份作业）</button></div><div class="ur-box"></div></div>`).join('')
-    : '<div class="empty">还没有关联班级</div>';
-  const classes = await api('GET', '/api/classes');
-  const linked = new Set(h.offerings.map((o) => o.class_id));
-  $('#cls-existing').innerHTML = '<option value="">（新建班级）</option>' + classes.filter((c) => !linked.has(c.id)).map((c) => `<option value="${c.id}">${esc(c.name)}（${c.members} 人）</option>`).join('');
-
-  if (h.course) {
-    const detail = await api('GET', `/api/courses/${h.course.id}`);
-    $('#course-materials').innerHTML = detail.materials.length
-      ? detail.materials.map((m) => `<div class="kv">${esc(m.filename)} <span class="pill">${m.chars} 字</span></div>`).join('')
-      : '<div class="empty">还没有课程资料</div>';
-    $('#materials-card-home').classList.toggle('full', !!detail.materials.length);
-  }
-  // "用了一段时间后": asked once there is some use to judge (a lesson taught, or a few tasks), and not again here
-  // after an answer.
-  const used = h.offerings.some((o) => o.sessions.some((x) => x.status === 'taught')) || h.tasks.length >= 3;
-  $('#trial-feedback').classList.toggle('hidden', !used || store.get('edu.trialAnswered') === '1');
-  $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
-  if (h.legacy_projects) await renderLegacy();
+  $('#home-course').innerHTML = courses.map((c) => `<option value="${c.id}">${esc(c.title)}</option>`).join('');
+  $('#home-course').value = S.course;
+  $('#home-course').classList.toggle('hidden', courses.length < 2);
+  const [crs, lessons] = await Promise.all([
+    api('GET', `/api/courses/${S.course}/lesson-home`),
+    api('GET', `/api/courses/${S.course}/lessons`),
+  ]);
+  S.home = { course: crs, lessons };
+  $('#course-title').textContent = crs.title;
+  $('#course-line').textContent = [crs.subject_name, crs.grade, crs.class ? `${crs.class.name} · ${crs.members.length} 人` : ''].filter(Boolean).join(' · ');
+  renderSettings(crs);
+  $('#lesson-list').innerHTML = lessons.length ? lessons.map(lessonRow).join('')
+    : '<div class="empty">还没有课。在上面写下主题，选从哪里开始。</div>';
 }
 
-// The "先建一门课程" card only shows when there is no course and the form is closed: the form says the same.
-function syncEmptyCard() {
-  const formOpen = !$('#new-course').classList.contains('hidden');
-  $('#home-empty').classList.toggle('hidden', !!(S.home && S.home.course) || formOpen);
+const STAGE_SHORT = { prep: '备课', questions: '出题', grading: '批改', analysis: '学情', review: '讲评' };
+const START_TAB = { prep: 'prep', grading: 'grading', explain: 'review' };
+const START_FOCUS = { prep: '#course-module', grading: '#g-paper-text', explain: '#ex-question' };
+
+// One line per lesson: where its loop stands and the one thing to do next (LESSON_LOOP_DESIGN.md 4.1).
+function lessonRow(l) {
+  const finished = l.stages.review && (!l.next || l.next.tab === 'review');
+  const marks = STAGES.map((t) => `<span class="stage-mark${l.stages[t] ? ' done' : ''}${l.next && l.next.tab === t && !finished ? ' now' : ''}" title="${STAGE_NAME[t]}${l.stages[t] ? '：已完成' : ''}">${l.stages[t] ? '✓ ' : ''}${STAGE_SHORT[t]}</span>`).join('');
+  const go = finished || !l.next
+    ? `<span class="muted">${esc(finished ? '已讲评' : l.state)}</span><button class="small secondary" data-open-lesson="${l.id}" data-tab="${finished ? 'review' : 'prep'}">打开</button>`
+    : `<button class="small" data-open-lesson="${l.id}" data-tab="${l.next.tab}" data-target="${esc(l.next.target || '')}">继续：${esc(l.next.label)}</button>`;
+  return `<div class="lesson-row"><div class="lesson-main"><b>${esc(l.title)}</b>${l.round > 1 ? ` <span class="pill">第 ${l.round} 轮</span>` : ''}
+      <span class="muted">${esc(dayOf(l.updated_at))}</span><div class="stage-marks">${marks}</div></div>
+    <div class="lesson-go">${go}</div></div>`;
 }
 
-const pct = (v) => (v == null ? '-' : `${Math.round(v * 100)}%`);
-
-async function renderUnit(uid) {
-  const v = await api('GET', `/api/units/${uid}`);
-  S.unit = uid;
-  const objs = v.objectives.length ? `<ul class="lines">${v.objectives.map((o) => `<li><b>${esc(o.code)}</b> ${esc(o.text)} ${o.version > 1 ? `<span class="pill">描述第 ${o.version} 版</span>` : ''}
-      ${o.needs_review ? '<span class="pill warn">表述改过，请核对题目对应</span>' : ''} <span class="muted">（${esc(o.from)}）</span>
-      <button class="link small" data-objective="${o.id}">按目标查看</button></li>`).join('')}</ul><div id="objective-view"></div>` : '<div class="kv">还没有已确认的备课方案。</div>';
-  const classes = v.classes.map((c) => `<div class="offering"><h4>${esc(c.class_name)}</h4>
-    <div class="kv">课时：${c.sessions.map((s) => `${esc(s.title)}（${esc(s.status_label)}）`).join('、') || '无'}</div>
-    <div class="kv">布置：${c.assignments.map((a) => `${esc(a.title)}（${esc(a.status_label)}，收到 ${a.received}/${a.roster}）`).join('、') || '无'}</div>
-    ${c.evidence.map((e) => `<div class="kv"><b>${esc(e.assignment)}</b>${e.partial ? ' <span class="pill warn">部分分析</span>' : ''} <span class="muted">${esc(e.coverage)}</span>
-      <table><tr><th>目标</th><th>题号</th><th>得分率</th><th>全部得分</th></tr>${e.objectives.map((o) => `<tr><td>${esc(o['目标'])}</td><td>${o['题号'].length ? o['题号'].join('、') : '<span class="muted">没有题目</span>'}</td><td>${pct(o['得分率'])}</td><td>${o['人数'] ? `${o['全部得分人数']}/${o['人数']}` : '-'}</td></tr>`).join('')}</table></div>`).join('') || '<div class="kv muted">还没有已确认的学情分析。</div>'}
-    ${c.patterns.length ? `<div class="kv">问题模式：${c.patterns.map((x) => `${esc(x.name)}（${esc(x.affected)}，${esc(x.assignment)}）`).join('；')}</div>` : ''}</div>`).join('');
-  const open = v.tasks.filter((t) => t.status === 'open');
-  $('#unit-view').innerHTML = `<div class="offering"><div class="card-head"><h4>${esc(v.unit.title)}</h4><button class="link small" data-unit-close="1">收起</button></div>
-    <h4>教学目标</h4>${objs}
-    ${classes || '<div class="kv">这个分组还没有布置给任何班级。</div>'}
-    ${open.length ? `<h4>进行中的工作</h4>${open.map((t) => `<div class="kv">${esc(t.title)} <button class="small link" data-open-task="${t.project_id}" data-tab="${t.tab}">打开</button></div>`).join('')}` : ''}
-    <p class="muted">得分率只来自已确认的学情分析，不合成单一的掌握分数。</p></div>`;
+function renderSettings(crs) {
+  $('#cs-title').value = crs.title;
+  $('#cs-grade').value = crs.grade || '';
+  $('#cs-count').textContent = `${crs.members.length} 人`;
+  $('#cs-members').innerHTML = crs.members.length
+    ? crs.members.map((m) => `<span class="member">${esc(m.alias)}<button class="link small" data-member-off="${m.id}" aria-label="移出 ${esc(m.alias)}">×</button></span>`).join('')
+    : '<div class="empty">还没有学生名单：可以在这里添加，也可以在批改时导入作答时自动加入。</div>';
+  $('#course-materials').innerHTML = crs.materials.length
+    ? crs.materials.map((m) => `<div class="kv">${esc(m.filename)} <span class="pill">${m.chars} 字</span></div>`).join('')
+    : '<div class="empty">还没有课程资料</div>';
 }
 
-async function renderObjective(oid) {
-  const v = await api('GET', `/api/objectives/${oid}`);
-  const cls = v.classes.map((c) => `<div class="kv"><b>${esc(c.class_name)}</b>：${esc(c.state)}
-    ${c.assignments.map((a) => `<div class="muted">· ${esc(a.assignment)}（${esc(a.status)}）${a.tested ? '' : '，没有考查这条目标'}
-      ${a.evidence ? `：得分率 ${pct(a.evidence.rate)}，全部得分 ${a.evidence.full}/${a.evidence.learners}${a.evidence.partial ? '（部分分析）' : ''}，帮助条件：${esc(a.evidence.help)}` : ''}</div>`).join('')}</div>`).join('');
-  $('#objective-view').innerHTML = `<div class="offering"><div class="card-head"><h4>${esc(v.code)} ${esc(v.text)}</h4>
-      ${v.needs_review ? `<button class="small secondary" data-objective-ok="${v.id}">已核对题目对应</button>` : ''}</div>
-    ${v.versions.length > 1 ? `<div class="kv">描述版本：${v.versions.map((x) => `第 ${x.version} 版「${esc(x.text)}」`).join(' → ')}</div>` : ''}
-    <div class="kv">教过：${v.plans.map((x) => `${esc(x.title)}（教案第 ${x.plan_version} 版）`).join('、') || '无'}</div>
-    <div class="kv">考查的题目：${v.questions.map((x) => `第 ${x.no} 题${x.round > 1 ? `（第 ${x.round} 轮）` : ''}`).join('、') || '还没有题目'}</div>
-    ${cls || '<div class="kv">还没有布置给班级。</div>'}<p class="muted">${esc(v.note)}</p></div>`;
-}
-
-async function renderUnitReview(oid, box) {
-  const list = await api('GET', `/api/offerings/${oid}/assignments`);
-  if (list.length < 2) { box.innerHTML = '<div class="kv">这个班至少要有两份作业才能做单元讲评；只有一份时在那份作业里准备讲评。</div>'; return; }
-  box.innerHTML = `<div class="kv">选择要合在一起讲评的作业：</div>${list.map((a) => `<label class="inline"><input type="checkbox" class="ur-pick" value="${a.id}" checked> ${esc(a.title)}（${esc(a.status_label)}）</label>`).join('')}
-    <div class="row"><button class="small secondary" data-ur-preview="${oid}">查看各份情况</button><button class="small" data-ur-go="${oid}">生成单元讲评</button></div><div class="ur-preview"></div>`;
+async function openLesson(pid, tab, target) {
+  await loadProjects(pid, false);
+  await selectProject(pid, { tab, aid: null });
+  if (target) await goNext({ tab, target });
 }
 
 // The records tab belongs to the open workspace, so its research and trial cards follow that workspace's course,
@@ -2346,6 +2250,9 @@ async function showAdmin() {
   $('#admin-export').innerHTML = S.pid ? '' : '<div class="kv muted">打开一个工作区后可以导出它的完整记录。</div>';
   await renderResearch();
   await renderTrial();
+  const legacy = await api('GET', '/api/migration/preview').catch(() => ({ groups: [] }));
+  $('#legacy-card').classList.toggle('hidden', !legacy.groups.length);
+  if (legacy.groups.length) await renderLegacy();
   window.scrollTo({ top: 0 });
   syncRoute();
 }
@@ -2410,25 +2317,11 @@ function bindExtras() {
     $('#revise-instruction').value = '';
     showNote(r.context_note); toast(`只改了：${r.changed.join('、')}；存为新草稿，确认后生效`); await refresh();
   }));
-  $('#package-btn').addEventListener('click', (e) => busy(e.target, '打包中…', async () => {
-    const pkg = await api('POST', `/api/projects/${S.pid}/coursemaker-package`);
-    downloadJson(pkg, `${pkg.package_id}.json`);
-    toast('已打包并下载；课件做好后可以传回来，系统会记下它依据的版本');
-  }));
   $('#cases-build').addEventListener('click', (e) => busy(e.target, '整理中…', async () => {
     const r = await api('POST', `/api/research/cases/build?course_id=${encodeURIComponent(recordsCourse())}`);
     toast(`新增 ${r.created} 个研究案例`); await renderResearch();
   }));
   $('#trial-refresh').addEventListener('click', (e) => busy(e.target, '…', renderTrial));
-  for (const [id, willing] of [['trial-willing', true], ['trial-unwilling', false]]) {
-    $('#' + id).addEventListener('click', (e) => busy(e.target, '…', async () => {
-      const r = await api('POST', '/api/trial/feedback', { willing, note: '' });
-      toast(r.willing ? '谢谢，已记录：愿意继续用' : '谢谢，已记录：暂不愿意');
-      store.set('edu.trialAnswered', '1');
-      $('#trial-feedback').classList.add('hidden');
-      if (S.view === 'admin') await renderTrial();
-    }));
-  }
   $('#dataset-export').addEventListener('click', (e) => busy(e.target, '导出中…', async () => {
     const data = await api('POST', `/api/datasets/export?course_id=${encodeURIComponent(recordsCourse())}`);
     downloadJson(data, `${data.manifest.version}.json`);
@@ -2439,33 +2332,7 @@ function bindExtras() {
     await api('POST', `/api/courses/${recordsCourse()}/consents`, { purposes: ['training'], version: $('#consent-version').value.trim(), granted_by: $('#consent-by').value.trim() });
     toast('已记录授权'); await renderResearch();
   }));
-  $('#home').addEventListener('click', async (e) => {
-    const ob = e.target.closest('[data-objective]');
-    if (ob) { await busy(ob, '…', () => renderObjective(ob.dataset.objective)); return; }
-    const ok = e.target.closest('[data-objective-ok]');
-    if (ok) { await busy(ok, '…', async () => { await api('POST', `/api/objectives/${ok.dataset.objectiveOk}/reviewed`); await renderObjective(ok.dataset.objectiveOk); }); return; }
-    const ur = e.target.closest('[data-unit-review]');
-    if (ur) { await busy(ur, '…', () => renderUnitReview(ur.dataset.unitReview, ur.closest('.offering').querySelector('.ur-box'))); return; }
-    const pv = e.target.closest('[data-ur-preview], [data-ur-go]');
-    if (pv) {
-      const box = pv.closest('.ur-box');
-      const ids = [...box.querySelectorAll('.ur-pick:checked')].map((x) => x.value);
-      const oid = pv.dataset.urPreview || pv.dataset.urGo;
-      if (pv.dataset.urPreview) {
-        await busy(pv, '…', async () => {
-          const rows = await api('POST', `/api/offerings/${oid}/unit-review/preview`, { offering_id: oid, assignment_ids: ids });
-          box.querySelector('.ur-preview').innerHTML = rows.map((r) => `<div class="kv">${esc(r.title)}：收到 ${r.received}/${r.roster}，${esc(r.coverage.label)}；未处理 ${r.open_items} 项；问题模式 ${r.patterns.length} 个</div>`).join('');
-        });
-      } else {
-        await busy(pv, '生成中…', async () => {
-          const r = await api('POST', `/api/offerings/${oid}/unit-review`, { offering_id: oid, assignment_ids: ids });
-          await loadProjects(r.project.id, false);
-          await selectProject(r.project.id, { tab: 'review' });
-          showNote(r.context_note); toast('单元讲评稿已生成（新任务），请核对后确认');
-        });
-      }
-      return;
-    }
+  $('#admin').addEventListener('click', async (e) => {
     const cv = e.target.closest('[data-case-verdict]');
     if (cv) {
       const row = cv.closest('[data-case]');
@@ -2496,120 +2363,78 @@ async function renderLegacy() {
 }
 
 function bindHomeEvents() {
-  $('#home-course').addEventListener('change', async (e) => { S.course = e.target.value || null; S.offering = null; await renderHome(); });
-  $('#new-course-btn').addEventListener('click', () => { $('#new-course').classList.toggle('hidden'); syncEmptyCard(); });
-  $('#nc-cancel').addEventListener('click', () => { $('#new-course').classList.add('hidden'); syncEmptyCard(); });
+  $('#home-course').addEventListener('change', async (e) => { S.course = e.target.value || null; await renderHome(); });
+  $('#settings-btn').addEventListener('click', () => $('#settings-card').classList.toggle('hidden'));
+  $('#settings-close').addEventListener('click', () => $('#settings-card').classList.add('hidden'));
+  $('#new-course-btn').addEventListener('click', async () => { S.newCourse = true; await renderHome(); });
+  $('#nc-cancel').addEventListener('click', async () => { S.newCourse = false; await renderHome(); });
   $('#nc-subject').addEventListener('change', (e) => $('#nc-custom-wrap').classList.toggle('hidden', e.target.value !== '__custom'));
   $('#nc-create').addEventListener('click', (e) => busy(e.target, '创建中…', async () => {
     const subject = $('#nc-subject').value === '__custom' ? $('#nc-custom').value.trim() : $('#nc-subject').value;
-    const c = await api('POST', '/api/courses', { title: $('#nc-title').value.trim(), subject, grade: $('#nc-grade').value.trim() });
-    $('#new-course').classList.add('hidden'); $('#nc-title').value = '';
-    S.course = c.id; S.offering = null;
-    toast('课程已创建：可以直接开始工作，班级以后再加'); await renderHome();
+    const roster = $('#nc-roster').value.split(/[\n,，]/).map((x) => x.trim()).filter(Boolean);
+    const c = await api('POST', '/api/course-setup', {
+      title: $('#nc-title').value.trim(), subject, grade: $('#nc-grade').value.trim(), class_name: $('#nc-class').value.trim(), roster,
+    });
+    ['#nc-title', '#nc-grade', '#nc-class', '#nc-roster', '#nc-custom'].forEach((x) => { $(x).value = ''; });
+    S.course = c.id; S.newCourse = false;
+    toast('课程背景已保存：写下第一节课的主题就可以开始'); await renderHome();
+    $('#nl-topic').focus();
   }));
-  $('#cls-add').addEventListener('click', (e) => busy(e.target, '处理中…', async () => {
-    let classId = $('#cls-existing').value;
-    const aliases = $('#cls-roster').value.split(/[\n,，]/).map((x) => x.trim()).filter(Boolean);
-    if (!classId) {
-      const name = $('#cls-name').value.trim();
-      if (!name) throw new Error('请填写班级名称，或选择已有班级');
-      classId = (await api('POST', '/api/classes', { name, aliases })).id;
-    } else if (aliases.length) await api('POST', `/api/classes/${classId}/members`, { aliases });
-    const o = await api('POST', `/api/courses/${S.course}/classes`, { class_id: classId });
-    $('#cls-name').value = ''; $('#cls-roster').value = '';
-    S.offering = o.id; toast(`${o.class_name}已关联到本课程`); await renderHome();
+  $('#cs-save').addEventListener('click', (e) => busy(e.target, '保存中…', async () => {
+    await api('PATCH', `/api/courses/${S.course}`, { title: $('#cs-title').value.trim(), grade: $('#cs-grade').value.trim() });
+    toast('已保存'); await renderHome();
+  }));
+  $('#cs-add').addEventListener('click', (e) => busy(e.target, '添加中…', async () => {
+    const aliases = $('#cs-roster').value.split(/[\n,，]/).map((x) => x.trim()).filter(Boolean);
+    if (!aliases.length) throw new Error('先写下学生代号，每行一个');
+    const crs = S.home.course;
+    const r = await api('POST', `/api/classes/${crs.class.class_id}/members`, { aliases });
+    $('#cs-roster').value = '';
+    toast(r.added.length ? `已加入 ${r.added.length} 人；之后新建的课自动带上` : '这些代号已经在名单里'); await renderHome();
   }));
   $('#cm-add').addEventListener('click', (e) => busy(e.target, '添加中…', async () => {
     await api('POST', `/api/courses/${S.course}/materials`, { text: $('#cm-text').value, filename: $('#cm-name').value || '课程资料' });
     $('#cm-text').value = ''; $('#cm-name').value = ''; toast('课程资料已添加'); await renderHome();
   }));
-  $('#sf-cancel').addEventListener('click', () => $('#start-form').classList.add('hidden'));
-  $('#sf-class').addEventListener('change', (e) => {
-    S.offering = e.target.value || null; store.set('edu.offering', S.offering);
-    startHint();
-  });
-  $('#sf-go').addEventListener('click', (e) => {
-    const f = START_FORM[S.startKind];
-    const question = $('#sf-question').value.trim();
-    if (f.needClass && !S.offering && S.home.offerings.length) { toast('批改要先选班级：作答和成绩按班记录', true); $('#sf-class').focus(); return; }
-    if (f.question && !question) { toast('先粘贴要讲的题目', true); $('#sf-question').focus(); return; }
-    if (f.needTopic && !$('#sf-module').value.trim()) { toast(`先写下${f.module}`, true); $('#sf-module').focus(); return; }
-    busy(e.target, '准备中…', async () => {
-      const topic = $('#sf-module').value.trim();
-      const r = await api('POST', `/api/courses/${S.course}/tasks`, {
-        kind: S.startKind, offering_id: S.offering || '',
-        // 批改 names the homework: the name is the task's title, not a 知识模块 (which would become a content group).
-        ...(f.titleField ? { title: topic } : { knowledge_module: topic }),
-        lesson: f.lesson ? $('#sf-lesson').value.trim() : '',
-        request: f.request ? $('#sf-request').value.trim() : '',
-      });
-      $('#start-form').classList.add('hidden');
-      ['#sf-module', '#sf-lesson', '#sf-request', '#sf-question'].forEach((x) => { $(x).value = ''; });
-      await loadProjects(r.project.id, false);
-      await selectProject(r.project.id, { tab: r.tab });
-      // 准备讲解 started with the question: it is already on the form of the page that drafts the explanation.
-      if (question && $('#ex-question')) { $('#ex-question').value = question; await goNext({ tab: 'review', target: '#ex-ask' }); }
-      toast(`已开始：${r.task.title}`);
-    });
-  });
-  $('#unit-add').addEventListener('click', (e) => busy(e.target, '添加中…', async () => {
-    await api('POST', `/api/courses/${S.course}/units`, { title: $('#unit-title').value.trim() });
-    $('#unit-title').value = ''; await renderHome();
-  }));
   $('#home').addEventListener('click', async (e) => {
-    const unit = e.target.closest('[data-unit]');
-    if (unit) { await busy(unit, '…', () => renderUnit(unit.dataset.unit)); return; }
-    if (e.target.closest('[data-unit-close]')) { S.unit = null; $('#unit-view').innerHTML = ''; return; }
     const start = e.target.closest('[data-start]');
-    if (start) { await openStartForm(start.dataset.start); return; }
-    const open = e.target.closest('[data-open-task]');
-    if (open) { await loadProjects(open.dataset.openTask, false); await selectProject(open.dataset.openTask, { tab: open.dataset.tab, aid: open.dataset.aid || null }); if (open.dataset.target) await goNext({ tab: open.dataset.tab, target: open.dataset.target }); return; }
-    const done = e.target.closest('[data-done-task]');
-    if (done) { await busy(done, '…', async () => { await api('PATCH', `/api/tasks/${done.dataset.doneTask}`, { status: 'done' }); await renderHome(); }); return; }
-    const keep = e.target.closest('[data-attn-keep]');
-    if (keep) {
-      const a = S.home.attention[Number(keep.dataset.attnKeep)];
-      await busy(keep, '…', async () => {
-        for (const u of a.assignment.updates) await api('POST', `/api/assignments/${a.assignment.id}/keep`, { question_lineage: u.question_lineage });
-        toast(`${a.assignment.class_name}继续用原版本；以后再有新版本时会再提醒`);
-        await renderHome();
+    if (start) {
+      const topic = $('#nl-topic').value.trim();
+      if (!topic) { toast('先写下这节课的主题，例如：对数函数', true); $('#nl-topic').focus(); return; }
+      const how = start.dataset.start;
+      await busy(start, '准备中…', async () => {
+        const r = await api('POST', `/api/courses/${S.course}/lessons`, { knowledge_module: topic, lesson: $('#nl-no').value.trim(), start: how });
+        $('#nl-topic').value = ''; $('#nl-no').value = '';
+        await openLesson(r.project.id, START_TAB[how], START_FOCUS[how]);
+        toast(`已开始：${r.project.title}`);
       });
       return;
     }
-    const attn = e.target.closest('[data-attn]');
-    if (attn) {
-      const a = S.home.attention[Number(attn.dataset.attn)];
-      await loadProjects(a.project_id, false);
-      await selectProject(a.project_id, { tab: 'grading', aid: a.assignment ? a.assignment.id : null });
-      return;
-    }
-    const st = e.target.closest('[data-session-status]');
-    if (st) {
-      const sid = st.closest('[data-session]').dataset.session;
-      await busy(st, '…', async () => { await api('PATCH', `/api/sessions/${sid}`, { status: st.dataset.sessionStatus }); await renderHome(); });
-      return;
-    }
-    const map = e.target.closest('[data-map]');
-    if (map) {
-      const box = map.closest('[data-legacy]');
-      const g = S.legacy[Number(map.dataset.map)];
-      const courseId = $('.lg-course', box).value;
-      const className = $('.lg-class', box).value.trim();
-      const body = { project_ids: g.projects.map((p) => p.id), course_id: courseId || null, course: courseId ? null : { title: $('.lg-title', box).value.trim(), subject: g.subject } };
-      if (className) body.class_name = className;
-      if (!window.confirm(`把 ${g.projects.length} 个项目整理进课程${className ? `，学生代号归入“${className}”` : ''}？整理前会自动备份数据库。`)) return;
-      await busy(map, '整理中…', async () => {
-        const r = await api('POST', '/api/migration/map', body);
-        S.course = r.course_id;
-        toast(`已整理：产物 ${r.checked.artifacts} 个、引用 ${r.checked.refs} 条，前后一致${r.assignments.length ? `；生成 ${r.assignments.length} 条布置记录` : ''}`);
-        await renderHome();
-      });
+    const open = e.target.closest('[data-open-lesson]');
+    if (open) { await openLesson(open.dataset.openLesson, open.dataset.tab, open.dataset.target || ''); return; }
+    const off = e.target.closest('[data-member-off]');
+    if (off) {
+      const alias = off.closest('.member').firstChild.textContent;
+      if (!window.confirm(`把 ${alias} 移出名单？已有的作答和批改保留。`)) return;
+      await busy(off, '…', async () => { await api('DELETE', `/api/classes/${S.home.course.class.class_id}/members/${off.dataset.memberOff}`); await renderHome(); });
     }
   });
-  $('#home').addEventListener('change', async (e) => {
-    if (!e.target.classList.contains('s-date')) return;
-    const sid = e.target.closest('[data-session]').dataset.session;
-    await busy(null, '', async () => { await api('PATCH', `/api/sessions/${sid}`, { planned_date: e.target.value }); await renderHome(); });
+  $('#admin').addEventListener('click', async (e) => {
+    const map = e.target.closest('[data-map]');
+    if (!map) return;
+    const box = map.closest('[data-legacy]');
+    const g = S.legacy[Number(map.dataset.map)];
+    const courseId = $('.lg-course', box).value;
+    const className = $('.lg-class', box).value.trim();
+    const body = { project_ids: g.projects.map((p) => p.id), course_id: courseId || null, course: courseId ? null : { title: $('.lg-title', box).value.trim(), subject: g.subject } };
+    if (className) body.class_name = className;
+    if (!window.confirm(`把 ${g.projects.length} 个项目整理进课程${className ? `，学生代号归入“${className}”` : ''}？整理前会自动备份数据库。`)) return;
+    await busy(map, '整理中…', async () => {
+      const r = await api('POST', '/api/migration/map', body);
+      S.course = r.course_id;
+      toast(`已整理：产物 ${r.checked.artifacts} 个、引用 ${r.checked.refs} 条，前后一致${r.assignments.length ? `；生成 ${r.assignments.length} 条布置记录` : ''}`);
+      await renderLegacy();
+    });
   });
 }
 

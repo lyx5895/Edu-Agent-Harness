@@ -135,7 +135,7 @@ def setup_round_one(ws):
     p = ws.create_project('高一数学｜对数函数｜第2课时', '数学', grade='高一', knowledge_module='对数函数')
     ws.add_material(p['id'], '对数函数 y=log_a x 的定义域是 (0,+∞)。')
     plan = ws.draft_lesson_plan(p['id'])
-    assert plan['context_note'] == '已参考：项目背景、材料 1 份、课程标准 3 条'
+    assert plan['context_note'] == '已参考：课时背景、材料 1 份、课程标准 3 条'
     ws.confirm(plan['lesson_plan']['id'])
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
     [q] = gen['candidates'][0]['questions']
@@ -284,7 +284,7 @@ def test_usable_drafts_fill_keyed_points_and_report_dropped():
     assert [d.type for d in kept] == ['single_choice'] and kept[0].points[0].score == 2
     assert len(dropped) == 1 and '缺少评分要点' in dropped[0]
     _, dropped = usable_drafts([off_target], {'calculation'}, n_patterns=2)
-    assert '问题模式' in dropped[0]
+    assert '共性问题' in dropped[0]
 
 
 def test_self_check_calls_are_recorded(ws):
@@ -348,7 +348,7 @@ def test_lesson_plan_review_and_second_round(ws):
     ws.confirm_gradings(pid)
     # Some roster/question entries are absent: analyze the received portion explicitly.
     out = ws.analyze(pid, partial=True)
-    assert ws.overview(pid)['next'][0]['label'] == '确认问题模式'
+    assert ws.overview(pid)['next'][0]['label'] == '确认共性问题'
     with pytest.raises(Conflict):
         ws.draft_review(pid)  # patterns must be confirmed first
     pattern = out['patterns'][0]
@@ -462,7 +462,7 @@ def test_next_lesson_carries_learning_status_into_the_plan(ws):
     assert ws.overview(nxt['id'])['learners'] == 3  # roster comes along
 
     plan = ws.draft_lesson_plan(nxt['id'])  # course info + carried-over 学情, no material needed
-    assert plan['context_note'] == '已参考：项目背景、课程标准 3 条、上一课时学情'
+    assert plan['context_note'] == '已参考：课时背景、课程标准 3 条、上一课时学情'
     sent = ws.llm.last('draft_lesson_plan')['user']['上一课时学情']
     assert sent['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域' and sent['上一课时'] == '第2课时'
     # A project that was not created as a next lesson never mentions one.
@@ -670,7 +670,7 @@ def test_photo_import_transcribes_then_imports_checked_text(ws):
     [row] = draft['answers']
     assert row['text'] == '定义域 x>1，又 x-1<8\n所以 1<x<[看不清]' and row['uncertain']
     assert len(draft['dropped']) == 1 and '第 7 题' in draft['dropped'][0]
-    assert draft['context_note'] == '已参考：项目背景、题干 1 份、作答照片 1 份'
+    assert draft['context_note'] == '已参考：课时背景、题干 1 份、作答照片 1 份'
     [name] = draft['photos']
     assert ws.photo_path(name).exists()
     with ws.store.read() as c:

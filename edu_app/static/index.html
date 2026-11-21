@@ -24,92 +24,78 @@
     </section>
 
     <section id="home" class="hidden">
-      <div class="home-head">
-        <h1>我的教学</h1>
-        <label>当前课程 <select id="home-course"></select></label>
-        <button id="new-course-btn" class="secondary small">新建课程</button>
-      </div>
-      <div id="new-course" class="card hidden">
-        <h3>新建课程</h3>
-        <p class="muted">课程是长期使用的工作空间：教材、课标和资料只填一次，各班有自己的名单、进度和学情。新建时只需要名称和学科，年级、教材和班级以后再补。</p>
+      <!-- 一节课的闭环 (LESSON_LOOP_DESIGN.md 4.1): the course line, the lessons, and 新的一节课. -->
+      <div id="setup-card" class="card hidden">
+        <h2>先填一次课程背景</h2>
+        <p class="muted">学科、年级和学生名单只填这一次，之后每节课自动带入。</p>
         <div class="grid-form">
-          <label>课程名称<input id="nc-title" placeholder="高一数学·上学期"></label>
+          <label>课程名称<input id="nc-title" placeholder="高一数学"></label>
           <label>学科<select id="nc-subject"></select></label>
           <label class="hidden" id="nc-custom-wrap">学科名称<input id="nc-custom" maxlength="20" placeholder="例如：信息技术、美术"></label>
           <label>年级（可选）<input id="nc-grade" placeholder="高一"></label>
-          <div class="wide"><button id="nc-create">创建课程</button> <button id="nc-cancel" class="link">取消</button></div>
+          <label>班级（可选）<input id="nc-class" placeholder="高一（3）班"></label>
+          <label class="wide">学生名单（可选，每行一个代号，不要写真实姓名）<textarea id="nc-roster" rows="3" placeholder="S01&#10;S02"></textarea></label>
+          <div class="wide"><button id="nc-create">开始使用</button> <button id="nc-cancel" class="link hidden">取消</button></div>
         </div>
       </div>
-      <div id="home-empty" class="card hidden">
-        <h3>先建一门课程</h3>
-        <p class="muted">课程是长期使用的工作空间：教材、课标和资料只填一次；班级各自有名单、进度和学情。</p>
-      </div>
-      <div id="home-body">
-        <div class="card attention hidden" id="attention-card"><h3>需要处理</h3><div id="home-attention"></div></div>
-        <div class="card start-card">
-          <h3>开始工作</h3>
-          <div class="row-btns" id="home-start"></div>
-          <div id="start-form" class="hidden">
-            <div id="start-hint" class="banner info hidden"></div>
-            <div class="grid-form">
-              <label id="sf-class-wrap">班级<select id="sf-class"></select></label>
-              <label class="wide hidden" id="sf-question-wrap">要讲的题目<textarea id="sf-question" rows="4" placeholder="粘贴题目；学生的疑问和作答可以到下一页再补"></textarea></label>
-              <label><span id="sf-module-label">知识模块或主题</span><input id="sf-module" placeholder="这次要教或练习的主题"></label>
-              <label id="sf-lesson-wrap"><span id="sf-lesson-label">课时（可选）</span><input id="sf-lesson" placeholder="第 2 课时"></label>
-              <label class="wide" id="sf-request-wrap">要求（可选）<input id="sf-request" placeholder="例如：基础薄弱，多安排基础练习"></label>
-              <div class="wide"><button id="sf-go">开始</button> <button id="sf-cancel" class="link">取消</button></div>
-            </div>
+
+      <div id="home-body" class="hidden">
+        <div class="home-head">
+          <div>
+            <h1 id="course-title"></h1>
+            <div id="course-line" class="muted"></div>
+          </div>
+          <div class="row-btns">
+            <select id="home-course" class="hidden" aria-label="切换课程"></select>
+            <button id="settings-btn" class="secondary small">课程设置</button>
           </div>
         </div>
-        <div class="card"><h3>继续工作</h3><div id="home-tasks"></div></div>
-        <p class="setup-intro muted">课程信息 <span class="muted">只填一次</span></p>
-        <div class="course-setup">
-        <div class="card mini" id="classes-card">
-          <h3>班级 <span class="help" tabindex="0" role="note" aria-label="上课的对象。名单、课时是否已上、每次作业的作答和学情都按班记录；备课方案确认后，这节课会自动出现在对应班级下。" title="上课的对象。名单、课时是否已上、每次作业的作答和学情都按班记录；备课方案确认后，这节课会自动出现在对应班级下。">?</span></h3>
-          <div id="home-classes"></div>
-          <details>
-            <summary>添加班级</summary>
-            <div class="grid-form">
-              <label>班级名称<input id="cls-name" placeholder="高一（3）班"></label>
-              <label>或选择已有班级<select id="cls-existing"></select></label>
-              <label class="wide">学生代号（每行一个，不要写真实姓名）<textarea id="cls-roster" rows="3" placeholder="S01&#10;S02"></textarea></label>
-              <div class="wide"><button id="cls-add">关联到本课程</button></div>
-            </div>
-          </details>
-        </div>
-        <div class="card mini" id="materials-card-home">
-          <h3>课程资料 <span class="help" tabindex="0" role="note" aria-label="这门课每次备课、出题、批改都会读到的背景材料，如课程纲要、教材目录、评分规范。所有班共用，不含学生作答；只放通用的，太长会被截断。" title="这门课每次备课、出题、批改都会读到的背景材料，如课程纲要、教材目录、评分规范。所有班共用，不含学生作答；只放通用的，太长会被截断。">?</span></h3>
+
+        <div id="settings-card" class="card hidden">
+          <div class="card-head"><h3>课程设置</h3><button class="link small" id="settings-close">收起</button></div>
+          <div class="grid-form">
+            <label>课程名称<input id="cs-title"></label>
+            <label>年级<input id="cs-grade"></label>
+            <div class="wide"><button class="small secondary" id="cs-save">保存</button></div>
+          </div>
+          <h4>学生名单 <span id="cs-count" class="pill"></span></h4>
+          <div id="cs-members" class="members"></div>
+          <div class="row"><textarea id="cs-roster" rows="2" placeholder="添加学生代号，每行一个"></textarea><button class="small secondary" id="cs-add">加入名单</button></div>
+          <h4>课程资料</h4>
+          <p class="muted">每节课备课、出题、批改都会读到的背景材料，例如教材目录、课程纲要、评分规范。</p>
           <div id="course-materials"></div>
           <details><summary>添加资料</summary>
             <textarea id="cm-text" rows="4" placeholder="粘贴教材目录、课程纲要等"></textarea>
             <div class="row"><input id="cm-name" placeholder="资料名称"><button id="cm-add">添加</button></div>
           </details>
+          <div class="row"><button class="link small" id="new-course-btn">再建一门课程</button></div>
         </div>
+
+        <div class="card start-card">
+          <h3>新的一节课</h3>
+          <div class="grid-form">
+            <label>主题<input id="nl-topic" placeholder="例如：对数函数"></label>
+            <label>课时（可选）<input id="nl-no" placeholder="例如：第 2 课时"></label>
+          </div>
+          <div class="start-ways">
+            <span class="label">从哪里开始</span>
+            <div class="row-btns" id="home-start">
+              <button class="start-btn" data-start="prep">从备课开始</button>
+              <button class="start-btn" data-start="grading">我有作业要批改</button>
+              <button class="start-btn" data-start="explain">我想讲一道题</button>
+            </div>
+          </div>
         </div>
-        <details class="card by-content" id="units-card">
-          <summary>按内容查看 <span id="units-count" class="pill"></span> <span class="help" tabindex="0" role="note" aria-label="开始工作时填的知识模块会自动成为一个内容分组。点开一个分组，看这块内容教过哪些课、考过哪些题、各班学得怎样。" title="开始工作时填的知识模块会自动成为一个内容分组。点开一个分组，看这块内容教过哪些课、考过哪些题、各班学得怎样。">?</span></summary>          <div id="home-units"></div>
-          <div id="unit-view"></div>
-          <details class="add-unit"><summary>手动添加一个分组</summary>
-            <div class="row"><input id="unit-title" placeholder="例如：对数函数"><button id="unit-add" class="small">添加</button></div>
-          </details>
-        </details>
+
+        <div class="card">
+          <h3>我的课</h3>
+          <div id="lesson-list"></div>
+        </div>
       </div>
-      <div class="card feedback-card" id="trial-feedback">
-        <span>用了一段时间后，你愿意继续用这个工作台吗？</span>
-        <span class="feedback-btns"><button class="small secondary" id="trial-willing">愿意继续用</button>
-          <button class="small link" id="trial-unwilling">暂不愿意</button></span>
-      </div>
-      <details class="card other-work">
-        <summary>其他工作区</summary>
-        <p class="muted">不属于课程的单独项目，以及所有工作区的列表。日常工作建议从上面的课程开始。</p>
-        <div class="row"><select id="project-select" aria-label="所有工作区"></select>
-          <button id="new-project-btn" class="secondary small">新建单独项目</button></div>
-      </details>
-      <div class="card hidden" id="legacy-card">
-        <h3>待整理的旧项目 <span id="legacy-count" class="pill"></span></h3>
-        <p class="muted">以前一节课一个项目。系统只按“进入下一课时”的前后关系分组提出候选，不会按相同标题或学生代号自动合并；你确认后才整理，整理前会备份数据库。</p>
-        <div id="legacy-list"></div>
-      </div>
+
+      <!-- Kept for the workspace switch and old single projects; not shown on the teacher home. -->
+      <select id="project-select" class="hidden" aria-hidden="true"></select>
+      <button id="new-project-btn" class="hidden" type="button"></button>
     </section>
 
     <section id="welcome" class="card hidden">
@@ -139,8 +125,9 @@
         <button data-tab="grading"><span class="mark">03</span>作业批改</button>
         <button data-tab="analysis"><span class="mark">04</span>学情分析</button>
         <button data-tab="review"><span class="mark">05</span>讲题答疑</button>
-        <button data-tab="records" class="aside">文件与记录<span id="records-badge" class="badge hidden"></span></button>
+        <button data-tab="records" class="aside">文件<span id="records-badge" class="badge hidden"></span></button>
       </nav>
+      <div id="round-bar" class="round-bar hidden" role="group" aria-label="轮次"></div>
       <div id="context-note" class="banner info hidden"></div>
       <div id="scope-bar" class="scope-bar hidden">
         <label>布置记录 <select id="scope-assignment"></select></label>
@@ -167,7 +154,7 @@
               <div class="cur-tools"><input id="curriculum-q" placeholder="搜索其他课标条目，例如：基本不等式"><button class="small secondary" id="curriculum-search">搜索</button>
                 <label class="inline"><input type="checkbox" id="curriculum-off"> 不参考课标</label></div>
             </div>
-            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <button id="regen-plan" class="secondary hidden">保存并重新生成教案</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换任务可继续编辑</span></div>
+            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <button id="regen-plan" class="secondary hidden">保存并重新生成教案</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换到别的课也不会丢</span></div>
           </div>
         </div>
         <div class="card setup" id="materials-card">
@@ -292,7 +279,7 @@
           <div id="analysis"></div>
         </div>
         <div class="card">
-          <h3>问题模式</h3>
+          <h3>共性问题</h3>
           <p class="muted">确认后用于讲评和再练。</p>
           <div id="patterns"></div>
         </div>
@@ -337,7 +324,7 @@
         <div class="card">
           <h3>讲评后再练</h3>
           <p class="muted">针对上面勾选的问题出一轮新题，生成后到“出题改题”确认。</p>
-          <div class="row"><label>每个问题模式出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
+          <div class="row"><label>每个共性问题出题数 <input type="number" id="p-count" min="1" max="3" value="1"></label>
             <button id="practice">生成再练题</button></div>
         </div>
       </div>
@@ -352,12 +339,6 @@
           <h3>导出文件</h3>
           <p class="muted">只导出已确认的版本；学生练习不含答案。打印版可在浏览器中“打印 / 另存为 PDF”。</p>
           <div id="deliverables"></div>
-        </div>
-        <div class="card">
-          <h3>送去制作课件（coursemaker）</h3>
-          <p class="muted">把已确认的教案和题目交给 coursemaker 生成讲义、课件和视频；不含学生名单和作答。</p>
-          <button class="secondary" id="package-btn">打包给 coursemaker</button>
-          <div id="courseware-list"></div>
         </div>
       </div>
     </section>
@@ -390,6 +371,11 @@
                 <button class="small" id="consent-grant">授权本课程内容用于训练</button></div>
             </details>
           </div>
+      <div class="card hidden" id="legacy-card">
+        <h3>待整理的旧项目 <span id="legacy-count" class="pill"></span></h3>
+        <p class="muted">以前一节课一个项目。系统只按“进入下一课时”的前后关系分组提出候选，不会按相同标题或学生代号自动合并；你确认后才整理，整理前会备份数据库。</p>
+        <div id="legacy-list"></div>
+      </div>
           <div class="card">
             <h3>研究记录导出</h3>
             <p id="model-status" class="muted"></p>

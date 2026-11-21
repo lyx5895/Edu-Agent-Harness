@@ -13,6 +13,7 @@ outside any transaction, then writes artifacts, references and generation record
 * ``photos``: photo import (transcribe, then the teacher checks the text before import)
 * ``records``: staleness, overview and research export
 * ``courses``: courses, classes, offerings, tasks, lesson sessions, 本班学情, home, mapping old projects
+* ``lessons``: the first version's one-class course and its lessons (LESSON_LOOP_DESIGN.md)
 * ``assignments``: 布置记录 (pinned versions, roster snapshot), rubric correction for one class, re-pinning
 
 Student work (submissions, gradings, analyses, patterns, comparisons, 讲评稿) is scoped by ``assignment_id``;
@@ -31,6 +32,7 @@ from edu_core.workflow.common import (
 from edu_core.workflow.courses import CoursesMixin
 from edu_core.workflow.delivery import DeliveryMixin
 from edu_core.workflow.lesson_plan import LessonPlanMixin
+from edu_core.workflow.lessons import LessonsMixin
 from edu_core.workflow.objectives import ObjectivesMixin
 from edu_core.workflow.photos import PhotosMixin
 from edu_core.workflow.projects import ProjectsMixin
@@ -65,6 +67,7 @@ from edu_core.workflow.trial import TrialMixin
 
 
 class Workspace(
+    LessonsMixin,
     CoursesMixin,
     ObjectivesMixin,
     DeliveryMixin,

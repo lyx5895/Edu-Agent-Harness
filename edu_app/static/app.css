@@ -393,3 +393,30 @@ summary .help { vertical-align: middle; }
 .head-running { color: var(--muted); font-size: 14px; }
 .banner.blocker { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .banner.blocker .row-btns { margin: 0; }
+/* ---------- 一节课的闭环 (LESSON_LOOP_DESIGN.md) ---------- */
+.home-head { justify-content: space-between; align-items: flex-end; }
+.home-head h1 { margin: 0; }
+#course-line { margin-top: 2px; }
+.start-ways { margin-top: 12px; }
+.start-ways .label { margin-bottom: 6px; }
+#home-start .start-btn { background: var(--card); color: var(--accent); border: 1px solid var(--accent); }
+#home-start .start-btn:hover { background: var(--accent); color: #fff; }
+.lesson-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 0; border-bottom: 1px solid var(--line); }
+.lesson-row:last-child { border-bottom: 0; }
+.lesson-main { flex: 1; min-width: 220px; }
+.lesson-main .muted { font-size: 13px; margin-left: 6px; }
+.lesson-go { display: flex; align-items: center; gap: 8px; }
+.stage-marks { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.stage-mark { font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.stage-mark.done { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+.stage-mark.now { border-color: var(--accent); color: var(--accent); }
+.members { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.member { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; padding: 2px 4px 2px 10px; border-radius: 999px; background: var(--bg); }
+.member button.link { padding: 0 6px; color: var(--muted); text-decoration: none; }
+.round-bar { display: flex; align-items: center; gap: 6px; margin: -4px 0 14px; flex-wrap: wrap; }
+.round-bar .label { margin: 0 4px 0 0; }
+/* The four per-card round pickers stay as the pages' state; the round switch above is what the teacher uses. */
+label:has(> #q-round), label:has(> #g-round), label:has(> #a-round), label:has(> #r-round) { display: none; }
+.banner.blocker.stack { display: block; }
+.banner.blocker.stack textarea { width: 100%; margin: 8px 0; background: var(--card); }

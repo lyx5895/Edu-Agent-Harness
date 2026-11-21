@@ -228,6 +228,20 @@ class NewClass(BaseModel):
     notes: str = Field(default='', max_length=500)
 
 
+class SetupCourse(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+    subject: str = Field(min_length=1, max_length=20)
+    grade: str = Field(default='', max_length=40)
+    class_name: str = Field(default='', max_length=60)
+    roster: list[str] = Field(default_factory=list, max_length=500)
+
+
+class NewLesson(BaseModel):
+    knowledge_module: str = Field(min_length=1, max_length=200)
+    lesson: str = Field(default='', max_length=100)
+    start: Literal['prep', 'grading', 'explain'] = 'prep'
+
+
 class LinkClass(BaseModel):
     class_id: str
 
@@ -849,6 +863,22 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.post('/api/courses')
     def create_course(body: NewCourse):
         return ws().create_course(**body.model_dump())
+
+    @app.post('/api/course-setup')
+    def setup_course(body: SetupCourse):
+        return ws().setup_course(**body.model_dump())
+
+    @app.get('/api/courses/{cid}/lesson-home')
+    def lesson_course(cid: str):
+        return ws().ensure_class(cid)
+
+    @app.get('/api/courses/{cid}/lessons')
+    def lessons(cid: str):
+        return ws().lessons(cid)
+
+    @app.post('/api/courses/{cid}/lessons')
+    def new_lesson(cid: str, body: NewLesson, request: Request):
+        return once(request, f'lesson:{cid}', lambda: ws().new_lesson(cid, **body.model_dump()))
 
     @app.get('/api/courses/{cid}')
     def course(cid: str):

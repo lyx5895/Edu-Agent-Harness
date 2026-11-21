@@ -53,7 +53,7 @@ class ReviewMixin:
             if pattern_ids:
                 pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
             if not pats:
-                raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
+                raise Conflict(f'第 {round_} 轮还没有已确认的共性问题，请先在学情分析中确认')
             ctx = Context('draft_review')
             ctx.add_other('project', pid)
             plan = self._plan(c, pid)
@@ -282,7 +282,7 @@ class ReviewMixin:
                         )
                         refs.append((conf['id'], 'analysis'))
             if not pats:
-                raise Conflict('所选作业里还没有已确认的问题模式')
+                raise Conflict('所选作业里还没有已确认的共性问题')
             units = {
                 self._project(c, self._assignment_row(c, aid)['project_id']).get('unit_id') for aid in assignment_ids
             }
@@ -374,7 +374,7 @@ class ReviewMixin:
             if pattern_ids:
                 pats = [x for x in pats if x['id'] in pattern_ids or x['lineage_id'] in pattern_ids]
             if not pats:
-                raise Conflict(f'第 {round_} 轮还没有已确认的问题模式，请先在学情分析中确认')
+                raise Conflict(f'第 {round_} 轮还没有已确认的共性问题，请先在学情分析中确认')
             ctx = Context('practice')
             ctx.add_other('project', pid)
             review = next((r for r in scope.current(c, 'review_plan', round_=round_) if r['confirmed_version']), None)
@@ -467,7 +467,7 @@ class ReviewMixin:
             ]
             gradings_b = [g for g in gradings_b if g]
         if not pats:
-            raise Conflict(f'第 {round_a} 轮还没有已确认的问题模式')
+            raise Conflict(f'第 {round_a} 轮还没有已确认的共性问题')
         if not gradings_b:
             raise Conflict(f'第 {round_b} 轮还没有已确认的批改')
         rows = []

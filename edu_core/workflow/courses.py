@@ -391,7 +391,7 @@ class CoursesMixin:
                 t['action_label'] = '核对题目'
                 t['progress_label'] = f'{len(questions)} 道题，核对后可布置'
             elif t['kind'] == 'grading' and not questions:
-                t['tab'], t['target'], t['action_label'] = 'questions', '#paper-text', '导入试卷'
+                t['tab'], t['target'], t['action_label'] = 'grading', '#g-paper-text', '导入试卷'
             t['assignment_id'], t['scope_label'] = '', ''
             # A task is named after how it started, but the work goes on: a 备课 task often ends up holding the
             # questions, the answers and the second round. Past its own kind, the card follows the loop's next step.

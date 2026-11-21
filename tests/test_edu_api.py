@@ -35,7 +35,7 @@ def test_teacher_flow_over_http(client):
     assert up.status_code == 200 and up.json()['filename'] == '讲义.md'
 
     drafted = client.post(f'/api/projects/{pid}/lesson-plan/draft').json()
-    assert drafted['context_note'] == '已参考：项目背景、材料 2 份、课程标准 3 条'
+    assert drafted['context_note'] == '已参考：课时背景、材料 2 份、课程标准 3 条'
     plan = drafted['lesson_plan']
     assert plan['content']['objectives'][0]['id'] == 'O1'
     assert client.post(f'/api/artifacts/{plan["id"]}/confirm', json={}).json()['status'] == 'confirmed'

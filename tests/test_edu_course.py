@@ -323,7 +323,7 @@ def test_explanation_without_analysis_stays_about_one_answer(ws):
     general = ws.explain(p['id'], '解不等式 log2(x-3)<2', ask='讲清定义域')
     g = general['explanation']['content']
     assert g['mode'] == 'general' and g['answer_comment'] == '' and g['quotes'] == [] and '预判' in g['scope_note']
-    assert '学生作答' not in ws.llm.calls[-1]['user'] and general['context_note'].startswith('已参考：项目背景')
+    assert '学生作答' not in ws.llm.calls[-1]['user'] and general['context_note'].startswith('已参考：课时背景')
     one = ws.explain(p['id'], '解不等式 log2(x-3)<2', student_answer='x-3<4，所以 x<7')['explanation']['content']
     assert one['mode'] == 'answer' and one['quotes'] == ['x<7'] and one['quotes_rejected'] == 1
     assert '不代表全班' in one['scope_note']
@@ -413,7 +413,7 @@ def test_new_grading_task_says_what_is_missing_and_how_to_get_there(ws):
     b = ws.overview(pid)['blockers']
     # 出题不必先备课；批改任务缺题目时，优先导入现成试卷。
     assert not b['questions']['blocked'] and b['grading']['blocked']
-    assert b['grading']['action']['label'] == '导入现成试卷' and b['grading']['action']['target'] == '#paper-text'
+    assert b['grading']['action']['label'] == '导入现成试卷' and b['grading']['action']['target'] == '#g-paper-text'
     assert b['grading']['reason']
     assert b['prep']['blocked'] is False and b['review']['blocked'] is False
 
@@ -474,10 +474,10 @@ def test_task_navigation_matches_intent_and_existing_work(ws):
     task = ws.start_task(crs['id'], 'grading', knowledge_module='对数函数')
     pid = task['project']['id']
     overview = ws.overview(pid)
-    assert overview['next'][0]['target'] == '#paper-text'
-    assert overview['blockers']['grading']['action']['target'] == '#paper-text'
+    assert overview['next'][0]['target'] == '#g-paper-text'
+    assert overview['blockers']['grading']['action']['target'] == '#g-paper-text'
     card = ws.tasks(crs['id'])[0]
-    assert card['action_label'] == '导入试卷' and card['tab'] == 'questions'
+    assert card['action_label'] == '导入试卷' and card['tab'] == 'grading'
     from test_edu_workflow import question
 
     ws.llm.handlers['import_paper'] = lambda r, payload: {

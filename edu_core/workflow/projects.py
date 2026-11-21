@@ -222,7 +222,7 @@ class ProjectsMixin:
             'objectives': [g['content']['text'] for g in self._goals(plan)],
         }
         if not (snapshot['patterns'] or snapshot['summary']):
-            raise Conflict('这一课时还没有已确认的问题模式或学情分析，先在“学情分析”中确认再进入下一课时')
+            raise Conflict('这一课时还没有已确认的共性问题或学情分析，先在“学情分析”中确认再进入下一课时')
         return snapshot
 
     def _prior_status(self, c, ctx, p):
@@ -290,6 +290,7 @@ class ProjectsMixin:
                     'INSERT INTO learners(id,project_id,alias,created_at) VALUES(?,?,?,?)',
                     (new_id('lrn'), new['id'], alias, time.time()),
                 )
+            self.lesson_after(c, pid, new['id'])
             event(c, pid, 'next_lesson_created', {'next_project': new['id']})
             event(c, new['id'], 'carried_over', {'from_project': pid, 'patterns': len(carry['patterns'])})
             return self._project_view(self._project(c, new['id']))

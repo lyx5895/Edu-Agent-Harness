@@ -36,7 +36,8 @@ WHITELIST = {
 
 LABELS = {
     **TYPES,
-    'project': '项目背景',
+    'project': '课时背景',
+    'problem_pattern': '共性问题',  # 已参考 is read by teachers: their word, not the artifact type name
     'material': '材料',
     'question_stem': '题干',
     'photo': '作答照片',

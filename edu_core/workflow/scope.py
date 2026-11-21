@@ -129,6 +129,7 @@ class Scope:
         if not self.assignment_id:
             lid = new_id('lrn')
             c.execute('INSERT INTO learners VALUES(?,?,?,?)', (lid, self.project_id, alias, time.time()))
+            self.ws._share_with_class(c, self.project_id, [alias])
             return lid
         a = self.assignment(c)
         class_id = c.execute('SELECT class_id FROM offerings WHERE id=?', (a['offering_id'],)).fetchone()[0]

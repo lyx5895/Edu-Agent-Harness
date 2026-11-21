@@ -62,7 +62,7 @@ def _forward(st):
     c, rc, r = st['counts'], st['round'], st['r']
     label_r = f'（第 {r} 轮）' if r > 1 else ''
     if st.get('task_kind') == 'grading' and not rc['question']['total']:
-        steps.append(_step('导入现成试卷', 'questions', '#paper-text', '核对题目与评分标准后，即可导入作答'))
+        steps.append(_step('导入现成试卷', 'grading', '#g-paper-text', '核对题目与评分标准后，即可导入作答'))
         return steps
     if st.get('task_kind') == 'explain' and not rc['problem_pattern']['confirmed']:
         steps.append(_step('准备题目讲解', 'review', '#ex-question'))
@@ -111,7 +111,7 @@ def _forward(st):
         if r > 1 and not rc['comparison']['total']:
             steps.append(_step(f'对比第 {r - 1}、{r} 轮', 'analysis', '#compare', '看讲评和再练之后问题是否还在'))
         if rc['problem_pattern']['total'] and not rc['problem_pattern']['confirmed']:
-            steps.append(_step('确认问题模式', 'analysis', '#patterns', '确认后才能据此准备讲评'))
+            steps.append(_step('确认共性问题', 'analysis', '#patterns', '确认后才能据此准备讲评'))
         elif not rc['problem_pattern']['confirmed']:
             steps.append(_step('查看学情分析', 'analysis', '#analysis', '这一轮没有归纳出需要讲评的问题'))
         elif not rc['review_plan']['total']:
@@ -139,6 +139,8 @@ def stage_status(counts, rc, r):
 
 
 PAPER_ALT = {'label': '导入现成试卷', 'tab': 'questions', 'target': '#paper-text'}
+# On 03 the paper is imported right in the page (缺什么就在当前页补): the questions it yields show in 02.
+PAPER_HERE = {'label': '导入现成试卷', 'tab': 'grading', 'target': '#g-paper-text'}
 
 
 def _blocker(reason, action, alt=None):
@@ -189,7 +191,7 @@ def blockers(st):
             if out['questions']['blocked']
             else '本轮还没有题目：批改需要题目和评分标准。'
         )
-        first, second = (PAPER_ALT, own) if st.get('task_kind') == 'grading' else (own, PAPER_ALT)
+        first, second = (PAPER_HERE, own) if st.get('task_kind') == 'grading' else (own, PAPER_HERE)
         out['grading'] = _blocker(reason, first, second)
 
     graded = rc['grading']['total'] and rc['grading']['confirmed'] == rc['grading']['total']

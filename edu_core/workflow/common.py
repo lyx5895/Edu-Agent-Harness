@@ -39,7 +39,7 @@ def usable_drafts(drafts, allowed, n_patterns=None):
             dropped.append(f'题型 {d.type} 不在允许范围内：{d.stem[:30]}')
             continue
         if n_patterns is not None and not 0 <= d.target_pattern_index < n_patterns:
-            dropped.append(f'没有对应到问题模式：{d.stem[:30]}')
+            dropped.append(f'没有对应到共性问题：{d.stem[:30]}')
             continue
         if not d.points:
             if d.type in KEYED_TYPES and d.answer_key.strip():

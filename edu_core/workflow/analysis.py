@@ -315,7 +315,7 @@ class AnalysisMixin:
         else:
             summary = (
                 f'已确认的批改中有 {len({e["learner"] for e in evidence.values()})} 名学生失分，'
-                '但归纳出的问题模式都没有通过作答证据核对，暂不形成学情结论；请看得分统计和补查问题。'
+                '但归纳出的共性问题都没有通过作答证据核对，暂不形成学情结论；请看得分统计和补查问题。'
             )
             summary_source = 'server'
         with self.store.tx() as c:
