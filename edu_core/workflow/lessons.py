@@ -29,6 +29,9 @@ FIRST_DONE = {
 
 
 class LessonsMixin:
+    # 本班学情 across lessons (COURSE_WORKSPACE_DESIGN.md 7.1) is not part of the first version.
+    class_status_on = False
+
     # ----- the course: background filled once -----
 
     def setup_course(self, title, subject, grade='', class_name='', roster=()):

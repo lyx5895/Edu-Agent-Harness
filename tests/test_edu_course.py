@@ -168,6 +168,7 @@ def test_partial_analysis_is_labelled_and_complete_needs_every_grading(ws):
 
 
 def test_class_status_reaches_the_next_plan_of_that_class_only(ws):
+    ws.class_status_on = True  # multi-class design, off in the first version
     crs, o3, o5 = two_classes(ws)
     pid, _ = prep_and_practice(ws, crs, o3)
     a3 = ws.assign(pid, o3['id'])
@@ -350,6 +351,7 @@ def test_class_adapted_copy_keeps_its_source_and_its_own_versions(ws):
 
 
 def test_teacher_removes_class_status_items_from_what_the_model_reads(ws):
+    ws.class_status_on = True  # multi-class design, off in the first version
     crs, o3, _ = two_classes(ws)
     pid, _ = prep_and_practice(ws, crs, o3)
     a3 = ws.assign(pid, o3['id'])

@@ -235,7 +235,9 @@ class ProjectsMixin:
             carry = json.loads(p['carryover'])
             ctx.add_other('carryover', carry['from_project'], sha(p['carryover']))
             return carry | {'label': '上一课时学情'}
-        if p.get('offering_id'):
+        # 本班学情 (every confirmed analysis of the class, read by any lesson of it) belongs to the multi-class design.
+        # In 一节课的闭环 the only link between lessons is 进入下一课时 (LESSON_LOOP_DESIGN.md 8), so it is off.
+        if p.get('offering_id') and self.class_status_on:
             prefs = json.loads(p['status_prefs']) if p.get('status_prefs') else {}
             carry = self._class_status(c, p['offering_id'], prefs)
             if carry:

@@ -693,9 +693,8 @@ async function renderPrep() {
   setCourseField('#course-notes', p.notes);
   setCourseField('#course-scope', p.lesson_scope);
   await renderCurriculum();
-  if (p.carryover) renderCarryover(p.carryover);
-  else if (p.offering_id) renderClassStatus(await api('GET', `/api/projects/${S.pid}/class-status`));
-  else renderCarryover(null);
+  // Only 进入下一课时 brings 学情 into a lesson (LESSON_LOOP_DESIGN.md 8); 本班学情 across lessons is not shown.
+  renderCarryover(p.carryover || null);
   const [mats, plans] = await Promise.all([
     api('GET', `/api/projects/${S.pid}/materials`),
     api('GET', `/api/projects/${S.pid}/lesson-plans`),
@@ -759,21 +758,6 @@ function renderCarryover(c) {
     ${c.summary ? `<p>${esc(c.summary)}</p>` : ''}
     ${pats ? `<ul class="carry-list">${pats}</ul>` : ''}
     ${c.review_focus.length ? `<p class="muted">上一课时讲评重点：${c.review_focus.map(esc).join('；')}</p>` : ''}`;
-}
-
-// 本班学情 for a task of a class: every item can be left out of what the model reads, and put back.
-function renderClassStatus(st) {
-  const box = $('#carryover-card');
-  box.classList.toggle('hidden', !st);
-  if (!st) return;
-  const pats = st.patterns.map((x) => `<li><label class="inline"><input type="checkbox" class="cs-pattern" value="${esc(x.lineage)}" ${x.excluded ? '' : 'checked'}>
-    <b>${esc(x.name)}</b></label> <span class="pill">${esc(x.affected)} 人</span> <span class="pill ${x.after_practice.includes('仍有') ? 'warn' : ''}">${esc(x.after_practice)}</span>
-    <div class="muted">${esc(x.description)}</div></li>`).join('');
-  box.innerHTML = `<div class="card-head"><h3>本班学情（${esc(st.from_title)}）</h3></div>
-    <p class="muted">备课和出题时会参考勾选的内容；取消勾选的不会发给模型，可以随时勾回来。只来自本班已确认的分析和共性问题。</p>
-    ${st.summary ? `<label class="inline"><input type="checkbox" id="cs-summary" ${st.summary_excluded ? '' : 'checked'}> 学情概述：${esc(st.summary)}</label>` : ''}
-    ${st.note ? `<p class="kv flag">${esc(st.note)}</p>` : ''}
-    ${pats ? `<ul class="carry-list">${pats}</ul>` : ''}`;
 }
 
 function nextLessonName(lesson) {
@@ -1515,14 +1499,6 @@ function bindEvents() {
     const r = await api('POST', `/api/projects/${S.pid}/explain`, { question: $('#ex-question').value, ask: $('#ex-ask').value, student_answer: $('#ex-answer').value });
     showNote(r.context_note); toast('讲解草稿已生成，请核对后确认'); await refresh();
   }));
-  $('#carryover-card').addEventListener('change', (e) => {
-    if (!e.target.matches('.cs-pattern, #cs-summary')) return;
-    const exclude = [...document.querySelectorAll('.cs-pattern')].filter((x) => !x.checked).map((x) => x.value);
-    const sum = $('#cs-summary');
-    busy(null, '', async () => {
-      await api('PATCH', `/api/projects/${S.pid}/class-status`, { exclude, exclude_summary: sum ? !sum.checked : null });
-      toast('已更新：之后的生成按勾选的本班学情');
-    });
   });
   $('#use-plan').addEventListener('click', (e) => busy(e.target, '处理中…', async () => {
     const s = await api('POST', `/api/projects/${S.pid}/use-plan`, { offering_id: $('#use-plan-class').value });
