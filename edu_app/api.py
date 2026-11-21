@@ -70,6 +70,7 @@ FIELD_KINDS = {
     'package_id': 'package',
     'artifact_id': 'artifact',
     'group': 'group',
+    'carry_from': 'project',
 }
 LIST_KINDS = {'project_ids': 'project', 'assignment_ids': 'assignment', 'sources': 'artifact', 'case_ids': 'case'}
 
@@ -240,6 +241,7 @@ class NewLesson(BaseModel):
     knowledge_module: str = Field(min_length=1, max_length=200)
     lesson: str = Field(default='', max_length=100)
     start: Literal['prep', 'grading', 'explain'] = 'prep'
+    carry_from: str = Field(default='', max_length=40)
 
 
 class LinkClass(BaseModel):

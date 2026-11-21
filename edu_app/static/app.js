@@ -1499,7 +1499,6 @@ function bindEvents() {
     const r = await api('POST', `/api/projects/${S.pid}/explain`, { question: $('#ex-question').value, ask: $('#ex-ask').value, student_answer: $('#ex-answer').value });
     showNote(r.context_note); toast('讲解草稿已生成，请核对后确认'); await refresh();
   }));
-  });
   $('#use-plan').addEventListener('click', (e) => busy(e.target, '处理中…', async () => {
     const s = await api('POST', `/api/projects/${S.pid}/use-plan`, { offering_id: $('#use-plan-class').value });
     toast(`已加入该班课时安排：${s.title}（计划中）`);
@@ -2105,6 +2104,15 @@ async function renderHome() {
   $('#course-title').textContent = crs.title;
   $('#course-line').textContent = [crs.subject_name, crs.grade, crs.class ? `${crs.class.name} · ${crs.members.length} 人` : ''].filter(Boolean).join(' · ');
   renderSettings(crs);
+  // 带上最近一节课的学情: offered when an earlier lesson has confirmed 学情; off unless the teacher ticks it.
+  const ls = crs.latest_status;
+  $('#nl-carry-wrap').classList.toggle('hidden', !ls);
+  if (!ls) $('#nl-carry').checked = false;
+  else {
+    $('#nl-carry-wrap').dataset.from = ls.id;
+    $('#nl-carry-text').textContent = `带上「${ls.title}」的学情`
+      + (ls.patterns.length ? `：${ls.patterns.join('、')}` : '（学情概述）') + '，备课和出题时参考';
+  }
   $('#lesson-list').innerHTML = lessons.length ? lessons.map(lessonRow).join('')
     : '<div class="empty">还没有课。在上面写下主题，选从哪里开始。</div>';
 }
@@ -2379,8 +2387,9 @@ function bindHomeEvents() {
       if (!topic) { toast('先写下这节课的主题，例如：对数函数', true); $('#nl-topic').focus(); return; }
       const how = start.dataset.start;
       await busy(start, '准备中…', async () => {
-        const r = await api('POST', `/api/courses/${S.course}/lessons`, { knowledge_module: topic, lesson: $('#nl-no').value.trim(), start: how });
-        $('#nl-topic').value = ''; $('#nl-no').value = '';
+        const carry = $('#nl-carry').checked && !$('#nl-carry-wrap').classList.contains('hidden') ? $('#nl-carry-wrap').dataset.from : '';
+        const r = await api('POST', `/api/courses/${S.course}/lessons`, { knowledge_module: topic, lesson: $('#nl-no').value.trim(), start: how, carry_from: carry });
+        $('#nl-topic').value = ''; $('#nl-no').value = ''; $('#nl-carry').checked = false;
         await openLesson(r.project.id, START_TAB[how], START_FOCUS[how]);
         toast(`已开始：${r.project.title}`);
       });

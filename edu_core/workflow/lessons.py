@@ -12,7 +12,7 @@ import time
 
 from edu_core import artifacts as A
 from edu_core.storage import event, new_id
-from edu_core.workflow.common import Conflict
+from edu_core.workflow.common import Conflict, _json
 from edu_core.workflow.steps import stage_status
 
 # 新的一节课: where the teacher starts. Each start is an existing task kind, so its first next step fits.
@@ -74,7 +74,35 @@ class LessonsMixin:
                     (course_id,),
                 )
             ]
-        return {**crs, 'class': cls, 'members': members, 'materials': materials}
+        return {
+            **crs,
+            'class': cls,
+            'members': members,
+            'materials': materials,
+            'latest_status': self.latest_status(course_id),
+        }
+
+    def latest_status(self, course_id):
+        """The most recent lesson of the course with confirmed 学情, offered when starting a new lesson."""
+        with self.store.read() as c:
+            rows = c.execute(
+                'SELECT p.id, MAX(COALESCE(a.created_at, p.created_at)) AS at FROM projects p '
+                'LEFT JOIN artifacts a ON a.project_id=p.id WHERE p.course_id=? GROUP BY p.id ORDER BY at DESC',
+                (course_id,),
+            ).fetchall()
+            for r in rows:
+                try:
+                    snap = self._carryover(c, r['id'])
+                except Conflict:
+                    continue  # no confirmed 学情 in this lesson
+                p = self._project(c, r['id'])
+                return {
+                    'id': r['id'],
+                    'title': '｜'.join(x for x in (p.get('knowledge_module'), p.get('lesson')) if x) or p['title'],
+                    'patterns': [x['name'] for x in snap['patterns']],
+                    'has_summary': bool(snap['summary']),
+                }
+        return None
 
     def ensure_class(self, course_id, class_name='本班'):
         """A course made before this version may have no class yet: give it one, so a roster has a home."""
@@ -151,14 +179,23 @@ class LessonsMixin:
                         out[k] = True
         return out
 
-    def new_lesson(self, course_id, knowledge_module, lesson='', start='prep'):
-        """新的一节课: a lesson of the course, with the class roster, opened where the teacher said they start."""
+    def new_lesson(self, course_id, knowledge_module, lesson='', start='prep', carry_from=''):
+        """新的一节课: a lesson of the course, with the class roster, opened where the teacher said they start.
+
+        ``carry_from`` names an earlier lesson of the same course whose confirmed 学情 the new lesson takes, frozen
+        as at 进入下一课时 (the only way 学情 moves between lessons, LESSON_LOOP_DESIGN.md 8).
+        """
         if start not in STARTS:
             raise ValueError('未知的开始方式')
         if not (knowledge_module or '').strip():
             raise Conflict('先写下这节课的主题，例如：对数函数')
         with self.store.read() as c:
             cls = self._the_class(c, course_id)
+            carry = None
+            if carry_from:
+                if self._project(c, carry_from).get('course_id') != course_id:
+                    raise Conflict('只能带上同一门课程里的学情')
+                carry = self._carryover(c, carry_from)
         started = self.start_task(
             course_id,
             STARTS[start],
@@ -167,9 +204,14 @@ class LessonsMixin:
             lesson=(lesson or '').strip(),
         )
         pid = started['project']['id']
-        if cls:
-            with self.store.tx() as c:
+        with self.store.tx() as c:
+            if cls:
                 self._copy_roster(c, cls['class_id'], pid)
+            if carry:
+                c.execute(
+                    'UPDATE projects SET prev_project_id=?, carryover=? WHERE id=?', (carry_from, _json(carry), pid)
+                )
+                event(c, pid, 'carried_over', {'from_project': carry_from, 'patterns': len(carry['patterns'])})
         return {'project': self._lesson_project(pid), 'tab': START_TAB[start]}
 
     def _lesson_project(self, pid):

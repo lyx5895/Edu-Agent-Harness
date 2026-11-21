@@ -115,3 +115,29 @@ def test_a_new_lesson_reads_no_learning_status_from_other_lessons(ws):
         next(x for x in reversed(ws.llm.calls) if x['task'] == 'draft_lesson_plan')['user'], ensure_ascii=False
     )
     assert '本班学情' not in sent and '上一课时学情' not in sent and '求出解' not in sent
+
+
+def test_a_new_lesson_can_take_the_latest_lesson_status_when_asked(ws):
+    crs = course(ws)
+    assert ws.lesson_course(crs['id'])['latest_status'] is None
+    pid, _ = planned_with_question(ws, crs)
+    ws.import_submissions(pid, f'甲,1,{GOOD}\n乙,1,{MISSED}')
+    ws.grade_round(pid)
+    ws.confirm_gradings(pid)
+    out = ws.analyze(pid, partial=True)
+    for x in (out['analysis'], *out['patterns']):
+        ws.confirm(x['id'])
+    ws.new_lesson(crs['id'], '对数函数', '第 3 课时')  # newer, but no 学情 of its own
+    latest = ws.lesson_course(crs['id'])['latest_status']
+    assert latest['id'] == pid and latest['patterns'] == ['解对数不等式时遗漏定义域']
+
+    plain = ws.new_lesson(crs['id'], '对数函数', '第 4 课时')['project']
+    assert not plain['carryover']
+    taken = ws.new_lesson(crs['id'], '对数函数', '第 4 课时', carry_from=pid)['project']
+    assert taken['carryover']['from_project'] == pid and taken['prev_project_id'] == pid
+    plan = ws.draft_lesson_plan(taken['id'])
+    assert plan['context_note'].endswith('上一课时学情')
+
+    other = ws.setup_course('高一物理', '物理')
+    with pytest.raises(Conflict):
+        ws.new_lesson(other['id'], '牛顿定律', carry_from=pid)
