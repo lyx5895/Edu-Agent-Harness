@@ -434,7 +434,7 @@ class CoursesMixin:
             notes.append(f'{queue} 份批改待复核')
         stale = len(A.stale(c, pid))
         if stale:
-            notes.append(f'{stale} 个产物依据已变化')
+            notes.append(f'{stale} 项结果需要更新')
         return notes
 
     # ----- lesson sessions -----

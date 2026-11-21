@@ -17,6 +17,7 @@ LABELS = {
     'revise_plan': '修改教案',
     'generate_questions': '出题',
     'regenerate_question': '换一道题',
+    'revise_question': '按意见修改题目',
     'import_paper': '整理试卷',
     'transcribe': '识别作答照片',
     'grade': '批改作答',
@@ -25,6 +26,7 @@ LABELS = {
     'practice': '生成再练题',
     'explain': '生成讲解',
     'unit_review': '单元讲评',
+    'check_plan': 'AI 看教案',
 }
 
 _lock = threading.Lock()

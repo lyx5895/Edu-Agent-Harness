@@ -19,7 +19,7 @@ from edu_core.workflow.common import (
 )
 from edu_core.workflow.prompts import (
     LESSON_PLAN_SYSTEM,
-    PLAN_REVIEW_SYSTEM,
+    PLAN_CHECK_SYSTEM,
     REVISE_SYSTEM,
 )
 from edu_core.workflow.runs import operation
@@ -32,6 +32,31 @@ from edu_core.workflow.schemas import (
 
 # A plan with worked examples, written by a reasoning model, ran to ~16k tokens; start with room instead of a retry.
 LONG_REPLY = 12000
+
+
+def plan_for_teacher(content):
+    """The plan as a teacher sees it (目标 1, 活动 2, 例题 1, Chinese headings), for the reviewer: given the stored
+    structure, it wrote its remarks with objective_ids, exit_check and O3."""
+    no = {o['id']: f'目标 {i}' for i, o in enumerate(content['objectives'], 1)}
+
+    def goals(x):
+        return '、'.join(no[i] for i in x.get('objective_ids', []) if i in no)
+
+    return {
+        '教学目标': [{'编号': no[o['id']], '目标': o['text'], '怎样算达到': o.get('success_criterion', '')} for o in content['objectives']],
+        '重点': content.get('key_points', []),
+        '难点': content.get('difficulties', []),
+        '课堂活动': [
+            {'编号': f'活动 {i}', '名称': a['name'], '用时': f'{a.get("minutes", 0)} 分钟', '做法': a.get('description', ''),
+             '对应': goals(a), '检验': a.get('evidence', '')}
+            for i, a in enumerate(content.get('activities', []), 1)
+        ],
+        '例题': [{'编号': f'例题 {i}', '对应': goals(x), '题目': x['problem'], '解答': x.get('solution', '')}
+                for i, x in enumerate(content.get('examples', []), 1)],
+        '当堂检测': [{'编号': f'当堂检测第 {i} 题', '对应': goals(x), '题目': x['question'], '答案': x.get('answer', '')}
+                 for i, x in enumerate(content.get('exit_check', []), 1)],
+        '备注': content.get('notes', ''),
+    }
 
 
 class LessonPlanMixin:
@@ -154,14 +179,7 @@ class LessonPlanMixin:
         )
         CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
         evidence_checks(content)
-        review, review_meta, review_manifest = self._review_plan(p, content, std)
-        if review:
-            content = normalize_plan({**content, 'review': review})
-            CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
-            evidence_checks(content)
         with self.store.tx() as c:
-            if review_meta:
-                record_generation(c, pid, review_meta, review_manifest, 'plan-review-v1')
             gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v5')
             plan = A.create(
                 c,
@@ -175,19 +193,37 @@ class LessonPlanMixin:
             )
         return {'lesson_plan': plan, 'context_note': describe(ctx.manifest)}
 
-    def _review_plan(self, p, content, std):
-        """Another provider reads the draft for knowledge errors, wrong example solutions, steps that cannot collect
-        their evidence and contradictions; plans had no check at all before. A failed review never loses the plan:
-        it is saved with the error noted."""
-        progress.step('审核教案')
-        ctx = Context('review_plan')
+    @operation('check_plan', lambda self, args, kwargs: _plan_project(self, args[0] if args else kwargs['aid']))
+    def check_plan(self, aid):
+        """AI 帮我看看: asked for by the teacher while giving revision remarks, never run on its own. The teacher
+        reads the plan first; remarks the teacher did not ask for, at the top of every plan, were in the way.
+        Returns at most three must-fix remarks written for the teacher (目标 1, 活动 2, 例题 1); nothing is stored
+        in the plan, the call is recorded like any other."""
+        with self.store.read() as c:
+            plan = A.get(c, aid)
+            if plan['type'] != 'lesson_plan':
+                raise ValueError('只能看备课方案')
+            p = self._project(c, plan['project_id'])
+        ids = (plan['content'].get('curriculum') or {}).get('ids') or []
+        std = CUR.context(p['subject'], ids, self._curriculum_query(p)) if ids else None
+        review, meta, manifest = self._check_plan(p, plan['content'], std)
+        if meta:
+            with self.store.tx() as c:
+                record_generation(c, p['id'], meta, manifest, 'plan-check-v1')
+        return review
+
+    def _check_plan(self, p, content, std):
+        """Another provider reads the plan for knowledge errors, wrong example solutions, steps that check nothing
+        and contradictions. A failed call says so instead of looking like a clean plan."""
+        progress.step('AI 正在看教案')
+        ctx = Context('check_plan')
         ctx.add_other('project', p['id'])
         ctx.add_other('plan_draft', p['id'], sha(_json(content)))
         try:
             out, meta = self.llm.complete(
                 'reviewer',
-                'review_plan',
-                PLAN_REVIEW_SYSTEM.format(subject=p['pack']['name']),
+                'check_plan',
+                PLAN_CHECK_SYSTEM.format(subject=p['pack']['name']),
                 _json(
                     {
                         '课时信息': {
@@ -197,14 +233,14 @@ class LessonPlanMixin:
                         },
                         '学生基础': p.get('learner_profile', ''),
                         '课标条目': [{'编号': it['id'], '原文': it['text']} for it in (std or {}).get('content', [])],
-                        '备课方案': {k: v for k, v in content.items() if k not in ('curriculum', 'review')},
+                        '备课方案': plan_for_teacher(content),
                     }
                 ),
                 PlanReview,
             )
         except ModelUnavailable as e:
-            return {'error': f'教案审核没有完成：{e}'[:200]}, None, ctx.manifest
-        review = {'issues': [x for x in out.issues if x.strip()], 'suggestions': [x for x in out.suggestions if x.strip()]}
+            return {'issues': [], 'error': f'这次没有看成：{e}'[:200]}, None, ctx.manifest
+        review = {'issues': [x for x in out.issues if x.strip()][:3]}
         return review, meta, ctx.manifest
 
     def lesson_plans(self, pid):
@@ -216,7 +252,8 @@ class LessonPlanMixin:
         """局部修改 (design doc 4.3): “缩短导入活动”“改第 2 条目标”只改指定部分. The server keeps the rest of the plan
         byte for byte, saves a full new draft version and records what changed and why.
 
-        ``target``: ``objective:O1``, ``activity:<序号从 1 开始>``, ``key_points``, ``difficulties`` or ``notes``.
+        ``target``: ``objective:O1``, ``activity:<n>``, ``example:<n>``, ``check:<n>`` (n from 1), ``key_points``,
+        ``difficulties`` or ``notes``.
         """
         instruction = (instruction or '').strip()
         if not instruction:
@@ -235,6 +272,9 @@ class LessonPlanMixin:
                 part = next((o for o in content['objectives'] if o['id'] == key), None)
             elif kind == 'activity' and key.isdigit() and 1 <= int(key) <= len(content['activities']):
                 part = content['activities'][int(key) - 1]
+            elif kind in ('example', 'check') and key.isdigit():
+                rows = content.get('examples' if kind == 'example' else 'exit_check', [])
+                part = rows[int(key) - 1] if 1 <= int(key) <= len(rows) else None
             elif kind in ('key_points', 'difficulties', 'notes'):
                 part = content.get(kind)
             else:
@@ -247,8 +287,8 @@ class LessonPlanMixin:
         user = _json(
             {
                 '学科': p['pack']['name'],
-                '整份方案': content,
-                '要修改的部分': {'位置': target, '当前内容': part},
+                '整份方案': plan_for_teacher(content),  # as the teacher sees it, so no field names come back
+                '要修改的部分': {'位置': _part_label(content, kind, key), '当前内容': part},
                 '老师的要求': instruction,
             }
         )
@@ -266,17 +306,20 @@ class LessonPlanMixin:
                 minutes=out.minutes or part.get('minutes', 0),
                 description=out.description.strip() or part.get('description', ''),
             )
+        elif kind == 'example':
+            part.update(problem=out.question.strip() or part['problem'], solution=out.answer.strip() or part.get('solution', ''))
+        elif kind == 'check':
+            part.update(question=out.question.strip() or part['question'], answer=out.answer.strip() or part.get('answer', ''))
         elif kind == 'notes':
             content['notes'] = out.text.strip()
         else:
             content[kind] = [x for x in out.items if x.strip()] or content[kind]
-        content.pop('review', None)  # the review was of the plan before this change
         revised = normalize_plan(content)
         # The stored plan carries the curriculum checks; recompute them before comparing so only real edits count.
         CUR.plan_checks(p['subject'], revised['objectives'], used=bool(revised.get('curriculum')))
         evidence_checks(revised)
         changed = sorted(
-            k for k in set(revised) | set(plan['content']) if k != 'review' and revised.get(k) != plan['content'].get(k)
+            k for k in set(revised) | set(plan['content']) if revised.get(k) != plan['content'].get(k)
         )
         if not changed:
             raise ModelUnavailable('模型没有做出修改，请换个说法再试')
@@ -286,7 +329,11 @@ class LessonPlanMixin:
                 c,
                 p['id'],
                 'lesson_plan',
-                {**revised, 'revision': {'target': target, 'instruction': instruction, 'changed': changed}},
+                {
+                    **revised,
+                    # label: how the teacher names the part (目标 1), shown instead of the internal objective:O1
+                    'revision': {'target': target, 'label': _part_label(content, kind, key), 'instruction': instruction, 'changed': changed},
+                },
                 origin='revised',
                 refs=[(r['ref_id'], r['role']) for r in plan['refs']],
                 generation_id=gid,
@@ -296,6 +343,16 @@ class LessonPlanMixin:
             )
             self._guard_basis(c, p['id'], new['id'], ctx.manifest)
         return {'lesson_plan': new, 'changed': changed, 'context_note': describe(ctx.manifest)}
+
+
+def _part_label(content, kind, key):
+    """How the teacher names the part being revised: 目标 2, 活动 3, 例题 1, 当堂检测第 1 题, 重点."""
+    if kind == 'objective':
+        n = next((i for i, o in enumerate(content['objectives'], 1) if o['id'] == key), 0)
+        return f'目标 {n}'
+    return {'activity': f'活动 {key}', 'example': f'例题 {key}', 'check': f'当堂检测第 {key} 题'}.get(
+        kind, {'key_points': '重点', 'difficulties': '难点', 'notes': '备注'}.get(kind, kind)
+    )
 
 
 def _plan_project(self, aid):

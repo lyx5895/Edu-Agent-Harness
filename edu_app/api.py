@@ -660,6 +660,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     def adopt_solver(qid: str):
         return ws().adopt_solver_answer(qid)
 
+    @app.post('/api/questions/{qid}/revise')
+    def revise_question(qid: str, body: RegenerateBody, request: Request):
+        return once(request, f'revise-question:{qid}', lambda: ws().revise_question(qid, body.instruction))
+
     @app.post('/api/questions/{qid}/regenerate')
     def regenerate(qid: str, body: RegenerateBody, request: Request):
         return once(
@@ -950,6 +954,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     def repin(aid: str, body: RepinBody):
         return ws().repin(aid, body.question_lineage)
 
+    @app.post('/api/assignments/{aid}/keep')
+    def keep_pinned(aid: str, body: RepinBody):
+        return ws().keep_pinned(aid, body.question_lineage)
+
     @app.get('/api/courses/{cid}/units')
     def units(cid: str):
         return ws().units(cid)
@@ -1058,6 +1066,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         )
 
     # ----- 局部修改, materials, deliverables, coursemaker -----
+
+    @app.post('/api/artifacts/{aid}/plan-review')
+    def plan_review(aid: str):
+        return ws().check_plan(aid)
 
     @app.post('/api/artifacts/{aid}/revise')
     def revise_part(aid: str, body: ReviseBody, request: Request):

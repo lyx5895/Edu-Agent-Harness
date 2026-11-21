@@ -70,7 +70,7 @@ function toast(msg, error = false) {
   toastTimer = setTimeout(() => t.classList.add('hidden'), error ? 7000 : 3500);
 }
 
-// 长时间的模型调用：底部显示已等多久、可以先去别的页面；完成时老师已经切走的话，提示并在那个标签上做标记。
+// 长时间的模型调用：底部显示正在做哪一步和进度条（不显示秒数）、可以先去别的页面；完成时老师已经切走的话，提示并在那个标签上做标记。
 const jobs = new Set();
 function startJob(label) {
   if (!label || label.length < 3) return null;
@@ -105,10 +105,12 @@ function showJobs() {
     const waited = Math.round((Date.now() - j.t0) / 1000);
     const live = (liveSteps.get(j.pid) || []).find((x) => !shown.has(x));
     if (live) shown.add(live);
-    if (!live) return `<div class="w-line"><b>${esc(j.label)}</b>… 已等 ${waited} 秒</div>`;
+    // No seconds on screen (neither waited nor usual): a running count made teachers watch the clock. The step and
+    // the bar say that work is moving; the usual time only paces the bar.
+    if (!live) return `<div class="w-line"><b>${esc(j.label)}</b>…</div>`;
     const count = live.total ? ` ${live.done}/${live.total}` : '';
     const pct = live.total ? live.done / live.total : live.typical ? Math.min(waited / live.typical, 0.95) : null;
-    return `<div class="w-line"><b>${esc(live.label)}</b>：${esc(live.step)}${count} · 已等 ${waited} 秒${live.typical ? `（以往约 ${live.typical} 秒）` : ''}</div>
+    return `<div class="w-line"><b>${esc(live.label)}</b>：${esc(live.step)}${count}</div>
       ${pct == null ? '' : `<div class="w-bar"><i style="width:${Math.round(pct * 100)}%"></i></div>`}`;
   });
   bar.innerHTML = rows.join('') + '<div class="w-hint">可以先看别的页面，完成后会提示。</div>';
@@ -153,7 +155,7 @@ function statusPill(a) {
   else if (a.status === 'candidate') pills.push('<span class="pill info">A/B 候选</span>');
   else pills.push(`<span class="pill warn">草稿 · 第 ${a.version} 版</span>`);
   if (a.status !== 'confirmed' && a.confirmed_version) pills.push(`<span class="pill">已确认版本：第 ${a.confirmed_version} 版</span>`);
-  if (a.stale) pills.push('<span class="pill bad">依据已变化</span>');
+  if (a.stale) pills.push('<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>');
   if (a.origin === 'imported') pills.push('<span class="pill">导入</span>');
   if (a.origin === 'edited') pills.push('<span class="pill">老师修改</span>');
   if (a.origin === 'teacher') pills.push(`<span class="pill">${a.type === 'grading' ? '老师改判' : '老师编写'}</span>`);
@@ -430,7 +432,8 @@ function renderScope() {
   const updates = show && a ? a.updates : [];
   $('#scope-updates').classList.toggle('hidden', !updates.length);
   $('#scope-updates').innerHTML = updates.map((u) => `<div>第 ${u.no} 题的${u.changed.map((k) => (k === 'rubric' ? '评分标准' : '题目')).join('和')}有新版本，这次布置仍使用原版本。
-    <button class="small secondary" data-repin="${u.question_lineage}">本班改用新版本并重新批改</button></div>`).join('');
+    <button class="small secondary" data-repin="${u.question_lineage}">本班改用新版本并重新批改</button>
+    <button class="small link" data-keep="${u.question_lineage}">保持原版本，不再提醒</button></div>`).join('');
   // A class assignment fixes its round.
   ['#g-round', '#a-round', '#r-round'].forEach((sel) => {
     const el = $(sel);
@@ -537,30 +540,23 @@ function loopActive() {
   return c.submission.total > 0 || c.problem_pattern.total > 0;
 }
 
+// One rule for every stage heading:
+//   - stage done      -> the green 下一步 button(s) to the next stage;
+//   - stage not done  -> nothing: what to do is on the page itself, and the tab marked 待办 shows where the loop is;
+//   - model running   -> a quiet "……中" line.
+// A page that cannot be used yet says why in the one banner under the heading (renderBlocker), never up here.
 function renderContinue() {
   const box = $(`#tab-${S.tab} .continue`);
   if (!box) return;
   const o = S.overview;
-  const done = !!o.stages[S.tab];
-  if (!done) {
-    // One form on every unfinished page: a green button for what this page needs (on a blocked page, the way to
-    // unblock it; the banner below then only gives the reason and the alternative), and the 下一步 link.
-    const action = currentAction();
-    // While this page's own model call runs, the heading says so instead of asking for the step being done.
-    const running = [...jobs].find((j) => j.pid === S.pid && j.tab === S.tab && j.view === 'project');
-    const here = running ? `<button class="continue-btn" disabled>${esc(running.label)}…</button>`
-      : action ? `<button class="continue-btn" data-current-action>${esc(action.label)} →</button>` : '';
-    // The next stage stays one click away even before this one is done: the stages can be taken in any order.
-    const next = S.tab !== 'review' && CONTINUE[S.tab]
-      ? `<button class="link small" data-continue="0">下一步：${esc(CONTINUE[S.tab][0].label)} →</button>` : '';
-    box.innerHTML = `<div class="head-now">${here}${next}</div>`;
-    return;
-  }
+  const running = [...jobs].find((j) => j.pid === S.pid && j.tab === S.tab && j.view === 'project');
+  if (running) { box.innerHTML = `<span class="head-running">${esc(running.label)}中…</span>`; return; }
+  if (!o.stages[S.tab]) { box.innerHTML = ''; return; }
   // A later lesson only needs this lesson's 学情 (in any round), so it stays open after 再练 starts round 2.
   const hasStatus = o.counts.problem_pattern.confirmed > 0 || !!o.next_lesson;
   const buttons = CONTINUE[S.tab]
     .map((g) => (g.action === 'next-lesson' && o.next_lesson ? { ...g, label: `进入下一课时（${o.next_lesson.title}）` } : g))
-    .map((g, i) => `<button class="continue-btn${i ? ' ghost' : ''}" data-continue="${i}"${done || (g.action === 'next-lesson' && hasStatus) ? '' : ' disabled'}>下一步：${esc(g.label)} →</button>`)
+    .map((g, i) => `<button class="continue-btn${i ? ' ghost' : ''}" data-continue="${i}"${g.action === 'next-lesson' && !hasStatus ? ' disabled' : ''}>下一步：${esc(g.label)} →</button>`)
     .join('');
   box.innerHTML = `<div class="row-btns">${buttons}</div>`;
 }
@@ -601,8 +597,13 @@ async function renderTab() {
   syncRoute();
 }
 
-// 跳步: a page whose earlier stage is missing says what is missing and offers the step (and the way round it),
-// instead of buttons that fail with a conflict.
+// 跳步: a page whose earlier stage is missing says, in one banner under the heading, what is missing and offers the
+// way to it. Every button names the page it goes to (去 02 ……), so nothing reads as an action of this page.
+const stageNo = (tab) => String(STAGES.indexOf(tab) + 1).padStart(2, '0');
+function whereTo(step) {
+  const label = step.label.replace(/^先到 0\d\s*/, '');
+  return step.tab === S.tab ? label : `去 ${stageNo(step.tab)} ${label}`;
+}
 function renderBlocker() {
   const pane = $(`#tab-${S.tab}`);
   if (!pane || !STAGES.includes(S.tab)) return;
@@ -615,10 +616,11 @@ function renderBlocker() {
   const soft = S.tab === 'analysis';  // 汇总 still works without gradings: it lists likely pitfalls
   box.classList.toggle('warn', !soft);
   box.classList.toggle('info', soft);
-  // A grading task usually has a paper already: importing it is the main way in, the lesson plan the alternative.
-  // The main way out is the green button in the stage heading; the banner adds only the alternative, if any.
-  box.innerHTML = `<div>${esc(b.reason)}${soft && !o.counts.submission.total ? '现在汇总只会列出可能的易错点。' : ''}</div>
-    ${b.alt ? `<div class="row-btns"><button class="small link" data-block="alt">或者：${esc(b.alt.label)} →</button></div>` : ''}`;
+  // Two ways out (e.g. 出题 or 导入现成试卷) are a real choice: two buttons of the same weight, each going straight to
+  // its own place, even when both are on the same page.
+  const ways = [b.action, b.alt].filter(Boolean);
+  box.innerHTML = `<div>${esc(b.reason)}${soft && !o.counts.submission.total ? '现在汇总只会列出可能的易错点。' : ''}${ways.length > 1 ? '可以选择：' : ''}</div>
+    <div class="row-btns">${ways.map((w, i) => `<button class="small" data-block="${i ? 'alt' : 'action'}">${esc(whereTo(w))} →</button>`).join('')}</div>`;
 }
 
 async function goNext(step) {
@@ -709,14 +711,20 @@ async function renderPrep() {
   $('#lesson-plan').innerHTML = plans.length
     ? lessonPlanItem(plans[0])
     : '<div class="empty">填写课时信息后点“生成备课方案”：教学目标、重点难点和课堂活动会一起生成，你可以修改后整体确认。</div>';
-  $('#draft-lesson-plan').textContent = plans.length ? '重新生成' : '生成备课方案';
-  $('#draft-lesson-plan').classList.toggle('secondary', !!plans.length);
+  // Once there is a plan, starting over belongs with changing the requirements (修改要求与材料), not next to the
+  // plan where one click rewrote everything the teacher had just read.
+  $('#draft-lesson-plan').classList.toggle('hidden', !!plans.length);
+  $('#regen-plan').classList.toggle('hidden', !plans.length);
   $('#revise-row').classList.toggle('hidden', !plans.length);
   if (plans.length) {
     const pc = plans[0].content;
+    if (S.planId !== plans[0].id) $('#plan-ai-notes').innerHTML = '';  // notes were about another version
+    S.planId = plans[0].id;
     $('#revise-target').innerHTML = [
       ...pc.objectives.map((o, i) => `<option value="objective:${o.id}">目标 ${i + 1}</option>`),
       ...(pc.activities || []).map((x, i) => `<option value="activity:${i + 1}">活动 ${i + 1}：${esc(x.name)}</option>`),
+      ...(pc.examples || []).map((x, i) => `<option value="example:${i + 1}">例题 ${i + 1}</option>`),
+      ...(pc.exit_check || []).map((x, i) => `<option value="check:${i + 1}">当堂检测第 ${i + 1} 题</option>`),
       '<option value="key_points">重点</option>', '<option value="difficulties">难点</option>', '<option value="notes">备注</option>',
     ].join('');
   }
@@ -905,6 +913,7 @@ async function renderQuestions() {
 async function onGoalEdit(btn) {
   const cov = S.cov;
   const act = btn.dataset.goals;
+  if (act === 'prep') { await goNext({ tab: 'prep', target: '#lesson-plan' }); return; }
   if (act !== 'save') { S.editGoals = act === 'edit' ? cov.plan_id : null; renderCoverage(cov); return; }
   const edited = Object.fromEntries($$('.goal-row', $('#coverage')).map((r) => [r.dataset.goal,
     { text: $('.g-text', r).value.trim(), success_criterion: $('.g-crit', r).value.trim() }]));
@@ -920,71 +929,85 @@ async function onGoalEdit(btn) {
 }
 
 // 目标覆盖: one line per objective; an objective without questions gets a one-click 补题.
+// Round 2+ is 讲评后再练, written for problem patterns, not for every objective: only the objectives it touches are
+// listed and none is marked missing.
 function renderCoverage(cov) {
   const box = $('#coverage');
   S.cov = cov;
   if (!cov.objectives.length) { box.innerHTML = ''; return; }
+  const inferred = cov.draft_kind === 'inferred';
+  const draft = cov.draft_kind === 'teacher_draft';  // drafted in 01: reviewed and confirmed there, not here
+  const later = cov.round > 1;
+  const canFill = cov.round === 1 && !draft;
   // Objectives inferred from the request or a paper can be corrected right here, next to the questions they drive.
-  const editing = cov.unconfirmed && S.editGoals === cov.plan_id;
+  const editing = inferred && S.editGoals === cov.plan_id;
   const goalForm = editing ? `<div class="goal-form">${cov.objectives.map((o, i) => `<div class="goal-row" data-goal="${esc(o.id)}">
       <span class="cov-no">目标 ${i + 1}</span><input class="g-text" value="${esc(o.text)}" aria-label="目标 ${i + 1}">
       <input class="g-crit" value="${esc(o.success_criterion || '')}" placeholder="达成标准：怎样从作答判断达成" aria-label="目标 ${i + 1} 的达成标准"></div>`).join('')}
       <div class="row-btns"><button class="small" data-goals="save">保存目标</button><button class="small link" data-goals="cancel">取消</button></div>
       <div class="muted">保存后，之后出的题按改过的目标；已经出的题不会自动改，需要时对那道题点“换一道”。</div></div>` : '';
+  const flag = inferred ? `<div class="kv flag">这些目标是从出题要求或导入试卷反推的，还没有确认，核对题目时一并看看。
+      ${editing ? '' : '<button class="small secondary" data-goals="edit">修改这些目标</button>'}</div>${goalForm}`
+    : draft ? `<div class="kv flag">这些目标来自 01 里还没确认的备课方案。确认后再按目标出题。
+      <button class="small secondary" data-goals="prep">去 01 审阅教案 →</button></div>` : '';
+  const rows = later ? cov.objectives.filter((o) => o.total) : cov.objectives;
   box.innerHTML = `<div class="coverage"><div class="label">目标覆盖（第 ${cov.round} 轮）</div>
-    ${cov.unconfirmed ? `<div class="kv flag">这些目标是从出题要求或导入试卷反推的，还没有确认，核对题目时一并看看。
-      ${editing ? '' : '<button class="small secondary" data-goals="edit">修改这些目标</button>'}</div>${goalForm}` : ''}${cov.objectives.map((o, i) => `<div class="cov-row${o.total ? '' : ' none'}">
+    ${flag}${later ? '<div class="muted">讲评后再练按问题模式出题，这里只列出这一轮涉及的目标。</div>' : ''}${rows.map((o) => {
+      const i = cov.objectives.indexOf(o);
+      return `<div class="cov-row${o.total || draft ? '' : ' none'}">
       <span class="cov-no">目标 ${i + 1}</span><span class="cov-text">${esc(o.text)}</span>
-      <span class="cov-count">${o.total ? `${o.total} 道 · 已确认 ${o.confirmed}` : '<span class="pill bad">还没有题</span>'}</span>
+      <span class="cov-count">${o.total ? `${o.total} 道 · 已确认 ${o.confirmed}` : draft ? '<span class="pill">还没有题</span>' : '<span class="pill bad">还没有题</span>'}</span>
       ${o.flagged.length ? `<span class="pill warn">第 ${o.flagged.join('、')} 题待核对</span>` : ''}
-      ${cov.round === 1 ? `<button class="small secondary" data-fill="${esc(o.id)}">补 1 道</button>` : ''}</div>`).join('')}
+      ${canFill ? `<button class="small secondary" data-fill="${esc(o.id)}">补 1 道</button>` : ''}</div>`;
+    }).join('')}
     ${cov.unassigned.length ? `<div class="muted">第 ${cov.unassigned.join('、')} 题没有对应目标</div>` : ''}</div>`;
 }
 
-function questionBody(q) {
+function questionBody(q, state = '') {
   const c = q.content;
   const r = q.rubric ? q.rubric.content : { points: [], total: 0 };
   const checks = c.checks || {};
-  const warn = [];
-  if (checks.answer_suspect) warn.push('<span class="pill bad">答案存疑</span>');
-  if ((checks.flags || []).length) warn.push('<span class="pill warn">需核对</span>');
-  if (checks.solver === 'agree' && !(checks.flags || []).length) warn.push('<span class="pill ok">自检通过</span>');
-  // A difficulty off the asked one is shown on the difficulty pill itself, not as a 需核对 reason.
-  if (checks.difficulty) warn.push(checks.difficulty_asked
-    ? `<span class="pill warn" title="审核模型评估的难度与要求不同">难度 ${esc(checks.difficulty)}（要求${esc(checks.difficulty_asked)}）</span>`
-    : `<span class="pill">难度 ${esc(checks.difficulty)}</span>`);
-  const notes = [...(checks.flags || []), ...(checks.notes || [])].map((n) => `<div class="kv flag">⚠ ${esc(n)}</div>`).join('');
+  // The question first: what the AI checks found folds into one line, opened only when the teacher wants it.
+  // Before, every question carried coloured notes, suggestions, the AI's worked solution and difficulty pills.
+  const tips = [...(checks.flags || []), ...(checks.notes || []),
+    ...(checks.difficulty_asked ? [`难度可能和要求不一样：要求${checks.difficulty_asked}，AI 估计为${checks.difficulty}`] : [])];
+  const mustLook = (checks.flags || []).length || checks.answer_suspect;
   const goal = (c.objective_ids || []).map((id) => S.goals && S.goals[id]).filter(Boolean)[0];
   const options = (c.options || []).map((o, i) => `<div>${'ABCDEFGH'[i]}. ${esc(o)}</div>`).join('');
   return `<div class="item-head"><div><b>第 ${c.no} 题</b> · ${esc(S.meta.question_types[c.type] || c.type)} · 满分 ${r.total}
-      ${(c.target_patterns || []).length ? '<span class="pill info">巩固练习</span>' : ''}</div><div>${warn.join(' ')}</div></div>
-    ${goal ? `<div class="kv">考查目标 ${goal.no}：${esc(goal.text)}${c.difficulty_requested ? ` · 要求难度 ${esc(c.difficulty_requested)}` : ''}${c.instruction ? ` · 换题要求：${esc(c.instruction)}` : ''}</div>` : ''}
+      ${goal ? ` · <span title="${esc(goal.text)}">目标 ${goal.no}</span>` : ''}
+      ${(c.target_patterns || []).length ? ' <span class="pill info">巩固练习</span>' : ''}</div>
+      <div>${state} ${mustLook ? '<span class="pill warn">需核对</span>' : ''}</div></div>
     <div class="stem">${esc(c.stem)}</div>${options}
     ${c.answer_key ? `<div class="kv">答案：${esc(c.answer_key)}${(c.accepted || []).length ? '（也接受：' + esc(c.accepted.join('、')) + '）' : ''}</div>` : ''}
-    <div class="kv">参考答案：${esc(c.reference)}</div>${notes}
-    ${(checks.suggestions || []).length ? `<details class="suggest"><summary>改进建议（${checks.suggestions.length}）</summary>${checks.suggestions.map((x) => `<div class="kv">${esc(x)}</div>`).join('')}</details>` : ''}
-    ${checks.solver_answer ? `<details><summary>查看独立解题的过程（${esc(checks.solver_score || '')}）</summary><div class="answer">${esc(checks.solver_answer)}</div></details>` : ''}
-    ${rubricTable(r.points)}`;
+    <div class="kv">参考答案：${esc(c.reference)}</div>
+    ${rubricTable(r.points)}
+    ${tips.length ? `<details class="ai-tips"><summary>AI 提示（${tips.length}）</summary>${tips.map((x) => `<div class="kv ai-note"><span>${esc(x)}</span>
+      ${state !== '' ? `<button class="link small" data-act="remark-open" data-note="${esc(x)}">按这条改</button>` : ''}</div>`).join('')}</details>` : ''}`;
 }
 
-// The 自动核对 column only appears when some point has a tool check; empty, it squeezed the table on phones.
+// What the teacher grades by: point, requirement, score. Tool settings (numeric checks) are the system's own.
 function rubricTable(points) {
-  const auto = points.some((p) => p.check);
-  return `<table class="rubric-table"><tr><th>要点</th><th>评分要求</th><th>分值</th>${auto ? '<th>自动核对</th>' : ''}</tr>
-    ${points.map((p) => `<tr><td>${esc(p.id)}</td><td>${esc(p.description)}</td><td>${p.score}</td>${auto ? `<td>${p.check ? esc(p.check.kind + '：' + p.check.expected) : ''}</td>` : ''}</tr>`).join('')}</table>`;
+  return `<table class="rubric-table"><tr><th>要点</th><th>评分要求</th><th>分值</th></tr>
+    ${points.map((p) => `<tr><td>${esc(p.id)}</td><td>${esc(p.description)}</td><td>${p.score}</td></tr>`).join('')}</table>`;
 }
 
 function questionItem(q) {
   const qDraft = q.status === 'draft';
   const rDraft = q.rubric && q.rubric.status === 'draft';
   const needsKind = (qDraft && q.confirmed_version) || (rDraft && q.rubric.confirmed_version);
+  // The question and its rubric are confirmed together, so the teacher sees one state, not two versioned pills.
+  const both = [q, q.rubric].filter(Boolean);
+  const state = both.some((a) => a.status === 'candidate') ? '<span class="pill info">A/B 候选</span>'
+    : both.every((a) => a.status === 'confirmed') ? '<span class="pill ok">已确认</span>' : '<span class="pill warn">草稿</span>';
+  const stale = both.some((a) => a.stale) ? ' <span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : '';
   return `<div class="item" data-id="${q.id}" data-rubric="${q.rubric ? q.rubric.id : ''}">
-    <div class="item-head"><div></div><div>题目 ${statusPill(q)} · 评分标准 ${statusPill(q.rubric)}</div></div>
-    ${questionBody(q)}
+    ${questionBody(q, state + stale)}
     <div class="item-actions" style="margin-top:8px">
-      <button class="small secondary" data-act="edit-question">编辑</button>
+      <button class="small secondary" data-act="remark-open">提修改意见</button>
+      <button class="small secondary" data-act="edit-question">自己编辑</button>
       <button class="small secondary" data-act="regen-open">换一道</button>
-      ${(q.content.checks || {}).answer_suspect && (q.content.checks || {}).solver_answer ? '<button class="small secondary" data-act="adopt-solver">采用独立解题的答案</button>' : ''}
+      ${(q.content.checks || {}).answer_suspect && (q.content.checks || {}).solver_answer ? '<button class="small secondary" data-act="adopt-solver">改用 AI 做出的答案</button>' : ''}
       ${qDraft || rDraft ? `${changeKindSelect(needsKind)}<button class="small" data-act="confirm-question">确认题目与评分标准</button>` : ''}
     </div><div class="edit-area"></div></div>`;
 }
@@ -1089,7 +1112,7 @@ function gradingRow(g) {
   const lost = c.points.filter((p) => p.status !== 'earned').map((p) => `${p.id}${p.error_tag ? '：' + p.error_tag : ''}`).join('；');
   return `<tr class="grading-row" data-expand="${g.id}"><td>${esc(c.learner_alias)}</td><td>${c.question_no}</td>
     <td class="${c.total < c.max_total ? 'score-lost' : ''}">${c.total}/${c.max_total}${c.undetermined ? '（' + c.undetermined + ' 个要点待判）' : ''}</td>
-    <td>${state} ${g.stale ? '<span class="pill bad">依据已变化</span>' : ''} ${g.origin === 'teacher' ? '<span class="pill">老师改判</span>' : ''}</td>
+    <td>${state} ${g.stale ? '<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : ''} ${g.origin === 'teacher' ? '<span class="pill">老师改判</span>' : ''}</td>
     <td>${esc(lost) || '<span class="muted">—</span>'}</td></tr>
     <tr class="grading-detail hidden" data-detail="${g.id}"><td colspan="5">${pointsDetail(c.points)}</td></tr>`;
 }
@@ -1180,6 +1203,9 @@ async function renderAnalysis() {
   const latestCmp = comps[comps.length - 1];
   $('#comparison').innerHTML = latestCmp ? comparisonView(latestCmp) : '<div class="empty">还没有对比结果。需要先有“讲评后再练”的一轮批改。</div>';
   const r = S.overview.latest_round || 1;
+  // Only rounds that exist can be compared: pick from them instead of typing numbers.
+  const opts = (S.overview.rounds || [1]).map((x) => `<option value="${x}">第 ${x} 轮</option>`).join('');
+  $('#cmp-a').innerHTML = opts; $('#cmp-b').innerHTML = opts;
   if (r > 1) { $('#cmp-a').value = r - 1; $('#cmp-b').value = r; }
   const cur = currentAssignment();
   [$('#cmp-a'), $('#cmp-b')].forEach((el) => { el.disabled = !!cur; });
@@ -1236,7 +1262,6 @@ function lessonPlanItem(a) {
   const goalsOf = (x) => (x.objective_ids || []).map((id) => (goalNo[id] ? `目标 ${goalNo[id]}` : '')).filter(Boolean).join('、');
   return `<div class="item" data-id="${a.id}">
     <div class="item-head"><div>${statusPill(a)}</div></div>
-    ${planReview(c.review)}
     ${(c.objectives || []).length && c.objectives.every((o) => (o.checks || []).includes('未对应课标'))
     ? '<div class="banner warn">所有目标都没有对应到课标条目：课时信息里勾选的课标可能不对，请在“修改要求与材料”里检查后重新生成。</div>' : ''}
     <h4>教学目标</h4>
@@ -1248,25 +1273,38 @@ function lessonPlanItem(a) {
     <h4>重点</h4>${lines(c.key_points)}<h4>难点</h4>${lines(c.difficulties)}
     <h4>课堂活动（共 ${total} 分钟）</h4>
     <table class="activity-table"><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td>
-      <td>${esc(x.description)}${x.evidence ? `<div class="kv">证据：${esc(x.evidence)}</div>` : ''}</td><td>${goalsOf(x)}</td></tr>`).join('')}</table>
+      <td>${esc(x.description)}${x.evidence ? `<div class="kv">检验：${esc(x.evidence)}</div>` : ''}</td><td>${goalsOf(x)}</td></tr>`).join('')}</table>
     ${planSections(c, goalsOf)}
     ${c.notes ? `<div class="kv">提醒：${esc(c.notes)}</div>` : ''}
-    ${c.revision ? `<div class="kv flag">这一版只改了：${esc(c.revision.target)}（${esc(c.revision.instruction)}）</div>` : ''}
+    ${c.revision ? `<div class="kv flag">这一版只改了：${esc(c.revision.label || c.revision.target)}（${esc(c.revision.instruction)}）</div>` : ''}
     <div class="item-actions review-actions"><button class="small secondary" data-act="edit-lesson-plan">修改</button>
+      <button class="small secondary" data-act="open-revise">提修改意见</button>
       ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认备课方案</button>` : ''}</div>
     <div class="edit-area"></div></div>`;
 }
 
-// 教案审核: only what must be fixed is shown, suggestions folded; a clean review adds nothing to read.
-function planReview(r) {
-  if (!r) return '';
-  if (r.error) return `<div class="kv muted">${esc(r.error)}</div>`;
-  const issues = (r.issues || []).length
-    ? `<div class="banner warn plan-review"><b>审核发现 ${r.issues.length} 处需要修改</b><ul>${r.issues.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`
-    : '';
-  const tips = (r.suggestions || []).length
-    ? `<details class="suggest"><summary>改进建议（${r.suggestions.length}）</summary>${r.suggestions.map((x) => `<div class="kv">${esc(x)}</div>`).join('')}</details>` : '';
-  return issues + tips;
+// AI 帮我看看: asked for from the revision panel, never shown unasked. Each remark can become the instruction,
+// with the part it names (目标 2, 活动 3, 例题 1, 当堂检测第 1 题) chosen in the part list when it is there.
+function renderPlanNotes(r) {
+  const box = $('#plan-ai-notes');
+  if (r.error) { box.innerHTML = `<div class="kv muted">${esc(r.error)}</div>`; return; }
+  box.innerHTML = (r.issues || []).length
+    ? `<div class="ai-notes">${r.issues.map((x, i) => `<div class="ai-note"><span>${esc(x)}</span>
+        <button class="link small" data-use-note="${i}">用这条</button></div>`).join('')}</div>`
+    : '<div class="kv muted">AI 没看出必须改的地方。</div>';
+  S.planNotes = r.issues || [];
+}
+
+function useNote(text) {
+  $('#revise-instruction').value = text;
+  const pick = [[/目标\s*(\d+)/, (n) => $$('#revise-target option').filter((o) => o.value.startsWith('objective:'))[n - 1]?.value],
+    [/活动\s*(\d+)/, (n) => `activity:${n}`], [/例题\s*(\d+)/, (n) => `example:${n}`], [/当堂检测第\s*(\d+)\s*题/, (n) => `check:${n}`]];
+  for (const [re, value] of pick) {
+    const m = re.exec(text);
+    const v = m && value(Number(m[1]));
+    if (v && $$('#revise-target option').some((o) => o.value === v)) { $('#revise-target').value = v; break; }
+  }
+  $('#revise-instruction').focus();
 }
 
 // 例题 and 当堂检测: what a 教案 needs to be taught from; answers fold away to keep the page short.
@@ -1311,7 +1349,7 @@ function lessonPlanForm(c) {
     <div><button class="small secondary" data-act="add-objective-row">添加目标</button></div>
     <label>重点（每行一条）<textarea class="f-key" rows="3">${esc((c.key_points || []).join('\n'))}</textarea></label>
     <label>难点（每行一条）<textarea class="f-diff" rows="2">${esc((c.difficulties || []).join('\n'))}</textarea></label>
-    <label>课堂活动（每行：名称｜分钟｜做法｜对应目标序号，如 1,2｜收集的证据）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
+    <label>课堂活动（每行：名称｜分钟｜做法｜对应目标序号，如 1,2｜检验方式）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
     <span class="label">例题</span><div class="f-examples">${(c.examples || []).map((x) => planRow('ex', nos(x), x.problem, x.solution)).join('')}</div>
     <div><button class="small secondary" data-act="add-plan-row" data-kind="ex">添加例题</button></div>
     <span class="label">当堂检测</span><div class="f-checks">${(c.exit_check || []).map((x) => planRow('ck', nos(x), x.question, x.answer)).join('')}</div>
@@ -1390,7 +1428,7 @@ function reviewForm(c) {
 function comparisonView(a) {
   const c = a.content;
   const list = (xs) => xs.length ? esc(xs.join('、')) : '—';
-  return `<p class="muted">第 ${c.round_a} 轮 → 第 ${c.round_b} 轮 ${a.stale ? '<span class="pill bad">依据已变化</span>' : ''}</p>
+  return `<p class="muted">第 ${c.round_a} 轮 → 第 ${c.round_b} 轮 ${a.stale ? '<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : ''}</p>
     <table><tr><th>问题模式</th><th>前一轮涉及</th><th>复测</th><th>已改善</th><th>仍存在</th><th>新出现</th><th>未复测</th></tr>
     ${c.patterns.map((r) => `<tr><td>${esc(r.name)}${r.enough_evidence ? '' : '<div class="kv">没有针对它的复测题，证据不足</div>'}
         ${(r.same_tag_elsewhere || []).length ? `<div class="kv flag">其他题有同类失分：${list(r.same_tag_elsewhere)}（不计入“仍存在”，请自行判断）</div>` : ''}</td><td>${list(r.before)}</td><td>${list(r.retested)}</td>
@@ -1430,11 +1468,11 @@ async function renderRecords() {
       ? '<span class="pill ok">已有新的结果</span><button class="small" data-resolve="redone">确认已重做</button>'
       : redo ? `<button class="small" data-redo="${m.type}" data-aid="${esc(m.assignment_id || '')}" data-round="${m.round}">${redo.label} →</button>` : '';
     return `<div class="item" data-mark="${m.ids.join(',')}">
-      <div class="item-head"><div>${m.class_name ? `<span class="pill info">${esc(m.class_name)}</span> ` : ''}<b>${esc(TYPE_LABEL[m.type] || m.type)}</b>${m.detail ? `「${esc(m.detail)}」` : ''} 第 ${m.version} 版 · 第 ${m.round} 轮${m.ids.length > 1 ? ` <span class="pill">×${m.ids.length}</span>` : ''}</div>
-        <div class="muted">原因：${m.cause ? esc(TYPE_LABEL[m.cause.type]) + '更新到第 ' + m.cause.version + ' 版（实质修改）' : '上游变化'}</div></div>
+      <div class="item-head"><div>${m.class_name ? `<span class="pill info">${esc(m.class_name)}</span> ` : ''}<b>${esc(TYPE_LABEL[m.type] || m.type)}</b>${m.detail ? `「${esc(m.detail)}」` : ''} · 第 ${m.round} 轮${m.round < (S.overview.latest_round || 1) ? '（早先一轮）' : ''}${m.ids.length > 1 ? ` <span class="pill">×${m.ids.length}</span>` : ''}</div>
+        <div class="muted">原因：${m.cause ? esc(TYPE_LABEL[m.cause.type]) + '改成了第 ' + m.cause.version + ' 版，这条结果用的是旧版' : '它依据的内容改过了'}</div></div>
       <div class="item-actions">${act}<button class="small secondary" data-resolve="kept">保留原结果</button></div></div>`;
   }).join('')
-    : '<div class="empty">没有依据已变化的产物。</div>')
+    : '<div class="empty">没有需要更新的结果。</div>')
     + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
   const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
   $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
@@ -1443,7 +1481,7 @@ async function renderRecords() {
       <a class="textlink" href="/api/projects/${S.pid}/deliverables/${k}?fmt=docx&${q}">Word</a></div>`).join('')
     + (S.aid ? '<p class="muted">学生练习和答案按当前布置记录固定的版本导出。</p>' : '');
   const cws = await api('GET', `/api/projects/${S.pid}/artifacts?type=courseware`);
-  $('#courseware-list').innerHTML = cws.map((x) => `<div class="kv">${esc(x.content.kind)} · 来自打包 ${esc(x.content.package_id.slice(-6))} ${x.stale ? '<span class="pill bad">依据已变化</span>' : ''}
+  $('#courseware-list').innerHTML = cws.map((x) => `<div class="kv">${esc(x.content.kind)} · 来自打包 ${esc(x.content.package_id.slice(-6))} ${x.stale ? '<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>' : ''}
     ${x.content.files.map((f) => `<a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>`).join(' ')}</div>`).join('');
 }
 
@@ -1572,6 +1610,15 @@ function bindEvents() {
       });
       return;
     }
+    const kp = e.target.closest('[data-keep]');
+    if (kp) {
+      busy(kp, '处理中…', async () => {
+        await api('POST', `/api/assignments/${S.aid}/keep`, { question_lineage: kp.dataset.keep });
+        toast('本班继续用原版本；以后再有新版本时会再提醒');
+        await refresh();
+      });
+      return;
+    }
     const b = e.target.closest('[data-open-project]');
     if (b) { S.tab = 'prep'; loadProjects(b.dataset.openProject); }
   });
@@ -1587,7 +1634,7 @@ function bindEvents() {
     }
     return generateQuestions(e.target);
   });
-  const generateQuestions = (btn) => busy(btn, '出题与自检中…（约 1 分钟）', async () => {
+  const generateQuestions = (btn) => busy(btn, '出题与自检中…', async () => {
     const topic = $('#q-topic-wrap').classList.contains('hidden') ? '' : $('#q-topic').value.trim();
     if (topic) {
       await api('PATCH', `/api/projects/${S.pid}`, { knowledge_module: topic });
@@ -1708,14 +1755,16 @@ function bindEvents() {
   $('#curriculum-off').addEventListener('change', (e) => { S.curTouched = true; $('#curriculum-box').classList.toggle('off', e.target.checked); });
   $('#curriculum-search').addEventListener('click', (e) => busy(e.target, '搜索中…', () => renderCurriculum($('#curriculum-q').value.trim())));
   $('#curriculum-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('#curriculum-search').click(); } });
-  $('#draft-lesson-plan').addEventListener('click', (e) => {
-    if (e.target.textContent === '重新生成' && !window.confirm('重新生成会产生一个新版本的草稿，当前方案保留在历史里。继续吗？')) return;
-    busy(e.target, '生成中…（约半分钟）', async () => {
-      await saveCourseInfo();  // what the teacher typed is what the plan is based on
-      clearCourseDirty();
-      const r = await api('POST', `/api/projects/${S.pid}/lesson-plan/draft`);
-      showNote(r.context_note); toast('备课方案已生成，请核对修改后确认'); await refresh();
-    });
+  const draftPlan = (btn) => busy(btn, '生成中…', async () => {
+    await saveCourseInfo();  // what the teacher typed is what the plan is based on
+    clearCourseDirty();
+    const r = await api('POST', `/api/projects/${S.pid}/lesson-plan/draft`);
+    showNote(r.context_note); toast('备课方案已生成，请核对修改后确认'); await refresh();
+  });
+  $('#draft-lesson-plan').addEventListener('click', (e) => draftPlan(e.target));
+  $('#regen-plan').addEventListener('click', (e) => {
+    if (!window.confirm('按现在的要求重新生成一份教案？当前方案会保留在历史里，但你对它的修改不会带到新方案。')) return;
+    draftPlan(e.target);
   });
   $('#draft-review').addEventListener('click', (e) => busy(e.target, '生成中…', async () => {
     const ids = $$('#review-patterns input:checked').map((i) => i.value);
@@ -1778,6 +1827,23 @@ async function onAction(e) {
       const box = btn.closest('.new-objective');
       if (box) box.remove(); else { const area = btn.closest('.edit-area') || btn.closest('.new-question-area'); if (area) area.innerHTML = ''; }
       rememberDraft();
+      break;
+    }
+    case 'remark-open': {
+      // 按意见修改: one line of what to change; the AI keeps everything else as it is.
+      $('.edit-area', item).innerHTML = `<div class="regen remark">
+        <input class="remark-text" placeholder="写下修改意见，例如：数据换成整数；去掉第（2）问；评分要点把过程分细一点" value="${esc(btn.dataset.note || '')}">
+        <button class="small" data-act="remark-go">让 AI 按意见改</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
+      $('.remark-text', item).focus();
+      break;
+    }
+    case 'remark-go': {
+      const remark = $('.remark-text', item).value.trim();
+      if (!remark) { toast('先写下修改意见', true); break; }
+      await busy(btn, '修改与自检中…', async () => {
+        const r = await api('POST', `/api/questions/${item.dataset.id}/revise`, { instruction: remark });
+        showNote(r.context_note); toast('已按意见改好，存为新的一版，请核对后确认'); S.showRound = Number($('#q-round').value || 1); await refresh();
+      });
       break;
     }
     case 'regen-open':
@@ -1891,6 +1957,13 @@ async function onAction(e) {
     case 'remove-objective-row':
       btn.closest('.obj-row').remove();
       break;
+    case 'open-revise': {
+      const panel = $('#revise-row');
+      panel.open = true;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('#revise-instruction').focus({ preventScroll: true });
+      break;
+    }
     case 'add-plan-row':
       $(btn.dataset.kind === 'ex' ? '.f-examples' : '.f-checks', item).insertAdjacentHTML('beforeend', planRow(btn.dataset.kind));
       break;
@@ -1955,7 +2028,7 @@ async function onAction(e) {
       const box = $(`.correction-area[data-for="${qlin}"]`);
       const imp = await api('GET', `/api/assignments/${S.aid}/correction?question_lineage=${encodeURIComponent(qlin)}`);
       box.innerHTML = `<div class="correction" data-qlin="${qlin}">
-        <div class="kv">更正后，只有这次布置改用新的评分标准；本班这道题的 ${imp.gradings} 份批改会标为“依据已变化”，重新批改并确认后才成为有效成绩，旧结果保留。</div>
+        <div class="kv">更正后，只有这次布置改用新的评分标准；本班这道题的 ${imp.gradings} 份批改会标为“需要更新”，重新批改并确认后才成为有效成绩，旧结果保留。</div>
         ${imp.other_assignments.length ? `<div class="kv flag">这些布置也在用同一版评分标准，不会被自动修改：${imp.other_assignments.map((o) => esc(`${o.class_name}·${o.title}`)).join('、')}。需要时到对应布置里分别更正。</div>` : ''}
         <div class="f-points">${imp.rubric.content.points.map(pointRow).join('')}</div>
         <div class="row"><button class="small secondary" data-act="add-point">加一个要点</button></div>
@@ -2001,6 +2074,59 @@ function pick(obj, keys) { const o = {}; keys.forEach((k) => { o[k] = obj[k] ?? 
 // ---------- 我的教学 (home: courses, classes, tasks) ----------
 
 const START_LABEL = { prep: '准备下一节课', practice: '出一份练习', grading: '批改作业', explain: '准备讲解' };
+// Each way in asks for what that job starts from: a lesson needs its topic, homework to grade needs its class,
+// an explanation needs the question. Fields a job doesn't need are not shown.
+const START_FORM = {
+  prep: { module: '知识模块或主题', ph: '这次要教的内容，例如：对数函数', lesson: true, request: true },
+  practice: { module: '练习的主题', ph: '例如：对数不等式', lesson: true, request: true, needTopic: true },
+  grading: { module: '作业名称（可选）', ph: '例如：对数函数第 2 课时作业', titleField: true, needClass: true },
+  explain: { module: '主题（可选）', ph: '例如：对数函数', question: true, noClass: true },
+};
+
+async function openStartForm(kind) {
+  S.startKind = kind;
+  const f = START_FORM[kind];
+  $$('#home-start [data-start]').forEach((b) => b.classList.toggle('chosen', b.dataset.start === kind));
+  $('#start-form').classList.remove('hidden');
+  $('#sf-go').textContent = `开始：${START_LABEL[kind]}`;
+  $('#sf-module-label').textContent = f.module;
+  $('#sf-module').placeholder = f.ph;
+  $('#sf-lesson-wrap').classList.toggle('hidden', !f.lesson);
+  $('#sf-request-wrap').classList.toggle('hidden', !f.request);
+  $('#sf-question-wrap').classList.toggle('hidden', !f.question);
+  const offs = S.home.offerings;
+  $('#sf-class-wrap').classList.toggle('hidden', !!f.noClass || !offs.length);
+  $('#sf-class').innerHTML = (f.needClass ? '<option value="">（请选择班级）</option>' : '<option value="">（先不指定班级）</option>')
+    + offs.map((o) => `<option value="${o.id}">${esc(o.class_name)}</option>`).join('');
+  $('#sf-class').value = !f.noClass && offs.some((o) => o.id === S.offering) ? S.offering : '';
+  if (!f.noClass) S.offering = $('#sf-class').value || null;
+  await startHint();
+  (f.question ? $('#sf-question') : f.needClass && !S.offering && offs.length ? $('#sf-class') : $('#sf-module')).focus();
+}
+
+async function startHint() {
+  const hint = $('#start-hint');
+  const kind = S.startKind;
+  hint.classList.add('hidden');
+  const say = (text) => { hint.textContent = text; hint.classList.remove('hidden'); };
+  if (kind === 'grading') {
+    say('下一步导入试卷（题目和评分标准），核对确认后导入学生作答。已经在这里出过题的作业，直接从“继续工作”打开它。');
+  } else if (kind === 'explain') {
+    say('粘贴一道题就能开始；学生的疑问和作答可以到下一页再补。');
+  } else if (kind === 'prep' && S.offering) {
+    const sug = await api('GET', `/api/offerings/${S.offering}/next-lesson`);
+    // A suggestion fills empty fields only: it never overwrites what the teacher already typed.
+    if (!$('#sf-module').value.trim() && sug.knowledge_module) $('#sf-module').value = sug.knowledge_module;
+    if (!$('#sf-lesson').value.trim() && sug.lesson) $('#sf-lesson').value = sug.lesson;
+    const parts = [`${sug.class_name}${sug.progress ? `已上到：${sug.progress}` : ''}`];
+    if (sug.unfinished.length) parts.push(`${sug.unfinished.length} 节计划课还没标记是否已上`);
+    if (sug.class_status) parts.push(`将参考本班已确认的学情：${sug.class_status.patterns.map((x) => x.name).join('、') || sug.class_status.summary}`);
+    parts.push(sug.note);
+    say(parts.join('；'));
+  } else if (!S.offering && S.home.offerings.length) {
+    say('没有指定班级也可以开始；布置给班级时再选。');
+  }
+}
 // 任务建立时间（秒级时间戳）→ "11月20日 09:30"：同名任务靠它区分。
 function dayOf(ts) {
   if (!ts) return '';
@@ -2031,8 +2157,6 @@ async function renderHome() {
   $('#home-course').value = S.course || '';
   if (!h.offerings.some((o) => o.id === S.offering)) S.offering = h.offerings.length === 1 ? h.offerings[0].id : null;
   store.set('edu.offering', S.offering);
-  $('#home-class').innerHTML = '<option value="">（不指定班级）</option>' + h.offerings.map((o) => `<option value="${o.id}">${esc(o.class_name)}</option>`).join('');
-  $('#home-class').value = S.offering || '';
   $('#home-body').classList.toggle('hidden', !h.course);
   if (!h.courses.length) $('#new-course').classList.remove('hidden');
   syncEmptyCard();
@@ -2040,7 +2164,8 @@ async function renderHome() {
   $('#attention-card').classList.toggle('hidden', !h.attention.length);  // nothing to do: no card at all
   $('#home-attention').innerHTML = h.attention.length
     ? h.attention.map((a, i) => `<div class="task-row"><div class="task-main">${esc(a.text)}</div>
-        ${a.project_id ? `<button class="small secondary" data-attn="${i}">去处理</button>` : ''}</div>`).join('')
+        <div>${a.project_id ? `<button class="small secondary" data-attn="${i}">去处理</button>` : ''}
+        ${a.kind === 'update' ? `<button class="small link" data-attn-keep="${i}">保持原版本</button>` : ''}</div></div>`).join('')
     : '<div class="empty">没有需要马上处理的事项。</div>';
   $('#home-tasks').innerHTML = h.tasks.length
     ? h.tasks.map((t) => `<div class="task-row"><div class="task-main"><b>${esc(t.title)}</b>
@@ -2082,6 +2207,10 @@ async function renderHome() {
       : '<div class="empty">还没有课程资料</div>';
     $('#materials-card-home').classList.toggle('full', !!detail.materials.length);
   }
+  // "用了一段时间后": asked once there is some use to judge (a lesson taught, or a few tasks), and not again here
+  // after an answer.
+  const used = h.offerings.some((o) => o.sessions.some((x) => x.status === 'taught')) || h.tasks.length >= 3;
+  $('#trial-feedback').classList.toggle('hidden', !used || store.get('edu.trialAnswered') === '1');
   $('#legacy-card').classList.toggle('hidden', !h.legacy_projects);
   if (h.legacy_projects) await renderLegacy();
 }
@@ -2268,6 +2397,13 @@ function bindExtras() {
     S.matDraft = null;
     toast('材料选择已保存，之后的生成按这里的选择'); await refresh();
   }));
+  $('#plan-ai-look').addEventListener('click', (e) => busy(e.target, 'AI 正在看…', async () => {
+    renderPlanNotes(await api('POST', `/api/artifacts/${S.planId}/plan-review`));
+  }));
+  $('#plan-ai-notes').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-use-note]');
+    if (b) useNote(S.planNotes[Number(b.dataset.useNote)]);
+  });
   $('#revise-go').addEventListener('click', (e) => busy(e.target, '修改中…', async () => {
     const plans = await api('GET', `/api/projects/${S.pid}/lesson-plans`);
     const r = await api('POST', `/api/artifacts/${plans[0].id}/revise`, { target: $('#revise-target').value, instruction: $('#revise-instruction').value });
@@ -2288,6 +2424,8 @@ function bindExtras() {
     $('#' + id).addEventListener('click', (e) => busy(e.target, '…', async () => {
       const r = await api('POST', '/api/trial/feedback', { willing, note: '' });
       toast(r.willing ? '谢谢，已记录：愿意继续用' : '谢谢，已记录：暂不愿意');
+      store.set('edu.trialAnswered', '1');
+      $('#trial-feedback').classList.add('hidden');
       if (S.view === 'admin') await renderTrial();
     }));
   }
@@ -2359,7 +2497,6 @@ async function renderLegacy() {
 
 function bindHomeEvents() {
   $('#home-course').addEventListener('change', async (e) => { S.course = e.target.value || null; S.offering = null; await renderHome(); });
-  $('#home-class').addEventListener('change', (e) => { S.offering = e.target.value || null; store.set('edu.offering', S.offering); });
   $('#new-course-btn').addEventListener('click', () => { $('#new-course').classList.toggle('hidden'); syncEmptyCard(); });
   $('#nc-cancel').addEventListener('click', () => { $('#new-course').classList.add('hidden'); syncEmptyCard(); });
   $('#nc-subject').addEventListener('change', (e) => $('#nc-custom-wrap').classList.toggle('hidden', e.target.value !== '__custom'));
@@ -2387,15 +2524,34 @@ function bindHomeEvents() {
     $('#cm-text').value = ''; $('#cm-name').value = ''; toast('课程资料已添加'); await renderHome();
   }));
   $('#sf-cancel').addEventListener('click', () => $('#start-form').classList.add('hidden'));
-  $('#sf-go').addEventListener('click', (e) => busy(e.target, '准备中…', async () => {
-    const r = await api('POST', `/api/courses/${S.course}/tasks`, {
-      kind: S.startKind, offering_id: S.offering || '', knowledge_module: $('#sf-module').value.trim(), lesson: $('#sf-lesson').value.trim(), request: $('#sf-request').value.trim(),
+  $('#sf-class').addEventListener('change', (e) => {
+    S.offering = e.target.value || null; store.set('edu.offering', S.offering);
+    startHint();
+  });
+  $('#sf-go').addEventListener('click', (e) => {
+    const f = START_FORM[S.startKind];
+    const question = $('#sf-question').value.trim();
+    if (f.needClass && !S.offering && S.home.offerings.length) { toast('批改要先选班级：作答和成绩按班记录', true); $('#sf-class').focus(); return; }
+    if (f.question && !question) { toast('先粘贴要讲的题目', true); $('#sf-question').focus(); return; }
+    if (f.needTopic && !$('#sf-module').value.trim()) { toast(`先写下${f.module}`, true); $('#sf-module').focus(); return; }
+    busy(e.target, '准备中…', async () => {
+      const topic = $('#sf-module').value.trim();
+      const r = await api('POST', `/api/courses/${S.course}/tasks`, {
+        kind: S.startKind, offering_id: S.offering || '',
+        // 批改 names the homework: the name is the task's title, not a 知识模块 (which would become a content group).
+        ...(f.titleField ? { title: topic } : { knowledge_module: topic }),
+        lesson: f.lesson ? $('#sf-lesson').value.trim() : '',
+        request: f.request ? $('#sf-request').value.trim() : '',
+      });
+      $('#start-form').classList.add('hidden');
+      ['#sf-module', '#sf-lesson', '#sf-request', '#sf-question'].forEach((x) => { $(x).value = ''; });
+      await loadProjects(r.project.id, false);
+      await selectProject(r.project.id, { tab: r.tab });
+      // 准备讲解 started with the question: it is already on the form of the page that drafts the explanation.
+      if (question && $('#ex-question')) { $('#ex-question').value = question; await goNext({ tab: 'review', target: '#ex-ask' }); }
+      toast(`已开始：${r.task.title}`);
     });
-    $('#start-form').classList.add('hidden');
-    await loadProjects(r.project.id, false);
-    await selectProject(r.project.id, { tab: r.tab });
-    toast(`已开始：${r.task.title}`);
-  }));
+  });
   $('#unit-add').addEventListener('click', (e) => busy(e.target, '添加中…', async () => {
     await api('POST', `/api/courses/${S.course}/units`, { title: $('#unit-title').value.trim() });
     $('#unit-title').value = ''; await renderHome();
@@ -2405,33 +2561,21 @@ function bindHomeEvents() {
     if (unit) { await busy(unit, '…', () => renderUnit(unit.dataset.unit)); return; }
     if (e.target.closest('[data-unit-close]')) { S.unit = null; $('#unit-view').innerHTML = ''; return; }
     const start = e.target.closest('[data-start]');
-    if (start) {
-      S.startKind = start.dataset.start;
-      $('#start-form').classList.remove('hidden');
-      $('#sf-go').textContent = `开始：${START_LABEL[S.startKind]}`;
-      const hint = $('#start-hint');
-      hint.classList.add('hidden');
-      if (S.startKind === 'prep' && S.offering) {
-        const sug = await api('GET', `/api/offerings/${S.offering}/next-lesson`);
-        // A suggestion fills empty fields only: it never overwrites what the teacher already typed.
-        if (!$('#sf-module').value.trim() && sug.knowledge_module) $('#sf-module').value = sug.knowledge_module;
-        if (!$('#sf-lesson').value.trim() && sug.lesson) $('#sf-lesson').value = sug.lesson;
-        const parts = [`${sug.class_name}${sug.progress ? `已上到：${sug.progress}` : ''}`];
-        if (sug.unfinished.length) parts.push(`${sug.unfinished.length} 节计划课还没标记是否已上`);
-        if (sug.class_status) parts.push(`将参考本班已确认的学情：${sug.class_status.patterns.map((x) => x.name).join('、') || sug.class_status.summary}`);
-        parts.push(sug.note);
-        hint.textContent = parts.join('；');
-        hint.classList.remove('hidden');
-      } else if (!S.offering && S.startKind !== 'explain') {
-        hint.textContent = '没有指定班级：可以先备课或出题，布置和批改时再选班级。';
-        hint.classList.remove('hidden');
-      }
-      return;
-    }
+    if (start) { await openStartForm(start.dataset.start); return; }
     const open = e.target.closest('[data-open-task]');
     if (open) { await loadProjects(open.dataset.openTask, false); await selectProject(open.dataset.openTask, { tab: open.dataset.tab, aid: open.dataset.aid || null }); if (open.dataset.target) await goNext({ tab: open.dataset.tab, target: open.dataset.target }); return; }
     const done = e.target.closest('[data-done-task]');
     if (done) { await busy(done, '…', async () => { await api('PATCH', `/api/tasks/${done.dataset.doneTask}`, { status: 'done' }); await renderHome(); }); return; }
+    const keep = e.target.closest('[data-attn-keep]');
+    if (keep) {
+      const a = S.home.attention[Number(keep.dataset.attnKeep)];
+      await busy(keep, '…', async () => {
+        for (const u of a.assignment.updates) await api('POST', `/api/assignments/${a.assignment.id}/keep`, { question_lineage: u.question_lineage });
+        toast(`${a.assignment.class_name}继续用原版本；以后再有新版本时会再提醒`);
+        await renderHome();
+      });
+      return;
+    }
     const attn = e.target.closest('[data-attn]');
     if (attn) {
       const a = S.home.attention[Number(attn.dataset.attn)];

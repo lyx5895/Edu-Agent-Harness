@@ -60,7 +60,6 @@ class QualityOutput(BaseModel):
     scope_note: str = Field(max_length=200)
     difficulty: Literal['基础', '中等', '较难']
     issues: list[str]  # must be fixed before use: these make a question 需核对
-    suggestions: list[str]  # could be better; shown folded, never a flag
 
 
 class SolveOutput(BaseModel):
@@ -139,8 +138,7 @@ class LessonPlanOutput(BaseModel):
 
 
 class PlanReview(BaseModel):
-    issues: list[str]  # must be fixed: knowledge errors, wrong example solutions, contradictions
-    suggestions: list[str]
+    issues: list[str]  # must be fixed before teaching, written for the teacher; no suggestions for plans
 
 
 class ReviewSection(BaseModel):
@@ -174,6 +172,8 @@ class RevisedPart(BaseModel):
     minutes: int = Field(ge=0, le=90)
     description: str = Field(max_length=400)
     items: list[str]
+    question: str = Field(default='', max_length=1500)  # an example's problem or an exit-check question
+    answer: str = Field(default='', max_length=2500)  # its solution or answer
 
 
 class PitfallOutput(BaseModel):

@@ -90,7 +90,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 **课程工作台的数据边界**：
 
 - **教学内容归课程，学生作答归布置记录。** 在课程任务里生成的产物自动带上 `course_id` 和 `task_id`。`submission`、`grading`、`analysis`、`problem_pattern`、`comparison`、`review_plan`（讲评稿引用学生原文）属于某次布置（`artifacts.ASSIGNMENT_TYPES`），`assignment_id` 为空表示项目自己的、不属于任何班级的作答。各阶段方法都接受 `assignment_id`；不传时与以前一样处理项目自己的作答。
-- **布置固定版本。** `assign()` 把本轮已确认的题目和评分标准版本写入 `pinned`，导入、批改、分析、讲评都读固定的版本。课程层的新版本不会给已布置的批改打“依据已变化”（`mark_downstream` 跳过固定了该谱系的布置），只在布置上显示“新版可用”。老师可以 `repin()` 让这次布置改用新版本，或者 `correct_rubric()` 更正本次评分依据：新建一个评分标准版本，只有这次布置改用它，本次布置的相关批改和分析被标记待重做，同时列出仍在用旧版本的其他布置，由老师逐个决定。
+- **布置固定版本。** `assign()` 把本轮已确认的题目和评分标准版本写入 `pinned`，导入、批改、分析、讲评都读固定的版本。课程层的新版本不会给已布置的批改打“依据已变化”（`mark_downstream` 跳过固定了该谱系的布置），只在布置上显示“新版可用”。老师可以 `repin()` 让这次布置改用新版本，或 `keep_pinned()` 保持原版本（在固定记录里存 `kept`，记下当时的新版本；之后再有更新版本时重新提醒），或者 `correct_rubric()` 更正本次评分依据：新建一个评分标准版本，只有这次布置改用它，本次布置的相关批改和分析被标记待重做，同时列出仍在用旧版本的其他布置，由老师逐个决定。
 - **项目自己的作答仍跟随最新版本**（过渡行为）：不属于班级的作答沿用原来的规则，上游实质修改后标记、重新批改。
 - **讲评后再练**：再练题是项目内容的新一轮；确认后布置给同一个班，`parent_id` 指向上一次布置。两轮对比按这条链取前后两次布置。
 - **主题**：`start_task` 不指定 `unit_id` 时，按知识模块归入同名主题（没有就新建）；旧项目整理时同样处理。`unit_view()` 汇总一个主题下的教学目标（取自已确认的备课方案）、各班的课时、布置、已确认证据分析的目标达成和问题模式。
@@ -183,9 +183,9 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
   2. 解析课标：老师选择 → **模型核对**（`_confirm_standards`，提示词 `PICK_STANDARDS_SYSTEM`，上下文 `pick_standards`）→ 无；勾选“不参考课标”时不用。没有老师选择时，`CUR.candidates()` 取字面匹配的前几名及其所在单元的全部条目，由 generator 选 0–3 条直接对应的（编号限于候选），保存为 `chosen_by='model'`；没有直接对应时 `ids` 为空并保存原因 `note`；模型调用失败时退回字面自动选择（`auto`）。练习任务反推目标前也做这一步。
   3. 输入：学科、年级、知识模块、本课时内容、课时、学生基础、老师说明、材料（≤8000 字）、课程标准（内容要求原文及编号、同主题的学业要求和教学提示）、上一课时学情（如有）。
   4. 提示词 `LESSON_PLAN_SYSTEM`：2–4 条可检验目标，重点 2–4、难点 1–3、活动 3–6 且总时长不超过课时（每个活动写 `evidence`：收集哪条目标的什么证据；要有小结）；例题 2–3 道（含完整解答，数据自洽）、当堂检测 1–2 道（含答案）；关键提问、作业、板书不生成（取决于老师习惯，徒增阅读和修改）；每条目标的达成标准都要有收集途径；有课标时每条目标填 `standard_ids`，要求不高于课标用词，超出须 `beyond_standard` + 理由；有本课时内容时只围绕它；有上一课时学情时安排简短回顾。
-  5. 服务器：丢弃不在提供范围内的课标编号；活动、例题、当堂检测的目标序号换成目标编号，越界则去掉；`normalize_plan` 编号；`CUR.plan_checks()` 写入 `checks`（未对应课标、要求高于课标）和 `standard_refs`，随后 `evidence_checks()` 给没有任何活动（带 `evidence`）或当堂检测收集证据的目标加“没有环节收集这条目标的达成证据”（没有活动的反推方案不查）。
-  6. **教案审核**（`_review_plan`，reviewer，提示词 `PLAN_REVIEW_SYSTEM`，上下文 `review_plan`）：知识性错误与前后矛盾、例题和检测的答案与数据、目标—活动—证据是否对得上、总用时 → `content.review = {issues, suggestions}`；审核失败时保存 `review.error`，方案照常保存。
-  7. 存为草稿，与已有方案同谱系。老师编辑（`edit`）或局部修改时按目标编号继承引用、重新检查，并清掉 `review`（它针对的是修改前的版本）。确认后才能出题。
+  5. 服务器：丢弃不在提供范围内的课标编号；活动、例题、当堂检测的目标序号换成目标编号，越界则去掉；`normalize_plan` 编号；`CUR.plan_checks()` 写入 `checks`（未对应课标、要求高于课标）和 `standard_refs`，随后 `evidence_checks()` 给没有任何活动（带 `evidence`）或当堂检测收集证据的目标加“课上没有安排检验这条目标的环节”（没有活动的反推方案不查）。
+  6. 不自动审核：老师先自己看，可以直接修改，或在“提修改意见”里写意见让 AI 改（`revise_plan_part`，可改目标、活动、例题、当堂检测、重点、难点、备注）。老师点“AI 帮我看看”时才调用 `check_plan(aid)`（reviewer，提示词 `PLAN_CHECK_SYSTEM`，上下文 `check_plan`）：输入是老师看到的方案（`plan_for_teacher`：目标 1、活动 2、例题 1，没有字段名），返回最多 3 条必须修改的意见，写给老师看；不存进方案，调用照常记录。每条意见可以“用这条”填进修改意见。
+  7. 存为草稿，与已有方案同谱系。老师编辑（`edit`）或局部修改时按目标编号继承引用、重新检查。确认后才能出题。
 
 ### 5.2 02 出题改题
 
@@ -201,6 +201,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
      - **独立解题**（reviewer，看不到答案；选项带字母；输出 `final_answer`），再用 `grading.grade` 按评分要点评这份解答，满分为 `agree`，否则 `disagree`；写作题跳过；解题前先验算题目给出的数值能否由题中原始数据得到（`data_issue`，例如 8 个样本不可能出现的熵），有问题加 `数据问题：…` 到 `checks.flags`；
      - `answer_suspect = disagree 或 reference_mismatch`。
 - `regenerate_question(qid, instruction, difficulty)`：同题型、同目标（再练题同问题模式），把原题和老师要求交给模型，经自检与审核后存为**同一题目谱系的新版本**（题号不变），评分标准也存为原评分标准谱系的新版本。
+- `revise_question(qid, instruction)`（按意见修改）：把完整原题（题干、选项、答案、参考答案、评分要点）和老师的意见交给 generator，只改意见提到的地方，同样经过自检与审核，存为同一题目谱系的新版本（题号、目标不变，内容带 `revised_from`）。界面上每道题有“提修改意见”，AI 提示的每一条可以“按这条改”。
 - `adopt_solver_answer(qid)`：用独立解题的最终答案和过程替换标准答案和参考答案，存为新草稿。
 - `coverage(pid, round)`：每条目标的题数、确认数、待核对题号，以及没有对应目标的题。
 - `import_paper(pid, text)`：保留原文整理成题目；反推目标，已有目标复用序号，新目标合并进备课方案的新草稿版本（标 `inferred`）。
@@ -282,7 +283,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 - `stage_status`（针对最新一轮）：01 = 备课方案已确认；02 = 本轮至少一道题已确认；03 = 本轮作答都已批改且全部确认；04 = 有学情分析，且问题模式都已确认（或没有问题模式）；05 = 讲评稿已确认。
 - `next_steps` 返回带 `tab`、`target`（页面元素选择器）、`hint` 的步骤：待选的 A/B 和依据已变化的产物优先，然后按 01–05 给出当前该做的事；第 2 轮起从 02 开始。
-- 页面顶部的“下一步”只在阶段之间跳转（`CONTINUE` 映射），本阶段未完成时置灰并显示还差的那一步；05 有“生成巩固练习”和“进入下一课时”两个按钮，后者只要有已确认的问题模式就可用。
+- 阶段标题区（`renderContinue`）只有一条规则：本阶段完成（`stages`）才显示“下一步”按钮（`CONTINUE` 映射），未完成时为空，等待模型时显示“……中”。页面还用不了时，标题下唯一的提示条（`renderBlocker`，来自 `blockers()`）写原因和按钮，跳到别的阶段的按钮都写成“去 0N ……”；批改任务缺题目时先导入试卷，其他任务先走自己的教案或出题；05 有“生成巩固练习”和“进入下一课时”两个按钮，后者只要有已确认的问题模式就可用。
 
 ## 9. 接口
 
@@ -314,7 +315,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 | `GET /api/offerings/{oid}/sessions`、`.../next-lesson`、`.../status`、`.../assignments`、`PATCH /api/sessions/{sid}` | 课时安排；准备下一节课的建议；本班学情；本班布置记录；标记已授课、改期、取消 |
 | `POST /api/projects/{pid}/use-plan` | 把已确认的教案加入另一个班的课时安排 |
 | `GET/POST /api/projects/{pid}/assignments`、`GET /api/assignments/{aid}` | 布置给班级；布置记录详情（固定版本、名单、新版可用） |
-| `GET /api/assignments/{aid}/correction?question_lineage=`、`POST .../correct-rubric`、`POST .../repin` | 更正本次评分依据（预览影响、执行）；改用新版本 |
+| `GET /api/assignments/{aid}/correction?question_lineage=`、`POST .../correct-rubric`、`POST .../repin`、`POST .../keep` | 更正本次评分依据（预览影响、执行）；改用新版本；保持原版本 |
 | `GET /api/migration/preview`、`POST /api/migration/map` | 旧项目整理：候选分组；确认整理 |
 | `GET /api/me`、`POST /api/login`、`POST /api/logout`、`GET/POST /api/users`、`GET/POST /api/courses/{cid}/members` | 登录状态、登录（设置 Cookie）、退出；用户管理（管理员）；课程成员 |
 | `GET /api/courses/{cid}/objectives`、`GET /api/objectives/{id}`、`POST .../reviewed`、`POST /api/objective-links` | 课程目标、按目标查看、核对完成、改对应关系 |

@@ -51,14 +51,14 @@ def _bigrams(text):
 
 
 def _mark_similar(items, threshold=0.6):
-    """Parts are written without seeing each other: a question much like an earlier one gets a suggestion that says
-    so (never a 需核对 flag). Similarity is the overlap of character pairs of the stems, options included."""
+    """Parts are written without seeing each other: a question much like an earlier one gets a note that says so
+    (never a 需核对 flag). Similarity is the overlap of character pairs of the stems, options included."""
     seen = []
     for k, (d, checks) in enumerate(items):
         grams = _bigrams(d.stem + ''.join(d.options))
         for j, other in seen:
             if grams and other and len(grams & other) / min(len(grams), len(other)) >= threshold:
-                checks.setdefault('suggestions', []).append(f'与本次生成的第 {j + 1} 道题内容相近，可以换个角度')
+                checks.setdefault('notes', []).append(f'和本次生成的第 {j + 1} 道题内容相近，可以换个角度')
                 break
         seen.append((k, grams))
 
@@ -426,17 +426,12 @@ class QuestionsMixin:
             flags.append(f'与目标不符：{out.objective_note or "没有考到这条目标"}')
         if not out.in_scope:
             flags.append(f'超出范围：{out.scope_note or "用到了本课时或课标以外的内容"}')
-        flags += [f'题目问题：{x}' for x in out.issues if x.strip()][:4]
+        flags += [x.strip() for x in out.issues if x.strip()][:3]
         # A difficulty off the asked one and improvement ideas are worth seeing, but they are not reasons to call a
         # question 需核对: every question used to carry ~4 flags, and the real errors drowned among them.
         asked = review.get('要求难度')
         off = asked in ('基础', '中等', '较难') and out.difficulty != asked
-        return {
-            'difficulty': out.difficulty,
-            'difficulty_asked': asked if off else '',
-            'flags': flags,
-            'suggestions': [x for x in out.suggestions if x.strip()][:2],
-        }, meta
+        return {'difficulty': out.difficulty, 'difficulty_asked': asked if off else '', 'flags': flags}, meta
 
     def _self_check(self, p, d: QuestionDraft, review=None):
         """Another model solves the question without the key; the grader checks that answer (design doc 4 ②).
@@ -494,8 +489,8 @@ class QuestionsMixin:
                 solver_score=f'{res["total"]}/{res["max_total"]}',
                 solver_model=metas[0].get('model_returned'),
             )
-            if not agree:
-                checks['notes'].append('另一个模型独立解题的结果与参考答案不一致，请核对答案')
+            if not agree:  # the teacher gets the result in one line, not the whole worked solution
+                checks['notes'].append(f'AI 独立做了一遍，得出“{solution.final_answer.strip()[:60]}”，和参考答案不一致，请核对')
             # The solver works the numbers anyway, so it also checks that the given ones can exist: the reviewer
             # read the formulas and missed entropies no real 8-sample split can have.
             if solution.data_issue.strip():
@@ -841,11 +836,15 @@ class QuestionsMixin:
         loose = [q['content']['no'] for q in qs if not q['content'].get('objective_ids') and q['status'] != 'candidate']
         # Objectives not yet confirmed (inferred from the request or a paper, or a plan draft) are shown as such.
         unconfirmed = bool(plan) and not plan.get('confirmed_version') and plan['status'] != 'confirmed'
+        # Why the objectives are unconfirmed decides what the page offers: objectives inferred from a request or a
+        # paper are corrected right here; a plan drafted in 01 is reviewed and confirmed in 01 before questions.
+        draft_kind = ('teacher_draft' if self._teacher_draft(plan) else 'inferred') if unconfirmed else ''
         return {
             'round': round_,
             'objectives': rows,
             'unassigned': loose,
             'unconfirmed': unconfirmed,
+            'draft_kind': draft_kind,
             'plan_id': plan['id'] if plan else None,
         }
 
@@ -866,9 +865,18 @@ class QuestionsMixin:
             content['checks'] = ck
             return A.edit(c, qid, content, teacher=teacher)
 
+    @operation('revise_question', artifact_project)
+    def revise_question(self, qid, instruction):
+        """按意见修改: the same question changed only where the teacher's remark says (数据换成整数, 去掉第 2 问),
+        checked like a new one and saved as its next version. Editing every field by hand was too much work."""
+        if not (instruction or '').strip():
+            raise ValueError('请写下修改意见')
+        return self.regenerate_question(qid, instruction.strip(), keep=True)
+
     @operation('regenerate_question', artifact_project)
-    def regenerate_question(self, qid, instruction='', difficulty=None):
-        """换一道: a new question for the same objective and type, saved as the next version of this question."""
+    def regenerate_question(self, qid, instruction='', difficulty=None, *, keep=False):
+        """换一道: a new question for the same objective and type, saved as the next version of this question.
+        With ``keep`` (按意见修改) the original is handed over whole and only what the remark asks is changed."""
         llm = self._model()
         with self.store.read() as c:
             q = A.get(c, qid)
@@ -907,6 +915,16 @@ class QuestionsMixin:
         system = GENERATE_SYSTEM.format(
             subject=p['pack']['name'], types=f'{qtype}（{QUESTION_TYPES[qtype]}）', variant=VARIANTS['a']
         )
+        if keep:
+            system += '\n这次不是出新题：按“老师的修改意见”修改“原题”，意见没有提到的题干、选项、答案和评分要点都保持原样；修改后数据仍要自洽。'
+        if keep:
+            original = {
+                '题干': q['content']['stem'],
+                '选项': q['content'].get('options', []),
+                '答案': q['content'].get('answer_key', ''),
+                '参考答案': q['content'].get('reference', ''),
+                '评分要点': [{'要求': x.get('description', ''), '分值': x.get('score')} for x in (old_rubric or {}).get('content', {}).get('points', [])],
+            }
         user = _json(
             {
                 '学科': p['pack']['name'],
@@ -921,18 +939,22 @@ class QuestionsMixin:
                 '学生基础': p.get('learner_profile', ''),
                 '每个目标出题数': 1,
                 '难度': difficulty,
-                '原题（请换一道，不要重复）': q['content']['stem'],
-                '老师的修改要求': instruction or '换一道考查同一目标的新题',
+                **(
+                    {'原题': original, '老师的修改意见': instruction}
+                    if keep
+                    else {'原题（请换一道，不要重复）': q['content']['stem'], '老师的修改要求': instruction or '换一道考查同一目标的新题'}
+                ),
             }
         )
-        out, meta = llm.complete('generator', 'regenerate_question', system, user, QuestionSet)
+        task = 'revise_question' if keep else 'regenerate_question'
+        out, meta = llm.complete('generator', task, system, user, QuestionSet)
         drafts, dropped = usable_drafts(out.questions, [qtype])
         if not drafts:
             raise ModelUnavailable('模型没有给出可用的题目，请重试' + (f'（{dropped[0]}）' if dropped else ''))
         d = drafts[0].model_copy(update={'objective_index': 0 if objs else -1})
         checks = self._self_check(p, d, self._review_ctx(p, objs, d, difficulty, pattern))
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'regenerate-v1')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'revise-question-v1' if keep else 'regenerate-v1')
             metas = checks.pop('_metas', [])
             manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
             checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v2') for m in metas]
@@ -946,7 +968,7 @@ class QuestionsMixin:
             content.update(
                 checks=checks,
                 difficulty_requested=difficulty,
-                regenerated_from=qid,
+                **({'revised_from': qid} if keep else {'regenerated_from': qid}),
                 instruction=instruction or '',
                 purpose=q['content'].get('purpose', ''),
             )

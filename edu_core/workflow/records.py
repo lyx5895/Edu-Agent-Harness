@@ -148,6 +148,7 @@ class RecordsMixin:
             'queue': len(self.review_queue(pid, latest, assignment_id=aid or None)),
             'pending_ab': pending_ab,
             'stale': stale,
+            'aid': aid or '',
         }
         nxt = next_steps(st)
         return {

@@ -54,7 +54,7 @@ def analyze(role, payload):
 HANDLERS = {
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
     # the best lexical candidates, like the automatic pick
-    'review_plan': lambda r, p: {'issues': [], 'suggestions': []},
+    'check_plan': lambda r, p: {'issues': []},
     'pick_standards': lambda r, p: {'ids': [c['编号'] for c in p['候选条目'][:3]], 'note': ''},
     'infer_objectives': lambda r, p: {
         'objectives': [{'text': f'能用{p.get("主题") or "所学内容"}解决基础问题', 'success_criterion': '写出关键步骤'}]
@@ -68,7 +68,6 @@ HANDLERS = {
         'scope_note': '',
         'difficulty': p.get('要求难度') or '中等',
         'issues': [],
-        'suggestions': [],
     },
     'grade': judge_points(RULES),
     'review': judge_points(RULES),
@@ -503,7 +502,7 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     assert o['standard_ids'] == [offered[0]] and o['checks'][0].startswith('要求高于课标：课标为“了解”')
     added = ws.edit(draft['id'], {'objectives': [o, {'text': '能画出 y=log2x 的图象', 'success_criterion': 'y'}]})
     # an objective the teacher adds has no standard and no step collecting its evidence yet
-    assert added['content']['objectives'][1]['checks'] == ['未对应课标', '没有环节收集这条目标的达成证据']
+    assert added['content']['objectives'][1]['checks'] == ['未对应课标', '课上没有安排检验这条目标的环节']
 
     # The teacher's own pick wins and is not reset by later course-info edits; 不参考课标 turns it off.
     ws.update_project(pid, curriculum_ids=['math.B2.2.3.1', 'nope'])
@@ -546,17 +545,12 @@ def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
         'scope_note': '用到了换底公式',
         'difficulty': '较难',
         'issues': ['条件不足'],
-        'suggestions': ['干扰项可以更有迷惑性', '可以结合生活情境', '第三条会被截掉'],
     }
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False, difficulty='基础')
     checks = gen['candidates'][0]['questions'][0]['content']['checks']
-    assert checks['flags'] == [  # only what must be fixed makes a question 需核对
-        '与目标不符：只考了单调性',
-        '超出范围：用到了换底公式',
-        '题目问题：条件不足',
-    ]
-    assert (checks['difficulty'], checks['difficulty_asked']) == ('较难', '基础')  # shown, not a flag
-    assert checks['suggestions'] == ['干扰项可以更有迷惑性', '可以结合生活情境']
+    assert checks['flags'] == ['与目标不符：只考了单调性', '超出范围：用到了换底公式', '条件不足']  # only must-fix
+    assert (checks['difficulty'], checks['difficulty_asked']) == ('较难', '基础')  # folded into AI 提示, not a flag
+    assert 'suggestions' not in checks
 
     cov = ws.coverage(p['id'])
     [row] = cov['objectives']

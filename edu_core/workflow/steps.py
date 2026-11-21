@@ -15,15 +15,50 @@ def next_steps(st):
     """What the teacher should do next, following the loop 备课设计 → 出题改题 → 作业批改 → 学情分析 → 讲题答疑 → 讲评后再练.
 
     ``st`` carries project-level counts and the counts of the latest round ``r``; later rounds restart at 出题改题.
-    Pending A/B choices and stale results come first.
+    Pending A/B choices and stale results of the current scope come first; stale results of another round or class
+    follow as an optional step.
     """
     steps = []
     if st['pending_ab']:
         steps.append(_step('选择 A/B 候选题', 'questions', '#ab-panel', '先在两版候选题中选一版'))
-    if st['stale']:
+    here, elsewhere = split_stale(st)
+    if here:
         steps.append(
-            _step('处理依据已变化的产物', 'records', '#stale-list', f'{len(st["stale"])} 个产物的上游有实质修改')
+            _step('更新受影响的结果', 'records', '#stale-list', f'{len(here)} 项结果用的是改动前的题目或评分标准')
         )
+    steps += _forward(st)
+    if elsewhere:
+        # Results of an earlier round or another class: worth tidying up, but they don't hold up this round.
+        steps.append(
+            _step(
+                '更新其他班级或轮次的结果',
+                'records',
+                '#stale-list',
+                f'{len(elsewhere)} 项其他班级或早先一轮的结果需要更新',
+                optional=True,
+            )
+        )
+    return steps
+
+
+def split_stale(st):
+    """Stale marks that concern the scope being worked on (this assignment and round, or shared content such as
+    questions and rubrics) versus results of another round or class."""
+    from edu_core.artifacts import ASSIGNMENT_TYPES
+
+    aid, r = st.get('aid') or '', st['r']
+    here, elsewhere = [], []
+    for m in st['stale']:
+        own = m.get('type') not in ASSIGNMENT_TYPES or (
+            (m.get('assignment_id') or '') == aid and (m.get('round') or 1) == r
+        )
+        (here if own else elsewhere).append(m)
+    return here, elsewhere
+
+
+def _forward(st):
+    """The loop's next step in the current scope."""
+    steps = []
     c, rc, r = st['counts'], st['round'], st['r']
     label_r = f'（第 {r} 轮）' if r > 1 else ''
     if st.get('task_kind') == 'grading' and not rc['question']['total']:
@@ -35,7 +70,9 @@ def next_steps(st):
     if st.get('task_kind') == 'practice' and not rc['question']['total'] and not st.get('plan_pending'):
         # 出一份练习 starts on 02: without a lesson plan the objectives are inferred from the request.
         if st['has_context']:
-            steps.append(_step('按要求出题', 'questions', '#generate-questions', '没有备课方案时，会先从要求反推教学目标'))
+            steps.append(
+                _step('按要求出题', 'questions', '#generate-questions', '没有备课方案时，会先从要求反推教学目标')
+            )
         else:
             steps.append(_step('写下练习的主题', 'questions', '#q-topic', '也可以导入现成试卷'))
         return steps
@@ -139,14 +176,21 @@ def blockers(st):
         out['grading'] = _blocker(
             '本轮的题目还没有确认：批改依据已确认的题目和评分标准。', _step('确认题目', 'questions', '#questions')
         )
-    elif out['questions']['blocked']:
-        out['grading'] = _blocker('还没有题目：批改需要题目和评分标准。', PAPER_ALT, out['questions']['action'])
     else:
-        out['grading'] = _blocker(
-            '本轮还没有题目：批改需要题目和评分标准。',
-            PAPER_ALT,
-            _step('按目标出题', 'questions', '#generate-questions'),
+        # A 批改 task usually arrives with a paper: importing it comes first. Any other task carries on with its own
+        # plan or questions, and importing a paper is the way round.
+        own = (
+            out['questions']['action']
+            if out['questions']['blocked']
+            else _step('出题', 'questions', '#generate-questions')
         )
+        reason = (
+            '还没有题目：批改需要题目和评分标准。'
+            if out['questions']['blocked']
+            else '本轮还没有题目：批改需要题目和评分标准。'
+        )
+        first, second = (PAPER_ALT, own) if st.get('task_kind') == 'grading' else (own, PAPER_ALT)
+        out['grading'] = _blocker(reason, first, second)
 
     graded = rc['grading']['total'] and rc['grading']['confirmed'] == rc['grading']['total']
     if rc['submission']['total'] and graded and rc['grading']['total'] >= rc['submission']['total']:

@@ -15,7 +15,7 @@ WHITELIST = {
     'infer_objectives': {'project', 'material', 'curriculum'},
     'pick_standards': {'project', 'curriculum'},
     # 教案审核: the draft just written, before anyone confirms it (it is reviewed, not passed on)
-    'review_plan': {'project', 'plan_draft'},
+    'check_plan': {'project', 'plan_draft'},
     'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},

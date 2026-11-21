@@ -209,7 +209,7 @@ def test_partial_revision_changes_only_the_target(ws):
         new['activities'][1:] == plan['content']['activities'][1:]
         and new['objectives'] == plan['content']['objectives']
     )
-    assert new['revision'] == {'target': 'activity:1', 'instruction': '缩短导入活动', 'changed': ['activities']}
+    assert new['revision'] == {'target': 'activity:1', 'label': '活动 1', 'instruction': '缩短导入活动', 'changed': ['activities']}
     assert out['lesson_plan']['status'] == 'draft' and out['lesson_plan']['edit_of'] == plan['id']
     with pytest.raises(ValueError):
         ws.revise_plan_part(plan['id'], 'activity:9', '改')

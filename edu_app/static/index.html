@@ -27,7 +27,6 @@
       <div class="home-head">
         <h1>我的教学</h1>
         <label>当前课程 <select id="home-course"></select></label>
-        <label>新任务默认班级 <select id="home-class"></select></label>
         <button id="new-course-btn" class="secondary small">新建课程</button>
       </div>
       <div id="new-course" class="card hidden">
@@ -53,9 +52,11 @@
           <div id="start-form" class="hidden">
             <div id="start-hint" class="banner info hidden"></div>
             <div class="grid-form">
-              <label>知识模块或主题<input id="sf-module" placeholder="这次要教或练习的主题"></label>
-              <label>课时（可选）<input id="sf-lesson" placeholder="第 2 课时"></label>
-              <label class="wide">要求（可选）<input id="sf-request" placeholder="例如：基础薄弱，多安排基础练习"></label>
+              <label id="sf-class-wrap">班级<select id="sf-class"></select></label>
+              <label class="wide hidden" id="sf-question-wrap">要讲的题目<textarea id="sf-question" rows="4" placeholder="粘贴题目；学生的疑问和作答可以到下一页再补"></textarea></label>
+              <label><span id="sf-module-label">知识模块或主题</span><input id="sf-module" placeholder="这次要教或练习的主题"></label>
+              <label id="sf-lesson-wrap"><span id="sf-lesson-label">课时（可选）</span><input id="sf-lesson" placeholder="第 2 课时"></label>
+              <label class="wide" id="sf-request-wrap">要求（可选）<input id="sf-request" placeholder="例如：基础薄弱，多安排基础练习"></label>
               <div class="wide"><button id="sf-go">开始</button> <button id="sf-cancel" class="link">取消</button></div>
             </div>
           </div>
@@ -166,7 +167,7 @@
               <div class="cur-tools"><input id="curriculum-q" placeholder="搜索其他课标条目，例如：基本不等式"><button class="small secondary" id="curriculum-search">搜索</button>
                 <label class="inline"><input type="checkbox" id="curriculum-off"> 不参考课标</label></div>
             </div>
-            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换任务可继续编辑</span></div>
+            <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <button id="regen-plan" class="secondary hidden">保存并重新生成教案</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换任务可继续编辑</span></div>
           </div>
         </div>
         <div class="card setup" id="materials-card">
@@ -184,9 +185,11 @@
         <div class="card result">
           <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
-          <details class="plan-more hidden" id="revise-row"><summary>只改其中一部分（让模型改）</summary>
-            <div class="row"><select id="revise-target"></select>
-            <input id="revise-instruction" placeholder="例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">修改这一部分</button></div></details>
+          <details class="plan-more hidden" id="revise-row"><summary>提修改意见（AI 按你的意见改）</summary>
+            <div class="row"><select id="revise-target" aria-label="要改的部分"></select>
+            <input id="revise-instruction" placeholder="写下你的修改意见，例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">让 AI 按意见改</button></div>
+            <div class="row"><button class="link small" id="plan-ai-look">没想好改哪里？AI 帮我看看</button></div>
+            <div id="plan-ai-notes"></div></details>
           <details class="plan-more hidden" id="use-plan-row"><summary>用于其他班</summary>
             <div class="row"><select id="use-plan-class"></select><button class="small secondary" id="use-plan">直接使用（加入该班课时安排）</button><button class="small secondary" id="derive-btn">做一份本班调整版</button></div></details>
         </div>
@@ -296,8 +299,8 @@
         <div class="card" id="compare-card">
           <h3>两轮对比</h3>
           <p class="muted">再练的一轮批改确认后，看这些问题是否还在。</p>
-          <div class="row"><label>前一轮 <input type="number" id="cmp-a" value="1" min="1"></label>
-            <label>后一轮 <input type="number" id="cmp-b" value="2" min="1"></label><button id="compare">对比</button></div>
+          <div class="row"><label>前一轮 <select id="cmp-a"></select></label>
+            <label>后一轮 <select id="cmp-b"></select></label><button id="compare">对比</button></div>
           <div id="comparison"></div>
         </div>
       </div>
@@ -341,8 +344,8 @@
 
       <div id="tab-records" class="tab hidden">
         <div class="card">
-          <h3>依据已变化的产物</h3>
-          <p class="muted">上游有实质修改后，用到旧版本的结果会列在这里。</p>
+          <h3>需要更新的结果</h3>
+          <p class="muted">题目、评分标准或教案做了实质修改后，用旧版本得出的批改和分析会列在这里：可以重做，也可以保留原结果。</p>
           <div id="stale-list"></div>
         </div>
         <div class="card">

@@ -184,9 +184,34 @@ class AssignmentsMixin:
                 changed.append('question')
             if r_new and r_new['id'] != pin['rubric']:
                 changed.append('rubric')
+            # The teacher chose to keep the original for exactly these versions: no reminder until a newer one.
+            kept = pin.get('kept') or {}
+            if (
+                changed
+                and kept.get('question') == (q_new or {}).get('id')
+                and kept.get('rubric') == (r_new or {}).get('id')
+            ):
+                changed = []
             if changed:
                 out.append({'question_lineage': q_lin, 'no': pin.get('no'), 'changed': changed})
         return out
+
+    def keep_pinned(self, aid, question_lineage, teacher='teacher'):
+        """保持原版本: the assignment deliberately keeps its pinned question and rubric. The newer versions that exist
+        now stop being reported; a later version is reported again."""
+        with self.store.tx() as c:
+            a, pin = self._pin(c, aid, question_lineage)
+            q = A.confirmed_in_lineage(c, question_lineage)
+            r = A.confirmed_in_lineage(c, pin.get('rubric_lineage')) if pin.get('rubric_lineage') else None
+            pin['kept'] = {'question': (q or {}).get('id'), 'rubric': (r or {}).get('id')}
+            c.execute('UPDATE assignments SET pinned=? WHERE id=?', (dump(a['pinned']), aid))
+            event(
+                c,
+                a['project_id'],
+                'assignment_kept_version',
+                {'assignment_id': aid, 'question_lineage': question_lineage, 'teacher': teacher},
+            )
+            return {'ok': True}
 
     def _pin(self, c, aid, question_lineage):
         a = self._assignment_row(c, aid)

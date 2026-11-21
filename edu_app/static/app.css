@@ -362,9 +362,6 @@ summary .help { vertical-align: middle; }
 .scope-tag { display: inline-block; margin-right: 8px; padding: 0 6px; border-radius: 4px; background: var(--line); color: var(--text); font-size: 12px; }
 #scope-info b { color: var(--text); font-weight: 600; }
 /* Stage heading: what to do on this page, and the next stage one click away. */
-.head-now { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.head-now .hint { text-align: right; }
-@media (max-width: 640px) { .head-now { align-items: stretch; } .head-now .hint { text-align: left; } }
 /* Waiting bar: the server's current step, a progress bar (items done, else time against the usual), a hint. */
 .working .w-line { line-height: 1.5; }
 .working .w-bar { height: 4px; border-radius: 2px; background: var(--line); margin: 4px 0 6px; overflow: hidden; }
@@ -377,9 +374,22 @@ summary .help { vertical-align: middle; }
 /* Rubric table: the id and score columns stay narrow so the requirement text gets the width. */
 .rubric-table td:first-child, .rubric-table th:first-child, .rubric-table td:nth-child(3), .rubric-table th:nth-child(3) { white-space: nowrap; width: 1%; }
 /* Lesson plan: review first, examples and checks readable, the editor's question rows. */
-.plan-review ul { margin: 6px 0 0 18px; padding: 0; }
 .plan-ex { border-left: 3px solid var(--line); padding: 4px 0 4px 10px; margin: 8px 0; }
 .plan-ex .stem { white-space: pre-wrap; }
 .plan-ex .answer { white-space: pre-wrap; padding: 8px; border-radius: 6px; border: 1px solid var(--line); }
 .plan-row { display: grid; grid-template-columns: 90px 1fr 1fr 32px; gap: 6px; margin-bottom: 6px; align-items: start; }
 @media (max-width: 760px) { .plan-row { grid-template-columns: 1fr 32px; } .plan-row .pr-text, .plan-row .pr-answer, .plan-row .pr-goal { grid-column: 1; } }
+/* AI 帮我看看: plain notes inside the revision panel, each usable as the instruction. */
+.ai-notes { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
+.ai-note { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
+.ai-note button { flex: none; }
+/* AI 提示 on a question: one folded line, plain notes inside. */
+.ai-tips { margin-top: 6px; }
+.ai-tips > summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.ai-tips .kv { margin: 4px 0 0 2px; }
+/* The start button whose form is open stays marked, so the form below reads as belonging to it. */
+#home-start:has(.chosen) .start-btn:not(.chosen) { background: var(--card); color: var(--accent, #2f6b4f); border: 1px solid var(--line); }
+/* The stage heading is quiet while a model call runs; the banner under it holds any "why not yet" and its way out. */
+.head-running { color: var(--muted); font-size: 14px; }
+.banner.blocker { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.banner.blocker .row-btns { margin: 0; }

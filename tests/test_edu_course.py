@@ -526,7 +526,7 @@ def test_task_card_follows_the_loop_and_stale_items_say_what_they_are(ws):
     rubric = ws.correction_impact(a3['id'], q['lineage_id'])['rubric']['content']
     ws.correct_rubric(a3['id'], q['lineage_id'], {'points': [{**rubric['points'][0], 'score': 3}, rubric['points'][1]]})
     card = ws.tasks(crs['id'])[0]
-    assert card['tab'] == 'records' and card['action_label'] == '处理依据已变化的产物'
+    assert card['tab'] == 'records' and card['action_label'] == '更新受影响的结果'
     [old] = [m for m in ws.stale(pid) if m['type'] == 'analysis']
     assert old['class_name'] == '高一（3）班' and old['detail'] == '完整分析' and not old['redone']
     assert {m['detail'] for m in ws.stale(pid) if m['type'] == 'grading'} == {'甲 第 1 题', '乙 第 1 题'}
@@ -558,7 +558,7 @@ def test_practice_task_writes_questions_without_a_lesson_plan(ws):
     assert plan['status'] == 'draft' and all(o['inferred'] for o in plan['content']['objectives'])
     assert '《沁园春·长沙》' in plan['content']['objectives'][0]['text']
     cov = ws.coverage(pid)
-    assert cov['unconfirmed'] and cov['objectives'][0]['total'] == 1
+    assert cov['unconfirmed'] and cov['draft_kind'] == 'inferred' and cov['objectives'][0]['total'] == 1
     assert q['content']['objective_ids'] == [cov['objectives'][0]['id']]
     ws.generate_questions(pid, types=['short_answer'], count=1, ab=False)  # reuses the inferred objectives
     assert sum(1 for x in ws.llm.calls if x['task'] == 'infer_objectives') == 1
@@ -569,6 +569,8 @@ def test_a_plan_drafted_in_prep_is_confirmed_before_questions(ws):
     pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
     ws.draft_lesson_plan(pid)
     assert ws.overview(pid)['blockers']['questions']['action']['target'] == '#lesson-plan'
+    # The questions page says the objectives come from 01's draft, not that they were inferred from a request.
+    assert ws.coverage(pid)['draft_kind'] == 'teacher_draft'
     with pytest.raises(Conflict) as err:
         ws.generate_questions(pid)
     assert '01' in str(err.value)
@@ -766,8 +768,8 @@ def test_parts_see_the_other_objectives_and_near_duplicates_get_a_suggestion(ws)
     qs = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
     assert sorted(seen) == [['能比较对数值大小'], ['能解简单对数不等式']]
     checks = [q['content']['checks'] for q in qs]
-    assert not checks[0].get('suggestions') and '第 1 道题内容相近' in checks[1]['suggestions'][-1]
-    assert not checks[1]['flags']  # a near duplicate is a suggestion, never 需核对
+    assert not any('内容相近' in n for n in checks[0]['notes']) and '第 1 道题内容相近' in checks[1]['notes'][-1]
+    assert not checks[1]['flags']  # a near duplicate is a note in AI 提示, never 需核对
 
 
 def test_the_solver_reports_given_numbers_the_data_cannot_produce(ws):
@@ -780,7 +782,7 @@ def test_the_solver_reports_given_numbers_the_data_cannot_produce(ws):
     assert q['content']['checks']['flags'][-1] == '数据问题：8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1'
 
 
-def test_plan_has_examples_and_exit_checks_and_is_reviewed(ws):
+def test_plan_has_examples_and_exit_checks_and_is_reviewed_on_request(ws):
     from edu_core.llm import ModelUnavailable
     from test_edu_workflow import HANDLERS
 
@@ -797,24 +799,103 @@ def test_plan_has_examples_and_exit_checks_and_is_reviewed(ws):
         return out
 
     ws.llm.handlers['draft_lesson_plan'] = plan
-    ws.llm.handlers['review_plan'] = lambda r, p: {'issues': ['例题 1 的解答缺少单调性的依据'], 'suggestions': ['小结可以回扣定义域']}
-    content = ws.draft_lesson_plan(pid)['lesson_plan']['content']
+    ws.llm.handlers['check_plan'] = lambda r, p: {'issues': ['例题 1 的解答缺少单调性的依据，补上“底数大于 1 递增”']}
+    plan = ws.draft_lesson_plan(pid)['lesson_plan']
+    content = plan['content']
+    assert 'check_plan' not in ws.llm.tasks() and 'review' not in content  # the teacher reads the plan first
     assert content['examples'][0]['objective_ids'] == ['O1'] and content['exit_check'][0]['objective_ids'] == ['O2']
     assert not {'key_questions', 'homework', 'board'} & set(content)  # only what is needed to teach from
-    assert ws.llm.last('review_plan')['user']['备课方案']['examples'][0]['problem'] == '解 log2(x-1)<3'
-    assert content['review'] == {'issues': ['例题 1 的解答缺少单调性的依据'], 'suggestions': ['小结可以回扣定义域']}
     o1, o2 = content['objectives']
-    assert '没有环节收集这条目标的达成证据' in o1.get('checks', [])  # its only step collects nothing
-    assert '没有环节收集这条目标的达成证据' not in o2.get('checks', [])  # the exit check collects it
+    assert '课上没有安排检验这条目标的环节' in o1.get('checks', [])  # its only step checks nothing
+    assert '课上没有安排检验这条目标的环节' not in o2.get('checks', [])  # the exit check checks it
 
-    with ws.store.read() as c:
-        draft = ws._plan(c, pid, confirmed=False)
-    edited = ws.edit(draft['id'], {'notes': '老师改了备注'})['content']
-    assert 'review' not in edited and edited['examples'] == content['examples']  # the edit keeps the sections
+    # AI 帮我看看: only when the teacher asks, written as the teacher sees the plan, not stored in it
+    assert ws.check_plan(plan['id']) == {'issues': ['例题 1 的解答缺少单调性的依据，补上“底数大于 1 递增”']}
+    seen = ws.llm.last('check_plan')['user']['备课方案']
+    assert seen['例题'][0] == {'编号': '例题 1', '对应': '目标 1', '题目': '解 log2(x-1)<3', '解答': '定义域 x>1；单调递增得 x<9；1<x<9'}
+    assert 'objective_ids' not in str(seen) and 'O1' not in str(seen)
+    assert 'review' not in ws.artifact(plan['id'])['content']
 
     def down(r, p):
         raise ModelUnavailable('网关超时')
 
-    ws.llm.handlers['review_plan'] = down
-    again = ws.draft_lesson_plan(pid)['lesson_plan']['content']
-    assert again['review']['error'].startswith('教案审核没有完成') and again['examples']  # the plan is kept
+    ws.llm.handlers['check_plan'] = down
+    failed = ws.check_plan(plan['id'])
+    assert failed['issues'] == [] and failed['error'].startswith('这次没有看成')  # never passed off as clean
+
+
+def test_an_example_can_be_revised_on_its_own(ws):
+    from test_edu_workflow import HANDLERS
+
+    crs = ws.create_course('高二人工智能', '人工智能')
+    pid = ws.start_task(crs['id'], 'prep', knowledge_module='决策树', lesson='第4课时')['project']['id']
+    base = HANDLERS['draft_lesson_plan']
+    ws.llm.handlers['draft_lesson_plan'] = lambda r, p: {**base(r, p), 'examples': [
+        {'objective_index': 0, 'problem': '6 个样本 3 是 3 否，求根节点熵', 'solution': 'H=1'}]}
+    plan = ws.draft_lesson_plan(pid)['lesson_plan']
+    ws.llm.handlers['revise_plan'] = lambda r, p: {
+        'text': '', 'success_criterion': '', 'name': '', 'minutes': 0, 'description': '', 'items': [],
+        'question': '6 个样本 4 是 2 否，求根节点熵', 'answer': 'H≈0.918'}
+    out = ws.revise_plan_part(plan['id'], 'example:1', '数据改成 4 是 2 否并重算')
+    assert out['lesson_plan']['content']['examples'][0] == {'problem': '6 个样本 4 是 2 否，求根节点熵', 'solution': 'H≈0.918', 'objective_ids': ['O1']}
+    sent = ws.llm.last('revise_plan')['user']
+    assert sent['要修改的部分']['位置'] == '例题 1' and '例题' in sent['整份方案'] and 'objectives' not in sent['整份方案']
+    assert out['lesson_plan']['content']['revision']['label'] == '例题 1'  # shown to the teacher, not example:1
+
+
+def test_a_question_is_changed_by_the_teachers_remark_not_replaced(ws):
+    import pytest as _pytest
+
+    from test_edu_workflow import question
+
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
+    [q] = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
+    ws.llm.handlers['revise_question'] = lambda r, p: {'questions': [question('解不等式 log2(x-1) < 2')]}
+    with _pytest.raises(ValueError):
+        ws.revise_question(q['id'], '  ')
+    new = ws.revise_question(q['id'], '把右边的 3 改成 2')['question']
+    sent = ws.llm.last('revise_question')
+    assert sent['user']['老师的修改意见'] == '把右边的 3 改成 2' and sent['user']['原题']['题干'] == q['content']['stem']
+    assert sent['user']['原题']['评分要点'] and '保持原样' in sent['system']  # the whole question, changed only as asked
+    assert (new['lineage_id'], new['version'], new['content']['no']) == (q['lineage_id'], 2, q['content']['no'])
+    assert new['content']['objective_ids'] == q['content']['objective_ids'] and new['content']['revised_from'] == q['id']
+    assert new['content']['stem'] == '解不等式 log2(x-1) < 2' and 'checks' in new['content']  # checked like a new one
+
+
+def test_keeping_the_original_version_stops_the_reminder_until_a_newer_one(ws):
+    crs, o3, o5 = two_classes(ws)
+    pid, q = prep_and_practice(ws, crs, o3)
+    a5 = ws.assign(pid, o5['id'])
+
+    def new_rubric_version():
+        rubric = ws.questions(pid)[0]['rubric']
+        pts = rubric['content']['points']
+        extra = {'id': f'P{len(pts) + 1}', 'description': '书写规范', 'score': 1}
+        new = ws.edit(rubric['id'], {'points': [*pts, extra]})
+        ws.confirm(new['id'], change_kind='substantive')
+
+    new_rubric_version()
+    assert ws.assignment(a5['id'])['updates'] and any(x['kind'] == 'update' for x in ws.home(crs['id'])['attention'])
+    ws.keep_pinned(a5['id'], q['lineage_id'])
+    assert ws.assignment(a5['id'])['updates'] == []
+    assert not any(x['kind'] == 'update' for x in ws.home(crs['id'])['attention'])
+    new_rubric_version()  # a later version is a new decision: reported again
+    assert ws.assignment(a5['id'])['updates'] == [{'question_lineage': q['lineage_id'], 'no': 1, 'changed': ['rubric']}]
+
+
+def test_stale_results_of_another_class_do_not_take_over_the_next_step(ws):
+    crs, o3, o5 = two_classes(ws)
+    pid, q = prep_and_practice(ws, crs, o3)
+    a3, a5 = ws.assign(pid, o3['id']), ws.assign(pid, o5['id'])
+    graded(ws, pid, a3['id'], f'甲,1,{GOOD}\n乙,1,{MISSED}')
+    graded(ws, pid, a5['id'], f'丙,1,{GOOD}\n丁,1,{MISSED}')
+    ws.confirm_gradings(pid, assignment_id=a3['id'])
+    rubric = ws.correction_impact(a3['id'], q['lineage_id'])['rubric']['content']
+    ws.correct_rubric(a3['id'], q['lineage_id'], {'points': [{**rubric['points'][0], 'score': 3}, rubric['points'][1]]})
+
+    here = ws.overview(pid, assignment_id=a3['id'])['next']
+    assert here[0]['label'] == '更新受影响的结果' and not here[0].get('optional')
+    there = ws.overview(pid, assignment_id=a5['id'])['next']
+    assert there[0]['tab'] == 'grading' and not there[0].get('optional')  # 5班's own loop comes first
+    assert there[-1]['label'] == '更新其他班级或轮次的结果' and there[-1]['optional']

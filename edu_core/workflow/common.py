@@ -142,13 +142,6 @@ def normalize_plan(plan):
         'exit_check': items('exit_check', ('question', 'answer'), (800, 800)),
     }
     out.update({k: v for k, v in extra.items() if v})
-    review = plan.get('review')
-    if isinstance(review, dict) and (review.get('issues') or review.get('suggestions') or review.get('error')):
-        out['review'] = {
-            'issues': [str(x)[:300] for x in review.get('issues') or []][:6],
-            'suggestions': [str(x)[:300] for x in review.get('suggestions') or []][:3],
-            **({'error': str(review['error'])[:200]} if review.get('error') else {}),
-        }
     if plan.get('curriculum'):
         out['curriculum'] = plan['curriculum']  # which standard items the plan was drafted against
     return out
@@ -171,6 +164,6 @@ def evidence_checks(plan):
             o.pop('checks', None)
 
 
-NO_EVIDENCE = '没有环节收集这条目标的达成证据'
+NO_EVIDENCE = '课上没有安排检验这条目标的环节'
 
 WEAK_MATCH = 6.0  # below this best score the automatic curriculum pick is left to the teacher
