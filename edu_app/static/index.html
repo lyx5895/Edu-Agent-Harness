@@ -126,7 +126,6 @@
         <button data-tab="grading"><span class="mark">03</span>作业批改</button>
         <button data-tab="analysis"><span class="mark">04</span>学情分析</button>
         <button data-tab="review"><span class="mark">05</span>讲题答疑</button>
-        <button data-tab="records" class="aside">文件<span id="records-badge" class="badge hidden"></span></button>
       </nav>
       <div id="round-bar" class="round-bar hidden" role="group" aria-label="轮次"></div>
       <div id="context-note" class="banner info hidden"></div>
@@ -173,6 +172,7 @@
         <div class="card result">
           <div class="card-head"><h3>备课方案</h3><button id="draft-lesson-plan">生成备课方案</button></div>
           <div id="lesson-plan"></div>
+          <div class="export-row hidden" id="prep-export"></div>
           <details class="plan-more hidden" id="revise-row"><summary>提修改意见（AI 按你的意见改）</summary>
             <div class="row"><select id="revise-target" aria-label="要改的部分"></select>
             <input id="revise-instruction" placeholder="写下你的修改意见，例如：缩短到 3 分钟，改成口答"><button class="small secondary" id="revise-go">让 AI 按意见改</button></div>
@@ -213,6 +213,7 @@
             <label>轮次 <select id="q-round"></select></label></div>
           <div id="coverage"></div>
           <div id="questions"></div>
+          <div class="export-row hidden" id="questions-export"></div>
           <div class="assign-row hidden" id="assign-row">
             <span class="label">布置给班级</span>
             <select id="assign-class"></select>
@@ -310,6 +311,7 @@
             <div class="head-actions"><label class="inline">依据 <select id="r-round"></select> 的学情</label> <button id="draft-review">定位讲解重点，生成讲评稿</button></div></div>
           <div id="review-patterns" class="checks"></div>
           <div id="review-plans"></div>
+          <div class="export-row hidden" id="review-export"></div>
         </div>
         <div class="card" id="explain-card">
           <h3>直接准备讲解</h3>
@@ -330,18 +332,6 @@
         </div>
       </div>
 
-      <div id="tab-records" class="tab hidden">
-        <div class="card">
-          <h3>需要更新的结果</h3>
-          <p class="muted">题目、评分标准或教案做了实质修改后，用旧版本得出的批改和分析会列在这里：可以重做，也可以保留原结果。</p>
-          <div id="stale-list"></div>
-        </div>
-        <div class="card">
-          <h3>导出文件</h3>
-          <p class="muted">只导出已确认的版本；学生练习不含答案。打印版可在浏览器中“打印 / 另存为 PDF”。</p>
-          <div id="deliverables"></div>
-        </div>
-      </div>
     </section>
 
     <section id="admin" class="hidden">

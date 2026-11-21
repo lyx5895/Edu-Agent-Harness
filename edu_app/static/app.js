@@ -260,7 +260,7 @@ async function init() {
 
 // ---------- 网址路由：#/p/<项目>/<页面>[/a/<布置记录>] ----------
 // 刷新、书签、后退键、把链接发给别人，都回到同一个地方；之前只记在浏览器的 localStorage 里。
-const ROUTE_TABS = ['prep', 'questions', 'grading', 'analysis', 'review', 'records'];
+const ROUTE_TABS = ['prep', 'questions', 'grading', 'analysis', 'review'];  // an old #/…/records link opens 01
 let route = { view: 'home' };
 function currentRoute() {
   if (S.view === 'project' && S.pid) return `#/p/${S.pid}/${S.tab}${S.aid ? `/a/${S.aid}` : ''}`;
@@ -491,9 +491,17 @@ function renderOverview() {
     b.title = waiting ? `待办：${waiting.label}` : '';
     $('.mark', b).textContent = o.stages[tab] ? '✓' : String(STAGES.indexOf(tab) + 1).padStart(2, '0');
   });
-  const badge = $('#records-badge');
-  badge.textContent = o.stale.length;
-  badge.classList.toggle('hidden', !o.stale.length);
+  // 需要更新 is shown on the stage it belongs to; the tab carries how many (LESSON_LOOP_DESIGN.md 6.4).
+  const perTab = {};
+  o.stale.forEach((m) => { const t = STALE_TAB[m.type]; if (t) perTab[t] = (perTab[t] || 0) + 1; });
+  $$('#tabs button[data-tab]').forEach((b) => {
+    let badge = $('.badge', b);
+    if (!badge) { badge = document.createElement('span'); badge.className = 'badge'; b.append(badge); }
+    const n = perTab[b.dataset.tab] || 0;
+    badge.textContent = n;
+    badge.title = n ? `${n} 项结果需要更新` : '';
+    badge.classList.toggle('hidden', !n);
+  });
   if (!$('#project-edit').classList.contains('hidden')) renderProjectEdit();
 }
 
@@ -571,7 +579,8 @@ async function renderTab() {
     t.classList.toggle('hidden', t.id !== `tab-${S.tab}`);
     t.setAttribute('role', 'tabpanel');
   });
-  const fn = { prep: renderPrep, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, review: renderReview, records: renderRecords }[S.tab];
+  if (!STAGES.includes(S.tab)) S.tab = 'prep';
+  const fn = { prep: renderPrep, questions: renderQuestions, grading: renderGrading, analysis: renderAnalysis, review: renderReview }[S.tab];
   renderScope();
   try { await fn(); } catch (e) { toast(e.message, true); }
   S.showRound = null;  // used once by this render's round selects; the selects keep it afterwards
@@ -587,6 +596,7 @@ async function renderTab() {
   showDirty();
   renderScope();
   renderRoundBar();
+  renderStale();
   renderBlocker();
   renderContinue();
   syncRoute();
@@ -719,6 +729,7 @@ async function renderPrep() {
   // plan where one click rewrote everything the teacher had just read.
   $('#draft-lesson-plan').classList.toggle('hidden', !!plans.length);
   $('#regen-plan').classList.toggle('hidden', !plans.length);
+  renderExport('#prep-export', ['lesson_plan'], !!(plans.length && plans[0].confirmed_version));
   $('#revise-row').classList.toggle('hidden', !plans.length);
   if (plans.length) {
     const pc = plans[0].content;
@@ -895,6 +906,7 @@ async function renderQuestions() {
   else if (S.overview.project.offering_id) $('#assign-class').value = S.overview.project.offering_id;
   $('#assign-btn').textContent = parent ? `布置给本班作为讲评后再练（第 ${round} 轮）` : `布置第 ${round} 轮已确认的题目`;
   const shown = qs.filter((q) => q.status !== 'candidate');
+  renderExport('#questions-export', ['student_paper', 'teacher_key'], qs.some((q) => q.confirmed_version), round);
   $('#questions').innerHTML = (shown.length ? shown.map(questionItem).join('') : '<div class="empty">这一轮还没有题目。</div>')
     + `<div class="row"><button class="secondary" data-act="new-question">手工添加题目</button></div><div class="new-question-area"></div>`;
 }
@@ -1370,6 +1382,7 @@ async function renderReview() {
   $('#review-plans').innerHTML = plans.length ? plans.map(reviewItem).join('') : '<div class="empty">这一轮还没有讲评稿。</div>';
   const exps = await api('GET', `/api/projects/${S.pid}/explanations`);
   $('#explanations').innerHTML = exps.map(explanationItem).join('');
+  renderExport('#review-export', ['review_outline'], plans.some((x) => x.confirmed_version) || exps.some((x) => x.confirmed_version), round);
 }
 
 function explanationItem(a) {
@@ -1427,9 +1440,8 @@ function comparisonView(a) {
     <p class="muted">复测、已改善、仍存在、新出现都只按针对这个共性问题出的再练题统计。</p>`;
 }
 
-// ---------- 文件（老师） ----------
 
-// Where each kind of stale result is redone. Gradings are redone in bulk by the button under the list.
+// Where each kind of stale result is redone. Gradings are redone together by the button under the list.
 const STALE_REDO = {
   analysis: { label: '重新分析', tab: 'analysis', target: '#analyze' },
   problem_pattern: { label: '重新分析', tab: 'analysis', target: '#analyze' },
@@ -1441,36 +1453,54 @@ const STALE_REDO = {
   lesson_plan: { label: '去核对教案', tab: 'prep', target: '#lesson-plan' },
 };
 
-async function renderRecords() {
-  const stale = await api('GET', `/api/projects/${S.pid}/stale`);
+// Which stage shows a result that needs an update: where it is made, and redone.
+const STALE_TAB = {
+  lesson_plan: 'prep', objective: 'prep', question: 'questions', rubric: 'questions', grading: 'grading',
+  analysis: 'analysis', problem_pattern: 'analysis', comparison: 'analysis', review_plan: 'review', explanation: 'review',
+};
+
+// 需要更新: at the top of the stage the results belong to, next to the work they affect (LESSON_LOOP_DESIGN.md 6.4).
+function renderStale() {
+  const pane = $(`#tab-${S.tab}`);
+  if (!pane || !STAGES.includes(S.tab)) return;
+  let box = $('.stale-box', pane);
+  if (!box) { box = document.createElement('div'); box.className = 'card stale-box'; $('.stage-head', pane).after(box); }
+  const stale = S.overview.stale.filter((m) => STALE_TAB[m.type] === S.tab);
+  box.classList.toggle('hidden', !stale.length);
+  if (!stale.length) { box.innerHTML = ''; return; }
   const graded = stale.filter((m) => m.type === 'grading');
-  // Grouped by class, each item says exactly what it is, and offers the redo itself (or, when a newer result is
-  // already there, the one click that says so) next to "keep".
-  const ordered = [...stale].sort((a, b) => (a.class_name || '').localeCompare(b.class_name || '') || a.round - b.round);
   // Identical-looking items (a pattern found by both a partial and a complete analysis) become one row: x2.
   const groups = new Map();
-  ordered.forEach((m) => {
+  [...stale].sort((a, b) => a.round - b.round).forEach((m) => {
     const k = [m.assignment_id, m.type, m.detail, m.round, m.version, m.redone].join('|');
     if (groups.has(k)) groups.get(k).ids.push(m.id); else groups.set(k, { ...m, ids: [m.id] });
   });
-  $('#stale-list').innerHTML = (groups.size ? [...groups.values()].map((m) => {
-    const redo = STALE_REDO[m.type];
-    const act = m.redone
-      ? '<span class="pill ok">已有新的结果</span><button class="small" data-resolve="redone">确认已重做</button>'
-      : redo ? `<button class="small" data-redo="${m.type}" data-aid="${esc(m.assignment_id || '')}" data-round="${m.round}">${redo.label} →</button>` : '';
-    return `<div class="item" data-mark="${m.ids.join(',')}">
-      <div class="item-head"><div>${m.class_name ? `<span class="pill info">${esc(m.class_name)}</span> ` : ''}<b>${esc(TYPE_LABEL[m.type] || m.type)}</b>${m.detail ? `「${esc(m.detail)}」` : ''} · 第 ${m.round} 轮${m.round < (S.overview.latest_round || 1) ? '（早先一轮）' : ''}${m.ids.length > 1 ? ` <span class="pill">×${m.ids.length}</span>` : ''}</div>
-        <div class="muted">原因：${m.cause ? esc(TYPE_LABEL[m.cause.type]) + '改成了第 ' + m.cause.version + ' 版，这条结果用的是旧版' : '它依据的内容改过了'}</div></div>
-      <div class="item-actions">${act}<button class="small secondary" data-resolve="kept">保留原结果</button></div></div>`;
-  }).join('')
-    : '<div class="empty">没有需要更新的结果。</div>')
-    + (graded.length ? `<div class="row"><button data-act="regrade-stale">重新批改这 ${graded.length} 条批改</button></div>` : '');
-  const q = `round=${S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
-  $('#deliverables').innerHTML = [['lesson_plan', '教案'], ['student_paper', '学生练习（不含答案）'], ['teacher_key', '教师答案与评分标准'], ['review_outline', '讲评提纲']]
-    .map(([k, label]) => `<div class="row"><span class="s-title">${label}</span>
-      <a class="textlink" target="_blank" href="/api/projects/${S.pid}/deliverables/${k}?fmt=html&${q}">打印 / PDF</a>
-      <a class="textlink" href="/api/projects/${S.pid}/deliverables/${k}?fmt=docx&${q}">Word</a></div>`).join('')
-    + (S.aid ? '<p class="muted">学生练习和答案按当前布置记录固定的版本导出。</p>' : '');
+  const latest = S.overview.latest_round || 1;
+  box.innerHTML = `<h3>需要更新 <span class="pill warn">${stale.length}</span></h3>
+    <p class="muted">它们依据的题目、评分标准或教案做了实质修改：可以重做，也可以保留原结果。旧结果都会保留。</p>
+    ${[...groups.values()].map((m) => {
+      const redo = STALE_REDO[m.type];
+      const act = m.redone
+        ? '<span class="pill ok">已有新的结果</span><button class="small" data-resolve="redone">确认已重做</button>'
+        : redo && m.type !== 'grading' ? `<button class="small" data-redo="${m.type}" data-aid="${esc(m.assignment_id || '')}" data-round="${m.round}">${redo.label}</button>` : '';
+      return `<div class="item" data-mark="${m.ids.join(',')}">
+        <div class="item-head"><div><b>${esc(TYPE_LABEL[m.type] || m.type)}</b>${m.detail ? `「${esc(m.detail)}」` : ''}${latest > 1 ? ` · 第 ${m.round} 轮` : ''}${m.ids.length > 1 ? ` <span class="pill">×${m.ids.length}</span>` : ''}</div>
+          <div class="muted">${m.cause ? esc(TYPE_LABEL[m.cause.type]) + '改成了第 ' + m.cause.version + ' 版，这条结果用的是旧版' : '它依据的内容改过了'}</div></div>
+        <div class="item-actions">${act}<button class="small secondary" data-resolve="kept">保留原结果</button></div></div>`;
+    }).join('')}
+    ${graded.length ? `<div class="row"><button data-act="regrade-stale">按新的评分标准重新批改这 ${graded.length} 份</button></div>` : ''}`;
+}
+
+// 导出: shown under a stage's result once there is something confirmed to export.
+const EXPORT_LABEL = { lesson_plan: '导出教案', student_paper: '学生练习（不含答案）', teacher_key: '答案与评分标准', review_outline: '导出讲评提纲' };
+function renderExport(sel, kinds, show, round) {
+  const box = $(sel);
+  box.classList.toggle('hidden', !show);
+  if (!show) { box.innerHTML = ''; return; }
+  const q = `round=${round || S.overview.latest_round || 1}${S.aid ? `&assignment_id=${encodeURIComponent(S.aid)}` : ''}`;
+  box.innerHTML = kinds.map((k) => `<span class="export-item"><span class="label">${EXPORT_LABEL[k]}</span>
+    <a class="textlink" target="_blank" href="/api/projects/${S.pid}/deliverables/${k}?fmt=html&${q}">打印 / PDF</a>
+    <a class="textlink" href="/api/projects/${S.pid}/deliverables/${k}?fmt=docx&${q}">Word</a></span>`).join('');
 }
 
 // ---------- events ----------

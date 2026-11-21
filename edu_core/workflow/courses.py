@@ -412,7 +412,7 @@ class CoursesMixin:
             t['scope_label'] = f'{a["class_name"]} · 第 {a["round"]} 轮'
         if step:
             t['tab'], t['target'], t['action_label'] = step['tab'], step['target'], step['label']
-            t['progress_label'] = f'进行到「{STAGE_NAMES.get(step["tab"], "文件与记录")}」'
+            t['progress_label'] = f'进行到「{STAGE_NAMES.get(step["tab"], "")}」'
         else:
             t['progress_label'] = '本轮已完成，可以布置再练或进入下一课时'
 

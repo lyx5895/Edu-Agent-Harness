@@ -528,7 +528,7 @@ def test_task_card_follows_the_loop_and_stale_items_say_what_they_are(ws):
     rubric = ws.correction_impact(a3['id'], q['lineage_id'])['rubric']['content']
     ws.correct_rubric(a3['id'], q['lineage_id'], {'points': [{**rubric['points'][0], 'score': 3}, rubric['points'][1]]})
     card = ws.tasks(crs['id'])[0]
-    assert card['tab'] == 'records' and card['action_label'] == '更新受影响的结果'
+    assert card['tab'] == 'grading' and card['action_label'] == '更新受影响的结果'  # gradings come first
     [old] = [m for m in ws.stale(pid) if m['type'] == 'analysis']
     assert old['class_name'] == '高一（3）班' and old['detail'] == '完整分析' and not old['redone']
     assert {m['detail'] for m in ws.stale(pid) if m['type'] == 'grading'} == {'甲 第 1 题', '乙 第 1 题'}

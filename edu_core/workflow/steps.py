@@ -24,7 +24,7 @@ def next_steps(st):
     here, elsewhere = split_stale(st)
     if here:
         steps.append(
-            _step('更新受影响的结果', 'records', '#stale-list', f'{len(here)} 项结果用的是改动前的题目或评分标准')
+            _step('更新受影响的结果', stale_tab(here), '.stale-box', f'{len(here)} 项结果用的是改动前的题目或评分标准')
         )
     steps += _forward(st)
     if elsewhere:
@@ -32,13 +32,35 @@ def next_steps(st):
         steps.append(
             _step(
                 '更新其他班级或轮次的结果',
-                'records',
-                '#stale-list',
+                stale_tab(elsewhere),
+                '.stale-box',
                 f'{len(elsewhere)} 项其他班级或早先一轮的结果需要更新',
                 optional=True,
             )
         )
     return steps
+
+
+# The stage a stale result is shown and redone on (the 需要更新 card at the top of that page).
+STALE_TAB = {
+    'lesson_plan': 'prep',
+    'objective': 'prep',
+    'question': 'questions',
+    'rubric': 'questions',
+    'grading': 'grading',
+    'analysis': 'analysis',
+    'problem_pattern': 'analysis',
+    'comparison': 'analysis',
+    'review_plan': 'review',
+    'explanation': 'review',
+}
+LOOP = ('prep', 'questions', 'grading', 'analysis', 'review')
+
+
+def stale_tab(marks):
+    """The earliest stage of the loop holding one of these stale results: redo upstream first."""
+    tabs = {STALE_TAB.get(m.get('type'), 'prep') for m in marks}
+    return next(t for t in LOOP if t in tabs)
 
 
 def split_stale(st):
