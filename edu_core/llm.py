@@ -91,6 +91,10 @@ def redact_images(messages):
     return out
 
 
+# A reply cut off at max_tokens is asked again once with this budget.
+LENGTH_RETRY_CAP = 16000
+
+
 class Gateway:
     def __init__(self, base_url, api_key, models, *, timeout=180.0, max_tokens=6000, client=None, retries=3):
         if not api_key and client is None:
@@ -123,7 +127,9 @@ class Gateway:
             time.sleep(min(2**attempt + random.random(), 20))
         raise ModelUnavailable(f'模型服务暂不可用：{last}')
 
-    def complete(self, role, task, system, user, schema):
+    def complete(self, role, task, system, user, schema, *, max_tokens=None):
+        """``max_tokens`` overrides the default budget for calls known to write long replies (plans, question sets):
+        starting them at 6000 wasted a whole truncated call before the retry."""
         model = self.models[role]
         messages = [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}]
         response_format = {
@@ -132,11 +138,12 @@ class Gateway:
         }
         started = time.time()
         attempts, usage, returned, raw, error = [], {}, None, '', None
-        for round_ in range(2):
+        max_tokens, repairs = max_tokens or self.max_tokens, 0
+        while True:
             body = {
                 'model': model,
                 'messages': messages,
-                'max_tokens': self.max_tokens,
+                'max_tokens': max_tokens,
                 'temperature': 0,
                 'response_format': response_format,
             }
@@ -147,7 +154,12 @@ class Gateway:
             for key, value in (data.get('usage') or {}).items():
                 if isinstance(value, int | float):
                     usage[key] = usage.get(key, 0) + value
-            attempts.append({'finish_reason': choice.get('finish_reason'), 'model_returned': returned})
+            attempts.append({'finish_reason': choice.get('finish_reason'), 'model_returned': returned, 'max_tokens': max_tokens})
+            if choice.get('finish_reason') == 'length' and max_tokens < LENGTH_RETRY_CAP:
+                # A reasoning model can spend the whole budget thinking (八数码 distances, a two-question part). The
+                # half-written reply is useless as a repair prompt: ask again, once, with room to finish.
+                max_tokens = LENGTH_RETRY_CAP
+                continue
             try:
                 if choice.get('finish_reason') == 'length':
                     raise ValueError('输出达到长度上限被截断')
@@ -162,11 +174,14 @@ class Gateway:
                     'attempts': attempts,
                     'request': redact_images(messages),
                     'response': raw,
-                    'repaired': round_ > 0,
+                    'repaired': repairs > 0,
                 }
                 return result, meta
             except (ValueError, ValidationError, json.JSONDecodeError) as e:
                 error = str(e)[:500]
+                if repairs >= 1:
+                    break
+                repairs += 1
                 messages = [
                     *messages,
                     {'role': 'assistant', 'content': raw[:4000]},

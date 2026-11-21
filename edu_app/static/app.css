@@ -376,3 +376,10 @@ summary .help { vertical-align: middle; }
 @media (max-width: 640px) { .goal-row { grid-template-columns: 1fr; } }
 /* Rubric table: the id and score columns stay narrow so the requirement text gets the width. */
 .rubric-table td:first-child, .rubric-table th:first-child, .rubric-table td:nth-child(3), .rubric-table th:nth-child(3) { white-space: nowrap; width: 1%; }
+/* Lesson plan: review first, examples and checks readable, the editor's question rows. */
+.plan-review ul { margin: 6px 0 0 18px; padding: 0; }
+.plan-ex { border-left: 3px solid var(--line); padding: 4px 0 4px 10px; margin: 8px 0; }
+.plan-ex .stem { white-space: pre-wrap; }
+.plan-ex .answer { white-space: pre-wrap; padding: 8px; border-radius: 6px; border: 1px solid var(--line); }
+.plan-row { display: grid; grid-template-columns: 90px 1fr 1fr 32px; gap: 6px; margin-bottom: 6px; align-items: start; }
+@media (max-width: 760px) { .plan-row { grid-template-columns: 1fr 32px; } .plan-row .pr-text, .plan-row .pr-answer, .plan-row .pr-goal { grid-column: 1; } }

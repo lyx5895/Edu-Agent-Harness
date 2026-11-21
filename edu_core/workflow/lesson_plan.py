@@ -10,20 +10,28 @@ from edu_core.context import Context, describe
 from edu_core.llm import ModelUnavailable
 from edu_core.storage import record_generation
 from edu_core.text import sha
+from edu_core import progress
 from edu_core.workflow.common import (
     Conflict,
     _json,
+    evidence_checks,
     normalize_plan,
 )
 from edu_core.workflow.prompts import (
     LESSON_PLAN_SYSTEM,
+    PLAN_REVIEW_SYSTEM,
     REVISE_SYSTEM,
 )
 from edu_core.workflow.runs import operation
 from edu_core.workflow.schemas import (
     LessonPlanOutput,
+    PlanReview,
     RevisedPart,
 )
+
+
+# A plan with worked examples, written by a reasoning model, ran to ~16k tokens; start with room instead of a retry.
+LONG_REPLY = 12000
 
 
 class LessonPlanMixin:
@@ -108,6 +116,7 @@ class LessonPlanMixin:
             LESSON_PLAN_SYSTEM.format(subject=p['pack']['name']),
             user,
             LessonPlanOutput,
+            max_tokens=LONG_REPLY,
         )
         if not out.objectives:
             raise ModelUnavailable('模型没有给出教学目标，请重试')
@@ -119,6 +128,9 @@ class LessonPlanMixin:
             if not d.pop('beyond_standard'):
                 d['beyond_reason'] = ''
             objectives.append(d)
+        def goal(i):  # the model numbers objectives from 0; the plan keeps O1, O2, ...
+            return [f'O{i + 1}'] if 0 <= i < len(out.objectives) else []
+
         content = normalize_plan(
             {
                 'objectives': objectives,
@@ -126,20 +138,31 @@ class LessonPlanMixin:
                 'key_points': out.key_points,
                 'difficulties': out.difficulties,
                 'activities': [
-                    {
-                        **a.model_dump(exclude={'objective_index'}),
-                        'objective_ids': [f'O{a.objective_index + 1}']
-                        if 0 <= a.objective_index < len(out.objectives)
-                        else [],
-                    }
+                    {**a.model_dump(exclude={'objective_index'}), 'objective_ids': goal(a.objective_index)}
                     for a in out.activities
+                ],
+                'examples': [
+                    {**x.model_dump(exclude={'objective_index'}), 'objective_ids': goal(x.objective_index)}
+                    for x in out.examples
+                ],
+                'exit_check': [
+                    {**x.model_dump(exclude={'objective_index'}), 'objective_ids': goal(x.objective_index)}
+                    for x in out.exit_check
                 ],
                 'notes': out.notes,
             }
         )
         CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
+        evidence_checks(content)
+        review, review_meta, review_manifest = self._review_plan(p, content, std)
+        if review:
+            content = normalize_plan({**content, 'review': review})
+            CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
+            evidence_checks(content)
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v4')
+            if review_meta:
+                record_generation(c, pid, review_meta, review_manifest, 'plan-review-v1')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v5')
             plan = A.create(
                 c,
                 pid,
@@ -151,6 +174,38 @@ class LessonPlanMixin:
                 lineage_id=prior['lineage_id'] if prior else None,
             )
         return {'lesson_plan': plan, 'context_note': describe(ctx.manifest)}
+
+    def _review_plan(self, p, content, std):
+        """Another provider reads the draft for knowledge errors, wrong example solutions, steps that cannot collect
+        their evidence and contradictions; plans had no check at all before. A failed review never loses the plan:
+        it is saved with the error noted."""
+        progress.step('审核教案')
+        ctx = Context('review_plan')
+        ctx.add_other('project', p['id'])
+        ctx.add_other('plan_draft', p['id'], sha(_json(content)))
+        try:
+            out, meta = self.llm.complete(
+                'reviewer',
+                'review_plan',
+                PLAN_REVIEW_SYSTEM.format(subject=p['pack']['name']),
+                _json(
+                    {
+                        '课时信息': {
+                            '知识模块': p.get('knowledge_module', ''),
+                            '课时': p.get('lesson', ''),
+                            '本课时内容': p.get('lesson_scope', ''),
+                        },
+                        '学生基础': p.get('learner_profile', ''),
+                        '课标条目': [{'编号': it['id'], '原文': it['text']} for it in (std or {}).get('content', [])],
+                        '备课方案': {k: v for k, v in content.items() if k not in ('curriculum', 'review')},
+                    }
+                ),
+                PlanReview,
+            )
+        except ModelUnavailable as e:
+            return {'error': f'教案审核没有完成：{e}'[:200]}, None, ctx.manifest
+        review = {'issues': [x for x in out.issues if x.strip()], 'suggestions': [x for x in out.suggestions if x.strip()]}
+        return review, meta, ctx.manifest
 
     def lesson_plans(self, pid):
         with self.store.read() as c:
@@ -215,10 +270,14 @@ class LessonPlanMixin:
             content['notes'] = out.text.strip()
         else:
             content[kind] = [x for x in out.items if x.strip()] or content[kind]
+        content.pop('review', None)  # the review was of the plan before this change
         revised = normalize_plan(content)
         # The stored plan carries the curriculum checks; recompute them before comparing so only real edits count.
         CUR.plan_checks(p['subject'], revised['objectives'], used=bool(revised.get('curriculum')))
-        changed = sorted(k for k in set(revised) | set(plan['content']) if revised.get(k) != plan['content'].get(k))
+        evidence_checks(revised)
+        changed = sorted(
+            k for k in set(revised) | set(plan['content']) if k != 'review' and revised.get(k) != plan['content'].get(k)
+        )
         if not changed:
             raise ModelUnavailable('模型没有做出修改，请换个说法再试')
         with self.store.tx() as c:

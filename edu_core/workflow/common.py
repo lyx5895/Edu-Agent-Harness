@@ -108,8 +108,23 @@ def normalize_plan(plan):
                 'minutes': max(0, min(int(a.get('minutes') or 0), 90)),
                 'description': str(a.get('description', '')).strip()[:400],
                 'objective_ids': [x for x in a.get('objective_ids', []) if x in used],
+                **({'evidence': str(a['evidence']).strip()[:200]} if str(a.get('evidence') or '').strip() else {}),
             }
         )
+
+    def items(key, fields, limits):
+        """Structured sections (例题, 当堂检测): keep the given text fields, drop empty entries."""
+        out = []
+        for x in plan.get(key) or []:
+            if not isinstance(x, dict):
+                continue
+            entry = {f: str(x.get(f, '')).strip()[:n] for f, n in zip(fields, limits)}
+            if not entry[fields[0]]:
+                continue
+            if 'objective_ids' in x:
+                entry['objective_ids'] = [i for i in x.get('objective_ids') or [] if i in used]
+            out.append(entry)
+        return out
 
     def lines(key):
         return [str(x).strip() for x in plan.get(key) or [] if str(x).strip()]
@@ -121,9 +136,41 @@ def normalize_plan(plan):
         'activities': activities,
         'notes': str(plan.get('notes', '')).strip()[:600],
     }
+    # besides goals and steps, what is needed to teach from: worked examples and a short exit check
+    extra = {
+        'examples': items('examples', ('problem', 'solution'), (1500, 2500)),
+        'exit_check': items('exit_check', ('question', 'answer'), (800, 800)),
+    }
+    out.update({k: v for k, v in extra.items() if v})
+    review = plan.get('review')
+    if isinstance(review, dict) and (review.get('issues') or review.get('suggestions') or review.get('error')):
+        out['review'] = {
+            'issues': [str(x)[:300] for x in review.get('issues') or []][:6],
+            'suggestions': [str(x)[:300] for x in review.get('suggestions') or []][:3],
+            **({'error': str(review['error'])[:200]} if review.get('error') else {}),
+        }
     if plan.get('curriculum'):
         out['curriculum'] = plan['curriculum']  # which standard items the plan was drafted against
     return out
 
+
+def evidence_checks(plan):
+    """Mark objectives that no step collects evidence for (达成标准 with nowhere to come from). Plans without
+    activities (objectives inferred for a practice) are not lesson plans in this sense and are left alone."""
+    if not plan.get('activities'):
+        return
+    collected = {i for a in plan['activities'] if a.get('evidence') for i in a.get('objective_ids', [])}
+    collected |= {i for x in plan.get('exit_check', []) for i in x.get('objective_ids', [])}
+    for o in plan['objectives']:
+        checks = [c for c in o.get('checks', []) if c != NO_EVIDENCE]
+        if o['id'] not in collected:
+            checks.append(NO_EVIDENCE)
+        if checks:
+            o['checks'] = checks
+        else:
+            o.pop('checks', None)
+
+
+NO_EVIDENCE = '没有环节收集这条目标的达成证据'
 
 WEAK_MATCH = 6.0  # below this best score the automatic curriculum pick is left to the teacher

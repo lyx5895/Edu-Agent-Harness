@@ -20,7 +20,7 @@ class FakeLLM:
     def model_for(self, role):
         return self.models[role]
 
-    def complete(self, role, task, system, user, schema):
+    def complete(self, role, task, system, user, schema, *, max_tokens=None):
         if isinstance(user, list):  # text plus images
             payload = json.loads(next(p['text'] for p in user if p.get('type') == 'text'))
             payload['_images'] = sum(1 for p in user if p.get('type') == 'image_url')
@@ -46,6 +46,10 @@ class FakeLLM:
 
     def tasks(self):
         return [c['task'] for c in self.calls]
+
+    def last(self, task):
+        """The latest call of one task (a plan draft is now followed by its review, so calls[-1] is not it)."""
+        return next(c for c in reversed(self.calls) if c['task'] == task)
 
 
 def judge_points(rules, *, confidence='high'):

@@ -306,6 +306,36 @@ def test_gateway_repairs_once_then_fails():
         gw.complete('generator', 't', 's', 'u', QuestionSet)
 
 
+def test_a_reply_cut_off_at_max_tokens_is_asked_again_once_with_more_room():
+    import json as _json
+
+    import httpx
+
+    from edu_core.llm import LENGTH_RETRY_CAP
+
+    sent = []
+
+    def handler(request):
+        body = _json.loads(request.content)
+        sent.append((body['max_tokens'], len(body['messages'])))
+        cut = body['max_tokens'] < LENGTH_RETRY_CAP
+        content = '{"questions": [' if cut else '{"questions": []}'
+        return httpx.Response(200, json={'choices': [{'message': {'content': content}, 'finish_reason': 'length' if cut else 'stop'}]})
+
+    gw = Gateway('http://x/v1', 'k', {'generator': 'm'}, max_tokens=6000, client=httpx.Client(transport=httpx.MockTransport(handler)))
+    out, meta = gw.complete('generator', 't', 's', 'u', QuestionSet)
+    # same messages, bigger budget; not counted as a format repair
+    assert out.questions == [] and sent == [(6000, 2), (LENGTH_RETRY_CAP, 2)] and not meta['repaired']
+
+    def always_cut(request):
+        return httpx.Response(200, json={'choices': [{'message': {'content': '{"q'}, 'finish_reason': 'length'}]})
+
+    sent.clear()
+    gw = Gateway('http://x/v1', 'k', {'generator': 'm'}, max_tokens=6000, client=httpx.Client(transport=httpx.MockTransport(always_cut)))
+    with pytest.raises(ModelUnavailable, match='截断'):
+        gw.complete('generator', 't', 's', 'u', QuestionSet)
+
+
 def test_math_curriculum_items_are_verified_and_searchable():
     from edu_core import curriculum as C
 

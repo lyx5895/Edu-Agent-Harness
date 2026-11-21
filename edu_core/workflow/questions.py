@@ -127,9 +127,9 @@ class QuestionsMixin:
         def request(part):
             """The generation input for some of the objectives (``part``: indexes into ``objs``). One part per
             objective keeps each reply short (a whole set used to run past max_tokens) and lets parts run side by
-            side; the suggested types rotate per objective so the merged set does not repeat one question type."""
+            side. Question types follow each objective's success criterion: rotating suggested types per objective
+            pushed objectives that ask students to write or compute towards multiple choice."""
             sub = [objs[i] for i in part]
-            lead = part[0] % len(allowed)
             return {
                 '学科': p['pack']['name'],
                 '年级': p['grade'],
@@ -151,7 +151,6 @@ class QuestionsMixin:
                 '学生基础': p.get('learner_profile', ''),
                 '材料摘录': materials,
                 '允许题型': [QUESTION_TYPES[t] + f'（{t}）' for t in allowed],
-                '建议优先题型': [QUESTION_TYPES[t] for t in (allowed[lead:] + allowed[:lead])[:2]],
                 '每个目标出题数': max(1, min(int(count), 5)),
                 '练习用途': purpose,
                 '难度': difficulty,
@@ -176,7 +175,9 @@ class QuestionsMixin:
                 types='、'.join(f'{t}（{QUESTION_TYPES[t]}）' for t in allowed),
                 variant=VARIANTS[variant],
             )
-            out, meta = llm.complete('generator', 'generate_questions', system, _json(request(part)), QuestionSet)
+            out, meta = llm.complete(
+                'generator', 'generate_questions', system, _json(request(part)), QuestionSet, max_tokens=12000
+            )
             drafts, dropped = usable_drafts(out.questions, allowed)
             for d in drafts:  # the part numbered its objectives from 0: back to the plan's numbering
                 d.objective_index = part[d.objective_index] if 0 <= d.objective_index < len(part) else part[0]
@@ -495,6 +496,10 @@ class QuestionsMixin:
             )
             if not agree:
                 checks['notes'].append('另一个模型独立解题的结果与参考答案不一致，请核对答案')
+            # The solver works the numbers anyway, so it also checks that the given ones can exist: the reviewer
+            # read the formulas and missed entropies no real 8-sample split can have.
+            if solution.data_issue.strip():
+                checks['flags'] = [*checks.get('flags', []), f'数据问题：{solution.data_issue.strip()}']
         checks['answer_suspect'] = checks.get('solver') == 'disagree' or bool(checks.get('reference_mismatch'))
         return checks
 

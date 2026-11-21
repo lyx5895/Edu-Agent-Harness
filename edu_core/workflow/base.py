@@ -18,6 +18,7 @@ from edu_core.subjects import KEYED_TYPES, QUESTION_TYPES, pack
 from edu_core.text import dump
 from edu_core.workflow.common import (
     Conflict,
+    evidence_checks,
     normalize_plan,
 )
 from edu_core.workflow.scope import Scope
@@ -173,10 +174,13 @@ class WorkspaceBase:
                         for key in ('standard_ids', 'beyond_reason'):
                             if key not in o and key in prev:
                                 o[key] = prev[key]
+            if src['type'] == 'lesson_plan' and isinstance(content, dict):
+                content = {**content, 'review': None}  # a teacher's edit outdates the review of the draft
             content = self._validate_content(src['type'], content, src['content'])
             if src['type'] == 'lesson_plan':
                 p = self._project(c, src['project_id'])
                 CUR.plan_checks(p['subject'], content['objectives'], used=bool(content.get('curriculum')))
+                evidence_checks(content)
             return A.edit(c, aid, content, teacher=teacher)
 
     def confirm(self, aid, change_kind='substantive', teacher='teacher'):

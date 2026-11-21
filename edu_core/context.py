@@ -14,6 +14,8 @@ WHITELIST = {
     'import_paper': {'project', 'material'},
     'infer_objectives': {'project', 'material', 'curriculum'},
     'pick_standards': {'project', 'curriculum'},
+    # 教案审核: the draft just written, before anyone confirms it (it is reviewed, not passed on)
+    'review_plan': {'project', 'plan_draft'},
     'transcribe': {'project', 'question_stem', 'photo'},
     'self_check_solve': {'question_stem'},
     'review_question': {'question_stem', 'lesson_plan', 'curriculum'},
@@ -44,6 +46,7 @@ LABELS = {
     'assignments': '所选的几份作业',
     'curriculum': '课程标准',
     'inferred_objectives': '由要求反推的教学目标（未确认）',
+    'plan_draft': '本次生成的备课方案草稿',
 }
 
 

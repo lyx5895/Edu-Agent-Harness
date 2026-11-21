@@ -54,6 +54,7 @@ def analyze(role, payload):
 HANDLERS = {
     'generate_questions': lambda r, p: {'questions': [question('解不等式 log2(x-1) < 3')]},
     # the best lexical candidates, like the automatic pick
+    'review_plan': lambda r, p: {'issues': [], 'suggestions': []},
     'pick_standards': lambda r, p: {'ids': [c['编号'] for c in p['候选条目'][:3]], 'note': ''},
     'infer_objectives': lambda r, p: {
         'objectives': [{'text': f'能用{p.get("主题") or "所学内容"}解决基础问题', 'success_criterion': '写出关键步骤'}]
@@ -86,7 +87,7 @@ HANDLERS = {
         'key_points': ['真数大于零'],
         'difficulties': ['取交集'],
         'activities': [
-            {'name': '复习定义域', 'minutes': 5, 'description': '口答', 'objective_index': 0},
+            {'name': '复习定义域', 'minutes': 5, 'description': '口答', 'objective_index': 0, 'evidence': '学习单第 1 题，检验目标 1'},
             {'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 9},
         ],
         'notes': '',
@@ -305,7 +306,7 @@ def test_next_step_guides_through_the_workflow(ws):
     assert ws.overview(pid)['next'][0]['target'] == '#draft-lesson-plan'  # material is optional
     plan = ws.draft_lesson_plan(pid)['lesson_plan']
     assert (
-        ws.llm.calls[-1]['user']['知识模块'] == '对数函数' and ws.llm.calls[-1]['user']['学生基础'] == '刚学完指数函数'
+        ws.llm.last('draft_lesson_plan')['user']['知识模块'] == '对数函数' and ws.llm.last('draft_lesson_plan')['user']['学生基础'] == '刚学完指数函数'
     )
     assert ws.overview(pid)['next'][0]['label'] == '确认备课方案'
     with pytest.raises(Conflict):
@@ -463,11 +464,11 @@ def test_next_lesson_carries_learning_status_into_the_plan(ws):
 
     plan = ws.draft_lesson_plan(nxt['id'])  # course info + carried-over 学情, no material needed
     assert plan['context_note'] == '已参考：项目背景、课程标准 3 条、上一课时学情'
-    sent = ws.llm.calls[-1]['user']['上一课时学情']
+    sent = ws.llm.last('draft_lesson_plan')['user']['上一课时学情']
     assert sent['问题模式'][0]['名称'] == '解对数不等式时遗漏定义域' and sent['上一课时'] == '第2课时'
     # A project that was not created as a next lesson never mentions one.
     ws.draft_lesson_plan(pid)
-    assert '上一课时学情' not in ws.llm.calls[-1]['user']
+    assert '上一课时学情' not in ws.llm.last('draft_lesson_plan')['user']
 
 
 def test_plan_is_drafted_against_the_curriculum_standard(ws):
@@ -483,7 +484,7 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     plan = ws.draft_lesson_plan(pid)['lesson_plan']['content']
     picked = next(x for x in ws.llm.calls if x['task'] == 'pick_standards')['user']
     assert 'math.B2.2.3.1' in [x['编号'] for x in picked['候选条目']]  # the unit's other items are offered too
-    sent = ws.llm.calls[-1]['user']
+    sent = ws.llm.last('draft_lesson_plan')['user']
     assert sent['本课时内容'] == '对数函数的图像与性质'
     offered = [x['编号'] for x in sent['课程标准']['内容要求']]
     assert offered == ['math.B2.2.3.2'] and sent['课程标准']['教学提示']  # the made-up id never reaches the plan
@@ -501,7 +502,8 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     [o] = edited['content']['objectives']
     assert o['standard_ids'] == [offered[0]] and o['checks'][0].startswith('要求高于课标：课标为“了解”')
     added = ws.edit(draft['id'], {'objectives': [o, {'text': '能画出 y=log2x 的图象', 'success_criterion': 'y'}]})
-    assert added['content']['objectives'][1]['checks'] == ['未对应课标']
+    # an objective the teacher adds has no standard and no step collecting its evidence yet
+    assert added['content']['objectives'][1]['checks'] == ['未对应课标', '没有环节收集这条目标的达成证据']
 
     # The teacher's own pick wins and is not reset by later course-info edits; 不参考课标 turns it off.
     ws.update_project(pid, curriculum_ids=['math.B2.2.3.1', 'nope'])
@@ -509,7 +511,7 @@ def test_plan_is_drafted_against_the_curriculum_standard(ws):
     assert ws.curriculum(pid)['selected'] == ['math.B2.2.3.1']
     ws.update_project(pid, curriculum_off=True)
     ws.draft_lesson_plan(pid)
-    assert '课程标准' not in ws.llm.calls[-1]['user']
+    assert '课程标准' not in ws.llm.last('draft_lesson_plan')['user']
 
 
 def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
@@ -520,13 +522,13 @@ def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
     h = ws.create_project('历史｜辛亥革命', 'history', knowledge_module='辛亥革命')
     assert ws.curriculum(h['id'])['selected'] == ['history.B1.1.8']  # 1.8 辛亥革命与中华民国的建立
     ws.draft_lesson_plan(h['id'])
-    assert ws.llm.calls[-1]['user']['课程标准']['内容要求'][0]['位置'].endswith('1.8辛亥革命与中华民国的建立')
+    assert ws.llm.last('draft_lesson_plan')['user']['课程标准']['内容要求'][0]['位置'].endswith('1.8辛亥革命与中华民国的建立')
     # A topic the standard does not cover is not guessed at: candidates are offered, nothing is ticked.
     a = ws.create_project('人工智能', 'ai', knowledge_module='支持向量机 核函数')
     sug = ws.curriculum(a['id'])
     assert sug['available'] and sug['selected'] == []
     ws.draft_lesson_plan(a['id'])
-    assert '课程标准' not in ws.llm.calls[-1]['user']
+    assert '课程标准' not in ws.llm.last('draft_lesson_plan')['user']
 
 
 def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):

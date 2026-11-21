@@ -87,18 +87,28 @@ class DeliveryMixin:
             blocks.append(
                 (
                     'table',
-                    [['环节', '用时', '做法', '对应目标']]
+                    [['环节', '用时', '做法', '对应目标', '收集的证据']]
                     + [
                         [
                             a['name'],
                             f'{a.get("minutes", 0)} 分钟',
                             a.get('description', ''),
                             '、'.join(a.get('objective_ids', [])),
+                            a.get('evidence', ''),
                         ]
                         for a in ct['activities']
                     ],
                 )
             )
+        # 例题 and 当堂检测: what the teacher teaches from, in print as on screen
+        for i, x in enumerate(ct.get('examples', []), 1):
+            if i == 1:
+                blocks.append(('h2', '例题'))
+            blocks += [('p', f'例 {i}　{x["problem"]}'), ('p', f'解答：{x["solution"]}')] if x.get('solution') else [('p', f'例 {i}　{x["problem"]}')]
+        if ct.get('exit_check'):
+            blocks.append(('h2', '当堂检测'))
+            for i, x in enumerate(ct['exit_check'], 1):
+                blocks.append(('p', f'{i}. {x["question"]}' + (f'　答案：{x["answer"]}' if x.get('answer') else '')))
         if ct.get('notes'):
             blocks += [('h2', '备注'), ('p', ct['notes'])]
         return blocks

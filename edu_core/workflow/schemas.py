@@ -66,6 +66,8 @@ class QualityOutput(BaseModel):
 class SolveOutput(BaseModel):
     answer: str = Field(max_length=4000)
     final_answer: str = Field(max_length=300)
+    # given numbers that the given raw data cannot produce (e.g. an entropy impossible for 8 samples)
+    data_issue: str = Field(default='', max_length=300)
 
 
 class Evidence(BaseModel):
@@ -103,6 +105,19 @@ class Activity(BaseModel):
     minutes: int = Field(ge=0, le=90)
     description: str = Field(max_length=400)
     objective_index: int
+    evidence: str = Field(default='', max_length=200)  # what this step collects to judge the objective
+
+
+class PlanExample(BaseModel):
+    objective_index: int
+    problem: str = Field(max_length=1500)
+    solution: str = Field(max_length=2500)
+
+
+class ExitCheck(BaseModel):
+    objective_index: int
+    question: str = Field(max_length=800)
+    answer: str = Field(max_length=800)
 
 
 class PlanObjective(ObjectiveDraft):
@@ -116,7 +131,16 @@ class LessonPlanOutput(BaseModel):
     key_points: list[str]
     difficulties: list[str]
     activities: list[Activity]
+    # Only what a teacher needs to teach from: 例题 and 当堂检测. 关键提问, 作业 and 板书 were dropped again: they
+    # depend on each teacher's habits and mostly added text to read and redo.
+    examples: list[PlanExample] = []
+    exit_check: list[ExitCheck] = []
     notes: str = Field(max_length=600)
+
+
+class PlanReview(BaseModel):
+    issues: list[str]  # must be fixed: knowledge errors, wrong example solutions, contradictions
+    suggestions: list[str]
 
 
 class ReviewSection(BaseModel):

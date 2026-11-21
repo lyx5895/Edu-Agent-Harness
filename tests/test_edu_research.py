@@ -224,7 +224,7 @@ def test_materials_can_be_excluded_or_narrowed_to_a_section(ws):
     ws.set_material_prefs(p['id'], exclude=[drop['id']], focus={keep['id']: '第二章'})
     note = ws.draft_lesson_plan(p['id'])['context_note']
     assert '材料 2 份（1 份已排除，1 份只发送指定章节）' in note
-    sent = ws.llm.calls[-1]['user']['参考材料']
+    sent = ws.llm.last('draft_lesson_plan')['user']['参考材料']
     assert sent == [{'文件': '教材', '内容': '# 第二章 对数\n对数定义与性质\n'}]
 
 

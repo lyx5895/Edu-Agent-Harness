@@ -187,7 +187,7 @@ def test_class_status_reaches_the_next_plan_of_that_class_only(ws):
     nxt = ws.start_task(crs['id'], 'prep', offering_id=o3['id'], knowledge_module='对数函数', lesson='第3课时')
     plan = ws.draft_lesson_plan(nxt['project']['id'])
     assert '本班学情' in plan['context_note']
-    sent = ws.llm.calls[-1]['user']['本班学情']
+    sent = ws.llm.last('draft_lesson_plan')['user']['本班学情']
     assert sent['班级与进度'] == '高一（3）班' and sent['问题模式'][0]['涉及人数'] == '1/2'
 
     other = ws.start_task(crs['id'], 'prep', offering_id=o5['id'], knowledge_module='对数函数')
@@ -368,7 +368,7 @@ def test_teacher_removes_class_status_items_from_what_the_model_reads(ws):
     assert '本班学情' not in ws.draft_lesson_plan(nxt)['context_note']  # nothing left to send
     ws.set_status_prefs(nxt, exclude=[])
     plan = ws.draft_lesson_plan(nxt)
-    sent = ws.llm.calls[-1]['user']['本班学情']
+    sent = ws.llm.last('draft_lesson_plan')['user']['本班学情']
     assert '本班学情' in plan['context_note'] and sent['问题模式'] and not sent['学情概述']
 
 
@@ -679,13 +679,12 @@ def test_questions_are_written_one_objective_per_call(ws):
     seen = []
 
     def gen(r, p):
-        seen.append(([g['目标'] for g in p['教学目标']], p['建议优先题型']))
+        seen.append(([g['目标'] for g in p['教学目标']], None))
         return {'questions': [question(f'第 {len(seen)} 组：{p["教学目标"][0]["目标"]}')]}
 
     ws.llm.handlers['generate_questions'] = gen
     out = ws.generate_questions(pid, types=['calculation', 'fill_blank'], count=1, ab=False)
     assert sorted(g for g, _ in seen) == [['能比较对数值大小'], ['能解简单对数不等式']]  # one call each
-    assert {tuple(t) for _, t in seen} == {('计算与推导', '填空题'), ('填空题', '计算与推导')}  # rotated suggestions
     qs = out['candidates'][0]['questions']
     cov = {o['text']: o['id'] for o in ws.coverage(pid)['objectives']}
     by_goal = {q['content']['objective_ids'][0]: q['content']['stem'] for q in qs}
@@ -745,7 +744,7 @@ def test_standards_confirmation_respects_the_teacher_and_follows_the_course_info
     ws.draft_lesson_plan(pid)
     cur = ws.curriculum(pid)
     assert cur['chosen_by'] == 'model' and cur['selected'] == [] and cur['note'] == '课标未单列这一内容'
-    assert '课程标准' not in ws.llm.calls[-1]['user']  # no standard reaches the plan
+    assert '课程标准' not in ws.llm.last('draft_lesson_plan')['user']  # no standard reaches the plan
 
     ws.update_project(pid, curriculum_ids=['math.B2.2.3.1'])
     calls = len(ws.llm.calls)
@@ -769,3 +768,53 @@ def test_parts_see_the_other_objectives_and_near_duplicates_get_a_suggestion(ws)
     checks = [q['content']['checks'] for q in qs]
     assert not checks[0].get('suggestions') and '第 1 道题内容相近' in checks[1]['suggestions'][-1]
     assert not checks[1]['flags']  # a near duplicate is a suggestion, never 需核对
+
+
+def test_the_solver_reports_given_numbers_the_data_cannot_produce(ws):
+    crs = ws.create_course('高二人工智能', '人工智能')
+    pid = ws.start_task(crs['id'], 'practice', knowledge_module='决策树')['project']['id']
+    ws.llm.handlers['self_check_solve'] = lambda r, p: {
+        'answer': '…', 'final_answer': '1<x<9', 'data_issue': '8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1',
+    }
+    [q] = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
+    assert q['content']['checks']['flags'][-1] == '数据问题：8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1'
+
+
+def test_plan_has_examples_and_exit_checks_and_is_reviewed(ws):
+    from edu_core.llm import ModelUnavailable
+    from test_edu_workflow import HANDLERS
+
+    crs = ws.create_course('高一数学', '数学')
+    pid = ws.start_task(crs['id'], 'prep', knowledge_module='对数', lesson='第2课时')['project']['id']
+    base = HANDLERS['draft_lesson_plan']
+
+    def plan(r, p):
+        out = base(r, p)
+        out['objectives'] = [out['objectives'][0], {**out['objectives'][0], 'text': '能比较两个对数值的大小'}]
+        out['activities'] = [{'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 0, 'evidence': ''}]
+        out['examples'] = [{'objective_index': 0, 'problem': '解 log2(x-1)<3', 'solution': '定义域 x>1；单调递增得 x<9；1<x<9'}]
+        out['exit_check'] = [{'objective_index': 1, 'question': '比较 log2 3 与 log2 5', 'answer': 'log2 3 < log2 5'}]
+        return out
+
+    ws.llm.handlers['draft_lesson_plan'] = plan
+    ws.llm.handlers['review_plan'] = lambda r, p: {'issues': ['例题 1 的解答缺少单调性的依据'], 'suggestions': ['小结可以回扣定义域']}
+    content = ws.draft_lesson_plan(pid)['lesson_plan']['content']
+    assert content['examples'][0]['objective_ids'] == ['O1'] and content['exit_check'][0]['objective_ids'] == ['O2']
+    assert not {'key_questions', 'homework', 'board'} & set(content)  # only what is needed to teach from
+    assert ws.llm.last('review_plan')['user']['备课方案']['examples'][0]['problem'] == '解 log2(x-1)<3'
+    assert content['review'] == {'issues': ['例题 1 的解答缺少单调性的依据'], 'suggestions': ['小结可以回扣定义域']}
+    o1, o2 = content['objectives']
+    assert '没有环节收集这条目标的达成证据' in o1.get('checks', [])  # its only step collects nothing
+    assert '没有环节收集这条目标的达成证据' not in o2.get('checks', [])  # the exit check collects it
+
+    with ws.store.read() as c:
+        draft = ws._plan(c, pid, confirmed=False)
+    edited = ws.edit(draft['id'], {'notes': '老师改了备注'})['content']
+    assert 'review' not in edited and edited['examples'] == content['examples']  # the edit keeps the sections
+
+    def down(r, p):
+        raise ModelUnavailable('网关超时')
+
+    ws.llm.handlers['review_plan'] = down
+    again = ws.draft_lesson_plan(pid)['lesson_plan']['content']
+    assert again['review']['error'].startswith('教案审核没有完成') and again['examples']  # the plan is kept

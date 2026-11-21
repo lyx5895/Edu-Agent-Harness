@@ -1233,8 +1233,10 @@ function lessonPlanItem(a) {
   const c = a.content;
   const total = (c.activities || []).reduce((n, x) => n + (Number(x.minutes) || 0), 0);
   const goalNo = Object.fromEntries((c.objectives || []).map((o, i) => [o.id, i + 1]));
+  const goalsOf = (x) => (x.objective_ids || []).map((id) => (goalNo[id] ? `目标 ${goalNo[id]}` : '')).filter(Boolean).join('、');
   return `<div class="item" data-id="${a.id}">
     <div class="item-head"><div>${statusPill(a)}</div></div>
+    ${planReview(c.review)}
     ${(c.objectives || []).length && c.objectives.every((o) => (o.checks || []).includes('未对应课标'))
     ? '<div class="banner warn">所有目标都没有对应到课标条目：课时信息里勾选的课标可能不对，请在“修改要求与材料”里检查后重新生成。</div>' : ''}
     <h4>教学目标</h4>
@@ -1245,13 +1247,42 @@ function lessonPlanItem(a) {
       ${(o.standard_refs || []).length ? `<div class="std-refs">依据课标：${o.standard_refs.map((s) => `<span class="std" tabindex="0" title="${esc(s.text)}（课标第 ${s.page} 页）">${esc(s.label)}</span>`).join('')}</div>` : ''}</li>`).join('')}</ol>
     <h4>重点</h4>${lines(c.key_points)}<h4>难点</h4>${lines(c.difficulties)}
     <h4>课堂活动（共 ${total} 分钟）</h4>
-    <table class="activity-table"><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td><td>${esc(x.description)}</td>
-      <td>${(x.objective_ids || []).map((id) => (goalNo[id] ? `目标 ${goalNo[id]}` : '')).join('、')}</td></tr>`).join('')}</table>
+    <table class="activity-table"><tr><th>活动</th><th>用时</th><th>做法</th><th>对应目标</th></tr>${(c.activities || []).map((x) => `<tr><td>${esc(x.name)}</td><td>${x.minutes} 分钟</td>
+      <td>${esc(x.description)}${x.evidence ? `<div class="kv">证据：${esc(x.evidence)}</div>` : ''}</td><td>${goalsOf(x)}</td></tr>`).join('')}</table>
+    ${planSections(c, goalsOf)}
     ${c.notes ? `<div class="kv">提醒：${esc(c.notes)}</div>` : ''}
     ${c.revision ? `<div class="kv flag">这一版只改了：${esc(c.revision.target)}（${esc(c.revision.instruction)}）</div>` : ''}
     <div class="item-actions review-actions"><button class="small secondary" data-act="edit-lesson-plan">修改</button>
       ${a.status !== 'confirmed' ? `${changeKindSelect(a.confirmed_version)}<button class="small" data-act="confirm">确认备课方案</button>` : ''}</div>
     <div class="edit-area"></div></div>`;
+}
+
+// 教案审核: only what must be fixed is shown, suggestions folded; a clean review adds nothing to read.
+function planReview(r) {
+  if (!r) return '';
+  if (r.error) return `<div class="kv muted">${esc(r.error)}</div>`;
+  const issues = (r.issues || []).length
+    ? `<div class="banner warn plan-review"><b>审核发现 ${r.issues.length} 处需要修改</b><ul>${r.issues.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`
+    : '';
+  const tips = (r.suggestions || []).length
+    ? `<details class="suggest"><summary>改进建议（${r.suggestions.length}）</summary>${r.suggestions.map((x) => `<div class="kv">${esc(x)}</div>`).join('')}</details>` : '';
+  return issues + tips;
+}
+
+// 例题 and 当堂检测: what a 教案 needs to be taught from; answers fold away to keep the page short.
+function planSections(c, goalsOf) {
+  const tag = (x) => (goalsOf(x) ? ` <span class="pill">${goalsOf(x)}</span>` : '');
+  let html = '';
+  if ((c.examples || []).length) {
+    html += `<h4>例题</h4>${c.examples.map((x, i) => `<div class="plan-ex"><div><b>例 ${i + 1}</b>${tag(x)}</div>
+      <div class="stem">${esc(x.problem)}</div>
+      ${x.solution ? `<details><summary>解答</summary><div class="answer">${esc(x.solution)}</div></details>` : ''}</div>`).join('')}`;
+  }
+  if ((c.exit_check || []).length) {
+    html += `<h4>当堂检测</h4>${c.exit_check.map((x, i) => `<div class="plan-ex"><div><b>${i + 1}.</b>${tag(x)} <span class="stem">${esc(x.question)}</span></div>
+      ${x.answer ? `<details><summary>答案</summary><div class="answer">${esc(x.answer)}</div></details>` : ''}</div>`).join('')}`;
+  }
+  return html;
 }
 
 function objectiveRow(o = {}) {
@@ -1261,15 +1292,30 @@ function objectiveRow(o = {}) {
     <button class="small danger" data-act="remove-objective-row" title="删除">×</button></div>`;
 }
 
+// One example or exit-check item in the plan editor: objective numbers, the question, its solution or answer.
+function planRow(kind, goals = '', text = '', answer = '') {
+  const second = kind === 'ex' ? '解答' : '答案';
+  return `<div class="plan-row" data-kind="${kind}">
+    <input class="pr-goal" placeholder="目标序号" value="${esc(goals)}" aria-label="对应目标序号">
+    <textarea class="pr-text" rows="2" placeholder="题目">${esc(text)}</textarea>
+    <textarea class="pr-answer" rows="2" placeholder="${second}">${esc(answer)}</textarea>
+    <button class="small danger" data-act="remove-plan-row" title="删除">×</button></div>`;
+}
+
 function lessonPlanForm(c) {
   const goalNo = Object.fromEntries((c.objectives || []).map((o, i) => [o.id, i + 1]));
-  const acts = (c.activities || []).map((x) => [x.name, x.minutes, x.description, (x.objective_ids || []).map((id) => goalNo[id]).filter(Boolean).join(',')].join('｜')).join('\n');
+  const nos = (x) => (x.objective_ids || []).map((id) => goalNo[id]).filter(Boolean).join(',');
+  const acts = (c.activities || []).map((x) => [x.name, x.minutes, x.description, nos(x), x.evidence || ''].join('｜')).join('\n');
   return `<div class="edit-grid">
     <span class="label">教学目标</span><div class="f-objectives">${(c.objectives || []).map(objectiveRow).join('')}</div>
     <div><button class="small secondary" data-act="add-objective-row">添加目标</button></div>
     <label>重点（每行一条）<textarea class="f-key" rows="3">${esc((c.key_points || []).join('\n'))}</textarea></label>
     <label>难点（每行一条）<textarea class="f-diff" rows="2">${esc((c.difficulties || []).join('\n'))}</textarea></label>
-    <label>课堂活动（每行：名称｜分钟｜做法｜对应目标序号，如 1,2）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
+    <label>课堂活动（每行：名称｜分钟｜做法｜对应目标序号，如 1,2｜收集的证据）<textarea class="f-acts" rows="5">${esc(acts)}</textarea></label>
+    <span class="label">例题</span><div class="f-examples">${(c.examples || []).map((x) => planRow('ex', nos(x), x.problem, x.solution)).join('')}</div>
+    <div><button class="small secondary" data-act="add-plan-row" data-kind="ex">添加例题</button></div>
+    <span class="label">当堂检测</span><div class="f-checks">${(c.exit_check || []).map((x) => planRow('ck', nos(x), x.question, x.answer)).join('')}</div>
+    <div><button class="small secondary" data-act="add-plan-row" data-kind="ck">添加检测题</button></div>
     <label>提醒<input class="f-notes" value="${esc(c.notes || '')}"></label>
     <div class="item-actions"><button class="small" data-act="save-lesson-plan">保存修改</button><button class="small secondary" data-act="cancel-edit">取消</button></div></div>`;
 }
@@ -1845,6 +1891,12 @@ async function onAction(e) {
     case 'remove-objective-row':
       btn.closest('.obj-row').remove();
       break;
+    case 'add-plan-row':
+      $(btn.dataset.kind === 'ex' ? '.f-examples' : '.f-checks', item).insertAdjacentHTML('beforeend', planRow(btn.dataset.kind));
+      break;
+    case 'remove-plan-row':
+      btn.closest('.plan-row').remove();
+      break;
     case 'save-lesson-plan': {
       const split = (v) => v.split('\n').map((x) => x.trim()).filter(Boolean);
       const rows = $$('.obj-row', item);
@@ -1852,13 +1904,19 @@ async function onAction(e) {
         id: r.dataset.oid || undefined, text: $('.o-text', r).value, success_criterion: $('.o-crit', r).value,
         inferred: r.dataset.inferred === '1' || undefined,
       })).filter((o) => o.text.trim());
+      const goalIds = (text) => (text || '').split(/[,，、\s]+/).map((n) => rows[Number(n) - 1]).filter(Boolean).map((r) => r.dataset.oid).filter(Boolean);
       const activities = split($('.f-acts', item).value).map((line) => {
-        const [name, minutes, description, goals] = line.split(/[｜|]/);
-        const ids = (goals || '').split(/[,，、\s]+/).map((n) => rows[Number(n) - 1]).filter(Boolean).map((r) => r.dataset.oid).filter(Boolean);
-        return { name: (name || '').trim(), minutes: Number(minutes) || 0, description: (description || '').trim(), objective_ids: ids };
+        const [name, minutes, description, goals, evidence] = line.split(/[｜|]/);
+        return { name: (name || '').trim(), minutes: Number(minutes) || 0, description: (description || '').trim(), objective_ids: goalIds(goals), evidence: (evidence || '').trim() };
       });
+      const planRows = (sel, a, b) => [...item.querySelectorAll(`${sel} .plan-row`)]
+        .map((r) => ({ objective_ids: goalIds($('.pr-goal', r).value), [a]: $('.pr-text', r).value.trim(), [b]: $('.pr-answer', r).value.trim() }))
+        .filter((x) => x[a]);
       await busy(btn, '保存中…', async () => {
-        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: { objectives, key_points: split($('.f-key', item).value), difficulties: split($('.f-diff', item).value), activities, notes: $('.f-notes', item).value } });
+        await api('PUT', `/api/artifacts/${item.dataset.id}`, { content: {
+          objectives, key_points: split($('.f-key', item).value), difficulties: split($('.f-diff', item).value), activities, notes: $('.f-notes', item).value,
+          examples: planRows('.f-examples', 'problem', 'solution'), exit_check: planRows('.f-checks', 'question', 'answer'),
+        } });
         closeEditors(item);
         toast('已保存修改，确认后生效'); await refresh();
       });

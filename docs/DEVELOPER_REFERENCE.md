@@ -138,7 +138,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 ## 4. 模型接入与上下文
 
-**网关**（`llm.Gateway`）：OpenAI 兼容的 `/chat/completions`，`response_format` 用 `json_schema`（`strict_schema()` 把 pydantic 模型转成严格 schema，保留属性名）。返回内容用 pydantic 校验；不通过时把错误发回模型修一次，仍不通过抛 `ModelUnavailable`（接口返回 503）。网络错误重试 3 次。记录 `model_requested` 和 `model_returned`（网关可能路由到不同版本）。推理模型的思考占输出 token，`max_tokens` 默认 6000。
+**网关**（`llm.Gateway`）：OpenAI 兼容的 `/chat/completions`，`response_format` 用 `json_schema`（`strict_schema()` 把 pydantic 模型转成严格 schema，保留属性名）。返回内容用 pydantic 校验；不通过时把错误发回模型修一次，仍不通过抛 `ModelUnavailable`（接口返回 503）。输出因 `max_tokens` 被截断时（推理模型可能把额度用在思考上），以 `LENGTH_RETRY_CAP`（16000）重新请求一次，不把截断的半截发回去。已知会写长回复的调用直接给更大的初始额度（`complete(..., max_tokens=)`：备课方案、出题各部分 12000），省掉一次注定被截断的调用。网络错误重试 3 次。记录 `model_requested` 和 `model_returned`（网关可能路由到不同版本）。推理模型的思考占输出 token，`max_tokens` 默认 6000。
 
 **角色**（`config.DEFAULT_MODELS`，可用 `EDU_MODEL_<ROLE>` 覆盖）：
 
@@ -182,22 +182,23 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
   1. 前提：有知识模块或材料，否则 409。
   2. 解析课标：老师选择 → **模型核对**（`_confirm_standards`，提示词 `PICK_STANDARDS_SYSTEM`，上下文 `pick_standards`）→ 无；勾选“不参考课标”时不用。没有老师选择时，`CUR.candidates()` 取字面匹配的前几名及其所在单元的全部条目，由 generator 选 0–3 条直接对应的（编号限于候选），保存为 `chosen_by='model'`；没有直接对应时 `ids` 为空并保存原因 `note`；模型调用失败时退回字面自动选择（`auto`）。练习任务反推目标前也做这一步。
   3. 输入：学科、年级、知识模块、本课时内容、课时、学生基础、老师说明、材料（≤8000 字）、课程标准（内容要求原文及编号、同主题的学业要求和教学提示）、上一课时学情（如有）。
-  4. 提示词 `LESSON_PLAN_SYSTEM`：2–4 条可检验目标，重点 2–4、难点 1–3、活动 3–6 且总时长不超过课时；有课标时每条目标填 `standard_ids`，要求不高于课标用词，超出须 `beyond_standard` + 理由；有本课时内容时只围绕它；有上一课时学情时安排简短回顾。
-  5. 服务器：丢弃不在提供范围内的课标编号；活动的目标序号越界则去掉；`normalize_plan` 编号；`CUR.plan_checks()` 写入 `checks`（未对应课标、要求高于课标）和 `standard_refs`。
-  6. 存为草稿，与已有方案同谱系。老师编辑（`edit`）时按目标编号继承引用，并重新检查。确认后才能出题。
+  4. 提示词 `LESSON_PLAN_SYSTEM`：2–4 条可检验目标，重点 2–4、难点 1–3、活动 3–6 且总时长不超过课时（每个活动写 `evidence`：收集哪条目标的什么证据；要有小结）；例题 2–3 道（含完整解答，数据自洽）、当堂检测 1–2 道（含答案）；关键提问、作业、板书不生成（取决于老师习惯，徒增阅读和修改）；每条目标的达成标准都要有收集途径；有课标时每条目标填 `standard_ids`，要求不高于课标用词，超出须 `beyond_standard` + 理由；有本课时内容时只围绕它；有上一课时学情时安排简短回顾。
+  5. 服务器：丢弃不在提供范围内的课标编号；活动、例题、当堂检测的目标序号换成目标编号，越界则去掉；`normalize_plan` 编号；`CUR.plan_checks()` 写入 `checks`（未对应课标、要求高于课标）和 `standard_refs`，随后 `evidence_checks()` 给没有任何活动（带 `evidence`）或当堂检测收集证据的目标加“没有环节收集这条目标的达成证据”（没有活动的反推方案不查）。
+  6. **教案审核**（`_review_plan`，reviewer，提示词 `PLAN_REVIEW_SYSTEM`，上下文 `review_plan`）：知识性错误与前后矛盾、例题和检测的答案与数据、目标—活动—证据是否对得上、总用时 → `content.review = {issues, suggestions}`；审核失败时保存 `review.error`，方案照常保存。
+  7. 存为草稿，与已有方案同谱系。老师编辑（`edit`）或局部修改时按目标编号继承引用、重新检查，并清掉 `review`（它针对的是修改前的版本）。确认后才能出题。
 
 ### 5.2 02 出题改题
 
 - `generate_questions(pid, types=, count=, difficulty=, purpose=, notes=, objective_ids=, ab=)`：
   1. 前提：备课方案已确认；没有备课方案时，先从主题和要求反推目标（存为未确认草稿，标 `inferred`）。01 生成但未确认的方案要先确认。`objective_ids` 只为指定目标出题（“补 1 道”）。
   2. **按目标拆分**（`generate-v4`）：每条目标一次调用，并发进行；每部分写完立刻开始它自己的自检。单个部分失败只丢掉它自己的题（原因并入 `dropped`），全部失败才报错。每部分各记一条 `generations`，A/B 时共用同一 `candidate_group` 和 `position`。合并后按题干与选项的字符二元组重叠度标出相近的题（`checks.suggestions`，不算需核对）。
-  3. 每部分的输入：这一条目标与达成标准、**其他目标**（由别的部分负责，本部分不考）、重点、难点、本课时内容、所引课标原文与教学提示、与这条目标相关的课堂活动、备课备注、上一课时学情（只给第一部分，整套只出一道巩固题）、学生基础、材料（≤6000 字）、允许题型、**建议优先题型**（按目标轮换）、每目标题数、用途、难度、出题说明。提示词里的难度定义与审核共用 `DIFFICULTY_LEVELS`；评分要点规则（多选题的漏选错选、每项作答要求对应要点、填空不考过程）；题目数据须自洽。
+  3. 每部分的输入：这一条目标与达成标准、**其他目标**（由别的部分负责，本部分不考）、重点、难点、本课时内容、所引课标原文与教学提示、与这条目标相关的课堂活动、备课备注、上一课时学情（只给第一部分，整套只出一道巩固题）、学生基础、材料（≤6000 字）、允许题型、每目标题数、用途、难度、出题说明。提示词里的难度定义与审核共用 `DIFFICULTY_LEVELS`；题型要能检验达成标准（要求学生写出、计算、说明的至少一道开放作答）；评分要点规则（多选题的漏选错选、每项作答要求对应要点、填空不考过程）；题目数据须自洽。
   4. A/B：勾选或按 `EDU_AB_RATE` 随机，出两版（第二版提示偏真实情境），两版并发，位置随机，存为 `candidate`。`choose(pid, group, verdict)` 记录 A/B/差不多/都不合适，采用的一版（它的全部部分）转草稿并编号。
   5. `usable_drafts`：题型不在允许范围的丢弃；没有评分要点的，选择/判断题补一个“答案正确”，其他丢弃；丢弃原因返回给界面。
   6. 每道题并发 `_self_check(p, d, review)`（审核与独立解题同时进行），结果写入 `checks`：
      - **题目审核** `_quality`（reviewer）：是否考查目标、是否超范围（前置知识可用）、估计难度、**必须修改的问题**（知识性错误、数据不自洽、条件不足或歧义、评分要点不可用）→ `checks.flags`（界面显示“需核对”）；可改进处 ≤2 条 → `checks.suggestions`（折叠显示）；难度与要求不同 → `checks.difficulty_asked`（只在难度标签上提示，不算需核对）；
      - **数值核对**：要点的 `check_expected` 与参考答案最终数值不一致 → `reference_mismatch`；
-     - **独立解题**（reviewer，看不到答案；选项带字母；输出 `final_answer`），再用 `grading.grade` 按评分要点评这份解答，满分为 `agree`，否则 `disagree`；写作题跳过；
+     - **独立解题**（reviewer，看不到答案；选项带字母；输出 `final_answer`），再用 `grading.grade` 按评分要点评这份解答，满分为 `agree`，否则 `disagree`；写作题跳过；解题前先验算题目给出的数值能否由题中原始数据得到（`data_issue`，例如 8 个样本不可能出现的熵），有问题加 `数据问题：…` 到 `checks.flags`；
      - `answer_suspect = disagree 或 reference_mismatch`。
 - `regenerate_question(qid, instruction, difficulty)`：同题型、同目标（再练题同问题模式），把原题和老师要求交给模型，经自检与审核后存为**同一题目谱系的新版本**（题号不变），评分标准也存为原评分标准谱系的新版本。
 - `adopt_solver_answer(qid)`：用独立解题的最终答案和过程替换标准答案和参考答案，存为新草稿。
