@@ -13,7 +13,7 @@ from edu_core import curriculum as CUR
 from edu_core.config import Settings
 from edu_core.context import describe
 from edu_core.llm import ModelUnavailable
-from edu_core.storage import Store, row
+from edu_core.storage import Store, new_id, row
 from edu_core.subjects import KEYED_TYPES, QUESTION_TYPES, pack
 from edu_core.text import dump
 from edu_core.workflow.common import (
@@ -202,7 +202,46 @@ class WorkspaceBase:
                 rubric = self._rubric_for(c, a['lineage_id'], include_drafts=True)
                 if rubric and rubric['status'] != 'confirmed':
                     A.confirm(c, rubric['id'], change_kind=change_kind, teacher=teacher)
+                # Confirming a question without comparing its alternative records the comparison as skipped: nothing
+                # stays pending for work the teacher has already adopted.
+                self._skip_open_comparisons(c, a['project_id'], aid, teacher)
             return done
+
+    def _skip_open_comparisons(self, c, pid, question_id, teacher):
+        rows = c.execute(
+            'SELECT candidate_group, display FROM comparisons WHERE project_id=? AND candidate_group NOT IN '
+            '(SELECT candidate_group FROM choices WHERE revoked_at IS NULL)',
+            (pid,),
+        ).fetchall()
+        for r in rows:
+            display = json.loads(r['display'] or '{}')
+            if (display.get('A') or {}).get('question') != question_id:
+                continue
+            c.execute(
+                'INSERT INTO choices(id,project_id,candidate_group,verdict,chosen_position,reason,teacher,created_at,'
+                'work_choice,preference,acceptable,reason_tags) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                (
+                    new_id('cho'),
+                    pid,
+                    r['candidate_group'],
+                    'skip',
+                    None,
+                    '',
+                    teacher,
+                    time.time(),
+                    '',
+                    'none',
+                    '',
+                    '[]',
+                ),
+            )
+            b_id = (display.get('B') or {}).get('question')
+            if b_id:
+                b = A.get(c, b_id)
+                c.execute(
+                    "UPDATE artifacts SET status='superseded' WHERE lineage_id=? AND status='candidate'",
+                    (b['lineage_id'],),
+                )
 
     def _validate_content(self, type_, content, previous):
         if not isinstance(content, dict):

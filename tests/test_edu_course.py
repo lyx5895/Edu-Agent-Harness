@@ -647,21 +647,23 @@ def test_review_and_independent_solution_run_side_by_side(ws):
     assert checks['solver'] == 'agree' and checks['difficulty'] == '中等'  # both results merged into the question
 
 
-def test_two_ab_versions_are_generated_side_by_side(ws):
+def test_alternatives_for_two_questions_run_side_by_side(ws):
     import threading
-
-    crs = ws.create_course('高一数学', '数学')
-    pid = ws.start_task(crs['id'], 'practice', knowledge_module='对数函数')['project']['id']
-    ws.generate_questions(pid, types=['calculation'], count=1, ab=False)  # objectives first, outside the race
-    import itertools
 
     from test_edu_workflow import question
 
-    n = itertools.count(1)  # two different versions, or the comparison is dropped as a duplicate
-    gen = lambda r, p: {'questions': [question(f'解不等式 log2(x-{next(n)}) < 3')]}  # noqa: E731
-    ws.llm.handlers['generate_questions'] = _meet(gen, threading.Barrier(2, timeout=5))
+    pid = _two_goal_task(ws)
+    ws.llm.handlers['generate_questions'] = lambda r, p: {
+        'questions': [{**question(f'第 {i} 条目标的题'), 'objective_index': i} for i in range(len(p['教学目标']))]
+    }
+
+    def alt(r, p):
+        return {'questions': [question('替代：' + p['原题']['题干'])]}
+
+    # Both alternatives are written at the same time: the two calls meet at the barrier instead of running one by one.
+    ws.llm.handlers['generate_alternative'] = _meet(alt, threading.Barrier(2, timeout=5))
     out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
-    assert [c['position'] for c in out['candidates']] == ['A', 'B'] and out['candidate_group']
+    assert len(out['alternatives']) == 2
 
 
 def _two_goal_task(ws):
@@ -713,20 +715,21 @@ def test_a_failed_part_costs_only_its_own_questions(ws):
     assert len(cand['questions']) == 1 and any('第 2 条目标' in d for d in cand['dropped'])
 
 
-def test_choosing_an_ab_version_promotes_all_its_parts(ws):
-    import itertools
-
+def test_choosing_an_alternative_replaces_one_question(ws):
     from test_edu_workflow import question
 
     pid = _two_goal_task(ws)
-    n = itertools.count(1)
-    ws.llm.handlers['generate_questions'] = lambda r, p: {'questions': [question(f'解不等式 log2(x-{next(n)}) < 3')]}
+    ws.llm.handlers['generate_questions'] = lambda r, p: {
+        'questions': [{**question(f'第 {i} 条目标的题'), 'objective_index': i} for i in range(len(p['教学目标']))]
+    }
+    ws.llm.handlers['generate_alternative'] = lambda r, p: {'questions': [question('替代：' + p['原题']['题干'])]}
     out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
-    assert [len(c['questions']) for c in out['candidates']] == [2, 2]
-    res = ws.choose(pid, out['candidate_group'], 'B')
-    assert len(res['promoted']) == 4  # two questions and their two rubrics
+    assert len(out['candidates'][0]['questions']) == 2
+    first = out['alternatives'][0]
+    res = ws.choose(pid, first['group'], 'B')
+    assert len(res['promoted']) == 2  # one question's next version and its rubric
     drafts = [q for q in ws.questions(pid) if q['status'] == 'draft']
-    assert sorted(q['content']['no'] for q in drafts) == [1, 2]
+    assert sorted(q['content']['no'] for q in drafts) == [1, 2]  # still two questions, one slot each
 
 
 def test_standards_confirmation_respects_the_teacher_and_follows_the_course_info(ws):
@@ -777,16 +780,23 @@ def test_parts_see_the_other_objectives_and_near_duplicates_get_a_suggestion(ws)
 def test_the_solver_reports_given_numbers_the_data_cannot_produce(ws):
     crs = ws.create_course('高二人工智能', '人工智能')
     pid = ws.start_task(crs['id'], 'practice', knowledge_module='决策树')['project']['id']
+    from test_edu_workflow import question
+
     ws.llm.handlers['self_check_solve'] = lambda r, p: {
-        'answer': '…', 'final_answer': '1<x<9', 'data_issue': '8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1',
+        'answer': '…',
+        'final_answer': '1<x<9',
+        'data_issue': '8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1',
     }
+    # the finding triggers one automatic rewrite; it is not what this test is about
+    ws.llm.handlers['revise_question'] = lambda r, p: {'questions': [question('修正后的题')]}
     [q] = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)['candidates'][0]['questions']
     assert q['content']['checks']['flags'][-1] == '数据问题：8 个样本的二分类熵不可能是 0.94，应为 0.954 或 1'
 
 
 def test_plan_has_examples_and_exit_checks_and_is_reviewed_on_request(ws):
-    from edu_core.llm import ModelUnavailable
     from test_edu_workflow import HANDLERS
+
+    from edu_core.llm import ModelUnavailable
 
     crs = ws.create_course('高一数学', '数学')
     pid = ws.start_task(crs['id'], 'prep', knowledge_module='对数', lesson='第2课时')['project']['id']
@@ -795,8 +805,12 @@ def test_plan_has_examples_and_exit_checks_and_is_reviewed_on_request(ws):
     def plan(r, p):
         out = base(r, p)
         out['objectives'] = [out['objectives'][0], {**out['objectives'][0], 'text': '能比较两个对数值的大小'}]
-        out['activities'] = [{'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 0, 'evidence': ''}]
-        out['examples'] = [{'objective_index': 0, 'problem': '解 log2(x-1)<3', 'solution': '定义域 x>1；单调递增得 x<9；1<x<9'}]
+        out['activities'] = [
+            {'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 0, 'evidence': ''}
+        ]
+        out['examples'] = [
+            {'objective_index': 0, 'problem': '解 log2(x-1)<3', 'solution': '定义域 x>1；单调递增得 x<9；1<x<9'}
+        ]
         out['exit_check'] = [{'objective_index': 1, 'question': '比较 log2 3 与 log2 5', 'answer': 'log2 3 < log2 5'}]
         return out
 
@@ -814,7 +828,12 @@ def test_plan_has_examples_and_exit_checks_and_is_reviewed_on_request(ws):
     # AI 帮我看看: only when the teacher asks, written as the teacher sees the plan, not stored in it
     assert ws.check_plan(plan['id']) == {'issues': ['例题 1 的解答缺少单调性的依据，补上“底数大于 1 递增”']}
     seen = ws.llm.last('check_plan')['user']['备课方案']
-    assert seen['例题'][0] == {'编号': '例题 1', '对应': '目标 1', '题目': '解 log2(x-1)<3', '解答': '定义域 x>1；单调递增得 x<9；1<x<9'}
+    assert seen['例题'][0] == {
+        '编号': '例题 1',
+        '对应': '目标 1',
+        '题目': '解 log2(x-1)<3',
+        '解答': '定义域 x>1；单调递增得 x<9；1<x<9',
+    }
     assert 'objective_ids' not in str(seen) and 'O1' not in str(seen)
     assert 'review' not in ws.artifact(plan['id'])['content']
 
@@ -832,22 +851,36 @@ def test_an_example_can_be_revised_on_its_own(ws):
     crs = ws.create_course('高二人工智能', '人工智能')
     pid = ws.start_task(crs['id'], 'prep', knowledge_module='决策树', lesson='第4课时')['project']['id']
     base = HANDLERS['draft_lesson_plan']
-    ws.llm.handlers['draft_lesson_plan'] = lambda r, p: {**base(r, p), 'examples': [
-        {'objective_index': 0, 'problem': '6 个样本 3 是 3 否，求根节点熵', 'solution': 'H=1'}]}
+    ws.llm.handlers['draft_lesson_plan'] = lambda r, p: {
+        **base(r, p),
+        'examples': [{'objective_index': 0, 'problem': '6 个样本 3 是 3 否，求根节点熵', 'solution': 'H=1'}],
+    }
     plan = ws.draft_lesson_plan(pid)['lesson_plan']
     ws.llm.handlers['revise_plan'] = lambda r, p: {
-        'text': '', 'success_criterion': '', 'name': '', 'minutes': 0, 'description': '', 'items': [],
-        'question': '6 个样本 4 是 2 否，求根节点熵', 'answer': 'H≈0.918'}
+        'text': '',
+        'success_criterion': '',
+        'name': '',
+        'minutes': 0,
+        'description': '',
+        'items': [],
+        'question': '6 个样本 4 是 2 否，求根节点熵',
+        'answer': 'H≈0.918',
+    }
     out = ws.revise_plan_part(plan['id'], 'example:1', '数据改成 4 是 2 否并重算')
-    assert out['lesson_plan']['content']['examples'][0] == {'problem': '6 个样本 4 是 2 否，求根节点熵', 'solution': 'H≈0.918', 'objective_ids': ['O1']}
+    assert out['lesson_plan']['content']['examples'][0] == {
+        'problem': '6 个样本 4 是 2 否，求根节点熵',
+        'solution': 'H≈0.918',
+        'objective_ids': ['O1'],
+    }
     sent = ws.llm.last('revise_plan')['user']
-    assert sent['要修改的部分']['位置'] == '例题 1' and '例题' in sent['整份方案'] and 'objectives' not in sent['整份方案']
+    assert (
+        sent['要修改的部分']['位置'] == '例题 1' and '例题' in sent['整份方案'] and 'objectives' not in sent['整份方案']
+    )
     assert out['lesson_plan']['content']['revision']['label'] == '例题 1'  # shown to the teacher, not example:1
 
 
 def test_a_question_is_changed_by_the_teachers_remark_not_replaced(ws):
     import pytest as _pytest
-
     from test_edu_workflow import question
 
     crs = ws.create_course('高一数学', '数学')
@@ -858,10 +891,16 @@ def test_a_question_is_changed_by_the_teachers_remark_not_replaced(ws):
         ws.revise_question(q['id'], '  ')
     new = ws.revise_question(q['id'], '把右边的 3 改成 2')['question']
     sent = ws.llm.last('revise_question')
-    assert sent['user']['老师的修改意见'] == '把右边的 3 改成 2' and sent['user']['原题']['题干'] == q['content']['stem']
-    assert sent['user']['原题']['评分要点'] and '保持原样' in sent['system']  # the whole question, changed only as asked
+    assert (
+        sent['user']['老师的修改意见'] == '把右边的 3 改成 2' and sent['user']['原题']['题干'] == q['content']['stem']
+    )
+    assert (
+        sent['user']['原题']['评分要点'] and '保持原样' in sent['system']
+    )  # the whole question, changed only as asked
     assert (new['lineage_id'], new['version'], new['content']['no']) == (q['lineage_id'], 2, q['content']['no'])
-    assert new['content']['objective_ids'] == q['content']['objective_ids'] and new['content']['revised_from'] == q['id']
+    assert (
+        new['content']['objective_ids'] == q['content']['objective_ids'] and new['content']['revised_from'] == q['id']
+    )
     assert new['content']['stem'] == '解不等式 log2(x-1) < 2' and 'checks' in new['content']  # checked like a new one
 
 

@@ -10,6 +10,7 @@ import hashlib
 import ipaddress
 import json
 import logging
+import os
 import tempfile
 import urllib.parse
 from pathlib import Path
@@ -415,7 +416,8 @@ class MapBody(BaseModel):
 
 
 def default_workspace() -> Workspace:
-    settings = load_settings()
+    # The app returns the questions first and finishes the checks in the background unless told otherwise.
+    settings = load_settings(background_checks=os.getenv('EDU_BACKGROUND_CHECKS', '1') not in ('0', 'false', 'no'))
     llm = None
     if settings.api_key:
         llm = Gateway(

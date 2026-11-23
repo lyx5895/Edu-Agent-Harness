@@ -61,6 +61,7 @@ HANDLERS = {
     },
     'practice': lambda r, p: {'questions': [question('解不等式 log3(x-2) < 2（巩固）', target=0)]},
     'self_check_solve': lambda r, p: {'answer': '定义域 x>1；单调递增得 x-1<8；所以 1<x<9', 'final_answer': '1<x<9'},
+    'self_check_compare': lambda r, p: {'consistent': True, 'note': ''},
     'review_question': lambda r, p: {
         'tests_objective': True,
         'objective_note': '',
@@ -86,7 +87,13 @@ HANDLERS = {
         'key_points': ['真数大于零'],
         'difficulties': ['取交集'],
         'activities': [
-            {'name': '复习定义域', 'minutes': 5, 'description': '口答', 'objective_index': 0, 'evidence': '学习单第 1 题，检验目标 1'},
+            {
+                'name': '复习定义域',
+                'minutes': 5,
+                'description': '口答',
+                'objective_index': 0,
+                'evidence': '学习单第 1 题，检验目标 1',
+            },
             {'name': '例题', 'minutes': 15, 'description': '板演', 'objective_index': 9},
         ],
         'notes': '',
@@ -239,18 +246,21 @@ def test_teacher_override_and_queue(ws):
 def test_ab_candidates_and_choice(ws):
     p = ws.create_project('物理｜匀速直线运动', 'physics', knowledge_module='匀速直线运动')
     ws.confirm(ws.draft_lesson_plan(p['id'])['lesson_plan']['id'])  # course info alone is enough
-    stems = iter(['一辆车 2 小时行驶 120 km，求平均速度。', '小明 10 分钟走了 1.2 km，求平均速度。'])
-    ws.llm.handlers['generate_questions'] = lambda r, payload: {'questions': [question(next(stems))]}
+    ws.llm.handlers['generate_questions'] = lambda r, payload: {
+        'questions': [question('一辆车 2 小时行驶 120 km，求平均速度。')]
+    }
+    ws.llm.handlers['generate_alternative'] = lambda r, payload: {
+        'questions': [question('小明 10 分钟走了 1.2 km，求平均速度。')]
+    }
     gen = ws.generate_questions(p['id'], types=['calculation'], ab=True)
-    assert gen['candidate_group'] and [c['position'] for c in gen['candidates']] == ['A', 'B']
-    assert {c['variant'] for c in gen['candidates']} == {'a', 'b'}
-    assert ws.questions(p['id'])[0]['status'] == 'candidate'
-    out = ws.choose(p['id'], gen['candidate_group'], 'B', reason='更贴近生活')
-    assert len(out['promoted']) == 2  # question + rubric
-    statuses = sorted(q['status'] for q in ws.questions(p['id']))
-    assert statuses == ['candidate', 'draft']  # the unchosen candidate stays as a research record
+    [alt] = gen['alternatives']
+    assert gen['candidates'][0]['position'] == 'A'
+    assert sorted(q['status'] for q in ws.questions(p['id'])) == ['candidate', 'draft']
+    out = ws.choose(p['id'], alt['group'], 'B', reason='更贴近生活')
+    assert len(out['promoted']) == 2  # the question's next version and its rubric
+    assert [q['content']['stem'] for q in ws.questions(p['id'])] == ['小明 10 分钟走了 1.2 km，求平均速度。']
     with pytest.raises(Conflict):
-        ws.choose(p['id'], gen['candidate_group'], 'A')
+        ws.choose(p['id'], alt['group'], 'A')
 
 
 def test_pitfalls_without_submissions(ws):
@@ -290,8 +300,9 @@ def test_usable_drafts_fill_keyed_points_and_report_dropped():
 def test_self_check_calls_are_recorded(ws):
     p, q = setup_round_one(ws)
     tasks = [g['task'] for g in ws.export(p['id'])['generations']]
-    assert 'self_check_solve' in tasks and 'grade' in tasks and 'review_question' in tasks
-    assert len(q['content']['checks']['generation_ids']) == 3  # review + solve + grade of the solution
+    assert 'self_check_solve' in tasks and 'self_check_compare' in tasks and 'review_question' in tasks
+    assert 'grade' not in tasks  # the solver's work is not graded point by point any more
+    assert len(q['content']['checks']['generation_ids']) == 3  # review + solve + one agreement judgement
 
 
 def test_next_step_guides_through_the_workflow(ws):
@@ -305,7 +316,8 @@ def test_next_step_guides_through_the_workflow(ws):
     assert ws.overview(pid)['next'][0]['target'] == '#draft-lesson-plan'  # material is optional
     plan = ws.draft_lesson_plan(pid)['lesson_plan']
     assert (
-        ws.llm.last('draft_lesson_plan')['user']['知识模块'] == '对数函数' and ws.llm.last('draft_lesson_plan')['user']['学生基础'] == '刚学完指数函数'
+        ws.llm.last('draft_lesson_plan')['user']['知识模块'] == '对数函数'
+        and ws.llm.last('draft_lesson_plan')['user']['学生基础'] == '刚学完指数函数'
     )
     assert ws.overview(pid)['next'][0]['label'] == '确认备课方案'
     with pytest.raises(Conflict):
@@ -521,7 +533,9 @@ def test_auto_pick_follows_the_course_info_and_other_subjects_have_none(ws):
     h = ws.create_project('历史｜辛亥革命', 'history', knowledge_module='辛亥革命')
     assert ws.curriculum(h['id'])['selected'] == ['history.B1.1.8']  # 1.8 辛亥革命与中华民国的建立
     ws.draft_lesson_plan(h['id'])
-    assert ws.llm.last('draft_lesson_plan')['user']['课程标准']['内容要求'][0]['位置'].endswith('1.8辛亥革命与中华民国的建立')
+    assert ws.llm.last('draft_lesson_plan')['user']['课程标准']['内容要求'][0]['位置'].endswith(
+        '1.8辛亥革命与中华民国的建立'
+    )
     # A topic the standard does not cover is not guessed at: candidates are offered, nothing is ticked.
     a = ws.create_project('人工智能', 'ai', knowledge_module='支持向量机 核函数')
     sug = ws.curriculum(a['id'])
@@ -546,11 +560,16 @@ def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
         'difficulty': '较难',
         'issues': ['条件不足'],
     }
+    ws.llm.handlers['revise_question'] = lambda r, p: {'questions': [question('修正后：解不等式 log2(x-1) < 3')]}
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False, difficulty='基础')
     checks = gen['candidates'][0]['questions'][0]['content']['checks']
     assert checks['flags'] == ['与目标不符：只考了单调性', '超出范围：用到了换底公式', '条件不足']  # only must-fix
     assert (checks['difficulty'], checks['difficulty_asked']) == ('较难', '基础')  # folded into AI 提示, not a flag
     assert 'suggestions' not in checks
+    # the findings became the rewrite remark, and the question now carries them as its next version
+    sent = ws.llm.last('revise_question')['user']
+    assert '条件不足' in sent['老师的修改意见']
+    assert gen['candidates'][0]['questions'][0]['content']['stem'] == '修正后：解不等式 log2(x-1) < 3'
 
     cov = ws.coverage(p['id'])
     [row] = cov['objectives']
@@ -558,8 +577,12 @@ def test_questions_are_reviewed_against_objective_scope_and_difficulty(ws):
 
 
 def test_adopt_solver_answer_and_regenerate_one_question(ws):
+    from edu_core.llm import ModelUnavailable
+
     p, q = setup_round_one(ws)
     ws.llm.handlers['self_check_solve'] = lambda r, p: {'answer': '直接得 x<9', 'final_answer': 'x<9'}
+    ws.llm.handlers['self_check_compare'] = lambda r, p: {'consistent': False, 'note': '漏了定义域'}
+    ws.llm.handlers['revise_question'] = lambda r, p: (_ for _ in ()).throw(ModelUnavailable('网关超时'))
     gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
     [bad] = gen['candidates'][0]['questions']
     assert bad['content']['checks']['answer_suspect']

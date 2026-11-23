@@ -103,7 +103,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 **课程目标**（`objectives.py`）：备课方案确认时 `_link_plan_objectives` 把每条目标对应到课程目标：同一方案谱系的旧版本沿用原对应，否则复用本课程表述相同的目标（同主题优先），再否则新建（编号 G1、G2…）。表述变化时新增描述版本并置 `needs_review`。`relink_objective` 由老师改对应；`objective_view` 汇总教过的方案、考查的题目、各班各次布置的已确认证据（导入作答的帮助条件为“未知”）。
 
-**A/B 留痕**：`generate_questions` 为每次比较写 `comparisons`（共同输入哈希、A/B 到生成记录和候选的映射、触发方式、抽样比例、规则与界面版本、状态 shown / duplicate / one_side_failed）。`choose` 的结论为 A、B、both_ok、neither、skip（旧的 same 视为 both_ok 并用 A 继续），`work_choice`、`preference`（better / work_only / none）、`acceptable`、`reason_tags` 分开存；`revoke_choice` 撤回后可重选；`merge_candidates` 用两侧候选生成新草稿（引用角色 `merged_from`）。系统抽样受 `EDU_AB_DAILY_CAP` 限制。
+**A/B 留痕（逐题）**：`generate_questions` 对每道新出的题独立按 `EDU_AB_RATE` 抽样（0.5，不设每日上限），抽中的题再调一次模型写替代版本（`generate_alternative`，variant b，看到原题后改写），原题留作 `draft`、替代版本存为 `candidate`。每次比较写一条 `comparisons`：`unit='question'`、`factor='prompt_variant_rewrite'`、`display` 记原题和替代版本各自的产物与生成记录 id、触发方式（sampled / requested）、抽样比例、规则与界面版本（`ab-v2` / `ui-2026-11b`）、状态（shown）。替代版本与原题几乎相同或生成失败时不出比较，原因写在返回的 `ab_note`。`choose` 的结论为 A、B、both_ok、neither、skip（旧的 same 视为 both_ok 并用 A 继续）；选 B 时替代版本的内容成为原题谱系的下一个版本（旧版本留作历史），两者都算完；`work_choice`、`preference`（better / work_only / none）、`acceptable`、`reason_tags` 分开存；`revoke_choice` 撤回后可重选，替代版本重新变回候选；`merge_candidates` 用原题和替代版本生成新草稿（引用角色 `merged_from`）。没比较就确认题目时，这条比较记为 skip。
 
 **局部修改**（`revise_plan_part`，上下文 `revise_plan`）：目标 `objective:O1`、`activity:<序号>`、`key_points`、`difficulties`、`notes`；模型只返回这一部分，服务器合并、重新做课标检查、比较出改动的字段，存为 `origin='revised'` 的新草稿，内容带 `revision`。
 
@@ -191,11 +191,11 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 
 - `generate_questions(pid, types=, count=, difficulty=, purpose=, notes=, objective_ids=, ab=)`：
   1. 前提：备课方案已确认；没有备课方案时，先从主题和要求反推目标（存为未确认草稿，标 `inferred`）。01 生成但未确认的方案要先确认。`objective_ids` 只为指定目标出题（“补 1 道”）。
-  2. **按目标拆分**（`generate-v4`）：每条目标一次调用，并发进行；每部分写完立刻开始它自己的自检。单个部分失败只丢掉它自己的题（原因并入 `dropped`），全部失败才报错。每部分各记一条 `generations`，A/B 时共用同一 `candidate_group` 和 `position`。合并后按题干与选项的字符二元组重叠度标出相近的题（`checks.suggestions`，不算需核对）。
+  2. **按目标拆分**（`generate-v4`）：每条目标一次调用，并发进行；题目写完立即入库并返回，自检在 `_finish_questions` 里做——`background_checks` 打开时先返回题目、自检在后台线程里进行（另记一条 `generate_checks` 运行，页面轮询 `/progress` 后自动刷新）。单个部分失败只丢掉它自己的题（原因并入 `dropped`），全部失败才报错。每部分各记一条 `generations`；替代版本另记一条，带自己的 `candidate_group`（每道题一组）和 `position='B'`。合并后按题干与选项的字符二元组重叠度标出相近的题（`checks.suggestions`，不算需核对）。
   3. 每部分的输入：这一条目标与达成标准、**其他目标**（由别的部分负责，本部分不考）、重点、难点、本课时内容、所引课标原文与教学提示、与这条目标相关的课堂活动、备课备注、上一课时学情（只给第一部分，整套只出一道巩固题）、学生基础、材料（≤6000 字）、允许题型、每目标题数、用途、难度、出题说明。提示词里的难度定义与审核共用 `DIFFICULTY_LEVELS`；题型要能检验达成标准（要求学生写出、计算、说明的至少一道开放作答）；评分要点规则（多选题的漏选错选、每项作答要求对应要点、填空不考过程）；题目数据须自洽。
-  4. A/B：勾选或按 `EDU_AB_RATE` 随机，出两版（第二版提示偏真实情境），两版并发，位置随机，存为 `candidate`。`choose(pid, group, verdict)` 记录 A/B/差不多/都不合适，采用的一版（它的全部部分）转草稿并编号。
+  4. A/B（逐题）：每道新出的题独立按 `EDU_AB_RATE` 抽样；抽中的题看到原题后用 variant b 的提示词另写一版（只考查同一目标、题型不变，题干和数据不照搬），所有替代版本并发生成。原题照常是草稿，替代版本存为 `candidate`，每对写一条 `comparisons`。比较不阻断流程：`choose(pid, group, verdict)` 记 A（保留原题）/ B（替代版本成为原题的下一个版本）/ both_ok / neither / skip；不选直接确认题目，比较记为 skip。
   5. `usable_drafts`：题型不在允许范围的丢弃；没有评分要点的，选择/判断题补一个“答案正确”，其他丢弃；丢弃原因返回给界面。
-  6. 每道题并发 `_self_check(p, d, review)`（审核与独立解题同时进行），结果写入 `checks`：
+  6. 每道题并发 `_self_check(p, d, review)`（审核与独立解题同时进行），结果写回题目（只有仍是草稿且文本未变的题会被改写）。自检**不做逐要点批改**：独立解题的答案与参考答案比对——选择、判断、填空由服务器判定，其余用一次短判断（`self_check_compare`，`AgreeOutput`）。审核或解题发现下列问题时，`_auto_rewrite` 带着这些问题调用 `revise_question` 重写一次（只一次，重写会再检一遍），仍不合格就保留标记交给老师：参考答案与独立解题不一致（`answer_suspect`）、`checks.flags` 非空。`checks` 里包括：
      - **题目审核** `_quality`（reviewer）：是否考查目标、是否超范围（前置知识可用）、估计难度、**必须修改的问题**（知识性错误、数据不自洽、条件不足或歧义、评分要点不可用）→ `checks.flags`（界面显示“需核对”）；可改进处 ≤2 条 → `checks.suggestions`（折叠显示）；难度与要求不同 → `checks.difficulty_asked`（只在难度标签上提示，不算需核对）；
      - **数值核对**：要点的 `check_expected` 与参考答案最终数值不一致 → `reference_mismatch`；
      - **独立解题**（reviewer，看不到答案；选项带字母；输出 `final_answer`），再用 `grading.grade` 按评分要点评这份解答，满分为 `agree`，否则 `disagree`；写作题跳过；解题前先验算题目给出的数值能否由题中原始数据得到（`data_issue`，例如 8 个样本不可能出现的熵），有问题加 `数据问题：…` 到 `checks.flags`；
@@ -282,7 +282,7 @@ SQLite（WAL），默认 `data/edu.sqlite`。表结构在 `storage.py` 的 `SCHE
 ## 8. 阶段状态与“下一步”
 
 - `stage_status`（针对最新一轮）：01 = 备课方案已确认；02 = 本轮至少一道题已确认；03 = 本轮作答都已批改且全部确认；04 = 有学情分析，且问题模式都已确认（或没有问题模式）；05 = 讲评稿已确认。
-- `next_steps` 返回带 `tab`、`target`（页面元素选择器）、`hint` 的步骤：待选的 A/B 和依据已变化的产物优先，然后按 01–05 给出当前该做的事；第 2 轮起从 02 开始。
+- `next_steps` 返回带 `tab`、`target`（页面元素选择器）、`hint` 的步骤：待选的 A/B 比较只作为 `optional` 步骤提示，不阻断；依据已变化的产物优先，然后按 01–05 给出当前该做的事；第 2 轮起从 02 开始。
 - 阶段标题区（`renderContinue`）只有一条规则：本阶段完成（`stages`）才显示“下一步”按钮（`CONTINUE` 映射），未完成时为空，等待模型时显示“……中”。页面还用不了时，标题下唯一的提示条（`renderBlocker`，来自 `blockers()`）写原因和按钮，跳到别的阶段的按钮都写成“去 0N ……”；批改任务缺题目时先导入试卷，其他任务先走自己的教案或出题；05 有“生成巩固练习”和“进入下一课时”两个按钮，后者只要有已确认的问题模式就可用。
 
 ## 9. 接口

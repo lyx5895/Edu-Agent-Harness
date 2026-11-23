@@ -69,6 +69,13 @@ class SolveOutput(BaseModel):
     data_issue: str = Field(default='', max_length=300)
 
 
+class AgreeOutput(BaseModel):
+    """Does an independent solution reach the reference answer's conclusion? One judgement, not a grading."""
+
+    consistent: bool
+    note: str = Field(default='', max_length=200)
+
+
 class Evidence(BaseModel):
     eid: str
     quote: str = Field(max_length=300)

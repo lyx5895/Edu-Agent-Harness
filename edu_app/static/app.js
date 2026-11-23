@@ -94,6 +94,21 @@ async function pollLive() {
     }
   } finally { livePolling = false; }
 }
+// 出题请求已经返回，自检和替代版本还在后台跑：跟着这次运行，结束后刷新页面，提示和比较面板自己出现。
+async function watchBackground(pid, rid, label = '后台自检与替代版本') {
+  const job = startJob(label);
+  const t0 = Date.now();
+  while (Date.now() - t0 < 15 * 60 * 1000) {
+    await new Promise((r) => setTimeout(r, 2000));
+    let live = [];
+    try { live = (await api('GET', `/api/projects/${pid}/progress`)) || []; } catch { /* keep waiting */ }
+    if (!live.some((x) => x.run_id === rid)) break;
+  }
+  endJob(job, false);
+  if (S.pid === pid) await refresh();
+  toast('后台自检完成：题目提示和替代版本已更新');
+}
+
 function showJobs() {
   const bar = $('#working');
   const slow = [...jobs].filter((j) => Date.now() - j.t0 > 2000);
@@ -152,7 +167,7 @@ function statusPill(a) {
   if (!a) return '';
   const pills = [];
   if (a.status === 'confirmed') pills.push(`<span class="pill ok">已确认 · 第 ${a.version} 版</span>`);
-  else if (a.status === 'candidate') pills.push('<span class="pill info">A/B 候选</span>');
+  else if (a.status === 'candidate') pills.push('<span class="pill info">另一个版本</span>');
   else pills.push(`<span class="pill warn">草稿 · 第 ${a.version} 版</span>`);
   if (a.status !== 'confirmed' && a.confirmed_version) pills.push(`<span class="pill">已确认版本：第 ${a.confirmed_version} 版</span>`);
   if (a.stale) pills.push('<span class="pill bad" title="它依据的题目、评分标准或教案改过了">需要更新</span>');
@@ -515,10 +530,9 @@ function currentAction() {
   if (tab === 'prep') return o.counts.lesson_plan.total
     ? step('审阅并确认教案', '#lesson-plan')
     : o.project.knowledge_module || o.materials ? step('生成教案', '#draft-lesson-plan') : step('填写要求，准备生成教案', '#course-module');
-  if (tab === 'questions') return o.pending_ab.length ? step('比较并选择题目', '#ab-panel')
-    : o.counts.question.total ? step('核对题目与评分标准', '#questions')
-      : !(o.counts.lesson_plan.total || o.project.knowledge_module || o.project.lesson_scope || o.materials)
-        ? step('写下练习的主题', '#q-topic') : step('设置出题要求，生成题目', '#generate-questions');
+  if (tab === 'questions') return o.counts.question.total ? step('核对题目与评分标准', '#questions')
+    : !(o.counts.lesson_plan.total || o.project.knowledge_module || o.project.lesson_scope || o.materials)
+      ? step('写下练习的主题', '#q-topic') : step('设置出题要求，生成题目', '#generate-questions');
   if (tab === 'grading') return step(o.review_queue ? `处理 ${o.review_queue} 份复核` : '导入作答并批改', o.review_queue ? '#queue' : '#sub-csv');
   if (tab === 'analysis') return step('查看学情与共性问题', '#analysis');
   if (tab === 'review') {
@@ -879,15 +893,15 @@ async function renderQuestions() {
   renderCoverage(cov);
   const confirmedQs = qs.filter((q) => q.confirmed_version).length;
   applyResultFirst('questions', `<b>需要再出题？</b>　本轮 ${qs.length} 道题，已确认 ${confirmedQs} 道。确认后就可以到 03 导入作答批改，也可以继续出题。`, qs.length > 0);
-  const candidates = qs.filter((q) => q.status === 'candidate' && q.candidate && S.overview.pending_ab.includes(q.candidate.candidate_group));
-  const groups = {};
-  candidates.forEach((q) => { (groups[q.candidate.candidate_group] ||= { A: [], B: [] })[q.candidate.position].push(q); });
-  $('#ab-panel').innerHTML = Object.entries(groups).map(([g, sides]) => `<div class="card" data-group="${g}">
-    <h3>这次出了两版，选一版继续</h3>
-    <div class="ab">${['A', 'B'].map((pos) => `<div><h4>${pos} 版</h4>${sides[pos].map((q) => questionBody(q)).join('') || '<div class="empty">（无）</div>'}</div>`).join('')}</div>
-    <div class="row"><button data-verdict="A">用 A 版</button><button data-verdict="B">用 B 版</button>
-      <button class="secondary" data-verdict="both_ok" data-work="A">差不多，用 A 版</button><button class="secondary" data-verdict="both_ok" data-work="B">差不多，用 B 版</button>
-      <button class="secondary" data-verdict="neither">都不合适</button><button class="link" data-verdict="skip">跳过</button></div>
+  // Per-question A/B: one card per compared question, the original next to its alternative. Never a gate.
+  const byId = Object.fromEntries(qs.map((q) => [q.id, q]));
+  const pairs = (S.overview.ab_pairs || []).filter((x) => byId[x.a] && byId[x.b]);
+  $('#ab-panel').innerHTML = pairs.map((x) => `<div class="card" data-group="${x.group}">
+    <h3>第 ${byId[x.a].content.no} 题另有一个版本（不比较也可以直接确认）</h3>
+    <div class="ab"><div><h4>当前版本</h4>${questionBody(byId[x.a])}</div>
+      <div><h4>另一个版本</h4>${questionBody(byId[x.b])}</div></div>
+    <div class="row"><button data-verdict="A">保留当前版本</button><button data-verdict="B">换成另一个版本</button>
+      <button class="secondary" data-verdict="neither">两个都不用</button><button class="link" data-verdict="skip">先不比较</button></div>
     <details><summary>补充一句（选填）</summary>
       <div class="row"><select class="ab-pref"><option value="none">不评价</option><option value="better">采用的这份更适合这节课</option><option value="work_only">只是选它继续修改</option></select>
         <input class="ab-reason" placeholder="理由（选填）"></div>
@@ -1667,11 +1681,21 @@ function bindEvents() {
     }
     const types = $$('#type-boxes input:checked').map((i) => i.value);
     const r = await api('POST', `/api/projects/${S.pid}/questions/generate`, {
-      types, count: Number($('#q-count').value), difficulty: $('#q-difficulty').value, purpose: $('#q-purpose').value, notes: $('#q-notes').value, ab: null,  // A/B is a research comparison the server samples (EDU_AB_RATE, daily cap); never a teacher's choice
+      types, count: Number($('#q-count').value), difficulty: $('#q-difficulty').value, purpose: $('#q-purpose').value, notes: $('#q-notes').value, ab: null,  // A/B is a research comparison the server samples per question (EDU_AB_RATE); never a teacher's choice
     });
     showNote(r.context_note);
     const dropped = r.candidates.flatMap((c) => c.dropped || []);
-    toast((r.candidate_group ? '这次出了两版，请先在上面选一版' : `生成了 ${r.candidates[0].questions.length} 道题，请核对后确认`) + (dropped.length ? `；丢弃 ${dropped.length} 道不完整的题：${dropped.join('；')}` : ''), dropped.length > 0);
+    const base = `生成了 ${r.candidates[0].questions.length} 道题，请核对后确认`
+      + (dropped.length ? `；丢弃 ${dropped.length} 道不完整的题：${dropped.join('；')}` : '');
+    const compared = (r.alternatives || []).length;
+    if (r.background) {
+      // Questions and alternatives are ready; only the checks (and a rewrite they may call for) land later.
+      toast(`${base}${compared ? `；其中 ${compared} 道题另有一个版本，可以在下面比较` : ''}。自检在后台进行，完成后页面会自动更新`);
+      S.showRound = 1; await refresh();
+      watchBackground(S.pid, r.background.run);
+      return;
+    }
+    toast(base + (compared ? `；其中 ${compared} 道题另有一个版本，可以在下面比较，不比较也可以` : ''), dropped.length > 0);
     S.showRound = 1; await refresh();
   });
   $('#coverage').addEventListener('click', async (e) => {
@@ -1818,7 +1842,7 @@ async function onAction(e) {
         preference: ['A', 'B'].includes(verdict) ? pref : 'none',
         reason_tags: [...card.querySelectorAll('.ab-tag:checked')].map((x) => x.value),
       });
-      toast(verdict === 'skip' ? '已跳过' : '已选好，题目进入草稿，核对后确认'); await refresh();
+      toast(verdict === 'B' ? '已换成另一个版本，核对后确认' : verdict === 'skip' ? '已跳过' : '已记录，核对题目后确认'); await refresh();
     });
     return;
   }

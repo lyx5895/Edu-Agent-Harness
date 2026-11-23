@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import time
 
 from edu_core import artifacts as A
@@ -23,17 +24,23 @@ class RecordsMixin:
             classes = {a['id']: a['class_name'] for a in self._assignment_views(c, project_id=pid)}
             for m in marks:
                 m['class_name'] = classes.get(m['assignment_id'], '')
-                art = row(c.execute('SELECT content, created_at FROM artifacts WHERE id=?', (m['artifact_id'],)).fetchone())
+                art = row(
+                    c.execute('SELECT content, created_at FROM artifacts WHERE id=?', (m['artifact_id'],)).fetchone()
+                )
                 ct = (art or {}).get('content') or {}
                 m['detail'] = ''
                 if m['type'] == 'analysis':
-                    m['detail'] = '部分分析' if ct.get('partial') else ('可能的易错点' if ct.get('mode') == 'pitfalls' else '完整分析')
+                    m['detail'] = (
+                        '部分分析'
+                        if ct.get('partial')
+                        else ('可能的易错点' if ct.get('mode') == 'pitfalls' else '完整分析')
+                    )
                 elif m['type'] == 'problem_pattern':
                     m['detail'] = ct.get('name', '')
                 elif m['type'] == 'grading':
                     m['detail'] = f'{ct.get("learner_alias", "")} 第 {ct.get("question_no", "")} 题'
                 newer = c.execute(
-                    "SELECT 1 FROM artifacts WHERE project_id=? AND type=? AND assignment_id=? AND round=? "
+                    'SELECT 1 FROM artifacts WHERE project_id=? AND type=? AND assignment_id=? AND round=? '
                     "AND status!='superseded' AND created_at>? AND lineage_id!=? "
                     "AND id NOT IN (SELECT artifact_id FROM stale_marks WHERE status='open') LIMIT 1",
                     (pid, m['type'], m['assignment_id'], m['round'], (art or {}).get('created_at', 0), m['lineage_id']),
@@ -115,14 +122,22 @@ class RecordsMixin:
             ) or [1]
             mats = c.execute('SELECT COUNT(*) FROM materials WHERE project_id=?', (pid,)).fetchone()[0]
             learners = len(scope.roster(c))
-            pending_ab = [
-                r[0]
-                for r in c.execute(
-                    'SELECT DISTINCT candidate_group FROM generations WHERE project_id=? AND candidate_group IS NOT NULL '
-                    'AND candidate_group NOT IN (SELECT candidate_group FROM choices WHERE revoked_at IS NULL)',
-                    (pid,),
+            open_ab = c.execute(
+                'SELECT candidate_group, display FROM comparisons WHERE project_id=? AND candidate_group NOT IN '
+                '(SELECT candidate_group FROM choices WHERE revoked_at IS NULL) ORDER BY created_at',
+                (pid,),
+            ).fetchall()
+            pending_ab = [r['candidate_group'] for r in open_ab]
+            ab_pairs = []
+            for r in open_ab:
+                display = json.loads(r['display'] or '{}')
+                ab_pairs.append(
+                    {
+                        'group': r['candidate_group'],
+                        'a': (display.get('A') or {}).get('question'),
+                        'b': (display.get('B') or {}).get('question'),
+                    }
                 )
-            ]
             latest = scope.round if scope.is_assignment else max(rounds)
             nxt_row = c.execute(
                 'SELECT id, title FROM projects WHERE prev_project_id=? ORDER BY created_at DESC LIMIT 1', (pid,)
@@ -160,6 +175,7 @@ class RecordsMixin:
             'stale': stale,
             'review_queue': queue,
             'pending_ab': pending_ab,
+            'ab_pairs': ab_pairs,
             'next': nxt,
             'latest_round': latest,
             'next_lesson': dict(nxt_row) if nxt_row else None,

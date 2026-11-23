@@ -20,7 +20,16 @@ def next_steps(st):
     """
     steps = []
     if st['pending_ab']:
-        steps.append(_step('选择 A/B 候选题', 'questions', '#ab-panel', '先在两版候选题中选一版'))
+        # A comparison is worth making, never a gate: the questions are already usable and can be confirmed as they are.
+        steps.append(
+            _step(
+                '比较题目版本',
+                'questions',
+                '#ab-panel',
+                f'{len(st["pending_ab"])} 道题另有一个版本，可以比较；不比较也可以继续',
+                optional=True,
+            )
+        )
     here, elsewhere = split_stale(st)
     if here:
         steps.append(

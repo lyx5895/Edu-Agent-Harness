@@ -26,7 +26,7 @@ ssh -N -L 7870:127.0.0.1:7870 <服务器>
 | `EDU_MODEL_GENERATOR` / `GRADER` / `ANALYST` | `DeepSeek-V4.1-Flash` | 出题、批改、学情分析 |
 | `EDU_MODEL_REVIEWER` | `claude-sonnet-5-5` | 失分判定的盲审复核、出题自检的独立解题、抽检 |
 | `EDU_AUDIT_RATE` | `0.05` | 判满分的作答被随机抽检的比例 |
-| `EDU_AB_RATE` | `0.2` | 不勾选时，出题自动出 A/B 两版的比例 |
+| `EDU_AB_RATE` | `0.5` | 每道新出的题写一个替代版本、供比较的概率 |
 | `EDU_DB` | `data/edu.sqlite` | 数据库 |
 
 ## 一次完整的使用流程
