@@ -285,8 +285,7 @@ summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* 首页层次：需要处理最醒目；其他工作区折叠在底部；试用意愿卡不抢眼 */
 .card.attention { border-color: var(--warn); background: var(--warn-soft); }
 .card.attention h3 { color: var(--warn); }
-/* 参考材料 is where the lesson content comes from: give it a red edge instead of another equal card. */
-.card.emphasis { border-color: var(--bad); border-left: 4px solid var(--bad); background: var(--bad-soft); }
+/* 参考材料 is where the lesson content comes from: only its title is colored, so it stands out without shouting. */
 .card.emphasis h3 { color: var(--bad); }
 .card.emphasis > p.why { margin: 2px 0 10px; font-size: 13px; color: var(--muted); }
 .other-work > summary { cursor: pointer; font-weight: 600; }
