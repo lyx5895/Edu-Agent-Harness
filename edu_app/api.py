@@ -131,6 +131,7 @@ class GenerateBody(BaseModel):
 class SuggestBody(BaseModel):
     field: str = Field(min_length=1, max_length=40)
     current: str = Field(default='', max_length=2000)
+    about: str = Field(default='', max_length=2000)
 
 
 class ManualQuestion(BaseModel):
@@ -607,7 +608,7 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
 
     @app.post('/api/projects/{pid}/suggest')
     def suggest(pid: str, body: SuggestBody):
-        return ws().suggest_field(pid, body.field, body.current)
+        return ws().suggest_field(pid, body.field, body.current, body.about)
 
     @app.get('/api/projects/{pid}/curriculum')
     def curriculum(pid: str, q: str | None = None):

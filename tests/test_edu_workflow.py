@@ -315,11 +315,11 @@ def test_suggest_field_drafts_from_context(ws):
     p = ws.create_project('对数函数', '数学', grade='高一', knowledge_module='对数函数')
     ws.add_material(p['id'], '对数函数 y=log_a x 的定义域是 (0,+∞)。')
     ws.llm.handlers['suggest_field'] = lambda r, payload: {'text': '对数函数的图象与性质'}
-    out = ws.suggest_field(p['id'], 'lesson_scope', current='')
+    out = ws.suggest_field(p['id'], 'lesson_scope', current='', about='对数函数的图象')
     assert out['text'] == '对数函数的图象与性质'
     assert '材料' in out['context_note']
     sent = ws.llm.last('suggest_field')['user']
-    assert sent['当前内容'] == '' and sent['材料摘录']
+    assert sent['当前内容'] == '' and sent['材料摘录'] and sent['针对的内容'] == '对数函数的图象'
     with pytest.raises(ValueError):
         ws.suggest_field(p['id'], 'nope')
 

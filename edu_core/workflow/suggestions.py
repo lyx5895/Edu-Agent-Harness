@@ -22,6 +22,9 @@ SUGGEST_FIELDS = {
     'course_notes': ('其他要求', 60),
     'q_topic': ('这次练习的主题或范围', 60),
     'q_notes': ('出题说明', 60),
+    'revise_instruction': ('修改意见', 80),
+    'remark': ('修改意见', 80),
+    'regen_note': ('换一道的其他要求', 60),
 }
 
 
@@ -29,7 +32,7 @@ class SuggestionsMixin:
     """AI 提示 on the input boxes of备课 and出题."""
 
     @operation('suggest_field')
-    def suggest_field(self, pid, field, current=''):
+    def suggest_field(self, pid, field, current='', about=''):
         """Draft ``field`` from the project's course info, objectives and materials. The teacher decides whether to
         use it; nothing is saved here."""
         spec = SUGGEST_FIELDS.get(field)
@@ -60,6 +63,7 @@ class SuggestionsMixin:
                     '教学目标': objectives,
                     '材料摘录': materials,
                     '当前内容': (current or '').strip()[:1000],
+                    '针对的内容': (about or '').strip()[:1500],
                 }
             ),
             FieldSuggestion,

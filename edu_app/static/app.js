@@ -246,34 +246,95 @@ const SUGGEST_INPUTS = {
   course_notes: 'course-notes',
   q_topic: 'q-topic',
   q_notes: 'q-notes',
+  revise_instruction: 'revise-instruction',
 };
 
+// The hint is shown in the box as gray placeholder text; Tab accepts it, typing replaces it.
+function setGhost(input, text) {
+  if (!input.dataset.ghost) input.dataset.ghostPlaceholder = input.placeholder || '';
+  input.dataset.ghost = text;
+  input.placeholder = text;
+  input.classList.add('ghost');
+}
+
+function clearGhost(input) {
+  if (!input || !input.dataset || !input.dataset.ghost) return;
+  input.placeholder = input.dataset.ghostPlaceholder || '';
+  delete input.dataset.ghost;
+  delete input.dataset.ghostPlaceholder;
+  input.classList.remove('ghost');
+}
+
+function suggestAbout(field, btn) {
+  if (field === 'revise_instruction') {
+    const sel = $('#revise-target');
+    return sel && sel.selectedOptions.length ? sel.selectedOptions[0].textContent : '';
+  }
+  if (field === 'remark' || field === 'regen_note') {
+    const card = btn.closest('[data-id]');
+    return (card && card.querySelector('.stem') ? card.querySelector('.stem').textContent : '').trim();
+  }
+  return '';
+}
+
 function bindSuggest() {
+  // Fields in the fixed forms: one hint row under each.
   for (const [field, id] of Object.entries(SUGGEST_INPUTS)) {
     const input = document.getElementById(id);
-    const label = input && input.closest('label');
-    if (!input || !label || label.querySelector('.suggest-row')) continue;
+    if (!input) continue;
+    const label = input.closest('label');
+    const host = label || input.closest('.row') || input;
+    if (host.querySelector && host.querySelector(`.suggest-row[data-suggest-row="${field}"]`)) continue;
     const row = document.createElement('div');
     row.className = 'suggest-row';
+    row.dataset.suggestRow = field;
     row.innerHTML = `<button type="button" class="link small" data-suggest="${field}">AI 提示</button><span class="muted"></span>`;
-    label.appendChild(row);
+    if (label) label.appendChild(row);
+    else host.insertAdjacentElement('afterend', row);
   }
   document.body.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-suggest]');
     if (!btn || !S.pid) return;
     const field = btn.dataset.suggest;
-    const input = document.getElementById(SUGGEST_INPUTS[field]);
+    const input = document.getElementById(SUGGEST_INPUTS[field])
+      || (btn.closest('.regen') && btn.closest('.regen').querySelector('input, textarea'));
     if (!input) return;
     const note = $('.muted', btn.closest('.suggest-row'));
     await busy(btn, '想一下…', async () => {
-      const r = await api('POST', `/api/projects/${S.pid}/suggest`, { field, current: input.value });
+      const r = await api('POST', `/api/projects/${S.pid}/suggest`, {
+        field, current: input.value, about: suggestAbout(field, btn),
+      });
       if (!r) return;
-      input.value = r.text;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.focus();
-      if (note) note.textContent = '已填入，可以继续修改';
+      if (!input.value.trim()) {
+        setGhost(input, r.text);
+        input.focus();
+        if (note) note.textContent = '按 Tab 填入';
+      } else {
+        input.value = r.text;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
+        if (note) note.textContent = '已替换，可以继续修改';
+      }
     });
   });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+    const input = e.target;
+    if (!input || !input.dataset || !input.dataset.ghost) return;
+    if (input.value.trim()) { clearGhost(input); return; }
+    e.preventDefault();
+    input.value = input.dataset.ghost;
+    clearGhost(input);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  document.addEventListener('input', (e) => {
+    const input = e.target;
+    if (input && input.dataset && input.dataset.ghost && input.value.trim()) clearGhost(input);
+  });
+  document.addEventListener('blur', (e) => {
+    const input = e.target;
+    if (input && input.dataset && input.dataset.ghost) clearGhost(input);
+  }, true);
 }
 
 async function init() {
@@ -1891,6 +1952,7 @@ async function onAction(e) {
       // 按意见修改: one line of what to change; the AI keeps everything else as it is.
       $('.edit-area', item).innerHTML = `<div class="regen remark">
         <input class="remark-text" placeholder="写下修改意见，例如：数据换成整数；去掉第（2）问；评分要点把过程分细一点" value="${esc(btn.dataset.note || '')}">
+        <div class="suggest-row" data-suggest-row="remark"><button type="button" class="link small" data-suggest="remark">AI 提示</button><span class="muted"></span></div>
         <button class="small" data-act="remark-go">让 AI 按意见改</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
       $('.remark-text', item).focus();
       break;
@@ -1911,6 +1973,7 @@ async function onAction(e) {
       $('.edit-area', item).innerHTML = `<div class="regen">
         <select class="regen-kind"><option value="">换一道同类题</option><option value="更简单">更简单</option><option value="更难">更难</option><option value="换个真实情境">换个真实情境</option></select>
         <input class="regen-note" placeholder="其他要求（选填），例如：不要用分数">
+        <div class="suggest-row" data-suggest-row="regen_note"><button type="button" class="link small" data-suggest="regen_note">AI 提示</button><span class="muted"></span></div>
         <button class="small" data-act="regen-go">生成</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
       break;
     case 'regen-go': {
