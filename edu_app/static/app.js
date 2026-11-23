@@ -893,27 +893,7 @@ async function renderQuestions() {
   renderCoverage(cov);
   const confirmedQs = qs.filter((q) => q.confirmed_version).length;
   applyResultFirst('questions', `<b>需要再出题？</b>　本轮 ${qs.length} 道题，已确认 ${confirmedQs} 道。确认后就可以到 03 导入作答批改，也可以继续出题。`, qs.length > 0);
-  // Per-question A/B: one card per compared question, two independently generated versions. The display order is
-  // the one recorded when the comparison was made, so a reload does not swap the sides.
-  const byId = Object.fromEntries(qs.map((q) => [q.id, q]));
-  const pairs = (S.overview.ab_pairs || []).filter((x) => byId[x.a] && byId[x.b]);
-  $('#ab-panel').innerHTML = pairs.map((x) => {
-    const first = x.shown_first === 'B' ? 'b' : 'a';
-    const second = first === 'a' ? 'b' : 'a';
-    const sideName = (side) => (side === 'a' ? '当前版本' : '另一个版本');
-    return `<div class="card" data-group="${x.group}">
-    <h3>第 ${byId[x.a].content.no} 题另有一个版本（不比较也可以直接确认）</h3>
-    <div class="ab"><div><h4>${sideName(first)}</h4>${questionBody(byId[x[first]])}</div>
-      <div><h4>${sideName(second)}</h4>${questionBody(byId[x[second]])}</div></div>
-    <div class="row"><button data-verdict="A">保留当前版本</button><button data-verdict="B">换成另一个版本</button>
-      <button class="secondary" data-verdict="neither">两个都不用</button><button class="link" data-verdict="skip">先不比较</button></div>
-    <details><summary>补充一句（选填）</summary>
-      <div class="row"><select class="ab-pref"><option value="none">不评价</option><option value="better">采用的这份更适合这节课</option><option value="work_only">只是选它继续修改</option></select>
-        <input class="ab-reason" placeholder="理由（选填）"></div>
-      <div class="checks">${['更贴合目标', '难度更合适', '更清楚', '有事实错误', '依据不足', '其他'].map((t) => `<label><input type="checkbox" class="ab-tag" value="${t}"> ${t}</label>`).join('')}</div>
-    </details>
-  </div>`;
-  }).join('');
+  // This branch generates one version per slot: no A/B cards are rendered.
   const offerings = S.overview.offerings;
   const confirmedHere = qs.some((q) => q.confirmed_version);
   // 布置给班级 is not part of this version: confirmed questions are graded directly (LESSON_LOOP_DESIGN.md 7).
@@ -1840,21 +1820,6 @@ async function onAction(e) {
   if (!btn) return;
   const item = btn.closest('[data-id]');
   const act = btn.dataset.act;
-  if (btn.dataset.verdict) {
-    const card = btn.closest('[data-group]');
-    await busy(btn, '提交中…', async () => {
-      const verdict = btn.dataset.verdict;
-      const pref = $('.ab-pref', card).value;
-      await api('POST', `/api/projects/${S.pid}/choices`, {
-        group: card.dataset.group, verdict, reason: $('.ab-reason', card).value,
-        work_choice: btn.dataset.work || null,
-        preference: ['A', 'B'].includes(verdict) ? pref : 'none',
-        reason_tags: [...card.querySelectorAll('.ab-tag:checked')].map((x) => x.value),
-      });
-      toast(verdict === 'B' ? '已换成另一个版本，核对后确认' : verdict === 'skip' ? '已跳过' : '已记录，核对题目后确认'); await refresh();
-    });
-    return;
-  }
   if (btn.dataset.redo) {  // open the stage where this result is redone, in the class and round it belongs to
     const r = STALE_REDO[btn.dataset.redo];
     S.aid = btn.dataset.aid || null;

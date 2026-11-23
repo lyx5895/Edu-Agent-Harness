@@ -28,9 +28,9 @@ class Settings:
     db: str = str(ROOT / 'data/edu.sqlite')
     # Share of fully-earned gradings re-checked by the reviewer to monitor false passes.
     audit_rate: float = 0.05
-    # Chance that one objective also gets an independent second version for an A/B comparison. The two arms share
-    # the task input and differ only in the system prompt; the comparison is per objective, not per question.
-    ab_rate: float = 0.5
+    # This branch is the single-version product: no second version is generated and no comparison is made. The
+    # A/B code path stays intact so the research branch can sample; set 1.0 to turn it back on.
+    ab_rate: float = 0.0
     # Write the self-check and the rewrite it may call for after the questions are returned, so the teacher is not
     # held up by work that only adds notes to questions they can already read. The A/B versions come with the
     # questions: the teacher compares them while reviewing.
