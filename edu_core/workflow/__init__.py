@@ -44,6 +44,7 @@ from edu_core.workflow.schemas import (
     Activity,
     AnalysisOutput,
     Evidence,
+    FieldSuggestion,
     FollowUp,
     ImportedPaper,
     LessonPlanOutput,
@@ -63,6 +64,7 @@ from edu_core.workflow.schemas import (
 )
 from edu_core.workflow.steps import next_steps, stage_status
 from edu_core.workflow.submissions import SubmissionsMixin
+from edu_core.workflow.suggestions import SuggestionsMixin
 from edu_core.workflow.trial import TrialMixin
 
 
@@ -78,6 +80,7 @@ class Workspace(
     LessonPlanMixin,
     QuestionsMixin,
     SubmissionsMixin,
+    SuggestionsMixin,
     PhotosMixin,
     AnalysisMixin,
     ReviewMixin,
@@ -93,6 +96,7 @@ __all__ = [
     'AnalysisOutput',
     'Conflict',
     'Evidence',
+    'FieldSuggestion',
     'FollowUp',
     'ImportedPaper',
     'LessonPlanOutput',

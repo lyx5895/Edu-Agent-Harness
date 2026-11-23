@@ -128,6 +128,11 @@ class GenerateBody(BaseModel):
     objective_ids: list[str] | None = None
 
 
+class SuggestBody(BaseModel):
+    field: str = Field(min_length=1, max_length=40)
+    current: str = Field(default='', max_length=2000)
+
+
 class ManualQuestion(BaseModel):
     question: dict[str, Any]
     rubric: dict[str, Any]
@@ -599,6 +604,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     @app.patch('/api/projects/{pid}')
     def update_project(pid: str, body: ProjectUpdate):
         return ws().update_project(pid, **body.model_dump())
+
+    @app.post('/api/projects/{pid}/suggest')
+    def suggest(pid: str, body: SuggestBody):
+        return ws().suggest_field(pid, body.field, body.current)
 
     @app.get('/api/projects/{pid}/curriculum')
     def curriculum(pid: str, q: str | None = None):

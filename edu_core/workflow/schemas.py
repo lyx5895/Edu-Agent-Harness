@@ -41,6 +41,12 @@ class QuestionSet(BaseModel):
     questions: list[QuestionDraft]
 
 
+class FieldSuggestion(BaseModel):
+    """One drafted value for a teacher input (AI 提示); the teacher edits it before saving."""
+
+    text: str = Field(max_length=600)
+
+
 class StandardPick(BaseModel):
     ids: list[str]
     note: str = Field(max_length=200)

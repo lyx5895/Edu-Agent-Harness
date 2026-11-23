@@ -32,6 +32,8 @@ WHITELIST = {
     # 局部修改 (design doc 4.3): the plan being revised and the teacher's instruction.
     'revise_plan': {'project', 'lesson_plan'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
+    # AI 提示: draft one field of the course info or the request from what the project already has.
+    'suggest_field': {'project', 'material', 'lesson_plan'},
 }
 
 LABELS = {

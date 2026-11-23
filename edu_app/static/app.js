@@ -238,6 +238,44 @@ function tuckNotes(root = document) {
   });
 }
 
+// AI 提示 on the input boxes of 备课 and 出题: one short call drafts the field from the project's own context.
+// The text goes into the box for the teacher to edit; nothing is saved until they save the form.
+const SUGGEST_INPUTS = {
+  lesson_scope: 'course-scope',
+  learner_profile: 'course-profile',
+  course_notes: 'course-notes',
+  q_topic: 'q-topic',
+  q_notes: 'q-notes',
+};
+
+function bindSuggest() {
+  for (const [field, id] of Object.entries(SUGGEST_INPUTS)) {
+    const input = document.getElementById(id);
+    const label = input && input.closest('label');
+    if (!input || !label || label.querySelector('.suggest-row')) continue;
+    const row = document.createElement('div');
+    row.className = 'suggest-row';
+    row.innerHTML = `<button type="button" class="link small" data-suggest="${field}">AI 提示</button><span class="muted"></span>`;
+    label.appendChild(row);
+  }
+  document.body.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-suggest]');
+    if (!btn || !S.pid) return;
+    const field = btn.dataset.suggest;
+    const input = document.getElementById(SUGGEST_INPUTS[field]);
+    if (!input) return;
+    const note = $('.muted', btn.closest('.suggest-row'));
+    await busy(btn, '想一下…', async () => {
+      const r = await api('POST', `/api/projects/${S.pid}/suggest`, { field, current: input.value });
+      if (!r) return;
+      input.value = r.text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+      if (note) note.textContent = '已填入，可以继续修改';
+    });
+  });
+}
+
 async function init() {
   tuckNotes();
   S.meta = await api('GET', '/api/meta');
@@ -256,6 +294,7 @@ async function init() {
   bindAdmin();
   bindResultFirst();
   bindExtras();
+  bindSuggest();
   const me = await api('GET', '/api/me');
   S.userId = me.user?.id || '';
   if (me.auth && !me.user) { showLogin(); return; }
