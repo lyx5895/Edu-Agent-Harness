@@ -277,11 +277,40 @@ function suggestAbout(field, btn) {
   return '';
 }
 
+// One request for a hint. ``quiet`` is the automatic path: no global progress bar, and a failure leaves the
+// field alone instead of showing a toast.
+async function requestHint(input, field, btn, { quiet = false } = {}) {
+  const row = btn ? btn.closest('.suggest-row') : null;
+  const note = row ? row.querySelector('.muted') : null;
+  if (note) note.textContent = '正在想…';
+  try {
+    const r = await api('POST', `/api/projects/${S.pid}/suggest`, {
+      field, current: input.value, about: suggestAbout(field, btn || input),
+    });
+    if (!r) return;
+    if (!input.value.trim()) {
+      setGhost(input, r.text);
+      if (note) note.textContent = '按 Tab 填入';
+    } else {
+      input.value = r.text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      if (note) note.textContent = '已替换，可以继续修改';
+    }
+  } catch (e) {
+    delete input.dataset.suggestTried;
+    if (note) note.textContent = '';
+    if (!quiet) toast(e.message, true);
+  }
+}
+
+let hintTimer = null;
+
 function bindSuggest() {
-  // Fields in the fixed forms: one hint row under each.
+  // Fields in the fixed forms: one hint row under each; the input remembers which field it belongs to.
   for (const [field, id] of Object.entries(SUGGEST_INPUTS)) {
     const input = document.getElementById(id);
     if (!input) continue;
+    input.dataset.suggestField = field;
     const label = input.closest('label');
     const host = label || input.closest('.row') || input;
     if (host.querySelector && host.querySelector(`.suggest-row[data-suggest-row="${field}"]`)) continue;
@@ -292,6 +321,7 @@ function bindSuggest() {
     if (label) label.appendChild(row);
     else host.insertAdjacentElement('afterend', row);
   }
+  // The button asks for a fresh hint and replaces whatever is there.
   document.body.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-suggest]');
     if (!btn || !S.pid) return;
@@ -299,23 +329,23 @@ function bindSuggest() {
     const input = document.getElementById(SUGGEST_INPUTS[field])
       || (btn.closest('.regen') && btn.closest('.regen').querySelector('input, textarea'));
     if (!input) return;
-    const note = $('.muted', btn.closest('.suggest-row'));
-    await busy(btn, '想一下…', async () => {
-      const r = await api('POST', `/api/projects/${S.pid}/suggest`, {
-        field, current: input.value, about: suggestAbout(field, btn),
-      });
-      if (!r) return;
-      if (!input.value.trim()) {
-        setGhost(input, r.text);
-        input.focus();
-        if (note) note.textContent = '按 Tab 填入';
-      } else {
-        input.value = r.text;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        input.focus();
-        if (note) note.textContent = '已替换，可以继续修改';
-      }
-    });
+    delete input.dataset.suggestTried;
+    await busy(btn, '想一下…', () => requestHint(input, field, btn));
+    if (!input.value.trim()) input.focus();
+  });
+  // No click needed: an empty field asks for its hint shortly after it gets focus, once.
+  document.addEventListener('focusin', (e) => {
+    const input = e.target;
+    const field = input && input.dataset && input.dataset.suggestField;
+    if (!field || !S.pid || input.value.trim() || input.dataset.ghost || input.dataset.suggestTried) return;
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => {
+      if (document.activeElement !== input || input.value.trim() || input.dataset.ghost) return;
+      input.dataset.suggestTried = '1';
+      const row = input.closest('label, .regen, .row') || document;
+      const btn = row.querySelector ? row.querySelector(`[data-suggest="${field}"]`) : null;
+      requestHint(input, field, btn, { quiet: true });
+    }, 600);
   });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab' || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -1951,7 +1981,7 @@ async function onAction(e) {
     case 'remark-open': {
       // 按意见修改: one line of what to change; the AI keeps everything else as it is.
       $('.edit-area', item).innerHTML = `<div class="regen remark">
-        <input class="remark-text" placeholder="写下修改意见，例如：数据换成整数；去掉第（2）问；评分要点把过程分细一点" value="${esc(btn.dataset.note || '')}">
+        <input class="remark-text" data-suggest-field="remark" placeholder="写下修改意见，例如：数据换成整数；去掉第（2）问；评分要点把过程分细一点" value="${esc(btn.dataset.note || '')}">
         <div class="suggest-row" data-suggest-row="remark"><button type="button" class="link small" data-suggest="remark">AI 提示</button><span class="muted"></span></div>
         <button class="small" data-act="remark-go">让 AI 按意见改</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
       $('.remark-text', item).focus();
@@ -1972,7 +2002,7 @@ async function onAction(e) {
     case 'regen-open':
       $('.edit-area', item).innerHTML = `<div class="regen">
         <select class="regen-kind"><option value="">换一道同类题</option><option value="更简单">更简单</option><option value="更难">更难</option><option value="换个真实情境">换个真实情境</option></select>
-        <input class="regen-note" placeholder="其他要求（选填），例如：不要用分数">
+        <input class="regen-note" data-suggest-field="regen_note" placeholder="其他要求（选填），例如：不要用分数">
         <div class="suggest-row" data-suggest-row="regen_note"><button type="button" class="link small" data-suggest="regen_note">AI 提示</button><span class="muted"></span></div>
         <button class="small" data-act="regen-go">生成</button><button class="small secondary" data-act="cancel-edit">取消</button></div>`;
       break;
