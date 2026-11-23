@@ -6,7 +6,7 @@ import contextvars
 import json
 import random
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 
 from edu_core import artifacts as A
 from edu_core import curriculum as CUR
@@ -141,6 +141,32 @@ class WorkspaceBase:
         with ThreadPoolExecutor(max_workers=max(1, min(self.settings.concurrency, len(items)))) as pool:
             futures = [pool.submit(contextvars.copy_context().run, fn, item) for item in items]
             return [f.result() for f in futures]
+
+    def _parallel_deadline(self, fn, items, timeout):
+        """Run items in parallel and return (completed, timed_out) after ``timeout`` seconds.
+
+        Completed items are (item, value); timed-out ones are (item, reason). A running call cannot be killed, so the
+        model client's own timeout still applies; the caller answers with whatever has already finished.
+        """
+        if not items:
+            return [], []
+        results, errors = [], []
+        pool = ThreadPoolExecutor(max_workers=max(1, min(self.settings.concurrency, len(items))))
+        try:
+            futures = {pool.submit(contextvars.copy_context().run, fn, item): item for item in items}
+            done, pending = wait(futures, timeout=timeout)
+            for future in done:
+                item = futures[future]
+                try:
+                    results.append((item, future.result()))
+                except Exception as e:  # noqa: BLE001 - one item's failure is reported, not raised
+                    errors.append((item, f'{type(e).__name__}: {e}'[:200]))
+            for future in pending:
+                errors.append((futures[future], '超过等待时间'))
+                future.cancel()
+        finally:
+            pool.shutdown(wait=False, cancel_futures=True)
+        return results, errors
 
     # ----- generic artifact operations -----
 

@@ -95,7 +95,7 @@ async function pollLive() {
   } finally { livePolling = false; }
 }
 // 出题请求已经返回，自检和替代版本还在后台跑：跟着这次运行，结束后刷新页面，提示和比较面板自己出现。
-async function watchBackground(pid, rid, label = '后台自检与替代版本') {
+async function watchBackground(pid, rid, label = '后台自检') {
   const job = startJob(label);
   const t0 = Date.now();
   while (Date.now() - t0 < 15 * 60 * 1000) {
@@ -106,7 +106,7 @@ async function watchBackground(pid, rid, label = '后台自检与替代版本') 
   }
   endJob(job, false);
   if (S.pid === pid) await refresh();
-  toast('后台自检完成：题目提示和替代版本已更新');
+  toast('后台自检完成：题目提示已更新，有可比较的版本会显示出来');
 }
 
 function showJobs() {
@@ -995,12 +995,15 @@ function questionBody(q, state = '') {
   const tips = [...(checks.flags || []), ...(checks.notes || []),
     ...(checks.difficulty_asked ? [`难度可能和要求不一样：要求${checks.difficulty_asked}，AI 估计为${checks.difficulty}`] : [])];
   const mustLook = (checks.flags || []).length || checks.answer_suspect;
+  const checkPill = checks.state === 'pending' || checks.state === 'running'
+    ? '<span class="pill info">自检中</span>'
+    : checks.state === 'error' ? '<span class="pill warn">自检未完成</span>' : '';
   const goal = (c.objective_ids || []).map((id) => S.goals && S.goals[id]).filter(Boolean)[0];
   const options = (c.options || []).map((o, i) => `<div>${'ABCDEFGH'[i]}. ${esc(o)}</div>`).join('');
   return `<div class="item-head"><div><b>第 ${c.no} 题</b> · ${esc(S.meta.question_types[c.type] || c.type)} · 满分 ${r.total}
       ${goal ? ` · <span title="${esc(goal.text)}">目标 ${goal.no}</span>` : ''}
       ${(c.target_patterns || []).length ? ' <span class="pill info">巩固练习</span>' : ''}</div>
-      <div>${state} ${mustLook ? '<span class="pill warn">需核对</span>' : ''}</div></div>
+      <div>${state} ${checkPill} ${mustLook ? '<span class="pill warn">需核对</span>' : ''}</div></div>
     <div class="stem">${esc(c.stem)}</div>${options}
     ${c.answer_key ? `<div class="kv">答案：${esc(c.answer_key)}${(c.accepted || []).length ? '（也接受：' + esc(c.accepted.join('、')) + '）' : ''}</div>` : ''}
     <div class="kv">参考答案：${esc(c.reference)}</div>
@@ -1675,7 +1678,7 @@ function bindEvents() {
     }
     return generateQuestions(e.target);
   });
-  const generateQuestions = (btn) => busy(btn, '出题与自检中…', async () => {
+  const generateQuestions = (btn) => busy(btn, '出题中…', async () => {
     const topic = $('#q-topic-wrap').classList.contains('hidden') ? '' : $('#q-topic').value.trim();
     if (topic) {
       await api('PATCH', `/api/projects/${S.pid}`, { knowledge_module: topic });
@@ -1695,7 +1698,7 @@ function bindEvents() {
       + (dropped.length ? `；丢弃 ${dropped.length} 道不完整的题：${dropped.join('；')}` : '');
     const compared = (r.alternatives || []).length;
     if (r.background) {
-      // Questions and alternatives are ready; only the checks (and a rewrite they may call for) land later.
+      // Questions are ready; the checks (and the comparisons they gate) land later.
       toast(`${base}${compared ? `；其中 ${compared} 道题另有一个版本，可以在下面比较` : ''}。自检在后台进行，完成后页面会自动更新`);
       S.showRound = 1; await refresh();
       watchBackground(S.pid, r.background.run);
@@ -1893,7 +1896,10 @@ async function onAction(e) {
       if (!remark) { toast('先写下修改意见', true); break; }
       await busy(btn, '修改与自检中…', async () => {
         const r = await api('POST', `/api/questions/${item.dataset.id}/revise`, { instruction: remark });
-        showNote(r.context_note); toast('已按意见改好，存为新的一版，请核对后确认'); S.showRound = Number($('#q-round').value || 1); await refresh();
+        showNote(r.context_note);
+        toast(r.background ? '已按意见改好，自检在后台进行，完成后页面会更新' : '已按意见改好，存为新的一版，请核对后确认');
+        S.showRound = Number($('#q-round').value || 1); await refresh();
+        if (r.background) watchBackground(S.pid, r.background.run);
       });
       break;
     }
@@ -1910,9 +1916,12 @@ async function onAction(e) {
       const now = (await api('GET', `/api/projects/${S.pid}/questions?round=${$('#q-round').value || 1}`)).find((x) => x.id === item.dataset.id);
       const cur = levels.indexOf((now && now.content.difficulty_requested) || '中等');
       const difficulty = kind === '更简单' ? levels[Math.max(0, cur - 1)] : kind === '更难' ? levels[Math.min(2, cur + 1)] : null;
-      await busy(btn, '换题与自检中…', async () => {
+      await busy(btn, '换题中…', async () => {
         const r = await api('POST', `/api/questions/${item.dataset.id}/regenerate`, { instruction: [kind, note].filter(Boolean).join('；'), difficulty });
-        showNote(r.context_note); toast('已换成新的一版，请核对后确认'); S.showRound = Number($('#q-round').value || 1); await refresh();
+        showNote(r.context_note);
+        toast(r.background ? '已换成新的一版，自检在后台进行，完成后页面会更新' : '已换成新的一版，请核对后确认');
+        S.showRound = Number($('#q-round').value || 1); await refresh();
+        if (r.background) watchBackground(S.pid, r.background.run);
       });
       break;
     }

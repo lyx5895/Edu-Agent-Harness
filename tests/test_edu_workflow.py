@@ -286,6 +286,31 @@ def test_questions_need_a_confirmed_lesson_plan(ws):
         Context('generate_questions').add_artifact({'type': 'grading', 'status': 'confirmed', 'version': 1})
 
 
+def test_infer_goals_picks_standards_in_the_same_call(ws):
+    p = ws.create_project('对数函数练习', '数学', knowledge_module='对数函数')
+    ws.add_material(p['id'], '对数函数 y=log_a x 的定义域是 (0,+∞)。')
+    picked = []
+
+    def infer(r, payload):
+        assert payload['候选课标条目']
+        picked.append(payload['候选课标条目'][0]['编号'])
+        return {
+            'objectives': [
+                {'text': '能解简单对数不等式', 'success_criterion': '写出定义域', 'standard_ids': picked[-1:]}
+            ]
+        }
+
+    ws.llm.handlers['infer_objectives'] = infer
+    before = len(ws.llm.calls)
+    ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
+    calls = ws.llm.calls[before:]
+    assert not [c for c in calls if c['task'] == 'pick_standards']  # the standard pick is part of the same call
+    [plan] = [x for x in ws.lesson_plans(p['id']) if x['status'] == 'draft']
+    [goal] = plan['content']['objectives']
+    assert goal['standard_ids'] == picked
+    assert ws.curriculum(p['id'])['selected'] == picked
+
+
 def test_usable_drafts_fill_keyed_points_and_report_dropped():
     from edu_core.workflow import QuestionDraft, usable_drafts
 
@@ -319,6 +344,7 @@ def test_self_check_calls_are_recorded(ws):
     assert 'self_check_solve' in tasks and 'self_check_compare' in tasks and 'review_question' in tasks
     assert 'grade' not in tasks  # the solver's work is not graded point by point any more
     assert len(q['content']['checks']['generation_ids']) == 3  # review + solve + one agreement judgement
+    assert q['content']['checks']['state'] == 'done'
 
 
 def test_next_step_guides_through_the_workflow(ws):
@@ -650,6 +676,30 @@ def test_adopt_solver_answer_clears_numeric_expectations(ws):
     assert cur['content']['reference'] == 'x<9' and fixed['version'] == 2
     assert cur['rubric']['content']['points'][0]['id'] == 'P1'
     assert 'check' not in cur['rubric']['content']['points'][0]
+
+
+def test_regenerate_returns_before_the_check_finishes(ws):
+    import time
+    from dataclasses import replace
+
+    p, q = setup_round_one(ws)
+    ws.settings = replace(ws.settings, background_checks=True)
+    ws.llm.handlers['regenerate_question'] = lambda r, p: {
+        'questions': [question('换一道：解不等式 log2(x+2) < 2')]
+    }
+    out = ws.regenerate_question(q['id'], instruction='换一道')
+    assert out['background']['run']
+    assert out['question']['content']['checks']['state'] == 'pending'
+    for _ in range(500):
+        with ws.store.read() as c:
+            row = c.execute('SELECT status FROM runs WHERE id=?', (out['background']['run'],)).fetchone()
+        if row and row['status'] != 'running':
+            break
+        time.sleep(0.02)
+    assert row['status'] == 'succeeded'
+    [cur] = [x for x in ws.questions(p['id'], round_=1) if x['lineage_id'] == q['lineage_id']]
+    assert cur['content']['checks']['state'] == 'done'
+    assert cur['content']['checks']['solver'] == 'agree'
 
 
 def test_generation_sees_activities_standards_and_carried_over_status(ws):

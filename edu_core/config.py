@@ -39,6 +39,9 @@ class Settings:
     max_tokens: int = 6000
     timeout: float = 180.0
     concurrency: int = 8
+    # How long one objective's generation may take before the response returns without it. The call keeps running
+    # in the client, but the teacher gets the objectives that are ready instead of waiting for the slowest one.
+    generate_timeout: float = 90.0
     # Single-user local tool without accounts: only loopback clients unless explicitly opened up.
     allow_remote: bool = False
     # Accounts and per-record access checks (design doc 10). Off: local single-user tool, as before.
@@ -57,6 +60,7 @@ def load_settings(**overrides) -> Settings:
         'background_checks': os.getenv('EDU_BACKGROUND_CHECKS', '') in ('1', 'true', 'yes'),
         'max_tokens': int(os.getenv('EDU_MAX_TOKENS', Settings.max_tokens)),
         'concurrency': int(os.getenv('EDU_CONCURRENCY', Settings.concurrency)),
+        'generate_timeout': float(os.getenv('EDU_GENERATE_TIMEOUT', Settings.generate_timeout)),
         'allow_remote': os.getenv('EDU_ALLOW_REMOTE', '') in ('1', 'true', 'yes'),
         'auth': os.getenv('EDU_AUTH', '') in ('1', 'true', 'yes'),
     }

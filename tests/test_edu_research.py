@@ -172,6 +172,9 @@ def test_ab_compares_one_version_per_objective(ws):
     assert gen['candidates'][0]['position'] == 'A'
     [alt] = gen['alternatives']
     assert alt['paired_a_index'] in (0, 1)
+    qs = {q['id']: q for q in ws.questions(pid)}
+    assert qs[alt['alternative']]['content']['type'] == qs[alt['question']]['content']['type']
+    assert qs[alt['alternative']]['content']['no'] == qs[alt['question']]['content']['no']
     with ws.store.read() as c:
         rows = [dict(r) for r in c.execute('SELECT * FROM comparisons WHERE project_id=?', (pid,))]
     assert len(rows) == 1
@@ -270,12 +273,32 @@ def test_sampled_alternatives_have_no_daily_cap(tmp_path):
 
 def test_ab_arms_share_the_input_and_b_has_no_original(ws):
     pid = ab_project(ws, ['原题'], ['替代'])
-    ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
+    ws.generate_questions(pid, types=['calculation', 'single_choice'], count=1, ab=True)
     calls = [c for c in ws.llm.calls if c['task'] == 'generate_questions']
     a = next(c for c in calls if '优先设计贴近真实情境' not in c['system'])
     b = next(c for c in calls if '优先设计贴近真实情境' in c['system'])
-    assert a['user'] == b['user']  # the same task input; only the system prompt differs
+    assert a['user'] == b['user']  # the same task input, including the pre-chosen type
+    assert a['user']['允许题型'] == ['计算与推导（calculation）']  # one type, fixed before either call
     assert '原题' not in b['user'] and '替代要求' not in b['user']
+
+
+def test_ab_versions_keep_the_same_type(ws):
+    pid = ab_project(ws, ['原题'], ['替代'])
+
+    def gen(role, payload, system):
+        if '优先设计贴近真实情境' in system:
+            # B ignores the restriction; the server must drop it rather than compare two different types.
+            return {'questions': [{**question('替代'), 'type': 'short_answer'}]}
+        return {
+            'questions': [
+                {**question('原题'), 'type': 'single_choice', 'options': ['1', '2', '3', '4'], 'answer_key': 'A'}
+            ]
+        }
+
+    ws.llm.handlers['generate_questions'] = gen
+    out = ws.generate_questions(pid, types=['single_choice', 'calculation'], count=1, ab=True)
+    assert out['alternatives'] == []
+    assert '没有生成成功' in out['ab_note']
 
 
 def test_revoking_an_adoption_restores_the_compared_question(ws):

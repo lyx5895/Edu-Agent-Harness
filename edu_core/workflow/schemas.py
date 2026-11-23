@@ -14,6 +14,8 @@ QuestionType = Literal[tuple(QUESTION_TYPES)]  # type: ignore[valid-type]
 class ObjectiveDraft(BaseModel):
     text: str = Field(max_length=200)
     success_criterion: str = Field(max_length=300)
+    # The standard items the objective rests on. Inferred goals choose them in the same call as the goal itself.
+    standard_ids: list[str] = Field(default_factory=list)
 
 
 class PointDraft(BaseModel):

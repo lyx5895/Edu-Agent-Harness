@@ -720,6 +720,29 @@ def test_a_failed_part_costs_only_its_own_questions(ws):
     assert len(cand['questions']) == 1 and any('第 2 条目标' in d for d in cand['dropped'])
 
 
+def test_a_slow_objective_does_not_hold_back_the_others(tmp_path):
+    import time
+
+    from test_edu_workflow import question
+
+    settings = load_settings(
+        db=str(tmp_path / 'slow.sqlite'), audit_rate=0.0, ab_rate=0.0, concurrency=2, generate_timeout=0.2
+    )
+    ws = Workspace(Store(settings.db), FakeLLM(dict(HANDLERS)), settings, rng=random.Random(1))
+    pid = _two_goal_task(ws)
+
+    def gen(r, p):
+        if p['教学目标'][0]['目标'] == '能比较对数值大小':
+            time.sleep(0.6)
+        return {'questions': [question('解不等式 log2(x-1) < 3')]}
+
+    ws.llm.handlers['generate_questions'] = gen
+    out = ws.generate_questions(pid, types=['calculation'], count=1, ab=False)
+    [cand] = out['candidates']
+    assert len(cand['questions']) == 1  # the fast objective is already usable
+    assert any('超时' in d for d in cand['dropped'])
+
+
 def test_choosing_an_alternative_replaces_one_question(ws):
     from test_edu_workflow import question
 

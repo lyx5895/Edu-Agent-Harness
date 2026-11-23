@@ -177,25 +177,47 @@ class QuestionsMixin:
         sampled = {part[0] for part in parts if rate > 0 and self.rng.random() < rate}
         groups = {i: new_id('ab') for i in sampled}
 
+        def choose_pair_type(index):
+            """The type both versions of this objective use. It is a shared task condition chosen before either call,
+            from the objective's success criterion; otherwise the selected types take turns across objectives. This
+            keeps A and B parallel while guaranteeing that the compared pair has the same type."""
+            goal = objs[index]['content']
+            text = f"{goal.get('text', '')}{goal.get('success_criterion', '')}"
+            for qtype, words in (
+                ('single_choice', ('选择', '选出', '判断')),
+                ('calculation', ('计算', '求解', '推导', '证明')),
+                ('short_answer', ('说明', '解释', '论述', '分析')),
+                ('fill_blank', ('填空', '写出', '填写')),
+            ):
+                if qtype in allowed and any(w in text for w in words):
+                    return qtype
+            return allowed[index % len(allowed)]
+
+        pair_types = {i: choose_pair_type(i) for i in sampled}
+
         def generate(part, variant):
+            qtype = pair_types.get(part[0])
+            system_types = [qtype] if qtype else allowed
             system = GENERATE_SYSTEM.format(
                 subject=p['pack']['name'],
-                types='、'.join(f'{t}（{QUESTION_TYPES[t]}）' for t in allowed),
+                types='、'.join(f'{t}（{QUESTION_TYPES[t]}）' for t in system_types),
                 variant=VARIANTS[variant],
             )
             payload = request(part)
+            if qtype:
+                payload['允许题型'] = [f'{QUESTION_TYPES[qtype]}（{qtype}）']
             if variant == 'b':
                 # One independent draw for the objective; it is paired with one of this part's A questions.
                 payload['每个目标出题数'] = 1
             out, meta = llm.complete(
                 'generator', 'generate_questions', system, _json(payload), QuestionSet, max_tokens=12000
             )
-            drafts, dropped = usable_drafts(out.questions, allowed)
+            drafts, dropped = usable_drafts(out.questions, [qtype] if qtype else allowed)
             for d in drafts:  # the part numbered its objectives from 0: back to the plan's numbering
                 d.objective_index = part[d.objective_index] if 0 <= d.objective_index < len(part) else part[0]
             # Checks happen once the questions are saved (``_finish_checks``): inline or in the background, they
             # no longer decide how long the teacher waits for the questions themselves.
-            return meta, [(d, {'notes': []}) for d in drafts], dropped, payload
+            return meta, [(d, {'notes': [], 'state': 'pending'}) for d in drafts], dropped, payload
 
         def arm(part, variant):
             """One arm of one part. A failure is returned to the caller instead of taking the other arm down."""
@@ -205,8 +227,8 @@ class QuestionsMixin:
                 return None, f'第 {part[0] + 1} 条目标的题没有生成成功（{type(e).__name__}: {e}）'[:200]
 
         def run_part(part):
-            """One part: A always; B as an independent draw when this objective is sampled. The two arms share the
-            input and differ only in the system prompt, so they can run side by side."""
+            """One part: A always; B as an independent draw when this objective is sampled. Both arms use the same
+            pre-chosen type, so they stay parallel and compared only when they are the same kind of question."""
             if part[0] in sampled:
                 a, b = self._parallel(lambda variant: arm(part, variant), ['a', 'b'])
                 return {'objective': part[0], 'group': groups[part[0]], 'a': a, 'b': b}
@@ -217,11 +239,17 @@ class QuestionsMixin:
                 return run_part(part), None
             except Exception as e:  # noqa: BLE001 - run_part itself failed before an arm reported
                 return None, f'第 {part[0] + 1} 条目标的题没有生成成功（{type(e).__name__}: {e}）'[:200]
+            finally:
+                progress.tick()
 
         progress.step('出题')
-        done = self._parallel(attempt_part, parts)
-        pieces = [r for r, _ in done if r is not None]
-        failures = [err for _, err in done if err]
+        progress.grow('出题', len(parts))
+        completed, timed_out = self._parallel_deadline(
+            attempt_part, parts, self.settings.generate_timeout or None
+        )
+        pieces = [result for _item, (result, _error) in completed if result is not None]
+        failures = [error for _item, (result, error) in completed if result is None and error]
+        failures += [f'第 {item[0] + 1} 条目标生成超时' for item, _reason in timed_out]
         all_pairs = []
         for piece in pieces:
             for arm_name in ('a', 'b'):
@@ -288,7 +316,11 @@ class QuestionsMixin:
                 written += [d for d, _ in items]
                 if not group:
                     continue
-                b_result, b_error = piece['b']
+                b_arm = piece.get('b')
+                if not b_arm:
+                    job['ab_notes'].append('另一种写法没有生成成功')
+                    continue
+                b_result, b_error = b_arm
                 if b_result is None:
                     job['ab_notes'].append(b_error or '另一种写法没有生成成功')
                     continue
@@ -317,6 +349,8 @@ class QuestionsMixin:
                         'difficulty_requested': difficulty,
                         'purpose': purpose,
                         'paired_with': paired_a['id'] if paired_a else '',
+                        # Another version of the same slot: show the paired A's number, not a new one.
+                        **({'no': paired_a['content'].get('no')} if paired_a else {}),
                     },
                 )
                 if b_questions and paired_a is not None:
@@ -423,6 +457,9 @@ class QuestionsMixin:
         checks_by_qid = {qid: merged for qid, _d, merged, _sha in written}
         a_ids = {q['id'] for q, _ in a_pairs}
         paired_a_ids = {bp['a']['id'] for bp in b_pairs}
+        if job.get('rewrite') is False:
+            # A single 换一道/按意见修改 is already the teacher's answer: leave the findings on it, do not rewrite again.
+            paired_a_ids |= a_ids
         rewritten, failed = self._auto_rewrite(
             job['pid'], [r for r in written if r[0] in a_ids], paired_a_ids
         )
@@ -453,6 +490,7 @@ class QuestionsMixin:
                 merged = {**old, **checks}
                 merged['generation_ids'] = generation_ids
                 merged['notes'] = [*old.get('notes', []), *checks.get('notes', [])]
+                merged['state'] = 'error' if checks.get('solver') == 'error' else 'done'
                 content['checks'] = merged
                 new_sha = sha(content)
                 c.execute(
@@ -630,8 +668,8 @@ class QuestionsMixin:
     def _infer_goals(self, pid, llm, notes=''):
         """Practice straight from the request: infer the objectives the questions will test, saved as a draft plan
         whose objectives are marked 由出题要求反推. The teacher checks them with the questions; nothing is confirmed
-        on their behalf."""
-        self._confirm_standards(pid, llm)
+        on their behalf. The standard items are chosen in the same call: a teacher's pick is respected, an automatic
+        one is saved only after the model has chosen from the candidates."""
         with self.store.read() as c:
             p = self._project(c, pid)
             ctx = Context('infer_objectives')
@@ -640,12 +678,18 @@ class QuestionsMixin:
             if not (p.get('knowledge_module') or p.get('lesson_scope') or materials or notes.strip()):
                 raise Conflict('请先写下这次练习的主题或范围，或添加参考材料')
             current = self._plan(c, pid, confirmed=False)
-        progress.step('反推教学目标')
-        with self.store.tx() as c:
-            std = self._curriculum_for_plan(c, p)
-        if std:
-            ids = [it['id'] for it in std['content']]
+
+        chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
+        locked = bool(chosen and chosen.get('chosen_by') in ('teacher', 'model'))
+        data = CUR.load(p['subject'])
+        if locked:
+            cands = [data['by_id'][i] for i in (chosen.get('ids') or []) if data and i in data['by_id']]
+        else:
+            cands = CUR.candidates(p['subject'], self._curriculum_query(p)) if data else []
+        if cands:
+            ids = [it['id'] for it in cands]
             ctx.add_other('curriculum', p['subject'], sha(_json(ids)), items=ids)
+        progress.step('反推教学目标')
         out, meta = llm.complete(
             'generator',
             'infer_objectives',
@@ -659,22 +703,33 @@ class QuestionsMixin:
                     '本课时内容': p.get('lesson_scope', ''),
                     '学生基础': p.get('learner_profile', ''),
                     '老师说明': notes or p.get('notes', ''),
-                    '课标条目': [{'位置': it['label'], '原文': it['text']} for it in (std or {}).get('content', [])],
+                    '候选课标条目': [{'编号': it['id'], '位置': it['label'], '原文': it['text']} for it in cands],
                     '材料摘录': materials,
                 }
             ),
             InferredGoals,
         )
-        goals = [
-            {'text': o.text, 'success_criterion': o.success_criterion, 'inferred': True}
-            for o in out.objectives[:4]
-            if o.text.strip()
-        ]
+        valid = {it['id'] for it in cands}
+        picked = list(dict.fromkeys(i for o in out.objectives for i in o.standard_ids if i in valid))[:3]
+        goals = []
+        for o in out.objectives[:4]:
+            if not o.text.strip():
+                continue
+            std = [i for i in dict.fromkeys(o.standard_ids) if i in valid][:3]
+            goal = {'text': o.text, 'success_criterion': o.success_criterion, 'inferred': True}
+            if std:
+                goal['standard_ids'] = std
+            goals.append(goal)
         if not goals:
             raise ModelUnavailable('没有得到可用的教学目标，请补充主题或范围后重试')
         base = current['content'] if current else {'key_points': [], 'difficulties': [], 'activities': [], 'notes': ''}
         with self.store.tx() as c:
-            gid = record_generation(c, pid, meta, ctx.manifest, 'infer-goals-v1')
+            gid = record_generation(c, pid, meta, ctx.manifest, 'infer-goals-v2')
+            if picked and not locked:
+                c.execute(
+                    'UPDATE projects SET curriculum=? WHERE id=?',
+                    (_json({'ids': picked, 'off': False, 'chosen_by': 'model', 'note': ''}), pid),
+                )
             return A.create(
                 c,
                 pid,
@@ -1439,12 +1494,9 @@ class QuestionsMixin:
         if not drafts:
             raise ModelUnavailable('模型没有给出可用的题目，请重试' + (f'（{dropped[0]}）' if dropped else ''))
         d = drafts[0].model_copy(update={'objective_index': 0})
-        checks = self._self_check(p, d, self._review_ctx(p, objs, d, difficulty, pattern))
+        checks = {'notes': [], 'state': 'pending'}
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'revise-question-v1' if keep else 'regenerate-v1')
-            metas = checks.pop('_metas', [])
-            manifest = [{'kind': 'question_stem', 'id': sha(d.stem), 'sha': sha(d.stem)}]
-            checks['generation_ids'] = [record_generation(c, pid, m, manifest, 'self-check-v2') for m in metas]
             content = _question_content(
                 d,
                 q['content']['no'],
@@ -1484,7 +1536,30 @@ class QuestionsMixin:
                 round_=q['round'],
             )
             self._guard_basis(c, pid, new['id'], ctx.manifest)
-        return {'question': new, 'context_note': describe(ctx.manifest)}
+        job = {
+            'pid': pid,
+            'p': p,
+            'objs': objs,
+            'difficulty': difficulty,
+            'purpose': q['content'].get('purpose', ''),
+            'trigger': 'single',
+            'rate': 0.0,
+            'a_pairs': [(new, d)],
+            'b_pairs': [],
+            'manifest': ctx.manifest,
+            'ab_notes': [],
+            'rewrite': False,
+        }
+        if self.settings.background_checks:
+            rid = self._start_background(pid, job)
+            return {
+                'question': new,
+                'context_note': describe(ctx.manifest),
+                'background': {'run': rid, 'questions': 1},
+            }
+        self._finish_checks(job)
+        [fresh] = self._fresh_questions(pid, [new])
+        return {'question': fresh, 'context_note': describe(ctx.manifest)}
 
     def questions(self, pid, round_=None):
         with self.store.read() as c:
