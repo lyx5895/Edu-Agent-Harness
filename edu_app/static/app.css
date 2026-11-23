@@ -103,6 +103,11 @@ th { color: var(--muted); font-weight: 500; }
 .project-line h1 { font-size: 20px; margin: 0; }
 button.link { background: none; color: var(--accent); padding: 0; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
 .suggest-row { margin-top: 4px; font-weight: 400; }
+/* On a form field the hint sits on the label line, right-aligned: one less line per field. */
+.grid-form label:has(> .suggest-row) { position: relative; }
+.grid-form label > .suggest-row { position: absolute; top: 0; right: 0; margin: 0; }
+.suggest-row button { font-size: 12px; }
+.suggest-row .muted { font-size: 11px; }
 .ghost::placeholder { color: #9aa0a6; font-style: italic; }
 .suggest-row .muted { margin-left: 8px; font-size: 12px; }
 .tabs { gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 18px; }
@@ -153,6 +158,8 @@ button.link { background: none; color: var(--accent); padding: 0; font-size: 14p
 .carry-list { margin: 6px 0; padding-left: 18px; }
 .carry-list li { margin-bottom: 6px; }
 .cur-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+#curriculum-box { border-left: 2px solid var(--line); padding-left: 12px; }
+#curriculum-note { margin: 4px 0 8px; font-size: 12px; }
 .cur-head a { color: var(--accent); }
 #curriculum-list { display: grid; gap: 6px; margin: 6px 0; }
 .cur-item { display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: start; padding: 8px 10px;
@@ -278,6 +285,10 @@ summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* 首页层次：需要处理最醒目；其他工作区折叠在底部；试用意愿卡不抢眼 */
 .card.attention { border-color: var(--warn); background: var(--warn-soft); }
 .card.attention h3 { color: var(--warn); }
+/* 参考材料 is where the lesson content comes from: give it a red edge instead of another equal card. */
+.card.emphasis { border-color: var(--bad); border-left: 4px solid var(--bad); background: var(--bad-soft); }
+.card.emphasis h3 { color: var(--bad); }
+.card.emphasis > p.why { margin: 2px 0 10px; font-size: 13px; color: var(--muted); }
 .other-work > summary { cursor: pointer; font-weight: 600; }
 .feedback-card { padding: 8px 14px; font-size: 13px; color: var(--muted); }
 

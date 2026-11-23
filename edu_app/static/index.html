@@ -157,8 +157,9 @@
             <div class="wide"><button id="save-course" class="secondary">保存课时信息</button> <button id="regen-plan" class="secondary hidden">保存并重新生成教案</button> <span id="dirty-note" class="pill warn hidden">尚未保存 · 切换到别的课也不会丢</span></div>
           </div>
         </div>
-        <div class="card setup" id="materials-card">
-          <h3>参考材料 <span class="muted">（可选）</span></h3>
+        <div class="card setup emphasis" id="materials-card">
+          <h3>参考材料 <span class="pill bad">建议填写</span></h3>
+          <p class="why">有教材、讲义或上一版教案就加进来：教案、例题和出的题会更贴本课内容。不填也能生成。</p>
           <div id="materials"></div>
           <div class="row hidden" id="material-prefs-row"><button class="small secondary" id="material-prefs-save">保存材料选择</button>
             <span class="muted">取消勾选的材料不发给模型；填写章节或关键词时只发送对应部分。</span></div>

@@ -879,7 +879,7 @@ async function renderPrep() {
         <span><span class="pill">${m.chars} 字</span>${m.scope === 'course' ? ' <span class="pill info">课程资料</span>' : ''}</span></div>
         <div class="kv">${esc(m.text)}${m.chars > 400 ? '…' : ''}</div>
         <input class="mat-focus" placeholder="只用某章节或关键词（选填），例如：第二章 对数" value="${esc(focusOf(m.id))}"></div>`).join('')
-    : '<div class="empty">没有材料也可以生成备课方案；有教材或讲义时添加进来，内容范围会更准。</div>';
+    : '<div class="empty">还没有材料。</div>';
   $('#material-prefs-row').classList.toggle('hidden', !mats.length);
   $('#lesson-plan').innerHTML = plans.length
     ? lessonPlanItem(plans[0])
