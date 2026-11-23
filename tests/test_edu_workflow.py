@@ -337,6 +337,18 @@ def test_suggest_course_topic_uses_course_context(ws):
         ws.suggest_course_field(crs['id'], 'nope')
 
 
+def test_suggest_course_lesson_number_follows_existing_lessons(ws):
+    crs = ws.create_course('高一数学·上学期', '数学', grade='高一')
+    ws.start_task(crs['id'], 'prep', knowledge_module='对数函数', lesson='第 2 课时')
+    ws.start_task(crs['id'], 'prep', knowledge_module='指数函数')
+    before = len(ws.llm.calls)
+    out = ws.suggest_course_field(crs['id'], 'nl_no')
+    assert out['text'] == '第 3 课时'  # the highest existing number plus one
+    assert len(ws.llm.calls) == before  # a count, not a model call
+    empty = ws.create_course('高一语文', '语文')
+    assert ws.suggest_course_field(empty['id'], 'nl_no')['text'] == '第 1 课时'
+
+
 def test_usable_drafts_fill_keyed_points_and_report_dropped():
     from edu_core.workflow import QuestionDraft, usable_drafts
 

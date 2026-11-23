@@ -248,6 +248,7 @@ const SUGGEST_INPUTS = {
   q_notes: 'q-notes',
   revise_instruction: 'revise-instruction',
   nl_topic: 'nl-topic',
+  nl_no: 'nl-no',
 };
 
 // The hint is shown in the box as gray placeholder text; Tab accepts it, typing replaces it.
@@ -292,7 +293,11 @@ async function requestHint(input, field, btn, { quiet = false } = {}) {
       field, current: input.value, about: suggestAbout(field, btn || input),
     });
     if (!r) return;
-    if (!input.value.trim()) {
+    if (!input.value.trim() && input.dataset.suggestFill === '1') {
+      input.value = r.text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      if (note) note.textContent = '已按已有课时填入';
+    } else if (!input.value.trim()) {
       setGhost(input, r.text);
       if (note) note.textContent = '按 Tab 填入';
     } else {
@@ -315,14 +320,16 @@ function bindSuggest() {
     const input = document.getElementById(id);
     if (!input) continue;
     input.dataset.suggestField = field;
-    if (field === 'nl_topic') input.dataset.suggestScope = 'course';
+    if (field === 'nl_topic' || field === 'nl_no') input.dataset.suggestScope = 'course';
+    if (field === 'nl_no') input.dataset.suggestFill = '1';  // a number to fill in, not a sentence to accept
     const label = input.closest('label');
     const host = label || input.closest('.row') || input;
     if (host.querySelector && host.querySelector(`.suggest-row[data-suggest-row="${field}"]`)) continue;
     const row = document.createElement('div');
     row.className = 'suggest-row';
     row.dataset.suggestRow = field;
-    row.innerHTML = `<button type="button" class="link small" data-suggest="${field}">AI 提示</button><span class="muted"></span>`;
+    const buttonLabel = field === 'nl_no' ? '填下一课时' : 'AI 提示';
+    row.innerHTML = `<button type="button" class="link small" data-suggest="${field}">${buttonLabel}</button><span class="muted"></span>`;
     if (label) label.appendChild(row);
     else host.insertAdjacentElement('afterend', row);
   }

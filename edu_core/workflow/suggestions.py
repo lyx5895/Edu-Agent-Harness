@@ -7,6 +7,8 @@ a remark), not a generic paragraph.
 
 from __future__ import annotations
 
+import re
+
 from edu_core.context import Context, describe
 from edu_core.llm import ModelUnavailable
 from edu_core.storage import record_generation
@@ -26,6 +28,7 @@ SUGGEST_FIELDS = {
     'remark': ('修改意见', 80),
     'regen_note': ('换一道的其他要求', 60),
     'nl_topic': ('这节课的主题', 40),
+    'nl_no': ('课时', 20),
 }
 
 
@@ -81,6 +84,18 @@ class SuggestionsMixin:
     def suggest_course_field(self, course_id, field='nl_topic', current=''):
         """AI 提示 on the home page's 新的一节课, before any project exists: draft the topic from the course's own
         materials and the lessons already taught, so a new lesson does not repeat the last one."""
+        if field == 'nl_no':
+            # Deterministic, no model: the next number after the lessons this course already has.
+            with self.store.read() as c:
+                self._course(c, course_id)
+                rows = [r[0] for r in c.execute('SELECT lesson FROM projects WHERE course_id=?', (course_id,))]
+            numbers = [int(m.group(1)) for x in rows if (m := re.search(r'第\s*(\d+)\s*课时', x or ''))]
+            n = max(numbers) + 1 if numbers else len(rows) + 1
+            return {
+                'field': field,
+                'text': f'第 {n} 课时',
+                'context_note': f'已参考：课程（已有 {len(rows)} 节课）',
+            }
         if field != 'nl_topic':
             raise ValueError('这个输入框还不支持 AI 提示')
         llm = self._model()
