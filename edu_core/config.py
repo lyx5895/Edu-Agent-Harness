@@ -28,10 +28,12 @@ class Settings:
     db: str = str(ROOT / 'data/edu.sqlite')
     # Share of fully-earned gradings re-checked by the reviewer to monitor false passes.
     audit_rate: float = 0.05
-    # Chance that one generated question also gets an alternative version for a per-question A/B comparison.
+    # Chance that one objective also gets an independent second version for an A/B comparison. The two arms share
+    # the task input and differ only in the system prompt; the comparison is per objective, not per question.
     ab_rate: float = 0.5
-    # Write the self-check, the rewrite it may call for and the alternatives after the questions are returned, so the
-    # teacher is not held up by work that only adds notes to questions they can already read.
+    # Write the self-check and the rewrite it may call for after the questions are returned, so the teacher is not
+    # held up by work that only adds notes to questions they can already read. The A/B versions come with the
+    # questions: the teacher compares them while reviewing.
     background_checks: bool = False
     # Reasoning models spend output tokens on thinking; a low cap returns empty content.
     max_tokens: int = 6000

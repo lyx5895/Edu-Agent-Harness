@@ -26,7 +26,6 @@ from edu_core.workflow.common import (
 )
 from edu_core.workflow.prompts import (
     AGREE_SYSTEM,
-    ALT_INSTRUCTION,
     GENERATE_SYSTEM,
     IMPORT_SYSTEM,
     INFER_GOALS_SYSTEM,
@@ -66,6 +65,12 @@ def _mark_similar(items, threshold=0.6):
                 checks.setdefault('notes', []).append(f'和本次生成的第 {j + 1} 道题内容相近，可以换个角度')
                 break
         seen.append((k, grams))
+
+
+def _checks_failed(checks):
+    """A version the teacher should not be asked to compare: a doubtful answer, a must-fix issue, or a check that
+    could not run. Merely differing in difficulty is not a failure."""
+    return bool(checks.get('answer_suspect') or checks.get('flags') or checks.get('solver') == 'error')
 
 
 class QuestionsMixin:
@@ -164,45 +169,112 @@ class QuestionsMixin:
 
         parts = [[i] for i in range(len(objs))]
 
-        def run_part(part):
+        if ab is None:
+            trigger, rate = 'sampled', self.settings.ab_rate
+        else:
+            trigger, rate = 'requested', 1.0 if ab else 0.0
+        # One comparison per objective at most: the teacher reads a set, not a stack of A/B cards.
+        sampled = {part[0] for part in parts if rate > 0 and self.rng.random() < rate}
+        groups = {i: new_id('ab') for i in sampled}
+
+        def generate(part, variant):
             system = GENERATE_SYSTEM.format(
                 subject=p['pack']['name'],
                 types='、'.join(f'{t}（{QUESTION_TYPES[t]}）' for t in allowed),
-                variant=VARIANTS['a'],
+                variant=VARIANTS[variant],
             )
+            payload = request(part)
+            if variant == 'b':
+                # One independent draw for the objective; it is paired with one of this part's A questions.
+                payload['每个目标出题数'] = 1
             out, meta = llm.complete(
-                'generator', 'generate_questions', system, _json(request(part)), QuestionSet, max_tokens=12000
+                'generator', 'generate_questions', system, _json(payload), QuestionSet, max_tokens=12000
             )
             drafts, dropped = usable_drafts(out.questions, allowed)
             for d in drafts:  # the part numbered its objectives from 0: back to the plan's numbering
                 d.objective_index = part[d.objective_index] if 0 <= d.objective_index < len(part) else part[0]
             # Checks happen once the questions are saved (``_finish_checks``): inline or in the background, they
             # no longer decide how long the teacher waits for the questions themselves.
-            return meta, [(d, {'notes': []}) for d in drafts], dropped
+            return meta, [(d, {'notes': []}) for d in drafts], dropped, payload
+
+        def arm(part, variant):
+            """One arm of one part. A failure is returned to the caller instead of taking the other arm down."""
+            try:
+                return generate(part, variant), None
+            except Exception as e:  # noqa: BLE001 - one arm failing must not lose the other
+                return None, f'第 {part[0] + 1} 条目标的题没有生成成功（{type(e).__name__}: {e}）'[:200]
+
+        def run_part(part):
+            """One part: A always; B as an independent draw when this objective is sampled. The two arms share the
+            input and differ only in the system prompt, so they can run side by side."""
+            if part[0] in sampled:
+                a, b = self._parallel(lambda variant: arm(part, variant), ['a', 'b'])
+                return {'objective': part[0], 'group': groups[part[0]], 'a': a, 'b': b}
+            return {'objective': part[0], 'group': None, 'a': arm(part, 'a'), 'b': None}
 
         def attempt_part(part):
             try:
                 return run_part(part), None
-            except Exception as e:  # noqa: BLE001 - reported per part, raised below when nothing came back
+            except Exception as e:  # noqa: BLE001 - run_part itself failed before an arm reported
                 return None, f'第 {part[0] + 1} 条目标的题没有生成成功（{type(e).__name__}: {e}）'[:200]
 
         progress.step('出题')
         done = self._parallel(attempt_part, parts)
         pieces = [r for r, _ in done if r is not None]
         failures = [err for _, err in done if err]
-        if not pieces:
-            raise ModelUnavailable('；'.join(failures))
-        _mark_similar([pair for _, items, _ in pieces for pair in items])
-        dropped = [x for _, _, dr in pieces for x in dr] + failures
+        all_pairs = []
+        for piece in pieces:
+            for arm_name in ('a', 'b'):
+                result = piece.get(arm_name)
+                if result and result[0]:
+                    all_pairs.extend(result[0][1])
+                elif result and result[1]:
+                    failures.append(result[1])
+        _mark_similar(all_pairs)
+        dropped = [
+            x
+            for piece in pieces
+            for arm_name in ('a', 'b')
+            if piece.get(arm_name) and piece[arm_name][0]
+            for x in piece[arm_name][0][2]
+        ]
+        dropped += failures
 
         result = {'context_note': describe(ctx.manifest), 'candidates': [], 'alternatives': []}
+        job = {
+            'pid': pid,
+            'p': p,
+            'objs': objs,
+            'difficulty': difficulty,
+            'purpose': purpose,
+            'trigger': trigger,
+            'rate': rate,
+            'a_pairs': [],
+            'b_pairs': [],
+            'manifest': ctx.manifest,
+            'ab_notes': [],
+        }
         with self.store.tx() as c:
             gids, made, written = [], [], []
-            for meta, items, _ in pieces:
-                # one generation record per part, as always; all of them are the one version the teacher gets
-                gid = record_generation(c, pid, meta, ctx.manifest, 'generate-v4', variant='a')
+            for piece in pieces:
+                a_result, _a_error = piece['a']
+                if a_result is None:
+                    continue
+                meta, items, _dropped, a_payload = a_result
+                group = piece['group']
+                # one generation record per part; both arms share the comparison group when sampled
+                gid = record_generation(
+                    c,
+                    pid,
+                    meta,
+                    ctx.manifest,
+                    'generate-v5',
+                    group=group,
+                    position='A' if group else None,
+                    variant='a',
+                )
                 gids.append(gid)
-                made += self._save_questions(
+                a_questions = self._save_questions(
                     c,
                     pid,
                     items,
@@ -212,7 +284,66 @@ class QuestionsMixin:
                     round_=1,
                     extra={'difficulty_requested': difficulty, 'purpose': purpose},
                 )
+                made += a_questions
                 written += [d for d, _ in items]
+                if not group:
+                    continue
+                b_result, b_error = piece['b']
+                if b_result is None:
+                    job['ab_notes'].append(b_error or '另一种写法没有生成成功')
+                    continue
+                meta_b, items_b, _dropped_b, _b_payload = b_result
+                bgid = record_generation(
+                    c,
+                    pid,
+                    meta_b,
+                    ctx.manifest,
+                    'generate-v5b',
+                    group=group,
+                    position='B',
+                    variant='b',
+                )
+                paired_index = self.rng.randrange(len(a_questions)) if a_questions else None
+                paired_a = a_questions[paired_index] if paired_index is not None else None
+                b_questions = self._save_questions(
+                    c,
+                    pid,
+                    items_b,
+                    objs,
+                    bgid,
+                    status='candidate',
+                    round_=1,
+                    extra={
+                        'difficulty_requested': difficulty,
+                        'purpose': purpose,
+                        'paired_with': paired_a['id'] if paired_a else '',
+                    },
+                )
+                if b_questions and paired_a is not None:
+                    job['b_pairs'].append(
+                        {
+                            'group': group,
+                            'objective': piece['objective'],
+                            'a': paired_a,
+                            'b': b_questions[0],
+                            'b_draft': items_b[0][0],
+                            'paired_a_index': paired_index,
+                            'a_generation': gid,
+                            'b_generation': bgid,
+                            'a_payload': a_payload,
+                            'meta_a': meta,
+                            'meta_b': meta_b,
+                        }
+                    )
+                else:
+                    for b_q in b_questions:
+                        c.execute(
+                            "UPDATE artifacts SET status='superseded' WHERE lineage_id=? AND status='candidate'",
+                            (b_q['lineage_id'],),
+                        )
+                    job['ab_notes'].append(f'第 {piece["objective"] + 1} 条目标的另一种写法没有生成成功')
+            if not gids:
+                raise ModelUnavailable('；'.join(failures) or '没有生成可用的题目')
             result['candidates'].append(
                 {
                     'position': 'A',
@@ -223,38 +354,17 @@ class QuestionsMixin:
                     'dropped': dropped,
                 }
             )
+            job['a_pairs'] = list(zip(made, written))
 
-        # A/B comparison, one question at a time: each question is sampled on its own (so a request can have none,
-        # one or several), and a sampled question gets an alternative written against it. The rest of the set is
-        # unaffected, and the teacher can compare without being held up.
-        if ab is None:
-            trigger, rate = 'sampled', self.settings.ab_rate
-        else:
-            trigger, rate = 'requested', 1.0 if ab else 0.0
-        job = {
-            'pid': pid,
-            'p': p,
-            'objs': objs,
-            'difficulty': difficulty,
-            'purpose': purpose,
-            'request': request,
-            'ctx_manifest': ctx.manifest,
-            'pairs': list(zip(made, written)),
-            'trigger': trigger,
-            'rate': rate,
-        }
-        # The alternatives belong with the questions: the teacher compares them while reviewing, so they are written
-        # before the response. Only the self-check (and the rewrite it may call for) is deferred.
-        alt = self._write_alternatives(job)
-        result['alternatives'] = alt['alternatives']
-        notes = [alt['ab_note']] if alt['ab_note'] else []
-        if self.settings.background_checks and job['pairs']:
-            result['background'] = {'run': self._start_background(pid, job), 'questions': len(job['pairs'])}
-            result['ab_note'] = '；'.join(notes)
+        if self.settings.background_checks and job['a_pairs']:
+            result['background'] = {'run': self._start_background(pid, job), 'questions': len(job['a_pairs'])}
+            result['ab_note'] = '；'.join(job['ab_notes'])
             return result
-        rewritten, failed = self._finish_checks(job)
+        rewritten, failed, comparisons = self._finish_checks(job)
         # The checks (and a rewrite they called for) are in the database now: answer with the current version.
         result['candidates'][0]['questions'] = self._fresh_questions(pid, made)
+        result['alternatives'] = comparisons
+        notes = [*job['ab_notes']]
         if rewritten:
             notes.append(f'{len(rewritten)} 道题发现问题后已自动重写一次')
         if failed:
@@ -282,15 +392,17 @@ class QuestionsMixin:
             return out
 
     def _finish_checks(self, job):
-        """Self-check each question and rewrite the ones the check found a real problem with. Runs inline or in a
-        background thread (``_start_background``); the alternatives were written before this, with the questions."""
-        if not job['pairs']:
-            return [], []
+        """Self-check every version, then publish only the comparisons whose two versions both passed. Runs inline
+        or in a background thread (``_start_background``)."""
+        a_pairs = job.get('a_pairs', [])
+        b_pairs = job.get('b_pairs', [])
+        if not a_pairs and not b_pairs:
+            return [], [], []
         progress.step('自检')
-        progress.grow('独立解题与审核', len(job['pairs']))
+        progress.grow('独立解题与审核', len(a_pairs) + len(b_pairs))
 
-        def check_one(pair):
-            q, d = pair
+        def check_one(item):
+            arm, q, d = item
             try:
                 checks = self._self_check(
                     job['p'], d, self._review_ctx(job['p'], job['objs'], d, job['difficulty'])
@@ -303,14 +415,24 @@ class QuestionsMixin:
                 }
             finally:
                 progress.tick()
-            return q['id'], q['content_sha'], d, checks
+            return arm, q['id'], q['content_sha'], d, checks
 
-        results = self._write_checks(job['pid'], self._parallel(check_one, job['pairs']))
-        return self._auto_rewrite(job['pid'], results)
+        tasks = [('a', q, d) for q, d in a_pairs] + [('b', bp['b'], bp['b_draft']) for bp in b_pairs]
+        rows = [(qid, sha_, d, checks) for _arm, qid, sha_, d, checks in self._parallel(check_one, tasks)]
+        written = self._write_checks(job['pid'], rows)
+        checks_by_qid = {qid: merged for qid, _d, merged, _sha in written}
+        a_ids = {q['id'] for q, _ in a_pairs}
+        paired_a_ids = {bp['a']['id'] for bp in b_pairs}
+        rewritten, failed = self._auto_rewrite(
+            job['pid'], [r for r in written if r[0] in a_ids], paired_a_ids
+        )
+        comparisons = self._finalize_comparisons(job, checks_by_qid)
+        return rewritten, failed, comparisons
 
     def _write_checks(self, pid, rows):
         """Write review and solve results into the questions they were computed for. A question the teacher edited or
-        confirmed while the check ran is left alone: those findings describe an older text."""
+        confirmed while the check ran is left alone: those findings describe an older text. A candidate (the B side)
+        is checked too, so a comparison only ever uses two verified versions."""
         rows = [r for r in rows if r]
         if not rows:
             return []
@@ -318,7 +440,7 @@ class QuestionsMixin:
         with self.store.tx() as c:
             for qid, expected_sha, d, checks in rows:
                 a = c.execute('SELECT content, content_sha, status FROM artifacts WHERE id=?', (qid,)).fetchone()
-                if a is None or a['status'] != 'draft' or a['content_sha'] != expected_sha:
+                if a is None or a['status'] not in ('draft', 'candidate') or a['content_sha'] != expected_sha:
                     continue
                 checks = dict(checks)
                 metas = checks.pop('_metas', [])
@@ -332,24 +454,27 @@ class QuestionsMixin:
                 merged['generation_ids'] = generation_ids
                 merged['notes'] = [*old.get('notes', []), *checks.get('notes', [])]
                 content['checks'] = merged
+                new_sha = sha(content)
                 c.execute(
-                    'UPDATE artifacts SET content=?, content_sha=? WHERE id=?', (dump(content), sha(content), qid)
+                    'UPDATE artifacts SET content=?, content_sha=? WHERE id=?', (dump(content), new_sha, qid)
                 )
-                written.append((qid, d, merged))
+                written.append((qid, d, merged, new_sha))
         return written
 
-    def _auto_rewrite(self, pid, results):
+    def _auto_rewrite(self, pid, results, paired_a_ids=()):
         """A question the check found a real problem with (a reference that disagrees with an independent solution,
         or must-fix issues) is rewritten once with those findings as the remark; the rewrite checks itself again.
-        What still fails stays flagged for the teacher — there is no second loop."""
+        A question taking part in a comparison is left alone: replacing one side under the teacher's feet is worse
+        than leaving the findings on the version they pick. There is no second loop."""
         rewritten, failed = [], []
-        paired = self._questions_with_alternatives(pid)
-        for qid, _d, checks in results:
+        for qid, _d, checks, expected_sha in results:
+            if qid in paired_a_ids:
+                continue
             if not (checks.get('answer_suspect') or checks.get('flags')):
                 continue
-            if qid in paired:
-                # The teacher has two versions to compare: replacing one of them under their feet is worse than
-                # leaving the findings on the question they pick.
+            with self.store.read() as c:
+                cur = c.execute('SELECT status, content_sha FROM artifacts WHERE id=?', (qid,)).fetchone()
+            if cur is None or cur['status'] != 'draft' or cur['content_sha'] != expected_sha:
                 continue
             try:
                 out = self.revise_question(qid, self._rewrite_remark(checks))
@@ -358,14 +483,79 @@ class QuestionsMixin:
                 failed.append(f'{type(e).__name__}: {e}'[:200])
         return rewritten, failed
 
-    def _questions_with_alternatives(self, pid):
-        with self.store.read() as c:
-            rows = c.execute(
-                'SELECT display FROM comparisons WHERE project_id=? AND candidate_group NOT IN '
-                '(SELECT candidate_group FROM choices WHERE revoked_at IS NULL)',
-                (pid,),
-            ).fetchall()
-        return {(json.loads(r['display'] or '{}').get('A') or {}).get('question') for r in rows}
+    def _finalize_comparisons(self, job, checks_by_qid):
+        """Publish a comparison only when both versions passed their checks; record the rest as not comparable so
+        the research data still shows what was generated and why it was not shown."""
+        out = []
+        pid = job['pid']
+        for bp in job.get('b_pairs', []):
+            a, b = bp['a'], bp['b']
+            a_checks = checks_by_qid.get(a['id'], {})
+            b_checks = checks_by_qid.get(b['id'], {})
+            if a['id'] not in checks_by_qid or b['id'] not in checks_by_qid:
+                status, note = 'not_comparable', '有一份没有完成自检，未展示比较'
+            elif _checks_failed(a_checks) or _checks_failed(b_checks):
+                status, note = 'not_comparable', '有一份没有通过自检，未展示比较'
+            elif b['content']['stem'].strip() == a['content']['stem'].strip():
+                status, note = 'same', '另一种写法与原题几乎相同，未展示比较'
+            else:
+                status, note = 'shown', ''
+            display = {
+                'A': {'question': a['id'], 'generation': bp['a_generation']},
+                'B': {'question': b['id'], 'generation': bp['b_generation']},
+                'shown_first': self.rng.choice(('A', 'B')),
+                'paired_a_index': bp['paired_a_index'],
+                'b_status': status,
+                'snapshot': {
+                    'objective': bp.get('objective'),
+                    'arms': {
+                        'A': {'prompt_version': 'generate-v5', 'model': bp['meta_a'].get('model_requested')},
+                        'B': {'prompt_version': 'generate-v5b', 'model': bp['meta_b'].get('model_requested')},
+                    },
+                },
+            }
+            common = {k: v for k, v in bp['a_payload'].items() if k != '每个目标出题数'}
+            with self.store.tx() as c:
+                c.execute(
+                    'INSERT INTO comparisons(candidate_group,project_id,unit,input_sha,factor,display,trigger,'
+                    'sample_rate,rule_version,ui_version,status,shown_first,paired_a_index,created_at) '
+                    'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                    (
+                        bp['group'],
+                        pid,
+                        'question',
+                        sha(_json(common)),
+                        'prompt_variant_independent',
+                        dump(display),
+                        job['trigger'],
+                        job['rate'],
+                        AB_RULE_VERSION,
+                        AB_UI_VERSION,
+                        status,
+                        display['shown_first'],
+                        bp['paired_a_index'],
+                        time.time(),
+                    ),
+                )
+                if status != 'shown':
+                    c.execute(
+                        "UPDATE artifacts SET status='superseded' WHERE lineage_id=? AND status='candidate'",
+                        (b['lineage_id'],),
+                    )
+                    event(c, pid, 'ab_not_comparable', {'group': bp['group'], 'reason': status})
+            if status == 'shown':
+                out.append(
+                    {
+                        'group': bp['group'],
+                        'question': a['id'],
+                        'alternative': b['id'],
+                        'paired_a_index': bp['paired_a_index'],
+                        'shown_first': display['shown_first'],
+                    }
+                )
+            else:
+                job.setdefault('ab_notes', []).append(note)
+        return out
 
     @staticmethod
     def _rewrite_remark(checks):
@@ -374,112 +564,6 @@ class QuestionsMixin:
             parts.append('参考答案与独立解题得出的结论对不上：请核对题干数据，或改正参考答案')
         parts += [str(f) for f in checks.get('flags', []) if str(f).strip()][:3]
         return '；'.join(parts)[:500]
-
-    def _write_alternatives(self, job):
-        """Sample each question on its own and write an alternative for the sampled ones. No self-check here: the
-        alternative is a candidate the teacher may or may not adopt, and adopting it is the teacher's call."""
-        rate = job['rate']
-        picked = [(q, d) for q, d in job['pairs'] if rate > 0 and self.rng.random() < rate]
-        out = {'alternatives': [], 'ab_note': ''}
-        if not picked:
-            return out
-        progress.step('写替代版本')
-
-        def write(pair):
-            q, d = pair
-            try:
-                return self._alternative_draft(job, d), None
-            except Exception as e:  # noqa: BLE001 - one failed alternative costs only its own comparison
-                return None, f'第 {q["content"].get("no", "?")} 道题的替代版本生成失败（{type(e).__name__}: {e}）'[:200]
-
-        outcomes = self._parallel(write, picked)
-        same = failed = 0
-        with self.store.tx() as c:
-            for (q, d), (ok, err) in zip(picked, outcomes):
-                if ok is None:
-                    failed += bool(err)
-                    continue
-                if ok['alt'].stem.strip() == d.stem.strip():
-                    same += 1
-                    continue
-                group = new_id('ab')
-                bgid = record_generation(
-                    c,
-                    job['pid'],
-                    ok['meta'],
-                    job['ctx_manifest'],
-                    'generate-alternative-v1',
-                    group=group,
-                    position='B',
-                    variant='b',
-                )
-                [alt_q] = self._save_questions(
-                    c,
-                    job['pid'],
-                    [(ok['alt'], {'notes': []})],
-                    job['objs'],
-                    bgid,
-                    status='candidate',
-                    round_=1,
-                    extra={
-                        'difficulty_requested': job['difficulty'],
-                        'purpose': job['purpose'],
-                        'alternative_to': q['id'],
-                    },
-                )
-                display = {
-                    'A': {'question': q['id'], 'generation': q['generation_id']},
-                    'B': {'question': alt_q['id'], 'generation': bgid},
-                }
-                c.execute(
-                    'INSERT INTO comparisons(candidate_group,project_id,unit,input_sha,factor,display,trigger,'
-                    'sample_rate,rule_version,ui_version,status,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
-                    (
-                        group,
-                        job['pid'],
-                        'question',
-                        sha(_json(ok['payload'])),
-                        'prompt_variant_rewrite',
-                        dump(display),
-                        job['trigger'],
-                        rate,
-                        AB_RULE_VERSION,
-                        AB_UI_VERSION,
-                        'shown',
-                        time.time(),
-                    ),
-                )
-                out['alternatives'].append({'group': group, 'question': q['id'], 'alternative': alt_q['id']})
-        notes = []
-        if same:
-            notes.append(f'{same} 道题的替代版本与原题几乎相同，没有展示')
-        if failed:
-            notes.append(f'{failed} 道题的替代版本生成失败，先按原题继续')
-        out['ab_note'] = '；'.join(notes)
-        return out
-
-    def _alternative_draft(self, job, d):
-        """One model call: an alternative for this question, written against it (the b prompt)."""
-        payload = job['request']([d.objective_index])
-        payload['每个目标出题数'] = 1
-        payload['允许题型'] = [f'{d.type}（{QUESTION_TYPES[d.type]}）']
-        payload['原题'] = {
-            '题型': f'{d.type}（{QUESTION_TYPES[d.type]}）',
-            '题干': d.stem,
-            '选项': d.options or [],
-        }
-        payload['替代要求'] = ALT_INSTRUCTION
-        system = GENERATE_SYSTEM.format(
-            subject=job['p']['pack']['name'],
-            types=f'{d.type}（{QUESTION_TYPES[d.type]}）',
-            variant=VARIANTS['b'],
-        )
-        out, meta = self.llm.complete('generator', 'generate_alternative', system, _json(payload), QuestionSet)
-        alts, _ = usable_drafts(out.questions, [d.type])
-        if not alts:
-            raise ModelUnavailable('模型没有给出可用的替代版本')
-        alt = alts[0].model_copy(update={'objective_index': d.objective_index})
-        return {'alt': alt, 'meta': meta, 'payload': payload}
 
     def _start_background(self, pid, job):
         """Run ``_finish_checks`` in a thread of this process. The run row and the live progress entry are created
@@ -743,7 +827,7 @@ class QuestionsMixin:
             if decision is not None:
                 return decision, solution, '', metas
         out, meta2 = self.llm.complete(
-            'grader',
+            'reviewer',
             'self_check_compare',
             AGREE_SYSTEM.format(subject=p['pack']['name']),
             _json(
@@ -815,6 +899,8 @@ class QuestionsMixin:
         work_choice=None,
         preference='none',
         reason_tags=None,
+        decision_ms=0,
+        rater_role='teacher',
     ):
         """A/B feedback on one compared question (AB spec 3, 4), kept as separate facts instead of one win/loss label.
 
@@ -840,10 +926,12 @@ class QuestionsMixin:
         tags = [t for t in (reason_tags or []) if t in REASON_TAGS]
         with self.store.tx() as c:
             cmp_row = c.execute(
-                'SELECT display FROM comparisons WHERE candidate_group=? AND project_id=?', (group, pid)
+                'SELECT display, status FROM comparisons WHERE candidate_group=? AND project_id=?', (group, pid)
             ).fetchone()
             if cmp_row is None:
                 raise KeyError('候选组不存在')
+            if cmp_row['status'] != 'shown':
+                raise Conflict('这一组没有可比较的版本')
             display = json.loads(cmp_row['display'] or '{}')
             a_id = (display.get('A') or {}).get('question')
             b_id = (display.get('B') or {}).get('question')
@@ -854,7 +942,8 @@ class QuestionsMixin:
             cid = new_id('cho')
             c.execute(
                 'INSERT INTO choices(id,project_id,candidate_group,verdict,chosen_position,reason,teacher,created_at,'
-                'work_choice,preference,acceptable,reason_tags) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+                'work_choice,preference,acceptable,reason_tags,decision_ms,rater_role) '
+                'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                 (
                     cid,
                     pid,
@@ -868,9 +957,11 @@ class QuestionsMixin:
                     preference,
                     acceptable,
                     dump(tags),
+                    int(decision_ms or 0),
+                    rater_role or 'teacher',
                 ),
             )
-            promoted = self._adopt_alternative(c, pid, a_id, b_id) if chosen == 'B' else []
+            promoted = self._adopt_alternative(c, pid, a_id, b_id, group) if chosen == 'B' else []
             self._close_alternative(c, b_id)
             event(
                 c,
@@ -880,15 +971,24 @@ class QuestionsMixin:
             )
             return {'choice_id': cid, 'verdict': verdict, 'promoted': promoted}
 
-    def _adopt_alternative(self, c, pid, a_id, b_id):
-        """The alternative's text becomes the next version of the original question and of its rubric, so the two are
-        one question with a history rather than two questions for one slot (换一道 is saved the same way). The old
-        version stays in the lineage as history."""
+    def _adopt_alternative(self, c, pid, a_id, b_id, group=''):
+        """B's text becomes the next version of A's question and rubric: one question with a history, not a second
+        question for the same slot. B was generated independently, so the history records the comparison group and
+        the version it was paired with, not "revised from A"."""
         base = A.get(c, a_id)
         alt = A.get(c, b_id)
         if base['lineage_id'] == alt['lineage_id']:
             return []
-        content = {**alt['content'], 'no': base['content'].get('no'), 'alternative_to': a_id}
+        base_rubric = self._rubric_for(c, base['lineage_id'], include_drafts=True)
+        alt_rubric = self._rubric_for(c, alt['lineage_id'], include_drafts=True)
+        content = {
+            **alt['content'],
+            'no': base['content'].get('no'),
+            'adopted_from_group': group,
+            'paired_with': a_id,
+        }
+        if base_rubric:
+            content['restore_rubric'] = base_rubric['id']
         refs = [(r['ref_id'], r['role']) for r in base['refs']]
         q = A.create(
             c,
@@ -901,8 +1001,6 @@ class QuestionsMixin:
             lineage_id=base['lineage_id'],
             round_=base['round'],
         )
-        base_rubric = self._rubric_for(c, base['lineage_id'], include_drafts=True)
-        alt_rubric = self._rubric_for(c, alt['lineage_id'], include_drafts=True)
         made = [q['id']]
         if alt_rubric:
             q['rubric'] = A.create(
@@ -932,8 +1030,9 @@ class QuestionsMixin:
         )
 
     def revoke_choice(self, choice_id, teacher='teacher'):
-        """Withdraw a choice (AB spec 4): a new event, the old row is kept and marked; drafts already taken stay.
-        The alternative becomes a candidate again, so the comparison can be made once more."""
+        """Withdraw a choice (AB spec 4): a new event, the old row is kept and marked. If the choice adopted B, the
+        question goes back to the version that was compared; the alternative becomes a candidate again, so the
+        comparison can be made once more."""
         with self.store.tx() as c:
             r = c.execute('SELECT * FROM choices WHERE id=?', (choice_id,)).fetchone()
             if r is None:
@@ -944,14 +1043,68 @@ class QuestionsMixin:
             cmp_row = c.execute(
                 'SELECT display FROM comparisons WHERE candidate_group=?', (r['candidate_group'],)
             ).fetchone()
-            b_id = (json.loads(cmp_row['display'] or '{}').get('B') or {}).get('question') if cmp_row else None
+            display = json.loads(cmp_row['display'] or '{}') if cmp_row else {}
+            a_id = (display.get('A') or {}).get('question')
+            b_id = (display.get('B') or {}).get('question')
+            restored = []
+            if a_id:
+                latest = c.execute(
+                    'SELECT * FROM artifacts WHERE lineage_id=(SELECT lineage_id FROM artifacts WHERE id=?) '
+                    'ORDER BY version DESC LIMIT 1',
+                    (a_id,),
+                ).fetchone()
+                adopted = json.loads(latest['content']) if latest else {}
+                # Only the version written by the adoption itself is rolled back; a later teacher edit is left alone.
+                if (
+                    latest
+                    and latest['edit_of'] is None
+                    and adopted.get('adopted_from_group') == r['candidate_group']
+                ):
+                    original = A.get(c, a_id)
+                    content = {
+                        k: v
+                        for k, v in original['content'].items()
+                        if k not in ('adopted_from_group', 'paired_with', 'restore_rubric')
+                    }
+                    content['no'] = adopted.get('no', content.get('no'))
+                    content['restored_from'] = latest['id']
+                    new_q = A.create(
+                        c,
+                        r['project_id'],
+                        'question',
+                        content,
+                        origin='teacher',
+                        refs=[(x['ref_id'], x['role']) for x in A.get(c, latest['id'])['refs']],
+                        lineage_id=latest['lineage_id'],
+                        round_=latest['round'],
+                    )
+                    restored.append(new_q['id'])
+                    rubric_id = adopted.get('restore_rubric')
+                    if rubric_id:
+                        old_rubric = A.get(c, rubric_id)
+                        new_rubric = A.create(
+                            c,
+                            r['project_id'],
+                            'rubric',
+                            {**old_rubric['content'], 'question_lineage': latest['lineage_id']},
+                            origin='teacher',
+                            refs=[(new_q['id'], 'question')],
+                            lineage_id=old_rubric['lineage_id'],
+                            round_=latest['round'],
+                        )
+                        restored.append(new_rubric['id'])
             if b_id:
                 b = A.get(c, b_id)
                 c.execute(
                     "UPDATE artifacts SET status='candidate' WHERE lineage_id=? AND status='superseded'",
                     (b['lineage_id'],),
                 )
-            event(c, r['project_id'], 'ab_choice_revoked', {'choice': choice_id, 'teacher': teacher})
+            event(
+                c,
+                r['project_id'],
+                'ab_choice_revoked',
+                {'choice': choice_id, 'teacher': teacher, 'restored': restored},
+            )
         return {'ok': True}
 
     def merge_candidates(self, pid, group, question, rubric, sources, teacher='teacher'):
@@ -1023,9 +1176,8 @@ class QuestionsMixin:
             _json({'学科': p['pack']['name'], '已有教学目标': [o['text'] for o in existing], '试卷': text[:30000]}),
             ImportedPaper,
         )
-        allowed = set(QUESTION_TYPES)
+        allowed = set(p['pack']['types'])
         drafts, dropped = usable_drafts(out.questions, allowed)
-        checks = [{'notes': ['由导入试卷整理，评分要点和教学目标为反推，请核对'], 'imported': True} for _ in drafts]
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'import-v1')
             known = {o['text'].strip() for o in existing}
@@ -1050,8 +1202,15 @@ class QuestionsMixin:
                 lineage_id=current_plan['lineage_id'] if current_plan else None,
             )
             objs = self._goals(plan)  # existing objectives first, so the model's indexes line up
+            keep = []
+            for d in drafts:
+                if 0 <= d.objective_index < len(objs):
+                    keep.append(d)
+                else:
+                    dropped.append(f'没有对应教学目标：{d.stem[:30]}')
+            checks = [{'notes': ['由导入试卷整理，评分要点和教学目标为反推，请核对'], 'imported': True} for _ in keep]
             made = self._save_questions(
-                c, pid, list(zip(drafts, checks)), objs, gid, status='draft', round_=1, origin='imported'
+                c, pid, list(zip(keep, checks)), objs, gid, status='draft', round_=1, origin='imported'
             )
         return {
             'lesson_plan': plan,
@@ -1137,7 +1296,9 @@ class QuestionsMixin:
         }
 
     def adopt_solver_answer(self, qid, teacher='teacher'):
-        """答案存疑 → take the independent solver's answer as a new draft version for the teacher to confirm."""
+        """答案存疑 → take the independent solver's answer as a new draft version for the teacher to confirm. The
+        rubric's old numeric/algebra expectations referred to the answer being replaced, so they are cleared too:
+        otherwise grading would keep comparing student work with the value the teacher just rejected."""
         with self.store.tx() as c:
             q = A.get(c, qid)
             if q['type'] != 'question':
@@ -1149,9 +1310,33 @@ class QuestionsMixin:
             if content['type'] in KEYED_TYPES or content['type'] == 'fill_blank':
                 content['answer_key'] = ck.get('solver_final', '').strip()
             content['reference'] = ck['solver_answer']
-            ck.update(answer_suspect=False, solver='adopted', notes=['已采用独立解题的答案，请核对后确认'])
+            ck.update(
+                answer_suspect=False,
+                solver='adopted',
+                notes=[*ck.get('notes', []), '已采用独立解题的答案；原先的数值核对值已清除，请核对评分要点'],
+            )
             content['checks'] = ck
-            return A.edit(c, qid, content, teacher=teacher)
+            new_q = A.edit(c, qid, content, teacher=teacher)
+            rubric = self._rubric_for(c, q['lineage_id'], include_drafts=True)
+            if rubric:
+                points, removed = [], False
+                for p in rubric['content']['points']:
+                    p = dict(p)
+                    if p.pop('check', None) is not None:
+                        removed = True
+                    points.append(p)
+                if removed:
+                    A.create(
+                        c,
+                        q['project_id'],
+                        'rubric',
+                        {**rubric['content'], 'points': points, 'question_lineage': q['lineage_id']},
+                        origin='teacher',
+                        refs=[(new_q['id'], 'question')],
+                        lineage_id=rubric['lineage_id'],
+                        round_=q['round'],
+                    )
+            return new_q
 
     @operation('revise_question', artifact_project)
     def revise_question(self, qid, instruction):
@@ -1191,15 +1376,16 @@ class QuestionsMixin:
             if plan:
                 self._add_plan(ctx, plan)
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
-            standards = []
+            standards, hints = [], []
             if cited:
-                data = CUR.load(p['subject'])
-                standards = [
-                    {'位置': data['by_id'][i]['label'], '原文': data['by_id'][i]['text']}
-                    for i in cited
-                    if i in data['by_id']
-                ]
+                std = CUR.context(p['subject'], cited, self._curriculum_query(p))
+                standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
+                hints = [it['text'] for it in std['hints']]
                 ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
+            materials = self._material_context(c, ctx, pid, limit=6000)
+            activities = self._activities_for_prompt(plan, objs) if plan else []
+        if not objs:
+            raise Conflict('这道题没有可用的教学目标：请先在备课方案里确认目标，再换一道')
         difficulty = difficulty or q['content'].get('difficulty_requested') or '中等'
         qtype = q['content']['type']
         system = GENERATE_SYSTEM.format(
@@ -1229,6 +1415,11 @@ class QuestionsMixin:
                 '针对的问题': pattern or '',
                 '本课时内容': p.get('lesson_scope', ''),
                 '课标条目': standards,
+                '课标教学提示': hints,
+                '本课重点': (plan or {}).get('content', {}).get('key_points', []),
+                '本课难点': (plan or {}).get('content', {}).get('difficulties', []),
+                '课堂活动': [a for a in activities if a['对应目标序号']],
+                '材料摘录': materials,
                 '学生基础': p.get('learner_profile', ''),
                 '每个目标出题数': 1,
                 '难度': difficulty,
@@ -1247,7 +1438,7 @@ class QuestionsMixin:
         drafts, dropped = usable_drafts(out.questions, [qtype])
         if not drafts:
             raise ModelUnavailable('模型没有给出可用的题目，请重试' + (f'（{dropped[0]}）' if dropped else ''))
-        d = drafts[0].model_copy(update={'objective_index': 0 if objs else -1})
+        d = drafts[0].model_copy(update={'objective_index': 0})
         checks = self._self_check(p, d, self._review_ctx(p, objs, d, difficulty, pattern))
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'revise-question-v1' if keep else 'regenerate-v1')

@@ -123,7 +123,8 @@ class RecordsMixin:
             mats = c.execute('SELECT COUNT(*) FROM materials WHERE project_id=?', (pid,)).fetchone()[0]
             learners = len(scope.roster(c))
             open_ab = c.execute(
-                'SELECT candidate_group, display FROM comparisons WHERE project_id=? AND candidate_group NOT IN '
+                "SELECT candidate_group, display, shown_first, paired_a_index FROM comparisons "
+                "WHERE project_id=? AND status='shown' AND candidate_group NOT IN "
                 '(SELECT candidate_group FROM choices WHERE revoked_at IS NULL) ORDER BY created_at',
                 (pid,),
             ).fetchall()
@@ -136,6 +137,9 @@ class RecordsMixin:
                         'group': r['candidate_group'],
                         'a': (display.get('A') or {}).get('question'),
                         'b': (display.get('B') or {}).get('question'),
+                        # The position the teacher actually saw: A first is not assumed.
+                        'shown_first': r['shown_first'] or display.get('shown_first', 'A'),
+                        'paired_a_index': r['paired_a_index'],
                     }
                 )
             latest = scope.round if scope.is_assignment else max(rounds)

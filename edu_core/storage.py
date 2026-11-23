@@ -189,6 +189,13 @@ UPDATE research_cases SET status='changed' WHERE status IN ('approved','rejected
 CREATE TABLE IF NOT EXISTS research_partitions(
   artifact_id TEXT PRIMARY KEY, split TEXT NOT NULL, tuned INTEGER NOT NULL DEFAULT 0);
 """
+# A/B research fields: the display position and the decision time are data, not UI details.
+MIGRATIONS[10] = """
+ALTER TABLE comparisons ADD COLUMN shown_first TEXT NOT NULL DEFAULT '';
+ALTER TABLE comparisons ADD COLUMN paired_a_index INTEGER;
+ALTER TABLE choices ADD COLUMN decision_ms INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE choices ADD COLUMN rater_role TEXT NOT NULL DEFAULT '';
+"""
 SCHEMA_VERSION = max(MIGRATIONS)
 
 

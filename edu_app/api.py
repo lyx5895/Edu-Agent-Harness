@@ -368,6 +368,7 @@ class ChoiceBody2(BaseModel):
     work_choice: Literal['A', 'B'] | None = None
     preference: Literal['better', 'work_only', 'none'] = 'none'
     reason_tags: list[str] = Field(default_factory=list, max_length=6)
+    decision_ms: int = Field(default=0, ge=0)
 
 
 class MergeBody(BaseModel):
@@ -698,6 +699,7 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
             work_choice=body.work_choice,
             preference=body.preference,
             reason_tags=body.reason_tags,
+            decision_ms=body.decision_ms,
         )
 
     @app.post('/api/choices/{choice_id}/revoke')

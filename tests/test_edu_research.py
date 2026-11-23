@@ -130,24 +130,28 @@ def test_unit_review_over_two_assignments_of_one_class(ws):
 def ab_project(ws, stems, alternatives=None):
     p = ws.create_project('物理', 'physics', knowledge_module='匀速直线运动')
     ws.confirm(ws.draft_lesson_plan(p['id'])['lesson_plan']['id'])
-    it = iter(stems)
+    a_stems = iter(stems)
+    b_stems = iter(alternatives or [f'替代 {i}' for i in range(30)])
 
-    def generate(r, payload):
+    def generate(role, payload, system):
+        # The b arm is recognized by its variant line; both arms share the rest of the input.
+        if '优先设计贴近真实情境' in system:
+            return {'questions': [question(next(b_stems))]}
         n = int(payload.get('每个目标出题数', 1))
         return {
             'questions': [
-                {**question(next(it)), 'objective_index': i} for i in range(len(payload['教学目标'])) for _ in range(n)
+                {**question(next(a_stems)), 'objective_index': i}
+                for i in range(len(payload['教学目标']))
+                for _ in range(n)
             ]
         }
 
     ws.llm.handlers['generate_questions'] = generate
-    alt = iter(alternatives or [f'替代 {i}' for i in range(30)])
-    ws.llm.handlers['generate_alternative'] = lambda r, payload: {'questions': [question(next(alt))]}
     return p['id']
 
 
 class ScriptedRng:
-    """Feeds the per-question sampling draws one by one, so a test says which questions get an alternative."""
+    """Feeds the per-objective sampling draws one by one, so a test says which objectives get a comparison."""
 
     def __init__(self, values):
         self.values = list(values)
@@ -155,35 +159,41 @@ class ScriptedRng:
     def random(self):
         return self.values.pop(0)
 
+    def randrange(self, n):
+        return 0
 
-def test_ab_compares_one_question_at_a_time(ws):
-    pid = ab_project(ws, ['原题一', '原题二'], ['替代一', '替代二'])
+    def choice(self, seq):
+        return seq[0]
+
+
+def test_ab_compares_one_version_per_objective(ws):
+    pid = ab_project(ws, ['原题一', '原题二'], ['替代一'])
     gen = ws.generate_questions(pid, types=['calculation'], count=2, ab=True)
     assert gen['candidates'][0]['position'] == 'A'
-    assert len(gen['alternatives']) == 2 and len({a['group'] for a in gen['alternatives']}) == 2
+    [alt] = gen['alternatives']
+    assert alt['paired_a_index'] in (0, 1)
     with ws.store.read() as c:
         rows = [dict(r) for r in c.execute('SELECT * FROM comparisons WHERE project_id=?', (pid,))]
-    assert {r['unit'] for r in rows} == {'question'} and {r['factor'] for r in rows} == {'prompt_variant_rewrite'}
-    pairs = {a['group']: (a['question'], a['alternative']) for a in gen['alternatives']}
-    for r in rows:
-        display = json.loads(r['display'])
-        assert (display['A']['question'], display['B']['question']) == pairs[r['candidate_group']]
-    # the original stays a draft; only the alternatives sit apart as candidates
-    assert sorted(q['status'] for q in ws.questions(pid)) == ['candidate', 'candidate', 'draft', 'draft']
-    assert len(ws.overview(pid)['pending_ab']) == 2
+    assert len(rows) == 1
+    assert {r['unit'] for r in rows} == {'question'}
+    assert {r['factor'] for r in rows} == {'prompt_variant_independent'}
+    assert rows[0]['shown_first'] in ('A', 'B')
+    display = json.loads(rows[0]['display'])
+    assert (display['A']['question'], display['B']['question']) == (alt['question'], alt['alternative'])
+    # the two A questions stay drafts; the independent B sits apart as a candidate
+    assert sorted(q['status'] for q in ws.questions(pid)) == ['candidate', 'draft', 'draft']
+    assert len(ws.overview(pid)['pending_ab']) == 1
 
 
 def test_choosing_an_alternative_replaces_only_that_question(ws):
-    pid = ab_project(ws, ['原题一', '原题二'], ['替代一', '替代二'])
-    gen = ws.generate_questions(pid, types=['calculation'], count=2, ab=True)
-    first, second = gen['alternatives']
-    out = ws.choose(pid, first['group'], 'B', reason='更贴近生活')
+    pid = ab_project(ws, ['原题一', '原题二'], ['替代一'])
+    [alt] = ws.generate_questions(pid, types=['calculation'], count=2, ab=True)['alternatives']
+    out = ws.choose(pid, alt['group'], 'B', reason='更贴近生活')
     assert len(out['promoted']) == 2  # the question's next version and its rubric
     qs = {q['content']['no']: q for q in ws.questions(pid)}
-    assert qs[1]['content']['stem'] == '替代一' and qs[1]['status'] == 'draft'
-    assert qs[2]['content']['stem'] == '原题二'
-    assert first['alternative'] not in {q['id'] for q in ws.questions(pid)}  # one question per slot, not two
-    assert ws.overview(pid)['pending_ab'] == [second['group']]
+    assert len(qs) == 2 and '替代一' in {q['content']['stem'] for q in qs.values()}
+    assert alt['alternative'] not in {q['id'] for q in qs.values()}  # one question per slot, not two
+    assert ws.overview(pid)['pending_ab'] == []
 
 
 def test_keeping_the_original_drops_the_alternative(ws):
@@ -229,23 +239,25 @@ def test_duplicate_or_failed_alternatives_are_not_compared(ws):
     assert gen['alternatives'] == [] and '几乎相同' in gen['ab_note']
     assert ws.questions(pid)[0]['status'] == 'draft' and ws.overview(pid)['pending_ab'] == []
 
-    def flaky(r, payload):
-        raise RuntimeError('超时')
+    def flaky(role, payload, system):
+        if '优先设计贴近真实情境' in system:
+            raise RuntimeError('超时')
+        return {'questions': [question('另一道题')]}
 
-    ws.llm.handlers['generate_questions'] = lambda r, payload: {'questions': [question('另一道题')]}
-    ws.llm.handlers['generate_alternative'] = flaky
+    ws.llm.handlers['generate_questions'] = flaky
     gen = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
-    assert gen['alternatives'] == [] and '生成失败' in gen['ab_note']
+    assert gen['alternatives'] == [] and '没有生成成功' in gen['ab_note']
 
 
-def test_sampling_is_decided_question_by_question(tmp_path):
+def test_sampling_is_decided_per_objective(tmp_path):
     settings = load_settings(db=str(tmp_path / 'e.sqlite'), audit_rate=0.0, ab_rate=0.5, concurrency=1)
-    ws = Workspace(Store(settings.db), FakeLLM(dict(HANDLERS)), settings, rng=ScriptedRng([0.1, 0.9, 0.4]))
-    pid = ab_project(ws, ['题一', '题二', '题三'], ['替一', '替二', '替三'])
+    ws = Workspace(Store(settings.db), FakeLLM(dict(HANDLERS)), settings, rng=ScriptedRng([0.1]))
+    pid = ab_project(ws, ['题一', '题二', '题三', '题四'], ['替一'])
     gen = ws.generate_questions(pid, types=['calculation'], count=3)
-    picked = {a['question'] for a in gen['alternatives']}
-    ids = {q['content']['stem']: q['id'] for q in ws.questions(pid)}
-    assert picked == {ids['题一'], ids['题三']}  # 0.1 and 0.4 are below 0.5; 0.9 is above
+    assert len(gen['alternatives']) == 1  # one draw decides the whole objective
+    assert gen['alternatives'][0]['paired_a_index'] in (0, 1, 2)
+    ws.rng = ScriptedRng([0.9])
+    assert ws.generate_questions(pid, types=['calculation'], count=1)['alternatives'] == []
 
 
 def test_sampled_alternatives_have_no_daily_cap(tmp_path):
@@ -254,6 +266,26 @@ def test_sampled_alternatives_have_no_daily_cap(tmp_path):
     pid = ab_project(ws, [f'题{i}' for i in range(8)], [f'替{i}' for i in range(8)])
     for _ in range(3):
         assert ws.generate_questions(pid, types=['calculation'])['alternatives']
+
+
+def test_ab_arms_share_the_input_and_b_has_no_original(ws):
+    pid = ab_project(ws, ['原题'], ['替代'])
+    ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
+    calls = [c for c in ws.llm.calls if c['task'] == 'generate_questions']
+    a = next(c for c in calls if '优先设计贴近真实情境' not in c['system'])
+    b = next(c for c in calls if '优先设计贴近真实情境' in c['system'])
+    assert a['user'] == b['user']  # the same task input; only the system prompt differs
+    assert '原题' not in b['user'] and '替代要求' not in b['user']
+
+
+def test_revoking_an_adoption_restores_the_compared_question(ws):
+    pid = ab_project(ws, ['原题一'], ['替代一'])
+    [alt] = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)['alternatives']
+    out = ws.choose(pid, alt['group'], 'B')
+    assert [q['content']['stem'] for q in ws.questions(pid) if q['status'] == 'draft'] == ['替代一']
+    ws.revoke_choice(out['choice_id'])
+    assert [q['content']['stem'] for q in ws.questions(pid) if q['status'] == 'draft'] == ['原题一']
+    assert ws.overview(pid)['pending_ab'] == [alt['group']]
 
 
 def test_merging_uses_the_original_and_its_alternative(ws):
@@ -285,9 +317,8 @@ def test_generation_returns_before_the_checks_finish(tmp_path):
 
     ws.llm.handlers['review_question'] = review
     gen = ws.generate_questions(pid, types=['calculation'], count=1)
-    # the alternative comes with the questions; only the check is still to come
-    assert gen['background']['run'] and len(gen['alternatives']) == 1
-    assert len(ws.overview(pid)['pending_ab']) == 1
+    # the questions come back now; the comparison is published with the checks
+    assert gen['background']['run'] and gen['alternatives'] == []
     [q] = [x for x in ws.questions(pid) if x['status'] == 'draft']
     assert not (q['content'].get('checks') or {}).get('solver')
     for _ in range(500):
@@ -299,7 +330,7 @@ def test_generation_returns_before_the_checks_finish(tmp_path):
     assert r['status'] == 'succeeded'
     [q] = [x for x in ws.questions(pid) if x['status'] == 'draft']
     assert q['content']['checks']['solver'] == 'agree'  # review, solve and agreement landed on the question
-    assert len(ws.overview(pid)['pending_ab']) == 1  # the comparison from the response is still open
+    assert len(ws.overview(pid)['pending_ab']) == 1  # both versions passed, so the comparison is open
 
 
 # ----- partial revision, materials, deliverables, coursemaker -----

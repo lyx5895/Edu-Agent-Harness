@@ -6,6 +6,7 @@ import json
 import re
 
 from edu_core import artifacts as A
+from edu_core import tools
 from edu_core.subjects import KEYED_TYPES
 from edu_core.workflow.schemas import (
     PointDraft,
@@ -31,6 +32,30 @@ def _rubric_from(points: list[PointDraft], question_lineage: str, target_pattern
     return {'question_lineage': question_lineage, 'total': round(sum(r['score'] for r in rows), 2), 'points': rows}
 
 
+def _key_problem(d):
+    """Structural checks the server can make before a keyed question is stored: a wrong key would otherwise become
+    the grading truth without anyone noticing."""
+    if d.type in ('single_choice', 'multi_choice'):
+        n = len(d.options)
+        if n < 2 or n > 8:
+            return f'选择题应有 2 到 8 个选项（现有 {n} 个）'
+        if len({o.strip() for o in d.options}) != n:
+            return '选项有重复'
+        letters = tools.choice_letters(d.answer_key)
+        if not letters:
+            return '答案键为空或不是选项字母'
+        if not letters <= set('ABCDEFGH'[:n]):
+            return '答案键超出选项范围'
+        if d.type == 'multi_choice' and len(letters) < 2:
+            return '多选题至少需要两个正确选项'
+    elif d.type == 'true_false':
+        if d.answer_key.strip().lower() not in ('对', '错', '正确', '错误', 'true', 'false', 't', 'f'):
+            return '判断题答案应为对或错'
+    elif d.type == 'fill_blank' and not (d.answer_key.strip() or any(a.strip() for a in d.accepted)):
+        return '填空题缺少答案'
+    return ''
+
+
 def usable_drafts(drafts, allowed, n_patterns=None):
     """Keep drafts the server can use; keyed questions without points get a default point. Returns (kept, dropped)."""
     kept, dropped = [], []
@@ -40,6 +65,10 @@ def usable_drafts(drafts, allowed, n_patterns=None):
             continue
         if n_patterns is not None and not 0 <= d.target_pattern_index < n_patterns:
             dropped.append(f'没有对应到共性问题：{d.stem[:30]}')
+            continue
+        problem = _key_problem(d)
+        if problem:
+            dropped.append(f'{problem}：{d.stem[:30]}')
             continue
         if not d.points:
             if d.type in KEYED_TYPES and d.answer_key.strip():

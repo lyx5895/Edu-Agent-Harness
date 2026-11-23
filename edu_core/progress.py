@@ -16,7 +16,7 @@ LABELS = {
     'draft_lesson_plan': '生成教案',
     'revise_plan': '修改教案',
     'generate_questions': '出题',
-    'generate_checks': '自检与替代版本',
+    'generate_checks': '自检与改写',
     'regenerate_question': '换一道题',
     'revise_question': '按意见修改题目',
     'import_paper': '整理试卷',

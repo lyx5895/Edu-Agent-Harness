@@ -653,15 +653,20 @@ def test_alternatives_for_two_questions_run_side_by_side(ws):
     from test_edu_workflow import question
 
     pid = _two_goal_task(ws)
-    ws.llm.handlers['generate_questions'] = lambda r, p: {
-        'questions': [{**question(f'第 {i} 条目标的题'), 'objective_index': i} for i in range(len(p['教学目标']))]
-    }
+    barrier = threading.Barrier(2, timeout=5)
 
-    def alt(r, p):
-        return {'questions': [question('替代：' + p['原题']['题干'])]}
+    def generate(role, payload, system):
+        if '优先设计贴近真实情境' in system:
+            barrier.wait()  # the two B calls must be in flight together
+            return {'questions': [question('替代：' + payload['教学目标'][0]['目标'])]}
+        return {
+            'questions': [
+                {**question(f'第 {i} 条目标的题'), 'objective_index': i}
+                for i in range(len(payload['教学目标']))
+            ]
+        }
 
-    # Both alternatives are written at the same time: the two calls meet at the barrier instead of running one by one.
-    ws.llm.handlers['generate_alternative'] = _meet(alt, threading.Barrier(2, timeout=5))
+    ws.llm.handlers['generate_questions'] = generate
     out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
     assert len(out['alternatives']) == 2
 
@@ -719,10 +724,18 @@ def test_choosing_an_alternative_replaces_one_question(ws):
     from test_edu_workflow import question
 
     pid = _two_goal_task(ws)
-    ws.llm.handlers['generate_questions'] = lambda r, p: {
-        'questions': [{**question(f'第 {i} 条目标的题'), 'objective_index': i} for i in range(len(p['教学目标']))]
-    }
-    ws.llm.handlers['generate_alternative'] = lambda r, p: {'questions': [question('替代：' + p['原题']['题干'])]}
+
+    def generate(role, payload, system):
+        if '优先设计贴近真实情境' in system:
+            return {'questions': [question('替代：' + payload['教学目标'][0]['目标'])]}
+        return {
+            'questions': [
+                {**question(f'第 {i} 条目标的题'), 'objective_index': i}
+                for i in range(len(payload['教学目标']))
+            ]
+        }
+
+    ws.llm.handlers['generate_questions'] = generate
     out = ws.generate_questions(pid, types=['calculation'], count=1, ab=True)
     assert len(out['candidates'][0]['questions']) == 2
     first = out['alternatives'][0]

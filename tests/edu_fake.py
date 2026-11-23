@@ -1,5 +1,6 @@
 """Scripted model for edu_core tests: each task maps to a handler(role, user_dict) -> reply dict."""
 
+import inspect
 import json
 
 from edu_core.llm import redact_images
@@ -30,7 +31,12 @@ class FakeLLM:
         handler = self.handlers.get(task) or self.handlers.get(f'{role}:{task}')
         if handler is None:
             raise AssertionError(f'unexpected model call: {role} {task}')
-        reply = handler(role, payload)
+        try:  # handlers may take the system prompt too, which is how a test tells the two A/B arms apart
+            inspect.signature(handler).bind(role, payload, system)
+            three_args = True
+        except TypeError:
+            three_args = False
+        reply = handler(role, payload, system) if three_args else handler(role, payload)
         result = schema.model_validate(reply)
         meta = {
             'task': task,

@@ -246,14 +246,17 @@ def test_teacher_override_and_queue(ws):
 def test_ab_candidates_and_choice(ws):
     p = ws.create_project('物理｜匀速直线运动', 'physics', knowledge_module='匀速直线运动')
     ws.confirm(ws.draft_lesson_plan(p['id'])['lesson_plan']['id'])  # course info alone is enough
-    ws.llm.handlers['generate_questions'] = lambda r, payload: {
-        'questions': [question('一辆车 2 小时行驶 120 km，求平均速度。')]
-    }
-    ws.llm.handlers['generate_alternative'] = lambda r, payload: {
-        'questions': [question('小明 10 分钟走了 1.2 km，求平均速度。')]
-    }
+
+    def generate(role, payload):
+        # The two arms are independent draws under different prompts; B asks for one question.
+        if payload.get('每个目标出题数') == 1:
+            return {'questions': [question('小明 10 分钟走了 1.2 km，求平均速度。')]}
+        return {'questions': [question('一辆车 2 小时行驶 120 km，求平均速度。')]}
+
+    ws.llm.handlers['generate_questions'] = generate
     gen = ws.generate_questions(p['id'], types=['calculation'], ab=True)
     [alt] = gen['alternatives']
+    assert alt['shown_first'] in ('A', 'B') and alt['paired_a_index'] == 0
     assert gen['candidates'][0]['position'] == 'A'
     assert sorted(q['status'] for q in ws.questions(p['id'])) == ['candidate', 'draft']
     out = ws.choose(p['id'], alt['group'], 'B', reason='更贴近生活')
@@ -287,7 +290,15 @@ def test_usable_drafts_fill_keyed_points_and_report_dropped():
     from edu_core.workflow import QuestionDraft, usable_drafts
 
     base = question('x')
-    mcq = QuestionDraft(**{**base, 'type': 'single_choice', 'answer_key': 'B', 'points': []})
+    mcq = QuestionDraft(
+        **{
+            **base,
+            'type': 'single_choice',
+            'options': ['1', '2', '3', '4'],
+            'answer_key': 'B',
+            'points': [],
+        }
+    )
     essay = QuestionDraft(**{**base, 'type': 'short_answer', 'points': []})
     off_target = QuestionDraft(**{**base, 'target_pattern_index': 5})
     kept, dropped = usable_drafts([mcq, essay], {'single_choice', 'short_answer'})
@@ -295,6 +306,11 @@ def test_usable_drafts_fill_keyed_points_and_report_dropped():
     assert len(dropped) == 1 and '缺少评分要点' in dropped[0]
     _, dropped = usable_drafts([off_target], {'calculation'}, n_patterns=2)
     assert '共性问题' in dropped[0]
+    bad_key = QuestionDraft(
+        **{**base, 'type': 'single_choice', 'options': ['1', '2'], 'answer_key': 'D', 'points': []}
+    )
+    _, dropped = usable_drafts([bad_key], {'single_choice'})
+    assert '答案键超出选项范围' in dropped[0]
 
 
 def test_self_check_calls_are_recorded(ws):
@@ -612,6 +628,28 @@ def test_adopt_solver_answer_and_regenerate_one_question(ws):
     ws.confirm(new['id'], change_kind='substantive')  # question and rubric confirmed together
     after = {x['lineage_id']: x for x in ws.questions(p['id'], round_=1)}[q['lineage_id']]
     assert after['status'] == 'confirmed' and after['rubric']['status'] == 'confirmed'
+
+
+def test_adopt_solver_answer_clears_numeric_expectations(ws):
+    from edu_core.llm import ModelUnavailable
+
+    p, _q = setup_round_one(ws)
+    ws.llm.handlers['self_check_solve'] = lambda r, p: {'answer': 'x<9', 'final_answer': 'x<9'}
+    ws.llm.handlers['self_check_compare'] = lambda r, p: {'consistent': False, 'note': '漏了定义域'}
+    ws.llm.handlers['revise_question'] = lambda r, p: (_ for _ in ()).throw(ModelUnavailable('跳过重写'))
+    gen = ws.generate_questions(p['id'], types=['calculation'], count=1, ab=False)
+    [bad] = gen['candidates'][0]['questions']
+    assert bad['content']['checks']['answer_suspect']
+    # The old grading expectation pointed at the answer the teacher is about to replace.
+    ws.edit(
+        bad['rubric']['id'],
+        {'points': [{'id': 'P1', 'description': '结果', 'score': 2, 'check': {'kind': 'numeric', 'expected': '9'}}]},
+    )
+    fixed = ws.adopt_solver_answer(bad['id'])
+    [cur] = [x for x in ws.questions(p['id'], round_=1) if x['lineage_id'] == bad['lineage_id']]
+    assert cur['content']['reference'] == 'x<9' and fixed['version'] == 2
+    assert cur['rubric']['content']['points'][0]['id'] == 'P1'
+    assert 'check' not in cur['rubric']['content']['points'][0]
 
 
 def test_generation_sees_activities_standards_and_carried_over_status(ws):

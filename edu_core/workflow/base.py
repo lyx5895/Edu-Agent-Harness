@@ -209,7 +209,8 @@ class WorkspaceBase:
 
     def _skip_open_comparisons(self, c, pid, question_id, teacher):
         rows = c.execute(
-            'SELECT candidate_group, display FROM comparisons WHERE project_id=? AND candidate_group NOT IN '
+            "SELECT candidate_group, display FROM comparisons WHERE project_id=? AND status='shown' "
+            'AND candidate_group NOT IN '
             '(SELECT candidate_group FROM choices WHERE revoked_at IS NULL)',
             (pid,),
         ).fetchall()
