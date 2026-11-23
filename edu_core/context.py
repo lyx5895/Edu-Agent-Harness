@@ -33,12 +33,13 @@ WHITELIST = {
     'revise_plan': {'project', 'lesson_plan'},
     'draft_review': {'project', 'lesson_plan', 'question', 'rubric', 'analysis', 'problem_pattern'},
     # AI 提示: draft one field of the course info or the request from what the project already has.
-    'suggest_field': {'project', 'material', 'lesson_plan'},
+    'suggest_field': {'project', 'course', 'material', 'lesson_plan'},
 }
 
 LABELS = {
     **TYPES,
     'project': '课时背景',
+    'course': '课程',
     'problem_pattern': '共性问题',  # 已参考 is read by teachers: their word, not the artifact type name
     'material': '材料',
     'question_stem': '题干',

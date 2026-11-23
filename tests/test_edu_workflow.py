@@ -324,6 +324,19 @@ def test_suggest_field_drafts_from_context(ws):
         ws.suggest_field(p['id'], 'nope')
 
 
+def test_suggest_course_topic_uses_course_context(ws):
+    crs = ws.create_course('高一数学·上学期', '数学', grade='高一')
+    ws.start_task(crs['id'], 'prep', knowledge_module='对数函数')
+    ws.llm.handlers['suggest_field'] = lambda r, payload: {'text': '对数函数的图象与性质'}
+    out = ws.suggest_course_field(crs['id'], 'nl_topic')
+    assert out['text'] == '对数函数的图象与性质'
+    sent = ws.llm.last('suggest_field')['user']
+    assert sent['课程名称'] == '高一数学·上学期'
+    assert '对数函数' in sent['已经上过的主题']  # a new lesson should not repeat the last one
+    with pytest.raises(ValueError):
+        ws.suggest_course_field(crs['id'], 'nope')
+
+
 def test_usable_drafts_fill_keyed_points_and_report_dropped():
     from edu_core.workflow import QuestionDraft, usable_drafts
 

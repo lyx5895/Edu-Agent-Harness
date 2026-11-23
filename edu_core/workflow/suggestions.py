@@ -25,6 +25,7 @@ SUGGEST_FIELDS = {
     'revise_instruction': ('修改意见', 80),
     'remark': ('修改意见', 80),
     'regen_note': ('换一道的其他要求', 60),
+    'nl_topic': ('这节课的主题', 40),
 }
 
 
@@ -74,4 +75,64 @@ class SuggestionsMixin:
             raise ModelUnavailable('模型没有给出可用的提示，请重试')
         with self.store.tx() as c:
             record_generation(c, pid, meta, ctx.manifest, 'suggest-v1')
+        return {'field': field, 'text': text, 'context_note': describe(ctx.manifest)}
+
+    @operation('suggest_field')
+    def suggest_course_field(self, course_id, field='nl_topic', current=''):
+        """AI 提示 on the home page's 新的一节课, before any project exists: draft the topic from the course's own
+        materials and the lessons already taught, so a new lesson does not repeat the last one."""
+        if field != 'nl_topic':
+            raise ValueError('这个输入框还不支持 AI 提示')
+        llm = self._model()
+        with self.store.read() as c:
+            course = self._course(c, course_id)
+            mats = [
+                dict(r)
+                for r in c.execute(
+                    'SELECT id, filename, sha256, text FROM materials WHERE course_id=? ORDER BY created_at DESC LIMIT 5',
+                    (course_id,),
+                )
+            ]
+            taught = [
+                r[0]
+                for r in c.execute(
+                    "SELECT knowledge_module FROM projects WHERE course_id=? AND knowledge_module!='' "
+                    'ORDER BY created_at DESC LIMIT 8',
+                    (course_id,),
+                )
+            ]
+            ctx = Context('suggest_field')
+            ctx.add_other('course', course_id)
+            excerpt, used = [], 0
+            for m in mats:
+                piece = (m['text'] or '')[: max(0, 2000 - used)]
+                used += len(piece)
+                ctx.add_other('material', m['id'], m['sha256'], filename=m['filename'], chars=len(m['text']), sent=len(piece))
+                if piece:
+                    excerpt.append(f'{m["filename"]}：{piece}')
+        out, meta = llm.complete(
+            'generator',
+            'suggest_field',
+            SUGGEST_SYSTEM.format(subject=course['subject_name'], field='这节课的主题', max_chars=40),
+            _json(
+                {
+                    '学科': course['subject_name'],
+                    '年级': course['grade'],
+                    '课程名称': course['title'],
+                    '教材': course.get('textbook', ''),
+                    '课程说明': course.get('notes', ''),
+                    '已经上过的主题': taught,
+                    '材料摘录': '\n'.join(excerpt),
+                    '当前内容': (current or '').strip()[:200],
+                    '针对的内容': '',
+                }
+            ),
+            FieldSuggestion,
+            max_tokens=600,
+        )
+        text = out.text.strip()[:40]
+        if not text:
+            raise ModelUnavailable('模型没有给出可用的提示，请重试')
+        with self.store.tx() as c:
+            record_generation(c, course_id, meta, ctx.manifest, 'suggest-v1')
         return {'field': field, 'text': text, 'context_note': describe(ctx.manifest)}

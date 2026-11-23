@@ -606,6 +606,10 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
     def update_project(pid: str, body: ProjectUpdate):
         return ws().update_project(pid, **body.model_dump())
 
+    @app.post('/api/courses/{cid}/suggest')
+    def suggest_course(cid: str, body: SuggestBody):
+        return ws().suggest_course_field(cid, body.field, body.current)
+
     @app.post('/api/projects/{pid}/suggest')
     def suggest(pid: str, body: SuggestBody):
         return ws().suggest_field(pid, body.field, body.current, body.about)

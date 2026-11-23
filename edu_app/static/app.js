@@ -247,6 +247,7 @@ const SUGGEST_INPUTS = {
   q_topic: 'q-topic',
   q_notes: 'q-notes',
   revise_instruction: 'revise-instruction',
+  nl_topic: 'nl-topic',
 };
 
 // The hint is shown in the box as gray placeholder text; Tab accepts it, typing replaces it.
@@ -282,9 +283,12 @@ function suggestAbout(field, btn) {
 async function requestHint(input, field, btn, { quiet = false } = {}) {
   const row = btn ? btn.closest('.suggest-row') : null;
   const note = row ? row.querySelector('.muted') : null;
+  const url = input.dataset.suggestScope === 'course'
+    ? `/api/courses/${S.course}/suggest`
+    : `/api/projects/${S.pid}/suggest`;
   if (note) note.textContent = '正在想…';
   try {
-    const r = await api('POST', `/api/projects/${S.pid}/suggest`, {
+    const r = await api('POST', url, {
       field, current: input.value, about: suggestAbout(field, btn || input),
     });
     if (!r) return;
@@ -311,6 +315,7 @@ function bindSuggest() {
     const input = document.getElementById(id);
     if (!input) continue;
     input.dataset.suggestField = field;
+    if (field === 'nl_topic') input.dataset.suggestScope = 'course';
     const label = input.closest('label');
     const host = label || input.closest('.row') || input;
     if (host.querySelector && host.querySelector(`.suggest-row[data-suggest-row="${field}"]`)) continue;
@@ -324,11 +329,13 @@ function bindSuggest() {
   // The button asks for a fresh hint and replaces whatever is there.
   document.body.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-suggest]');
-    if (!btn || !S.pid) return;
+    if (!btn) return;
     const field = btn.dataset.suggest;
     const input = document.getElementById(SUGGEST_INPUTS[field])
       || (btn.closest('.regen') && btn.closest('.regen').querySelector('input, textarea'));
     if (!input) return;
+    if (input.dataset.suggestScope !== 'course' && !S.pid) return;
+    if (input.dataset.suggestScope === 'course' && !S.course) return;
     delete input.dataset.suggestTried;
     await busy(btn, '想一下…', () => requestHint(input, field, btn));
     if (!input.value.trim()) input.focus();
@@ -337,7 +344,8 @@ function bindSuggest() {
   document.addEventListener('focusin', (e) => {
     const input = e.target;
     const field = input && input.dataset && input.dataset.suggestField;
-    if (!field || !S.pid || input.value.trim() || input.dataset.ghost || input.dataset.suggestTried) return;
+    const ready = input.dataset.suggestScope === 'course' ? !!S.course : !!S.pid;
+    if (!field || !ready || input.value.trim() || input.dataset.ghost || input.dataset.suggestTried) return;
     clearTimeout(hintTimer);
     hintTimer = setTimeout(() => {
       if (document.activeElement !== input || input.value.trim() || input.dataset.ghost) return;
