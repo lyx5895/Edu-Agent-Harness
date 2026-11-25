@@ -32,7 +32,7 @@
           <label>课程名称<input id="nc-title" placeholder="高一数学"></label>
           <label>学科<select id="nc-subject"></select></label>
           <label class="hidden" id="nc-custom-wrap">学科名称<input id="nc-custom" maxlength="20" placeholder="例如：信息技术、美术"></label>
-          <label>年级（可选）<input id="nc-grade" placeholder="高一"></label>
+          <label>年级（可选）<input id="nc-grade" placeholder="如：高一、初二、五年级"></label>
           <label>班级（可选）<input id="nc-class" placeholder="高一（3）班"></label>
           <label class="wide">学生名单（可选，每行一个代号，不要写真实姓名）<textarea id="nc-roster" rows="3" placeholder="S01&#10;S02"></textarea></label>
           <div class="wide"><button id="nc-create">开始使用</button> <button id="nc-cancel" class="link hidden">取消</button></div>
@@ -55,7 +55,7 @@
           <div class="card-head"><h3>课程设置</h3><button class="link small" id="settings-close">收起</button></div>
           <div class="grid-form">
             <label>课程名称<input id="cs-title"></label>
-            <label>年级<input id="cs-grade"></label>
+            <label>年级<input id="cs-grade" placeholder="如：高一、初二、五年级"></label>
             <div class="wide"><button class="small secondary" id="cs-save">保存</button></div>
           </div>
           <h4>学生名单 <span id="cs-count" class="pill"></span></h4>
@@ -105,7 +105,7 @@
       <form id="project-form" class="grid-form">
         <label>项目名称<input name="title" required placeholder="高一数学｜对数函数｜第2课时"></label>
         <label>学科<select name="subject" id="subject-select" required></select></label>
-        <label>年级<input name="grade" placeholder="高一"></label>
+        <label>年级<input name="grade" placeholder="如：高一、初二、五年级"></label>
         <label class="wide">老师说明（可选）<textarea name="notes" rows="2" placeholder="学生基础、本课重点等"></textarea></label>
         <div class="wide"><button type="submit">创建</button> <button type="button" id="cancel-project" class="secondary">取消</button></div>
       </form>

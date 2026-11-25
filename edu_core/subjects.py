@@ -90,6 +90,14 @@ _PACKS = [
         'tags': ['区域定位错误', '地理原理误用', '图表判读错误', '要素分析不全', '计算错误'],
     },
     {
+        # 小学科学 (and 初中综合科学 where a region teaches it); standards: 义务教育科学课程标准 only
+        'id': 'science',
+        'name': '科学',
+        'types': ['single_choice', 'fill_blank', 'short_answer', 'experiment', 'material_analysis'],
+        'tools': ['answer_match', 'numeric', 'units'],
+        'tags': ['科学概念混淆', '观察记录不准确', '实验探究不规范', '证据与结论不对应', '术语不规范'],
+    },
+    {
         # Knowledge questions only (e.g. SVM, decision trees, neural networks); no programming, no sandbox.
         'id': 'ai',
         'name': '人工智能',
@@ -101,6 +109,38 @@ _PACKS = [
 
 SUBJECTS = {p['id']: {'feedback_language': 'zh', 'writing_dimensions': [], **p} for p in _PACKS}
 BY_NAME = {p['name']: p for p in SUBJECTS.values()}
+# What the 义务教育 stage calls the same subjects (their standards are filed under these ids)
+for _alias, _id in {
+    '道德与法治': 'politics',
+    '政治': 'politics',
+    '信息科技': 'ai',
+    '信息技术': 'ai',
+    '生物学': 'biology',
+}.items():
+    BY_NAME.setdefault(_alias, SUBJECTS[_id])
+
+# The same subject is called differently in 义务教育 (grades 1–9): what teachers, pages and prompts should say there.
+COMPULSORY_NAMES = {'politics': '道德与法治', 'ai': '信息科技'}
+
+
+def subject_name(subject: str, *grade_texts: str) -> str:
+    """The subject's name for this grade: ``politics`` in 初二 → 道德与法治, in 高一 (or no grade) → 思想政治."""
+    from edu_core.curriculum import source  # curriculum does not import subjects; kept local to stay one-way
+
+    p = pack(subject)
+    compulsory = '@' in source(p['id'], *grade_texts)
+    return COMPULSORY_NAMES.get(p['id'], p['name']) if compulsory else p['name']
+
+
+def subject_label(p: dict) -> str:
+    """How a subject is listed in a picker: both names when the stages differ (思想政治 / 道德与法治)."""
+    other = COMPULSORY_NAMES.get(p['id'])
+    return f'{p["name"]} / {other}' if other else p['name']
+
+
+def subject_aliases(p: dict) -> list[str]:
+    """Every name that picks this subject when typed (course titles such as 初二道德与法治)."""
+    return [p['name'], *(a for a, q in BY_NAME.items() if q['id'] == p['id'] and a != p['name'])]
 
 
 # A subject without a pack uses the general flow (COURSE_WORKSPACE_DESIGN.md 1.2): common question types, answer-key

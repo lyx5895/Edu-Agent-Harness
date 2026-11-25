@@ -16,7 +16,7 @@ import time
 from edu_core import artifacts as A
 from edu_core.access import CURRENT_USER
 from edu_core.storage import event, new_id, row
-from edu_core.subjects import pack
+from edu_core.subjects import pack, subject_name
 from edu_core.workflow.common import Conflict
 
 KINDS = {'prep': '备课', 'practice': '出一份练习', 'grading': '批改作业', 'explain': '准备讲解', 'legacy': '旧课时项目'}
@@ -35,8 +35,8 @@ GRADE_RE = re.compile(r'(高[一二三]|初[一二三]|[一二三四五六]年�
 def _suggest_course(p):
     """A course name for an old project, e.g. 高一数学·对数函数: grade + subject (or the title's first part when it
     names the subject) + knowledge module. Only a suggestion; the teacher edits it before mapping."""
-    subject = pack(p['subject'])['name']
     grade = p['grade'] or (m.group(1) if (m := GRADE_RE.search(p['title'])) else '')
+    subject = subject_name(p['subject'], grade)
     head = re.split(r'[｜|·]', p['title'])[0].strip()
     base = head if subject in head and len(head) <= 12 else f'{grade}{subject}'
     module = (p.get('knowledge_module') or '').strip()
@@ -56,7 +56,7 @@ class CoursesMixin:
         r = row(c.execute('SELECT * FROM courses WHERE id=?', (cid,)).fetchone()) if cid else None
         if r is None:
             raise KeyError(f'课程不存在：{cid}')
-        r['subject_name'] = pack(r['subject'])['name']
+        r['subject_name'] = subject_name(r['subject'], r.get('grade', ''), r.get('title', ''))
         return r
 
     def create_course(self, title, subject, grade='', term='', textbook='', notes='', owner=''):

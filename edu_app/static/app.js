@@ -386,9 +386,9 @@ async function init() {
   tuckNotes();
   S.meta = await api('GET', '/api/meta');
   $('#subject-select').innerHTML = '<option value="" disabled selected>请选择学科</option>'
-    + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+    + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.label || s.name)}</option>`).join('');
   $('#nc-subject').innerHTML = '<option value="" disabled selected>请选择学科</option>'
-    + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.name)}</option>`).join('')
+    + S.meta.subjects.map((s) => `<option value="${s.id}">${esc(s.label || s.name)}</option>`).join('')
     + '<option value="__custom">其他（自己填写）</option>';
   S.course = store.get('edu.course');
   $('#model-status').textContent = S.meta.model_ready
@@ -821,7 +821,7 @@ function renderProjectEdit() {
   const locked = S.overview.counts.question.total > 0;
   $('#project-edit').innerHTML = `<h3>编辑这节课</h3><div class="grid-form">
     <label>名称<input class="pe-title" value="${esc(p.title)}"></label>
-    <label>学科<select class="pe-subject" ${locked ? 'disabled' : ''}>${S.meta.subjects.some((s) => s.id === p.subject) ? '' : `<option value="${esc(p.subject)}" selected>${esc(p.subject_name)}</option>`}${S.meta.subjects.map((s) => `<option value="${s.id}" ${s.id === p.subject ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>
+    <label>学科<select class="pe-subject" ${locked ? 'disabled' : ''}>${S.meta.subjects.some((s) => s.id === p.subject) ? '' : `<option value="${esc(p.subject)}" selected>${esc(p.subject_name)}</option>`}${S.meta.subjects.map((s) => `<option value="${s.id}" ${s.id === p.subject ? 'selected' : ''}>${esc(s.label || s.name)}</option>`).join('')}</select></label>
     <label>年级<input class="pe-grade" value="${esc(p.grade)}"></label>
     <label class="wide">老师说明<textarea class="pe-notes" rows="2">${esc(p.notes)}</textarea></label>
     ${locked ? '<div class="wide muted">这节课已经有题目，学科不能再改。</div>' : ''}
@@ -969,7 +969,9 @@ async function renderCurriculum(q) {
   const keep = dirty ? $$('#curriculum-list input:checked').map((i) => ({ id: i.value, html: i.closest('.cur-item').outerHTML })) : [];
   const r = await api('GET', `/api/projects/${S.pid}/curriculum${q !== undefined ? `?q=${encodeURIComponent(q)}` : ''}`);
   if (q === undefined && !dirty) S.curTouched = false;  // ticks changed but not saved stay marked as changed
-  $('#curriculum-src').innerHTML = `依据<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.title)}</a>（${esc(r.scope)}）`;
+  // 义务教育 standards are OCR of scanned PDFs: say so, so a teacher checks a quotation before relying on it
+  $('#curriculum-src').innerHTML = `依据<a href="${esc(r.source_url)}" target="_blank" rel="noopener">${esc(r.title)}</a>（${esc(r.stage)}；${esc(r.scope)}）`
+    + (r.text_source ? ` <span class="pill" title="${esc(r.text_source)}">扫描版识别</span>` : '');
   $('#curriculum-note').textContent = q !== undefined
     ? `“${q}”的搜索结果，勾选后保存课时信息。`
     : r.weak ? '没有找到明确对应的课标条目：请从下面勾选或换个说法搜索；都不勾选时，备课方案不受课标约束。'
@@ -1686,7 +1688,7 @@ function bindEvents() {
   subjectSel.addEventListener('change', () => { subjectSel.dataset.manual = '1'; });
   $('#project-form [name=title]').addEventListener('input', (e) => {
     if (subjectSel.dataset.manual) return;
-    const hit = S.meta.subjects.find((s) => e.target.value.includes(s.name) || (s.id === 'ai' && /AI|人工智能/i.test(e.target.value)));
+    const hit = S.meta.subjects.find((s) => (s.aliases || [s.name]).some((n) => e.target.value.includes(n)) || (s.id === 'ai' && /AI|人工智能/i.test(e.target.value)));
     if (hit) subjectSel.value = hit.id;
   });
   document.querySelector('#workspace').addEventListener('click', (e) => {

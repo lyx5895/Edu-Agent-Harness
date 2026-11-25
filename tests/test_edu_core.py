@@ -84,7 +84,7 @@ def test_grading_context_cannot_read_history_or_unconfirmed(store):
 # ---------- subject packs and tools ----------
 
 
-def test_ten_subject_packs():
+def test_subject_packs():
     assert {p['name'] for p in SUBJECTS.values()} == {
         '语文',
         '数学',
@@ -95,6 +95,7 @@ def test_ten_subject_packs():
         '思想政治',
         '历史',
         '地理',
+        '科学',  # 义务教育 only
         '人工智能',
     }
     assert pack('人工智能')['id'] == 'ai' and 'writing' not in pack('ai')['types']

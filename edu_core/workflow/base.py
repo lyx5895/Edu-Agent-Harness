@@ -14,7 +14,7 @@ from edu_core.config import Settings
 from edu_core.context import describe
 from edu_core.llm import ModelUnavailable
 from edu_core.storage import Store, new_id, row
-from edu_core.subjects import KEYED_TYPES, QUESTION_TYPES, pack
+from edu_core.subjects import KEYED_TYPES, QUESTION_TYPES, pack, subject_name
 from edu_core.text import dump
 from edu_core.workflow.common import (
     Conflict,
@@ -45,6 +45,12 @@ class WorkspaceBase:
         if p is None:
             raise KeyError(f'项目不存在：{pid}')
         p['pack'] = pack(p['subject'])
+        # which curriculum standard: the grade field decides, a grade in the title is the fallback (高一数学)
+        p['std'] = CUR.source(p['subject'], p.get('grade', ''), p.get('title', ''))
+        # …and what the subject is called at that stage (初二 → 道德与法治): pages and every prompt read this name
+        name = subject_name(p['subject'], p.get('grade', ''), p.get('title', ''))
+        if name != p['pack']['name']:
+            p['pack'] = {**p['pack'], 'name': name}
         return p
 
     def _project_view(self, p):
@@ -69,7 +75,8 @@ class WorkspaceBase:
             'status_prefs': json.loads(p['status_prefs']) if p.get('status_prefs') else {},
             'material_prefs': json.loads(p['material_prefs']) if p.get('material_prefs') else {},
             'curriculum': json.loads(p['curriculum']) if p.get('curriculum') else None,
-            'has_curriculum': CUR.available(p['subject']),
+            'has_curriculum': CUR.available(p['std']),
+            'curriculum_stage': CUR.stage_name(p['std']),
             'subject_name': p['pack']['name'],
             'question_types': p['pack']['types'],
         }
@@ -203,7 +210,7 @@ class WorkspaceBase:
             content = self._validate_content(src['type'], content, src['content'])
             if src['type'] == 'lesson_plan':
                 p = self._project(c, src['project_id'])
-                CUR.plan_checks(p['subject'], content['objectives'], used=bool(content.get('curriculum')))
+                CUR.plan_checks(p['std'], content['objectives'], used=bool(content.get('curriculum')))
                 evidence_checks(content)
             return A.edit(c, aid, content, teacher=teacher)
 

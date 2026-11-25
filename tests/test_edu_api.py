@@ -22,7 +22,7 @@ def client(tmp_path):
 
 def test_teacher_flow_over_http(client):
     meta = client.get('/api/meta').json()
-    assert len(meta['subjects']) == 10 and meta['model_ready']
+    assert len(meta['subjects']) == 11 and meta['model_ready']
     p = client.post('/api/projects', json={'title': '高一数学｜对数函数', 'subject': 'math', 'grade': '高一'}).json()
     pid = p['id']
     assert (

@@ -60,12 +60,12 @@ class ProjectsMixin:
         """对应课标: suggestions for the course info (or a search), and what is selected."""
         with self.store.read() as c:
             p = self._project(c, pid)
-        data = CUR.load(p['subject'])
+        data = CUR.load(p['std'])
         if not data:
             return {'available': False}
         chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
         query = q if q is not None else self._curriculum_query(p)
-        found = CUR.search(p['subject'], query, k=8)
+        found = CUR.search(p['std'], query, k=8)
         auto = self._auto_pick(found)
         selected = chosen['ids'] if chosen else [it['id'] for it in auto]
         by_id = data['by_id']
@@ -86,6 +86,8 @@ class ProjectsMixin:
             'title': data['title'],
             'source_url': data['source_url'],
             'scope': data['scope'],
+            'stage': data['stage_name'],  # 普通高中 / 义务教育·8年级: which set the grade selected
+            'text_source': data.get('text_source', ''),  # set when the texts are OCR of a scan, not a text layer
             'query': query,
             'items': [view(it) for it in extra + found],
             'selected': selected,
@@ -113,15 +115,15 @@ class ProjectsMixin:
         with self.store.read() as c:
             p = self._project(c, pid)
         chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
-        if not CUR.load(p['subject']) or (chosen and chosen.get('chosen_by') in ('teacher', 'model')):
+        if not CUR.load(p['std']) or (chosen and chosen.get('chosen_by') in ('teacher', 'model')):
             return
         query = self._curriculum_query(p)
-        cands = CUR.candidates(p['subject'], query)
+        cands = CUR.candidates(p['std'], query)
         if not cands:
             return
         ctx = Context('pick_standards')
         ctx.add_other('project', pid)
-        ctx.add_other('curriculum', p['subject'], sha(_json([it['id'] for it in cands])), items=[it['id'] for it in cands])
+        ctx.add_other('curriculum', p['std'], sha(_json([it['id'] for it in cands])), items=[it['id'] for it in cands])
         try:
             out, meta = llm.complete(
                 'generator',
@@ -154,7 +156,7 @@ class ProjectsMixin:
 
     def _curriculum_for_plan(self, c, p):
         """Resolve the standard items for drafting: the teacher's pick, else an automatic pick saved for review."""
-        data = CUR.load(p['subject'])
+        data = CUR.load(p['std'])
         if not data:
             return None
         chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
@@ -163,14 +165,14 @@ class ProjectsMixin:
         if chosen:
             ids = chosen['ids']
         else:
-            ids = [it['id'] for it in self._auto_pick(CUR.search(p['subject'], self._curriculum_query(p), k=8))]
+            ids = [it['id'] for it in self._auto_pick(CUR.search(p['std'], self._curriculum_query(p), k=8))]
             c.execute(
                 'UPDATE projects SET curriculum=? WHERE id=?',
                 (_json({'ids': ids, 'off': False, 'chosen_by': 'auto'}), p['id']),
             )
         if not ids:
             return None
-        return CUR.context(p['subject'], ids, self._curriculum_query(p))
+        return CUR.context(p['std'], ids, self._curriculum_query(p))
 
     def _carryover(self, c, pid):
         """What the next lesson inherits from this one: confirmed problem patterns (with the re-practice result
@@ -332,13 +334,21 @@ class ProjectsMixin:
             ):
                 if value is not None:
                     changes[key] = value.strip()[:500]
+            # the standard this project will be matched against once the edits apply (grade 初二 → 义务教育)
+            new_std = CUR.source(
+                pack(subject)['id'] if subject is not None else p['subject'],
+                changes.get('grade', p.get('grade', '')),
+                changes.get('title', p.get('title', '')),
+            )
             if curriculum_ids is not None or curriculum_off is not None:
                 prev = json.loads(p['curriculum']) if p.get('curriculum') else {}
-                data = CUR.load(p['subject'])
+                data = CUR.load(new_std)
                 ids = prev.get('ids', []) if curriculum_ids is None else curriculum_ids
                 ids = [i for i in dict.fromkeys(ids) if data and i in data['by_id']]
                 off = prev.get('off', False) if curriculum_off is None else bool(curriculum_off)
                 changes['curriculum'] = _json({'ids': ids, 'off': off, 'chosen_by': 'teacher'})
+            elif new_std != p['std'] and p.get('curriculum'):
+                changes['curriculum'] = ''  # another set of standards (or 学段): the old picks do not exist there
             if 'knowledge_module' in changes or 'lesson_scope' in changes:
                 prev = json.loads(p['curriculum']) if p.get('curriculum') else {}
                 moved = any(k in changes and changes[k] != (p.get(k) or '') for k in ('knowledge_module', 'lesson_scope'))

@@ -1,7 +1,14 @@
-"""Curriculum standards (课程标准) as verified items, matching, and requirement-level checks.
+"""Curriculum standards (课程标准) as items, matching, and requirement-level checks.
 
-Item files are built by ``scripts/edu_build_curriculum.py`` from the official MOE PDFs; every item text is a
-verbatim excerpt. Only subjects with a file are supported (pilot: math).
+Two sets of standards:
+
+- 普通高中 (grades 10–12, and the default when no grade is known): ``<subject>.json``, built by
+  ``scripts/edu_build_curriculum.py`` from the PDFs' text layer; every item text is a verbatim excerpt.
+- 义务教育 (grades 1–9): ``compulsory/<subject>.json``, built by ``scripts/edu_build_curriculum_compulsory.py`` from
+  MinerU's OCR of the scanned PDFs (``text_source`` says so). Every item has ``grades`` [lo, hi]; only the items
+  whose range meets the class's grade are loaded, so a 初二 lesson never matches a 一年级 item.
+
+Callers pass a *source key* from :func:`source` (``math`` or ``math@7-9``) wherever a subject used to go.
 """
 
 from __future__ import annotations
@@ -22,22 +29,79 @@ LEVELS = (
 )
 LEVEL_NAME = {1: '了解', 2: '理解', 3: '掌握'}
 
+_CN = {'一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9}
+_GRADE_WORDS = [
+    (re.compile(r'高([一二三])'), lambda m: (9 + _CN[m.group(1)],) * 2),
+    (re.compile(r'初([一二三])'), lambda m: (6 + _CN[m.group(1)],) * 2),
+    (re.compile(r'([一二三四五六七八九])年级'), lambda m: (_CN[m.group(1)],) * 2),
+    (re.compile(r'(?<!\d)([1-9])\s*年级'), lambda m: (int(m.group(1)),) * 2),
+    (re.compile(r'高中'), lambda m: (10, 12)),
+    (re.compile(r'初中'), lambda m: (7, 9)),
+    (re.compile(r'小学'), lambda m: (1, 6)),
+]
+
+
+def grade_range(text: str) -> tuple[int, int] | None:
+    """``初二`` → (8, 8), ``五年级`` → (5, 5), ``高一`` → (10, 10), ``小学`` → (1, 6); None when no grade is named."""
+    for pattern, value in _GRADE_WORDS:
+        if m := pattern.search(text or ''):
+            return value(m)
+    return None
+
+
+def source(subject: str, *grade_texts: str) -> str:
+    """Which standard a lesson is matched against: the first of ``grade_texts`` that names a grade decides (pass
+    the grade field before titles). Grades 1–9 → 义务教育 (``math@7-9``), otherwise 普通高中 (``math``)."""
+    for text in grade_texts:
+        if r := grade_range(text):
+            lo, hi = r
+            return f'{subject}@{lo}-{min(hi, 9)}' if lo <= 9 else subject
+    return subject
+
+
+def stage_name(key: str) -> str:
+    """``math@7-9`` → ``义务教育·7～9年级``; a senior-high key → ``普通高中``."""
+    _, _, grades = key.partition('@')
+    if not grades:
+        return '普通高中'
+    lo, hi = grades.split('-')
+    return f'义务教育·{lo}年级' if lo == hi else f'义务教育·{lo}～{hi}年级'
+
 
 @cache
-def load(subject: str) -> dict | None:
-    if not re.fullmatch(r'[a-z]+', subject or ''):
+def _read(path: Path) -> dict | None:
+    return json.loads(path.read_text(encoding='utf-8')) if path.exists() else None
+
+
+@cache
+def load(key: str) -> dict | None:
+    m = re.fullmatch(r'([a-z]+)(?:@([1-9])-([1-9]))?', key or '')
+    if not m:
         return None  # only packaged subjects have standards; custom subject names never become paths
-    path = DIR / f'{subject}.json'
-    if not path.exists():
-        return None
-    data = json.loads(path.read_text(encoding='utf-8'))
+    subject, lo, hi = m.group(1), m.group(2), m.group(3)
+    if lo is None:
+        raw = _read(DIR / f'{subject}.json')
+        if raw is None:
+            return None
+        data = dict(raw)
+    else:
+        raw = _read(DIR / 'compulsory' / f'{subject}.json')
+        if raw is None:
+            return None
+        lo, hi = int(lo), int(hi)
+        items = [it for it in raw['items'] if it['grades'][0] <= hi and lo <= it['grades'][1]]
+        if not any(it['kind'] == 'content' for it in items):
+            return None  # e.g. 一年级英语: the standard has only 教学提示 for 预备级, nothing to plan against
+        data = {**raw, 'items': items, 'grades': [lo, hi]}
+    data['key'] = key
+    data['stage_name'] = stage_name(key)
     data['by_id'] = {it['id']: it for it in data['items']}
     data['idf'] = _idf([it for it in data['items'] if it['kind'] == 'content'])
     return data
 
 
-def available(subject: str) -> bool:
-    return load(subject) is not None
+def available(key: str) -> bool:
+    return load(key) is not None
 
 
 def short_label(item: dict) -> str:
@@ -53,11 +117,11 @@ def unit_of(item: dict) -> str:
     return item['label'].rsplit('·', 1)[0]
 
 
-def candidates(subject: str, query: str, n: int = 24) -> list[dict]:
+def candidates(key: str, query: str, n: int = 24) -> list[dict]:
     """What a model may choose the standards from: the best lexical matches plus every item of the units they are
     in. Characters alone cannot tell that k 近邻 is one of the 核心算法 of 人工智能初步, but its unit is found."""
-    data = load(subject)
-    found = search(subject, query, k=8)
+    data = load(key)
+    found = search(key, query, k=8)
     if not data or not found:
         return []
     units = list(dict.fromkeys(unit_of(it) for it in found[:3]))
@@ -107,9 +171,9 @@ def _score(data, query_grams, item):
     return total
 
 
-def search(subject: str, query: str, k: int = 6, kinds=('content',)) -> list[dict]:
+def search(key: str, query: str, k: int = 6, kinds=('content',)) -> list[dict]:
     """Best matching items for the course info. Deterministic and explainable (character bigrams, IDF-weighted)."""
-    data = load(subject)
+    data = load(key)
     if not data or not query.strip():
         return []
     q = _grams(query)
@@ -132,17 +196,23 @@ def search(subject: str, query: str, k: int = 6, kinds=('content',)) -> list[dic
     return [{**it, 'score': round(s, 2)} for s, it in scored[:k] if s >= 0.35 * top]
 
 
-def context(subject: str, ids: list[str], query: str = '') -> dict:
+def _groups(item: dict) -> list[str]:
+    """Which 学业要求 / 教学提示 go with an item: the theme in its id (B2 = 必修 主题二), or the ``groups`` a
+    compulsory item lists (its 学段·领域, 学习任务群 or 英语级别)."""
+    return item.get('groups') or [item['id'].split('.')[1]]
+
+
+def context(key: str, ids: list[str], query: str = '') -> dict:
     """What the model sees: the chosen 内容要求, plus the 学业要求 and 教学提示 of the same themes that match best."""
-    data = load(subject)
+    data = load(key)
     if not data:
         return {'content': [], 'requirements': [], 'hints': []}
     content = [data['by_id'][i] for i in ids if i in data['by_id'] and data['by_id'][i]['kind'] == 'content']
-    prefixes = {it['id'].split('.')[1] for it in content}  # e.g. B2 = 必修 主题二
+    prefixes = {g for it in content for g in _groups(it)}
     q = _grams(query + ''.join(it['label'] + it['text'] for it in content))
 
     def best(kind, n):
-        pool = [it for it in data['items'] if it['kind'] == kind and it['id'].split('.')[1] in prefixes]
+        pool = [it for it in data['items'] if it['kind'] == kind and prefixes.intersection(_groups(it))]
         pool.sort(key=lambda it: -_score(data, q, it))
         return pool[:n]
 
@@ -157,9 +227,9 @@ def level(text: str) -> int:
     return 0
 
 
-def plan_checks(subject: str, objectives: list[dict], used: bool) -> None:
+def plan_checks(key: str, objectives: list[dict], used: bool) -> None:
     """Annotate objectives in place with ``checks``: missing citation, or a requirement above the cited items."""
-    data = load(subject)
+    data = load(key)
     for o in objectives:
         checks = []
         cited = [data['by_id'][i] for i in o.get('standard_ids', []) if data and i in data['by_id']]

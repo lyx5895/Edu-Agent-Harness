@@ -123,10 +123,10 @@ class QuestionsMixin:
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
             hints, standards = [], []
             if cited:
-                std = CUR.context(p['subject'], cited, self._curriculum_query(p))
+                std = CUR.context(p['std'], cited, self._curriculum_query(p))
                 hints = [it['text'] for it in std['hints']]
                 standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
-                ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
+                ctx.add_other('curriculum', p['std'], sha(_json(cited)), items=cited)
             carry = self._carryover_for_prompt(c, ctx, p)
             materials = self._material_context(c, ctx, pid, limit=6000)
         allowed = [t for t in (types or p['pack']['types']) if t in p['pack']['types']]
@@ -681,14 +681,14 @@ class QuestionsMixin:
 
         chosen = json.loads(p['curriculum']) if p.get('curriculum') else None
         locked = bool(chosen and chosen.get('chosen_by') in ('teacher', 'model'))
-        data = CUR.load(p['subject'])
+        data = CUR.load(p['std'])
         if locked:
             cands = [data['by_id'][i] for i in (chosen.get('ids') or []) if data and i in data['by_id']]
         else:
-            cands = CUR.candidates(p['subject'], self._curriculum_query(p)) if data else []
+            cands = CUR.candidates(p['std'], self._curriculum_query(p)) if data else []
         if cands:
             ids = [it['id'] for it in cands]
-            ctx.add_other('curriculum', p['subject'], sha(_json(ids)), items=ids)
+            ctx.add_other('curriculum', p['std'], sha(_json(ids)), items=ids)
         progress.step('反推教学目标')
         out, meta = llm.complete(
             'generator',
@@ -743,7 +743,7 @@ class QuestionsMixin:
     def _review_ctx(self, p, objs, d, difficulty=None, pattern=None):
         """What the quality review compares a question with: its objective, the lesson scope and cited standards."""
         obj = objs[d.objective_index]['content'] if 0 <= d.objective_index < len(objs) else None
-        data = CUR.load(p['subject'])
+        data = CUR.load(p['std'])
         standards = [
             data['by_id'][i]['text'] for i in (obj or {}).get('standard_ids', []) if data and i in data['by_id']
         ]
@@ -1433,10 +1433,10 @@ class QuestionsMixin:
             cited = sorted({i for o in objs for i in o['content'].get('standard_ids', [])})
             standards, hints = [], []
             if cited:
-                std = CUR.context(p['subject'], cited, self._curriculum_query(p))
+                std = CUR.context(p['std'], cited, self._curriculum_query(p))
                 standards = [{'位置': it['label'], '原文': it['text']} for it in std['content']]
                 hints = [it['text'] for it in std['hints']]
-                ctx.add_other('curriculum', p['subject'], sha(_json(cited)), items=cited)
+                ctx.add_other('curriculum', p['std'], sha(_json(cited)), items=cited)
             materials = self._material_context(c, ctx, pid, limit=6000)
             activities = self._activities_for_prompt(plan, objs) if plan else []
         if not objs:

@@ -27,7 +27,7 @@ from edu_core.config import load_settings
 from edu_core.context import ContextViolation
 from edu_core.llm import Gateway, ModelUnavailable
 from edu_core.storage import Store
-from edu_core.subjects import QUESTION_TYPES, SUBJECTS, error_tags
+from edu_core.subjects import QUESTION_TYPES, SUBJECTS, error_tags, subject_aliases, subject_label
 from edu_core.workflow import Conflict, Workspace
 
 STATIC = Path(__file__).parent / 'static'
@@ -569,7 +569,14 @@ def create_app(workspace: Workspace | None = None) -> FastAPI:
         w = ws()
         return {
             'subjects': [
-                {'id': p['id'], 'name': p['name'], 'types': p['types'], 'tags': error_tags(p['id'])}
+                {
+                    'id': p['id'],
+                    'name': p['name'],
+                    'label': subject_label(p),  # 思想政治 / 道德与法治: both stages' names in pickers
+                    'aliases': subject_aliases(p),
+                    'types': p['types'],
+                    'tags': error_tags(p['id']),
+                }
                 for p in SUBJECTS.values()
             ],
             'question_types': QUESTION_TYPES,

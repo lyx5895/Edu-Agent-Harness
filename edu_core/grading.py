@@ -57,9 +57,9 @@ SYSTEM = """你是严格、公正的{subject}阅卷老师，按评分要点逐�
 WRITING_RULE = '\n7. 这是写作题：每个要点是一个评分维度，按维度给出建议分，reason 说明理由并引用原文。'
 
 
-def _payload(subject, question, points, answer, tags, quote_feedback=None):
+def _payload(subject, question, points, answer, tags, quote_feedback=None, name=None):
     body = {
-        '学科': pack(subject)['name'],
+        '学科': name or pack(subject)['name'],
         '题型': QUESTION_TYPES.get(question.get('type', ''), question.get('type', '')),
         '题目': question.get('stem', ''),
         '参考答案': question.get('reference', ''),
@@ -74,14 +74,14 @@ def _payload(subject, question, points, answer, tags, quote_feedback=None):
     return json.dumps(body, ensure_ascii=False)
 
 
-def _ask(llm, role, subject, question, points, answer, task):
+def _ask(llm, role, subject, question, points, answer, task, name=None):
     tags = error_tags(subject)
     system = SYSTEM.format(
-        subject=pack(subject)['name'],
+        subject=name or pack(subject)['name'],
         writing_rule=WRITING_RULE if question.get('type') in SUGGESTED_ONLY_TYPES else '',
     )
     metas = []
-    out, meta = llm.complete(role, task, system, _payload(subject, question, points, answer, tags), GradeOutput)
+    out, meta = llm.complete(role, task, system, _payload(subject, question, points, answer, tags, name=name), GradeOutput)
     metas.append(meta)
     judged = _normalize(out, points, answer, tags)
     bad = [pid for pid, j in judged.items() if j.get('ungrounded')]
@@ -91,7 +91,7 @@ def _ask(llm, role, subject, question, points, answer, task):
             '学生没有写相关内容时 evidence_quote 填空字符串并判 missed。'
         )
         out, meta = llm.complete(
-            role, task, system, _payload(subject, question, points, answer, tags, feedback), GradeOutput
+            role, task, system, _payload(subject, question, points, answer, tags, feedback, name=name), GradeOutput
         )
         metas.append(meta)
         retry = _normalize(out, points, answer, tags)
@@ -183,8 +183,9 @@ def _tool_point(point, answer):
     return None, '', ''
 
 
-def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0, rng=None):
-    """Grade one answer. Returns (result, generation metas)."""
+def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0, rng=None, subject_name=None):
+    """Grade one answer. Returns (result, generation metas). ``subject_name``: what the subject is called at the
+    class's stage (道德与法治 for 初二), when it differs from the pack's name."""
     rng = rng or _random
     points = rubric['points']
     if not points:
@@ -245,7 +246,7 @@ def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0
 
     pending = [p for p in points if results[p['id']] is None]
     if pending:
-        judged, m = _ask(llm, 'grader', subject, question, pending, answer, 'grade')
+        judged, m = _ask(llm, 'grader', subject, question, pending, answer, 'grade', subject_name)
         metas += m
         for p in pending:
             j = judged[p['id']]
@@ -289,7 +290,7 @@ def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0
             if results[p['id']]['source'] == 'model' and results[p['id']]['status'] in ('partial', 'missed')
         ]
         if deductions:
-            second, m = _ask(llm, 'reviewer', subject, question, deductions, answer, 'review')
+            second, m = _ask(llm, 'reviewer', subject, question, deductions, answer, 'review', subject_name)
             metas += m
             for p in deductions:
                 r, mine = second[p['id']], results[p['id']]
@@ -313,7 +314,7 @@ def grade(llm, *, subject, question, rubric, answer, review=True, audit_rate=0.0
         model_points = [p for p in points if results[p['id']]['source'] == 'model']
         all_earned = all(r['status'] == 'earned' for r in results.values())
         if model_points and all_earned and rng.random() < audit_rate:
-            second, m = _ask(llm, 'reviewer', subject, question, model_points, answer, 'audit')
+            second, m = _ask(llm, 'reviewer', subject, question, model_points, answer, 'audit', subject_name)
             metas += m
             flagged = [
                 p['id']

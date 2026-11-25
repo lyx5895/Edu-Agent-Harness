@@ -198,6 +198,7 @@ class SubmissionsMixin:
                 result, metas = grading.grade(
                     llm,
                     subject=p['subject'],
+                    subject_name=p['pack']['name'],
                     question=question,
                     rubric=rub,
                     answer=sub['text'],

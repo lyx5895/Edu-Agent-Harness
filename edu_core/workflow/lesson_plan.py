@@ -109,7 +109,7 @@ class LessonPlanMixin:
             }
         if std:
             extra['课程标准'] = {
-                '来源': CUR.load(p['subject'])['title'],
+                '来源': CUR.load(p['std'])['title'],
                 '内容要求': [
                     {
                         '编号': it['id'],
@@ -177,7 +177,7 @@ class LessonPlanMixin:
                 'notes': out.notes,
             }
         )
-        CUR.plan_checks(p['subject'], content['objectives'], used=bool(std))
+        CUR.plan_checks(p['std'], content['objectives'], used=bool(std))
         evidence_checks(content)
         with self.store.tx() as c:
             gid = record_generation(c, pid, meta, ctx.manifest, 'lesson-plan-v5')
@@ -205,7 +205,7 @@ class LessonPlanMixin:
                 raise ValueError('只能看备课方案')
             p = self._project(c, plan['project_id'])
         ids = (plan['content'].get('curriculum') or {}).get('ids') or []
-        std = CUR.context(p['subject'], ids, self._curriculum_query(p)) if ids else None
+        std = CUR.context(p['std'], ids, self._curriculum_query(p)) if ids else None
         review, meta, manifest = self._check_plan(p, plan['content'], std)
         if meta:
             with self.store.tx() as c:
@@ -316,7 +316,7 @@ class LessonPlanMixin:
             content[kind] = [x for x in out.items if x.strip()] or content[kind]
         revised = normalize_plan(content)
         # The stored plan carries the curriculum checks; recompute them before comparing so only real edits count.
-        CUR.plan_checks(p['subject'], revised['objectives'], used=bool(revised.get('curriculum')))
+        CUR.plan_checks(p['std'], revised['objectives'], used=bool(revised.get('curriculum')))
         evidence_checks(revised)
         changed = sorted(
             k for k in set(revised) | set(plan['content']) if revised.get(k) != plan['content'].get(k)

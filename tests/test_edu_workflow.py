@@ -927,3 +927,16 @@ def test_comparison_counts_only_points_written_for_the_pattern(ws):
     assert row['new'] == ['甲']  # 丙 only lost the tag on a question not written for the pattern
     assert set(row['same_tag_elsewhere']) == {'乙', '丙'}
     assert row['not_retested'] == [] and row['enough_evidence']
+
+
+def test_a_lower_secondary_plan_is_drafted_as_daode_yu_fazhi(ws):
+    # 思想政治 is called 道德与法治 in 1–9 年级: the model is told the subject the class actually has, and the
+    # standard offered is the 义务教育 one for that grade
+    p = ws.create_project('初二·宪法', 'politics', grade='初二', knowledge_module='宪法', lesson='第1课时')
+    ws.update_project(p['id'], lesson_scope='宪法是根本法 公民的基本权利和义务')
+    ws.draft_lesson_plan(p['id'])
+    for task in ('pick_standards', 'draft_lesson_plan'):
+        call = ws.llm.last(task)
+        assert '道德与法治' in call['system'] and '思想政治' not in call['system'], task
+    offered = ws.llm.last('pick_standards')['user']['候选条目']
+    assert offered and all(c['编号'].startswith('politics.S4.') for c in offered)
